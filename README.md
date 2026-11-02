@@ -19,12 +19,19 @@ In alto, accanto a «RDDC», si passa da **Collezione** a **Wishlist**. Gli ogge
 Dalla scheda: «Cerca su eBay / Subito», avviso se ce l'hai già, e **«✅ Preso!»** per spostarlo in collezione.
 
 ## Database su GitHub (collezione condivisa tra telefoni)
-1. Dal telefono «principale»: Menu → **Esporta «collezione.json»**.
-2. Su GitHub, nel repository dell'app: **Add file → Upload files**, trascina `collezione.json` (sostituisce quello vecchio) → **Commit changes**.
-3. Ogni telefono che apre l'app lo carica in automatico (o Menu → «Aggiorna ora»): aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente.
+**Automatico (consigliato)** – Menu → «🔑 Salvataggio automatico su GitHub»: incolla un *token* e l'app sincronizza da sola, in entrambe le direzioni (all'avvio, dopo ogni modifica e quando chiudi l'app). Ogni sincronizzazione è un solo commit; le foto vanno in `foto/` (una volta sola ciascuna) e `collezione.json` resta leggero. Le eliminazioni arrivano anche sugli altri telefoni.
+Per creare il token: <https://github.com/settings/personal-access-tokens/new> → *Only select repositories* → questo repository → *Repository permissions* → **Contents: Read and write** → *Generate token*.
 
-Le modifiche fatte sul telefono più recenti di quelle del file non vengono sovrascritte, e un oggetto eliminato sul telefono non ricompare. L'indirizzo del file si può cambiare in Menu (es. un `raw.githubusercontent.com/...` di un altro repository pubblico).
-⚠️ Il repository è pubblico (serve per GitHub Pages): il file è leggibile da chiunque conosca l'indirizzo, foto comprese.
+**Manuale** – Menu → «Esporta collezione.json», poi su GitHub *Add file → Upload files*. Chi non ha il token (solo lettura) riceve comunque tutto all'avvio.
+
+Le modifiche più recenti fatte sul telefono non vengono mai sovrascritte da dati più vecchi.
+⚠️ Il repository è pubblico (serve per GitHub Pages): `collezione.json` e le foto sono leggibili da chiunque conosca l'indirizzo.
+
+## Altro
+- **Viste**: il pulsante accanto alla ricerca alterna Lista, Griglia (foto grandi) e Linea del tempo.
+- **Registro interventi** nella scheda di ogni oggetto (pulizia, condensatori, batteria PRAM…), con costi e promemoria; quelli in scadenza compaiono in cima alla lista.
+- **Catalogo PDF**: Menu → «Catalogo PDF» → nella stampa scegli «Salva come PDF».
+- **Annulla**: dopo «Elimina» c'è qualche secondo per ripristinare l'oggetto.
 
 ## Incollare i dati da EveryMac (metodo consigliato)
 Quando la ricerca automatica non riesce a leggere EveryMac:
@@ -36,22 +43,20 @@ Quando la ricerca automatica non riesce a leggere EveryMac:
 Vengono letti: nome, linea, codici (Axxxx/Mxxxx, EMC, Model ID, n° ordine), date, CPU, RAM, archiviazione, grafica, display, sistema operativo, connettività, porte, batteria, dimensioni (convertite in cm), peso, prezzo USA e Italia, descrizione, colore e tutte le altre specifiche.
 
 ## Recupero automatico da EveryMac
-EveryMac non permette richieste dirette da altri siti (CORS), quindi l'app usa dei proxy pubblici gratuiti.
-Se sono lenti/bloccati, pubblica un proxy tuo gratuito su Cloudflare Workers e incolla l'URL in Menu → Impostazioni:
+EveryMac non permette richieste dirette da altri siti (CORS) e i proxy pubblici gratuiti ormai sono a pagamento o bloccati: per la ricerca automatica serve un proxy tuo, gratuito, su Cloudflare Workers (5 minuti, istruzioni anche nell'app):
 
 ```js
 export default {
   async fetch(req) {
     const u = new URL(req.url).searchParams.get('url') || '';
-    if (!/^https:\/\/(www\.)?everymac\.com\//.test(u)) return new Response('no', {status: 403});
-    const r = await fetch(u, {headers: {'User-Agent': 'Mozilla/5.0'}});
-    return new Response(r.body, {status: r.status, headers: {
-      'Content-Type': r.headers.get('Content-Type') || 'text/html',
-      'Access-Control-Allow-Origin': '*'}});
+    const h = {'Access-Control-Allow-Origin': '*'};
+    if (!/^https:\/\/(www\.)?everymac\.com\//.test(u)) return new Response('Solo everymac.com', {status: 403, headers: h});
+    const r = await fetch(u, {headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36', 'Accept-Language': 'en-US,en'}, cf: {cacheTtl: 86400}});
+    return new Response(r.body, {status: r.status, headers: {...h, 'Content-Type': r.headers.get('Content-Type') || 'text/html', 'Cache-Control': 'public, max-age=86400'}});
   }
 }
 ```
-URL da inserire: `https://NOME.TUOACCOUNT.workers.dev/?url={url}`
+Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
 
 ## Backup
 I dati stanno solo sul dispositivo: Menu → "Esporta backup completo" ogni tanto (include le foto).
