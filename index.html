@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1d1f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>RDDC – Collezione vintage</title>
+<style>
+:root{--bg:#f4f1ea;--card:#fffdf8;--ink:#1d1d1f;--mute:#6b675e;--line:#e2ddd0;--acc:#b5471f;--acc2:#2f6f5e;--chip:#ebe5d6;--shadow:0 1px 3px rgba(0,0,0,.12)}
+@media (prefers-color-scheme:dark){:root{--bg:#16150f;--card:#201f17;--ink:#f1ede2;--mute:#a39e8e;--line:#34322a;--acc:#e8825a;--acc2:#6fc0a8;--chip:#2c2a20;--shadow:0 1px 3px rgba(0,0,0,.5)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+#top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line)}
+.row{display:flex;gap:8px;align-items:center}
+.search{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px}
+#sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pill{background:var(--chip);border-radius:14px;padding:3px 10px;font-size:13px;border:0}
+.pill.x::after{content:" ✕";opacity:.6}
+#list{padding:4px 12px 110px}
+.gh{position:sticky;top:var(--hh,96px);background:var(--bg);font-weight:700;color:var(--acc);padding:12px 2px 4px;font-size:14px;letter-spacing:.04em;z-index:2}
+.gh small{color:var(--mute);font-weight:400}
+.card{display:flex;gap:12px;background:var(--card);border-radius:14px;padding:10px;margin:8px 0;box-shadow:var(--shadow);align-items:center}
+.th{width:64px;height:64px;border-radius:10px;background:var(--chip);object-fit:cover;flex:none;display:grid;place-items:center;font-size:26px;overflow:hidden}
+.th img{width:100%;height:100%;object-fit:cover}
+.ct{min-width:0;flex:1}
+.ct b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct span{display:block;color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yr{font-weight:700;color:var(--acc2);font-size:14px}
+.empty{text-align:center;color:var(--mute);padding:60px 20px}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--acc);color:#fff;font-size:32px;box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:6}
+.page{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column}
+.page>header{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;border-bottom:1px solid var(--line);background:var(--bg)}
+.page>header h2{flex:1;margin:0;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.page .body{flex:1;overflow:auto;padding:12px 14px calc(30px + env(safe-area-inset-bottom))}
+.btn{border:0;background:var(--acc);color:#fff;border-radius:12px;padding:11px 16px;font-weight:600}
+.btn.sec{background:var(--chip);color:var(--ink)}
+.btn.dng{background:#a32020}
+.btn.sm{padding:7px 12px;font-size:14px}
+.sec-t{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:20px 0 6px}
+.kv{display:grid;grid-template-columns:minmax(100px,38%) 1fr;gap:1px;background:var(--line);border-radius:12px;overflow:hidden}
+.kv>div{background:var(--card);padding:8px 10px;word-break:break-word}
+.kv>div:nth-child(odd){color:var(--mute);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{background:var(--chip);border:1px solid transparent;border-radius:16px;padding:5px 11px;font-size:14px}
+.chip.on{background:var(--acc);color:#fff}
+.chip i{font-style:normal;opacity:.65;margin-left:4px;font-size:12px}
+label.f{display:block;margin:10px 0 2px;font-size:13px;color:var(--mute)}
+.in{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+textarea.in{min-height:70px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.photos{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.photos .ph{position:relative;flex:none;scroll-snap-align:start}
+.photos img{height:200px;max-width:86vw;border-radius:12px;display:block;object-fit:contain;background:var(--chip)}
+.photos.sm img{height:84px}
+.ph button{position:absolute;top:4px;right:4px;border:0;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;width:26px;height:26px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cgrid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:var(--chip)}
+.res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
+.res small{display:block;color:var(--mute)}
+.bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px}
+.bar div{height:14px;background:var(--acc2);border-radius:7px;min-width:3px}
+.bar span:first-child{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note{background:var(--chip);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--mute);margin:10px 0}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;z-index:99;font-size:14px;max-width:88vw;display:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:grid;place-items:center;padding:20px}
+.modal>div{background:var(--card);border-radius:16px;padding:18px;max-width:380px;width:100%}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+a{color:var(--acc2)}
+</style>
+</head>
+<body>
+<div id="top">
+  <div class="row">
+    <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, CPU, note…" autocomplete="off">
+    <button class="ibtn" id="bFil" aria-label="Filtri">⚙︎ <span class="badge" id="nF" hidden></span></button>
+    <button class="ibtn" id="bMenu" aria-label="Menu">☰</button>
+  </div>
+  <div id="sum"></div>
+</div>
+<div id="list"></div>
+<button class="fab" id="fab" aria-label="Aggiungi">+</button>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ============ util ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',ms)}
+function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m)})}
+
+/* ============ database (IndexedDB) ============ */
+const DB={
+  db:null,mem:new Map(),
+  open(){return new Promise(res=>{try{const r=indexedDB.open('rddc',1);r.onupgradeneeded=()=>r.result.createObjectStore('dev',{keyPath:'id'});r.onsuccess=()=>{DB.db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})},
+  tx(m){return DB.db.transaction('dev',m).objectStore('dev')},
+  all(){return new Promise(res=>{if(!DB.db)return res([...DB.mem.values()]);const q=DB.tx('readonly').getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>res([])})},
+  put(d){const c=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));DB.mem.set(c.id,c);return new Promise(res=>{if(!DB.db)return res();const q=DB.tx('readwrite').put(c);q.onsuccess=q.onerror=()=>res()})},
+  del(id){DB.mem.delete(id);return new Promise(res=>{if(!DB.db)return res();const q=DB.tx('readwrite').delete(id);q.onsuccess=q.onerror=()=>res()})},
+  clear(){DB.mem.clear();return new Promise(res=>{if(!DB.db)return res();const q=DB.tx('readwrite').clear();q.onsuccess=q.onerror=()=>res()})}
+};
+
+/* ============ model ============ */
+const STATI=['Funzionante','Da testare','Da riparare','Non funzionante','Per ricambi'];
+const TIPI=['Computer desktop','All-in-one','Portatile','Server','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Monitor','Stampante','Periferica','Rete','Altro'];
+const MARCHE0=['Apple','Commodore','Atari','IBM','Nokia','Sony','Nintendo','Sega','Microsoft','HP','Compaq','Palm','Olivetti'];
+const TOP=[['nome','Nome *'],['marca','Marca','list:marche'],['tipologia','Tipologia','list:tipi'],['linea','Linea di prodotto','list:linee'],['anno','Anno (introduzione)','number']];
+const SECTIONS=[
+ ['Descrizione',[['descrizione','Descrizione','area']]],
+ ['Identificazione',[['modello','Modello (Axxxx)'],['emc','EMC'],['identifier','Model ID / codice'],['ordine','N° ordine / part no.'],['intro','Data introduzione'],['discontinued','Fine produzione'],['seriale','Numero di serie']]],
+ ['Hardware',[['cpu','Processore'],['ram','RAM'],['storage','Archiviazione'],['gpu','Grafica'],['display','Display'],['os_orig','OS originale'],['os_max','OS massimo'],['connettivita','Connettività'],['porte','Porte','area'],['batteria','Batteria'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
+ ['Collezione',[['luogo','Luogo (dove si trova)','list:luoghi'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']]]
+];
+const FACETS=[['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['luogo','Luogo'],['stato','Stato']];
+const SORTS={nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca'};
+const GROUPS={'':'Nessuno',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',stato:'Stato'};
+let devices=[];
+let S=LS.get('rd_state',{q:'',sel:{},group:'decennio',sort:'anno_a'});
+S.sel=S.sel||{};
+
+function val(d,k){
+  if(k==='decennio')return d.anno?Math.floor(d.anno/10)*10+'s':'—';
+  const v=d[k];return (v===undefined||v===null||v==='')?'—':String(v);
+}
+function idx(d){d._i=[d.nome,d.marca,d.tipologia,d.linea,d.anno,d.modello,d.emc,d.identifier,d.ordine,d.cpu,d.ram,d.storage,d.gpu,d.note,d.seriale,d.luogo,d.descrizione,d.os_orig,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
+function pass(d,skip){
+  const q=S.q.trim().toLowerCase();
+  if(q&&!q.split(/\s+/).every(w=>d._i.includes(w)))return false;
+  for(const [k,set] of Object.entries(S.sel)){ if(k===skip||!set||!set.length)continue; if(!set.includes(val(d,k)))return false }
+  return true;
+}
+function sorter(){
+  const c=(a,b)=>String(a||'').localeCompare(String(b||''),'it',{numeric:true,sensitivity:'base'});
+  const s=S.sort;
+  return (a,b)=>s==='anno_a'?((a.anno||9999)-(b.anno||9999))||c(a.nome,b.nome):s==='anno_d'?((b.anno||0)-(a.anno||0))||c(a.nome,b.nome):s==='recenti'?(b.creato||0)-(a.creato||0):s==='marca'?c(a.marca,b.marca)||c(a.nome,b.nome):c(a.nome,b.nome);
+}
+function save(){LS.set('rd_state',S)}
+
+/* ============ main list ============ */
+function render(){
+  save();
+  const items=devices.filter(d=>pass(d)).sort(sorter());
+  const nF=Object.values(S.sel).reduce((n,a)=>n+(a?a.length:0),0);
+  const b=$('#nF');b.hidden=!nF;b.textContent=nF;
+  let sum=`<span>${items.length===devices.length?devices.length+' dispositivi':items.length+' di '+devices.length}</span>`;
+  for(const [k,a] of Object.entries(S.sel))(a||[]).forEach(v=>sum+=`<button class="pill x" data-rm="${esc(k)}" data-v="${esc(v)}">${esc(v)}</button>`);
+  $('#sum').innerHTML=sum;
+  $('#list').style.setProperty('--hh',$('#top').offsetHeight+'px');
+  const L=$('#list');
+  if(!devices.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">🖥️</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo dispositivo.<br>Puoi cercarlo online con il codice Axxxx / EMC.</p></div>`;return}
+  if(!items.length){L.innerHTML=`<div class="empty">Nessun risultato.</div>`;return}
+  let html='',cur=null;
+  const grp=S.group;
+  if(grp){
+    const map=new Map();items.forEach(d=>{const g=val(d,grp);if(!map.has(g))map.set(g,[]);map.get(g).push(d)});
+    const keys=[...map.keys()].sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
+    if(S.sort==='anno_d'&&['anno','decennio'].includes(grp))keys.reverse();
+    for(const k of keys){html+=`<div class="gh">${esc(k)} <small>${map.get(k).length}</small></div>`+map.get(k).map(card).join('')}
+  }else html=items.map(card).join('');
+  L.innerHTML=html;
+}
+function card(d){
+  const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
+  const sub2=[d.tipologia,d.cpu].filter(Boolean).join(' · ');
+  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b><span>${esc(sub)}</span><span>${esc(sub2)}</span></div><div class="yr">${d.anno||''}</div></div>`;
+}
+function icon(d){const t=(d.tipologia||'').toLowerCase();return t.includes('portatil')?'💻':t.includes('smart')?'📱':t.includes('tablet')?'📱':t.includes('music')||t.includes('ipod')?'🎵':t.includes('console')?'🎮':t.includes('foto')?'📷':t.includes('monitor')?'🖵':'🖥️'}
+
+/* ============ overlay pages ============ */
+const stack=[];
+function openPage(title,body,{actions='',replace=false,mount}={}){
+  if(replace)swapTop();
+  const el=document.createElement('div');el.className='page';
+  el.innerHTML=`<header><button class="ibtn" data-back aria-label="Indietro">←</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
+  document.body.append(el);stack.push(el);
+  const st={p:stack.length};
+  replace?history.replaceState(st,''):history.pushState(st,'');
+  el.addEventListener('click',e=>{if(e.target.closest('[data-back]'))history.back()});
+  mount&&mount(el);return el;
+}
+function swapTop(){const t=stack.pop();t&&t.remove()}
+addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;while(stack.length>p)stack.pop().remove()});
+function goBase(cb){const n=(history.state&&history.state.p)||0;if(!n){cb&&cb();return}const once=()=>{removeEventListener('popstate',once);cb&&cb()};addEventListener('popstate',once);history.go(-n)}
+history.replaceState({p:0},'');
+
+/* ============ filters ============ */
+function openFilters(){
+  const el=openPage('Filtri e ordinamento','',{actions:'<button class="btn sm sec" data-reset>Azzera</button>'});
+  const draw=()=>{
+    let h=`<div class="grid2"><div><label class="f">Raggruppa per</label><select class="in" id="gSel">${Object.entries(GROUPS).map(([k,v])=>`<option value="${k}" ${S.group===k?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div><label class="f">Ordina per</label><select class="in" id="sSel">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}" ${S.sort===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`;
+    for(const [k,lab] of FACETS){
+      const cnt=new Map();devices.filter(d=>pass(d,k)).forEach(d=>{const v=val(d,k);cnt.set(v,(cnt.get(v)||0)+1)});
+      (S.sel[k]||[]).forEach(v=>{if(!cnt.has(v))cnt.set(v,0)});
+      const keys=[...cnt.keys()].sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
+      if(!keys.length)continue;
+      h+=`<div class="sec-t">${lab}</div><div class="chips">`+keys.map(v=>`<button class="chip ${(S.sel[k]||[]).includes(v)?'on':''}" data-k="${k}" data-v="${esc(v)}">${esc(v)}<i>${cnt.get(v)}</i></button>`).join('')+'</div>';
+    }
+    $('.body',el).innerHTML=h+`<p class="note">Tocca più valori nello stesso gruppo per combinarli (es. Apple + Commodore). I gruppi diversi si sommano (es. Marca Apple + Decennio 1990s).</p>`;
+  };
+  draw();
+  el.addEventListener('click',e=>{
+    const c=e.target.closest('.chip');
+    if(c){const k=c.dataset.k,v=c.dataset.v;const a=S.sel[k]=S.sel[k]||[];const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);draw();render()}
+    if(e.target.closest('[data-reset]')){S.sel={};S.q='';$('#q').value='';draw();render()}
+  });
+  el.addEventListener('change',e=>{if(e.target.id==='gSel')S.group=e.target.value;if(e.target.id==='sSel')S.sort=e.target.value;render()});
+}
+
+/* ============ detail ============ */
+function openDetail(id,replace){
+  const d=devices.find(x=>x.id===id);if(!d)return;
+  const kv=rows=>rows.length?`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join('')}</div>`:'';
+  let h='';
+  if(d.foto&&d.foto.length)h+=`<div class="photos">${d.foto.map(f=>`<div class="ph"><img src="${f}" alt=""></div>`).join('')}</div>`;
+  h+=`<h1 style="margin:10px 0 2px;font-size:22px">${esc(d.nome)}</h1><div class="chips">`+[d.marca,d.tipologia,d.linea,d.anno,d.stato].filter(Boolean).map(x=>`<span class="chip">${esc(x)}</span>`).join('')+'</div>';
+  for(const [t,fs] of SECTIONS){
+    const rows=fs.filter(([k])=>d[k]!==undefined&&d[k]!=='').map(([k,l])=>[l,d[k]]);
+    if(rows.length)h+=`<div class="sec-t">${t}</div>`+kv(rows);
+  }
+  if(d.specs&&d.specs.length)h+=`<div class="sec-t">Tutte le specifiche (${d.specs.length})</div>`+kv(d.specs);
+  if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
+  h+=`<div class="row" style="flex-wrap:wrap;margin-top:18px"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>Aggiorna da web</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div>`;
+  openPage(d.nome,h,{replace,mount(el){
+    el.addEventListener('click',async e=>{
+      if(e.target.closest('[data-edit]'))openForm(d);
+      if(e.target.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);render();toast('Duplicato');goBase(()=>openDetail(c.id))}
+      if(e.target.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();toast('Eliminato')}
+      if(e.target.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})}});
+    });
+  }});
+}
+
+/* ============ form ============ */
+function listOpts(kind){
+  const u=a=>[...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'it'));
+  if(kind==='marche')return u([...MARCHE0,...devices.map(d=>d.marca)]);
+  if(kind==='tipi')return u([...TIPI,...devices.map(d=>d.tipologia)]);
+  if(kind==='linee')return u(devices.map(d=>d.linea));
+  if(kind==='luoghi')return u(devices.map(d=>d.luogo));
+  return [];
+}
+function fieldHTML(k,l,t,v){
+  v=v==null?'':v;t=t||'';
+  if(t.startsWith('select:'))return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${t.slice(7).split('|').map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
+  if(t.startsWith('list:'))return `<label class="f">${l}</label><input class="in" name="${k}" list="dl_${t.slice(5)}" value="${esc(v)}" autocomplete="off">`;
+  return `<label class="f">${l}</label><input class="in" name="${k}" ${t==='number'?'type="number" inputmode="decimal" step="any"':''} value="${esc(v)}">`;
+}
+function openForm(src,{fromLookup=false}={}){
+  const d=JSON.parse(JSON.stringify(src||{}));
+  const isNew=!devices.some(x=>x.id===d.id);
+  let foto=d.foto||[],thumb=d.thumb||'';
+  let h=['marche','tipi','linee','luoghi'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
+  h+=`<form id="f" onsubmit="return false">`;
+  h+=fieldHTML('nome','Nome *','',d.nome);
+  h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k])}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k])}</div>`).join('')+`</div>`;
+  h+=`<div class="sec-t">Foto</div><div id="ph"></div><div class="row" style="flex-wrap:wrap;margin:8px 0"><button type="button" class="btn sm sec" data-cam>📷 Scatta</button><button type="button" class="btn sm sec" data-gal>🖼️ Galleria</button><button type="button" class="btn sm sec" data-web>🔎 Cerca sul web</button></div><input type="file" id="fCam" accept="image/*" capture="environment" hidden><input type="file" id="fGal" accept="image/*" multiple hidden>`;
+  for(const [t,fs] of SECTIONS){h+=`<div class="sec-t">${t}</div>`+fs.map(([k,l,ty])=>fieldHTML(k,l,ty,d[k])).join('')}
+  h+=`<div class="sec-t">Altre specifiche</div><label class="f">Una per riga, formato «Etichetta: valore»</label><textarea class="in" name="_specs" style="min-height:140px">${esc((d.specs||[]).map(p=>p[0]+': '+p[1]).join('\n'))}</textarea>`;
+  h+=fieldHTML('fonte','Fonte (URL)','',d.fonte);
+  h+=`<div class="row" style="margin-top:20px"><button class="btn" style="flex:1" data-save>Salva</button></div></form>`;
+  const acts=`<button class="btn sm sec" data-look>🔎 Cerca dati online</button>`;
+  const el=openPage(isNew?'Nuovo dispositivo':'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
+    const drawPh=()=>{$('#ph',el).innerHTML=foto.length?`<div class="photos sm">${foto.map((f,i)=>`<div class="ph"><img src="${f}" alt=""><button type="button" data-rmf="${i}">✕</button></div>`).join('')}</div>`:'<div class="note">Nessuna foto</div>'};
+    drawPh();
+    const ta=el.querySelector('textarea[name=descrizione]');const bd=document.createElement('button');bd.type='button';bd.className='btn sm sec';bd.style.marginTop='6px';bd.textContent='📖 Prendi da Wikipedia';bd.onclick=()=>{const f=$('#f',el);openDescPicker(((f.marca.value||'')+' '+(f.nome.value||'')).trim(),t=>{ta.value=t})};ta.after(bd);
+    const addFiles=async fs=>{for(const f of fs){try{const u=await shrink(f,1000);foto.push(u);if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh()};
+    $('#fCam',el).onchange=e=>addFiles(e.target.files);
+    $('#fGal',el).onchange=e=>addFiles(e.target.files);
+    el.addEventListener('click',async e=>{
+      const t=e.target;
+      if(t.closest('[data-cam]'))$('#fCam',el).click();
+      if(t.closest('[data-gal]'))$('#fGal',el).click();
+      if(t.dataset.rmf!==undefined){foto.splice(+t.dataset.rmf,1);if(!foto.length)thumb='';else if(t.dataset.rmf==0)thumb=await shrink(foto[0],180,.75);drawPh()}
+      if(t.closest('[data-web]')){const f=$('#f',el);openImageSearch(((f.marca.value||'')+' '+(f.nome.value||'')).trim(),async url=>{try{const b=await fetchBlob(url);const u=await shrink(b,1000);foto.push(u);if(!thumb)thumb=await shrink(b,180,.75);drawPh();toast('Foto aggiunta')}catch(e){toast('Impossibile scaricare la foto')}})}
+      if(t.closest('[data-look]')){const f=$('#f',el);collect(f);openLookup({prefill:f.modello.value||f.emc.value||f.nome.value,marca:f.marca.value,onResult:async r=>{const cur=collect(f);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
+      if(t.closest('[data-save]')){
+        const f=$('#f',el);const cur=collect(f);
+        if(!cur.nome){toast('Inserisci il nome');f.nome.focus();return}
+        const o=Object.assign({},d,cur,{foto,thumb});
+        o.id=o.id||uid();o.creato=o.creato||Date.now();
+        const dup=devices.find(x=>x.id!==o.id&&o.modello&&x.modello===o.modello&&x.emc===o.emc&&x.nome===o.nome);
+        if(dup&&isNew&&!await ask('Esiste già un dispositivo identico ("'+dup.nome+'"). Salvare comunque?','Salva'))return;
+        idx(o);await DB.put(o);
+        const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
+        render();goBase(()=>openDetail(o.id));toast('Salvato');
+      }
+    });
+  }});
+  function collect(f){
+    const o={};
+    for(const [k] of TOP)o[k]=f[k].value.trim();
+    o.anno=o.anno?parseInt(o.anno,10)||'':'';
+    for(const [,fs] of SECTIONS)for(const [k] of fs)o[k]=f[k].value.trim();
+    o.fonte=f.fonte.value.trim();
+    o.specs=f._specs.value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf(':');return i<0?[l,'']:[l.slice(0,i).trim(),l.slice(i+1).trim()]});
+    return o;
+  }
+}
+async function shrink(src,max,q=.82){
+  const bmp=await createImageBitmap(src instanceof Blob?src:await (await fetch(src)).blob());
+  const s=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas');c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',q);
+}
+
+/* ============ add chooser ============ */
+function openAdd(){
+  openPage('Aggiungi dispositivo',`
+  <p>Come vuoi aggiungerlo?</p>
+  <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
+  <button class="res" data-a="man"><b>✍️ Inserisci a mano</b><small>Per dispositivi senza scheda online.</small></button>`,{mount(el){
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;
+      if(b.dataset.a==='man'){openForm({marca:'Apple'},{fromLookup:true})}
+      else openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:async r=>openForm(await mergeFetched({},r,true),{fromLookup:true})});
+    });
+  }});
+}
+
+/* ============ rete / proxy ============ */
+function proxies(){
+  const mine=(LS.get('rd_proxy','')||'').trim();
+  const list=['https://corsproxy.io/?url={url}','https://api.allorigins.win/raw?url={url}','https://api.codetabs.com/v1/proxy?quest={url}'];
+  return mine?[mine,...list]:list;
+}
+async function viaProxy(url,blob){
+  let last;
+  for(const p of proxies()){
+    try{
+      const u=p.includes('{url}')?p.replace('{url}',encodeURIComponent(url)):p+encodeURIComponent(url);
+      const r=await fetch(u,{signal:AbortSignal.timeout(20000)});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return blob?await r.blob():await r.text();
+    }catch(e){last=e}
+  }
+  throw last||new Error('proxy');
+}
+async function fetchBlob(url){
+  try{const r=await fetch(url,{signal:AbortSignal.timeout(15000)});if(r.ok)return await r.blob()}catch(e){}
+  return viaProxy(url,true);
+}
+
+/* ============ EveryMac ============ */
+const EM='https://everymac.com';
+const EM_LINEE={macbook_pro:'MacBook Pro',macbook_air:'MacBook Air',macbook:'MacBook',powerbook:'PowerBook',ibook:'iBook',imac:'iMac',mac_mini:'Mac mini',mac_pro:'Mac Pro',power_mac:'Power Mac',emac:'eMac',mac_studio:'Mac Studio',xserve:'Xserve',performa:'Performa',quadra:'Quadra',centris:'Centris',macintosh_lc:'Macintosh LC',macintosh_classic:'Macintosh Classic',powerbook_duo:'PowerBook Duo',macintosh_ii:'Macintosh II',macintosh_se:'Macintosh SE',mac_se:'Macintosh SE',mac_classic:'Macintosh Classic',mac_plus:'Macintosh Plus',power_macintosh:'Power Macintosh'};
+function emTipo(seg){
+  if(/book/.test(seg))return 'Portatile';
+  if(/imac|emac/.test(seg))return 'All-in-one';
+  if(/xserve/.test(seg))return 'Server';
+  return 'Computer desktop';
+}
+function emKeyword(q){
+  q=q.trim();
+  if(/^\d{4}$/.test(q))return 'EMC '+q;
+  if(/^a\d{4}$/i.test(q))return q.toUpperCase();
+  return q;
+}
+const clean=t=>(t||'').replace(/ /g,' ').replace(/\s+/g,' ').trim();
+function parseEMSearch(html,base){
+  const d=new DOMParser().parseFromString(html,'text/html');
+  const m=new Map();
+  d.querySelectorAll('a[href]').forEach(a=>{
+    let href;try{href=new URL(a.getAttribute('href'),base).href}catch(e){return}
+    if(!/\/systems\/apple\/.+\/specs\/.+\.html/.test(href))return;
+    const t=clean(a.textContent);
+    if(!m.has(href))m.set(href,'');
+    if(t&&!/^complete/i.test(t)&&!m.get(href))m.set(href,t);
+  });
+  return [...m].map(([href,name])=>({href,name:name||decodeURIComponent(href.split('/').pop().replace(/-specs\.html$/,'').replace(/-/g,' '))}));
+}
+function parseEMSpecs(html,url){
+  const d=new DOMParser().parseFromString(html,'text/html');
+  let hd=[...d.querySelectorAll('h1,h2,h3')].find(h=>/specs/i.test(h.textContent));
+  let title=clean(hd?hd.textContent:(d.title||'').replace(/^EveryMac\.com:?\s*/i,''));
+  title=title.replace(/\s*Specs\s*$/i,'').replace(/[“”]/g,'"');
+  const pairs=[];let stop=false;
+  for(const tr of d.querySelectorAll('tr')){
+    if(stop)break;
+    if(tr.querySelector('tr'))continue;
+    if(hd&&!(hd.compareDocumentPosition(tr)&Node.DOCUMENT_POSITION_FOLLOWING))continue;
+    const cells=[...tr.children].filter(c=>/^t[dh]$/i.test(c.tagName));
+    if(cells.length<2)continue;
+    let l=clean(cells[0].textContent).replace(/:$/,'').replace(/\*+$/,'').trim();
+    let v=clean(cells[1].textContent).replace(/\*+/g,'').trim();
+    if(!l||!v||l.length>45||v.length>240||!/[a-z]/i.test(l))continue;
+    if(/^(details|popular|tech specs)/i.test(l))continue;
+    pairs.push([l,v]);
+    if(/^power adapter$/i.test(l)||pairs.length>140)stop=true;
+  }
+  let img='';
+  const bad=/(banner|logo|sponsor|owc|cash|button|icon|spacer|pixel|ads?\/|adserv|buy|sell|upgrade|\.gif$)/i;
+  for(const im of d.querySelectorAll('img[src]')){
+    if(hd&&!(hd.compareDocumentPosition(im)&Node.DOCUMENT_POSITION_FOLLOWING))continue;
+    const s=im.getAttribute('src');if(!/\.(jpe?g|png)/i.test(s)||bad.test(s))continue;
+    try{img=new URL(s,url).href;break}catch(e){}
+  }
+  return {title,pairs,img};
+}
+function mapEM(p,url){
+  const P=Object.fromEntries(p.pairs);
+  const find=(re)=>{const k=Object.keys(P).find(k=>re.test(k));return k?P[k]:''};
+  const nz=s=>/^(n\/a|none)$/i.test(s||'')?'':(s||'');
+  const f={nome:p.title,marca:'Apple'};
+  const seg=(url.match(/\/systems\/apple\/([^/]+)\//)||[])[1]||'';
+  f.linea=EM_LINEE[seg]||(seg?seg.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):'');
+  f.tipologia=emTipo(seg);
+  const mn=find(/^Apple Model No/i);
+  f.modello=(mn.match(/A\d{4}/)||[''])[0];
+  f.emc=(mn.match(/EMC\s*(\d{4})/i)||[,''])[1];
+  f.ordine=nz(find(/^Apple Order No/i));
+  f.identifier=nz(find(/^Model ID/i));
+  f.intro=nz(find(/^Introduction Date/i));
+  f.discontinued=nz(find(/^Discontinued Date/i));
+  const my=(f.intro.match(/\b(19|20)\d\d\b/)||[''])[0];f.anno=my?+my:'';
+  f.cpu=[nz(find(/^Processor Type/i)),nz(find(/^Processor Speed/i))].filter(Boolean).join(' @ ');
+  const mx=nz(find(/^Maximum RAM/i));
+  f.ram=[nz(find(/^Standard RAM/i)),mx?`(max ${mx})`:''].filter(Boolean).join(' ');
+  f.storage=[nz(find(/^Standard Storage$/i)),nz(find(/^Std\. Storage Speed/i))].filter(Boolean).join(' ');
+  f.gpu=nz(find(/^Video Card|^Graphics/i));
+  f.display=[nz(find(/^Built-in Display/i)),nz(find(/^Native Resolution/i))].filter(Boolean).join(' – ');
+  f.os_orig=nz(find(/^Pre-Installed/i));
+  f.os_max=nz(find(/^Maximum (MacOS|OS|System)/i));
+  f.connettivita=[find(/^Standard Ethernet/i),find(/^Standard AirPort|^Standard Wi-?Fi/i),find(/^Standard Bluetooth/i)].map(nz).filter(Boolean).join(' · ');
+  const usb=nz(find(/^USB Ports/i)),fw=nz(find(/^Firewire Ports/i)),ex=nz(find(/^Expansion Slots/i));
+  f.porte=[usb&&'USB '+usb,fw&&'FireWire '+fw,ex].filter(Boolean).join(' · ');
+  f.batteria=[nz(find(/^Battery Type/i)),nz(find(/^Battery Life/i))].filter(Boolean).join(' – ');
+  f.dimensioni=nz(find(/^Dimensions/i));
+  f.peso=nz(find(/Weight/i));
+  f.prezzo=nz(find(/^Original Price/i));
+  return {fields:f,specs:p.pairs,imageUrl:p.img,fonte:url};
+}
+async function emLookup(q,onPick){
+  const kw=emKeyword(q);
+  const su=`${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(kw)}`;
+  const html=await viaProxy(su);
+  const links=parseEMSearch(html,su);
+  if(links.length>1)return {choices:links};
+  if(links.length===1){const h2=await viaProxy(links[0].href);return {result:finishEM(h2,links[0].href)}}
+  if(/Introduction Date/i.test(html)){return {result:finishEM(html,su)}}
+  return {none:true,url:su};
+}
+function finishEM(html,url){
+  const p=parseEMSpecs(html,url);
+  if(!p.pairs.length)throw new Error('Pagina EveryMac non riconosciuta');
+  return mapEM(p,url);
+}
+
+/* ============ Wikipedia / Commons (CORS aperto) ============ */
+async function wjson(u){const r=await fetch(u,{signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function wikiSearch(q,lang='en'){
+  const j=await wjson(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srlimit=8&format=json&origin=*`);
+  return (j.query.search||[]).map(s=>({title:s.title,snippet:s.snippet.replace(/<[^>]+>/g,''),lang}));
+}
+function wclean(s){
+  s=s.replace(/<ref[^>]*\/>/g,'').replace(/<ref[\s\S]*?<\/ref>/g,'').replace(/<!--[\s\S]*?-->/g,'')
+   .replace(/<br\s*\/?>/gi,', ').replace(/<[^>]+>/g,'')
+   .replace(/\{\{\s*(?:start date|release date|start-date|dts|date)[^|}]*\|(\d{4})(?:\|(\d{1,2}))?(?:\|(\d{1,2}))?[^}]*\}\}/gi,(m,y,mo,da)=>[y,mo,da].filter(Boolean).join('-'));
+  for(let i=0;i<4;i++)s=s.replace(/\{\{(?:nowrap|nobr|small|abbr|convert|cvt|val|ubl|plainlist|flatlist|unbulleted list|hlist)\s*\|([^{}]*)\}\}/gi,(m,a)=>a.split('|').filter(x=>!/^\s*[a-z]+=/.test(x)).join(' ').trim());
+  for(let i=0;i<4;i++)s=s.replace(/\{\{[^{}]*\}\}/g,'');
+  return clean(s.replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g,'$1').replace(/\[https?:\/\/\S+\s+([^\]]+)\]/g,'$1').replace(/'{2,}/g,'').replace(/^[*\s]+/,'').replace(/\s*\*\s*/g,'; '));
+}
+async function wikiLoad(title,lang,marca){
+  const base=`https://${lang}.wikipedia.org/w/api.php`;
+  const [a,b]=await Promise.all([
+    wjson(`${base}?action=query&prop=extracts|pageimages|info&exintro=1&explaintext=1&piprop=thumbnail&pithumbsize=800&inprop=url&titles=${encodeURIComponent(title)}&format=json&origin=*`),
+    wjson(`${base}?action=parse&page=${encodeURIComponent(title)}&prop=wikitext&section=0&format=json&origin=*`).catch(()=>null)
+  ]);
+  const pg=Object.values(a.query.pages)[0];
+  const wt=b&&b.parse&&b.parse.wikitext?b.parse.wikitext['*']:'';
+  const pairs=[];
+  // infobox: unisci le righe di continuazione
+  const lines=wt.split('\n');let cur=null;
+  for(const ln of lines){
+    const m=ln.match(/^\s*\|\s*([\w \-]+?)\s*=\s*(.*)$/);
+    if(m){cur=[m[1].toLowerCase().trim(),m[2]];pairs.push(cur)}
+    else if(cur&&ln.trim()&&!/^\s*(\}\}|\{\{)/.test(ln)&&!/^\s*\|/.test(ln)&&pairs.length<90)cur[1]+=' '+ln.trim();
+    else if(/^\s*\}\}\s*$/.test(ln))cur=null;
+  }
+  const P={};const specs=[];
+  for(const [k,v0] of pairs){const v=wclean(v0);if(!v||/^(image|caption|logo|alt|image_size|imagesize|image_upright|website|footnotes)/.test(k))continue;if(!(k in P)){P[k]=v;specs.push([k.replace(/[_-]/g,' ').replace(/^\w/,c=>c.toUpperCase()),v])}}
+  const g=(...ks)=>{for(const k of ks)if(P[k])return P[k];return ''};
+  const f={nome:g('name')||pg.title,marca:marca||g('manufacturer','developer','maker')||'',
+    intro:g('released','release date','release_date','first release date','introduced','first_release_date','release'),
+    discontinued:g('discontinued','last release date'),
+    cpu:g('cpu','processor'),ram:g('memory','ram'),storage:g('storage','storage capacity'),
+    gpu:g('graphics','gpu','video'),display:g('display','screen'),os_orig:g('os','operating system','operating_system'),
+    connettivita:g('connectivity','networking'),batteria:g('battery','power'),dimensioni:g('dimensions'),peso:g('weight','mass'),
+    prezzo:g('price','launch price','introductory price'),modello:g('model','model number'),linea:g('family','series','product family','product line')};
+  const my=(f.intro.match(/\b(19[5-9]\d|20[0-3]\d)\b/)||[''])[0];f.anno=my?+my:'';
+  f.descrizione=pg.extract?pg.extract.split('\n')[0].slice(0,900):'';
+  const ty=g('type','device type').toLowerCase();
+  f.tipologia=/phone/.test(ty)?'Smartphone':/tablet/.test(ty)?'Tablet':/laptop|notebook/.test(ty)?'Portatile':/console/.test(ty)?'Console':/player|ipod/.test(ty)?'Lettore musicale':/camera/.test(ty)?'Fotocamera':/computer/.test(ty)?'Computer desktop':'';
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  return {fields:f,specs,imageUrl:pg.thumbnail?pg.thumbnail.source:'',fonte:pg.fullurl||`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`};
+}
+async function commonsSearch(q){
+  const j=await wjson(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(q)}&gsrlimit=18&prop=imageinfo&iiprop=url|mime&iiurlwidth=640&format=json&origin=*`);
+  return Object.values((j.query&&j.query.pages)||{}).filter(p=>p.imageinfo&&/image\/(jpeg|png|webp)/.test(p.imageinfo[0].mime)).map(p=>({thumb:p.imageinfo[0].thumburl,title:p.title}));
+}
+function openImageSearch(q,onPick){
+  const el=openPage('Cerca foto sul web',`<div class="row"><input class="in" id="iq" value="${esc(q)}"><button class="btn" id="ig">Cerca</button></div><div id="ir" style="margin-top:12px"></div>
+  <p class="note">Risultati da Wikimedia Commons (immagini libere). Per altre fonti: <a id="gl" target="_blank" rel="noopener" href="#">cerca su Google Immagini</a>, salva la foto e aggiungila dalla Galleria.</p>`,{mount(el){
+    const go=async()=>{
+      const v=$('#iq',el).value.trim();$('#gl',el).href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(v);
+      $('#ir',el).innerHTML='<span class="spin"></span>Cerco…';
+      try{const r=await commonsSearch(v);$('#ir',el).innerHTML=r.length?`<div class="cgrid">${r.map((x,i)=>`<img src="${esc(x.thumb)}" data-i="${i}" alt="${esc(x.title)}" loading="lazy">`).join('')}</div>`:'Nessuna immagine trovata. Prova con meno parole (es. solo il modello).';el._r=r}
+      catch(e){$('#ir',el).textContent='Ricerca non riuscita: '+e.message}
+    };
+    $('#ig',el).onclick=go;$('#iq',el).onkeydown=e=>{if(e.key==='Enter')go()};go();
+    el.addEventListener('click',e=>{const i=e.target.closest('img[data-i]');if(i){history.back();onPick(el._r[+i.dataset.i].thumb)}});
+  }});
+}
+
+async function openDescPicker(q,cb){
+  openPage('Descrizione da Wikipedia',`<div class="row"><input class="in" id="dq" value="${esc(q)}"><button class="btn" id="dg">Cerca</button></div><div id="dr" style="margin-top:12px"></div><p class="note">Testo introduttivo di Wikipedia (italiano, poi inglese). Puoi modificarlo dopo.</p>`,{mount(el){
+    const out=$('#dr',el);let res=[];
+    const go=async()=>{const v=$('#dq',el).value.trim();if(!v)return;out.innerHTML='<span class="spin"></span>Cerco…';
+      try{res=await wikiSearch(v,'it');res=res.concat(await wikiSearch(v,'en'));
+        out.innerHTML=res.length?res.map((x,i)=>`<button class="res" data-i="${i}"><b>${esc(x.title)}</b> <small>${x.lang.toUpperCase()} · ${esc(x.snippet.slice(0,100))}</small></button>`).join(''):'Nessun risultato.'}
+      catch(e){out.textContent='Errore di rete: '+e.message}};
+    $('#dg',el).onclick=go;$('#dq',el).onkeydown=e=>{if(e.key==='Enter')go()};go();
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;const x=res[+b.dataset.i];out.innerHTML='<span class="spin"></span>Carico…';
+      try{const j=await wjson(`https://${x.lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(x.title)}&format=json&origin=*`);
+        const p=Object.values(j.query.pages)[0];const t=(p.extract||'').split('\n').filter(Boolean).slice(0,2).join('\n\n').slice(0,1200);
+        history.back();cb(t+(t?`\n\n(Fonte: Wikipedia ${x.lang.toUpperCase()}, «${x.title}»)`:''))}
+      catch(err){out.textContent='Errore: '+err.message}});
+  }});
+}
+
+/* ============ lookup UI ============ */
+function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
+  const isApple=/^apple$/i.test(marca||'Apple');
+  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple?'selected':''}>Apple</option><option value="altro" ${isApple?'':'selected'}>Altra marca</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, EMC 2554, MacBookPro9,2" autocomplete="off"></div>
+  <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
+  <div id="lo" style="margin-top:14px"></div>
+  <p class="note" id="lh"></p>`;
+  openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
+    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Nokia 3310</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
+    hint();$('#lb',el).onchange=hint;
+    const out=$('#lo',el);
+    const busy=m=>out.innerHTML=`<span class="spin"></span>${esc(m)}`;
+    const preview=r=>{
+      const f=r.fields;
+      const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display]].filter(x=>x[1]);
+      out.innerHTML=`${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" style="max-height:160px;max-width:100%;border-radius:10px;display:block;margin-bottom:8px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${esc(b)}</div>`).join('')}</div><p class="note">${r.specs.length} specifiche trovate. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" id="use" style="width:100%">Usa questi dati</button>`;
+      $('#use',el).onclick=()=>onResult(r);
+    };
+    const wikiFlow=async(q,mc)=>{
+      busy('Cerco su Wikipedia…');
+      let res=await wikiSearch(q);
+      if(!res.length)res=await wikiSearch(q,'it');
+      if(!res.length){out.innerHTML='Nessun risultato.';return}
+      out.innerHTML='<b>Scegli la pagina giusta:</b>'+res.map((x,i)=>`<button class="res" data-w="${i}"><b>${esc(x.title)}</b><small>${esc(x.snippet.slice(0,110))}</small></button>`).join('');
+      out.onclick=async e=>{const b=e.target.closest('[data-w]');if(!b)return;const x=res[+b.dataset.w];busy('Carico la scheda…');try{preview(await wikiLoad(x.title,x.lang,mc))}catch(err){out.textContent='Errore: '+err.message}};
+    };
+    const go=async()=>{
+      const q=$('#lq',el).value.trim();if(!q)return;
+      const ap=$('#lb',el).value==='apple';
+      if(!ap){try{await wikiFlow(q,'')}catch(e){out.textContent='Errore di rete: '+e.message}return}
+      busy('Cerco su EveryMac…');
+      try{
+        const r=await emLookup(q);
+        if(r.result)return preview(r.result);
+        if(r.choices){
+          out.innerHTML=`<b>${r.choices.length} modelli corrispondono – scegli:</b>`+r.choices.map((x,i)=>`<button class="res" data-c="${i}"><b>${esc(x.name)}</b></button>`).join('');
+          out.onclick=async e=>{const b=e.target.closest('[data-c]');if(!b)return;const c=r.choices[+b.dataset.c];busy('Carico le specifiche…');try{preview(finishEM(await viaProxy(c.href),c.href))}catch(err){out.textContent='Errore: '+err.message}};
+          return;
+        }
+        await wikiFlow('Apple '+q,'Apple');
+      }catch(e){
+        out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Il browser non può leggere EveryMac direttamente: serve un proxy CORS (vedi Menu → Impostazioni). Intanto puoi:</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}" style="text-decoration:none">Apri su EveryMac</a><button class="btn sm" id="lw">Prova con Wikipedia</button></div>`;
+        $('#lw',el).onclick=()=>wikiFlow('Apple '+q,'Apple').catch(er=>out.textContent='Errore: '+er.message);
+      }
+    };
+    $('#lg',el).onclick=go;$('#lq',el).onkeydown=e=>{if(e.key==='Enter')go()};
+    if(prefill&&replaceSelf!==true&&false)go();
+    setTimeout(()=>$('#lq',el).focus(),250);
+  }});
+}
+async function mergeFetched(base,r,overwrite){
+  const m=Object.assign({},base);
+  for(const [k,v] of Object.entries(r.fields)){ if(v===''||v==null)continue; if(overwrite||m[k]===undefined||m[k]==='')m[k]=v }
+  if(r.specs&&r.specs.length){
+    const have=new Map((m.specs||[]).map(p=>[p[0],p[1]]));
+    r.specs.forEach(([l,v])=>{if(overwrite||!have.has(l))have.set(l,v)});
+    m.specs=[...have];
+  }
+  if(r.fonte)m.fonte=r.fonte;
+  if(r.imageUrl&&!(m.foto&&m.foto.length)){
+    try{const b=await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1000)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata')}
+  }
+  return m;
+}
+
+/* ============ statistiche ============ */
+function openStats(){
+  const bars=(title,k)=>{
+    const c=new Map();devices.forEach(d=>{const v=val(d,k);c.set(v,(c.get(v)||0)+1)});
+    const a=[...c].sort((x,y)=>y[1]-x[1]).slice(0,12);const mx=Math.max(...a.map(x=>x[1]),1);
+    return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${v}</span></div>`).join('');
+  };
+  const sum=k=>devices.reduce((s,d)=>s+(parseFloat(d[k])||0),0);
+  const h=`<div class="kv"><div>Dispositivi</div><div>${devices.length}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div></div>`+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per stato','stato');
+  openPage('Statistiche',h);
+}
+
+/* ============ menu / impostazioni / backup ============ */
+function dl(name,type,text){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+}
+function csv(){
+  const cols=['nome','marca','tipologia','linea','anno','modello','emc','identifier','ordine','intro','discontinued','cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','stato','scatola','condizione','acq_anno','acq_prezzo','valore','luogo','seriale','descrizione','note','fonte'];
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  return '﻿'+cols.join(';')+'\n'+devices.map(d=>cols.map(c=>q(d[c])).join(';')).join('\n');
+}
+function openMenu(){
+  const h=`<div class="sec-t">Collezione</div>
+  <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
+  <div class="sec-t">Backup (importante!)</div>
+  <div class="note" id="bk"></div>
+  <button class="res" data-m="exp"><b>💾 Esporta backup completo (JSON con foto)</b></button>
+  <button class="res" data-m="csv"><b>📄 Esporta tabella (CSV per Excel/Fogli)</b></button>
+  <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
+  <input type="file" id="fi" accept=".json,application/json" hidden>
+  <div class="sec-t">Impostazioni</div>
+  <label class="f">Proxy CORS personale per EveryMac (facoltativo)</label>
+  <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
+  <p class="note">Senza questo uso proxy pubblici gratuiti, che a volte sono lenti o bloccati. Nel README c'è un Cloudflare Worker di 10 righe da pubblicare gratis.</p>
+  <button class="btn sec" data-m="pxs">Salva proxy</button>
+  <div class="sec-t">Zona pericolosa</div>
+  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>`;
+  openPage('Menu',h,{mount(el){
+    (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
+    el.addEventListener('click',async e=>{
+      const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
+      if(a==='stats')openStats();
+      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',JSON.stringify({app:'rddc',v:1,devices:devices.map(d=>Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_')))}));toast('Backup scaricato')}
+      if(a==='csv'){dl('rddc.csv','text/csv',csv())}
+      if(a==='imp')$('#fi',el).click();
+      if(a==='pxs'){LS.set('rd_proxy',$('#px',el).value.trim());toast('Salvato')}
+      if(a==='clr'&&await ask('Cancellare TUTTI i dispositivi? Non si può annullare.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};render();toast('Collezione svuotata')}
+    });
+    $('#fi',el).onchange=async e=>{
+      try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
+        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
+        render();toast(n+' dispositivi importati')}catch(err){toast('File non valido')}
+    };
+  }});
+}
+
+/* ============ init ============ */
+$('#q').value=S.q||'';
+$('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
+$('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
+$('#list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openDetail(c.dataset.id)});
+$('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
+(async()=>{
+  await DB.open();
+  devices=await DB.all();devices.forEach(idx);
+  render();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
