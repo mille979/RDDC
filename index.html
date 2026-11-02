@@ -3,53 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1d1d1f">
+<meta name="theme-color" content="#f8f2e7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#110d07" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>RDDC – Collezione vintage</title>
 <style>
-:root{--bg:#f4f1ea;--card:#fffdf8;--ink:#1d1d1f;--mute:#6b675e;--line:#e2ddd0;--acc:#b5471f;--acc2:#2f6f5e;--chip:#ebe5d6;--shadow:0 1px 3px rgba(0,0,0,.12)}
-@media (prefers-color-scheme:dark){:root{--bg:#16150f;--card:#201f17;--ink:#f1ede2;--mute:#a39e8e;--line:#34322a;--acc:#e8825a;--acc2:#6fc0a8;--chip:#2c2a20;--shadow:0 1px 3px rgba(0,0,0,.5)}}
+:root{--bg:#f8f2e7;--card:#fffaf1;--ink:#24190b;--mute:#76674f;--line:#eadcc4;--acc:#f2a531;--acc-ink:#9c5a00;--on-acc:#2b1a02;--acc2:#3d7a66;--chip:#f4e6cc;--dng:#b3261e;--shadow:0 1px 2px rgba(80,50,0,.10),0 4px 14px rgba(80,50,0,.06);--glow:rgba(242,165,49,.45)}
+@media (prefers-color-scheme:dark){:root{--bg:#110d07;--card:#1c160e;--ink:#f7ecd9;--mute:#a99679;--line:#33281a;--acc:#ffb547;--acc-ink:#ffbd5c;--on-acc:#2b1a02;--acc2:#7cc4ad;--chip:#2a2015;--dng:#d2463b;--shadow:0 1px 3px rgba(0,0,0,.5);--glow:rgba(255,181,71,.35)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Roboto,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line)}
+.brand{font:700 15px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.2em;color:var(--acc-ink);text-shadow:0 0 12px var(--glow);padding:2px 2px 9px;display:flex;align-items:baseline;gap:10px}
+.brand small{font:600 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-shadow:none}
 .row{display:flex;gap:8px;align-items:center}
-.search{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
-.ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative}
-.badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px}
+.search{flex:1;min-width:0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.search:focus,.in:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative;text-decoration:none;display:inline-grid;place-items:center}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:var(--on-acc);border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px}
 #sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .pill{background:var(--chip);border-radius:14px;padding:3px 10px;font-size:13px;border:0}
 .pill.x::after{content:" ✕";opacity:.6}
 #list{padding:4px 12px 110px}
-.gh{position:sticky;top:var(--hh,96px);background:var(--bg);font-weight:700;color:var(--acc);padding:12px 2px 4px;font-size:14px;letter-spacing:.04em;z-index:2}
+.gh{position:sticky;top:var(--hh,120px);background:var(--bg);font-weight:700;color:var(--acc-ink);padding:12px 2px 4px;font-size:14px;letter-spacing:.04em;z-index:2}
 .gh small{color:var(--mute);font-weight:400}
-.card{display:flex;gap:12px;background:var(--card);border-radius:14px;padding:10px;margin:8px 0;box-shadow:var(--shadow);align-items:center}
-.th{width:64px;height:64px;border-radius:10px;background:var(--chip);object-fit:cover;flex:none;display:grid;place-items:center;font-size:26px;overflow:hidden}
+.card{display:flex;gap:12px;background:var(--card);border-radius:16px;padding:10px;margin:8px 0;box-shadow:var(--shadow);align-items:center}
+.th{width:66px;height:66px;border-radius:12px;background:var(--chip);flex:none;display:grid;place-items:center;font-size:28px;overflow:hidden}
 .th img{width:100%;height:100%;object-fit:cover}
 .ct{min-width:0;flex:1}
 .ct b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ct span{display:block;color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.yr{font-weight:700;color:var(--acc2);font-size:14px}
+.ct>span{display:block;color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;gap:10px;font-size:12px;color:var(--mute);margin-top:3px;white-space:nowrap;overflow:hidden}
+.meta span{display:inline-flex;align-items:center;gap:4px}
+.yr{font-weight:700;color:var(--acc-ink);background:var(--chip);border-radius:10px;padding:3px 8px;font-size:13px;font-variant-numeric:tabular-nums;align-self:flex-start}
+.qty{font-weight:700;color:var(--acc-ink)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c,transparent);border:1px solid rgba(127,127,127,.55);flex:none;vertical-align:-1px}
 .empty{text-align:center;color:var(--mute);padding:60px 20px}
-.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--acc);color:#fff;font-size:32px;box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:6}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--acc);color:var(--on-acc);font-size:32px;box-shadow:0 4px 18px var(--glow),0 2px 6px rgba(0,0,0,.25);z-index:6}
 .page{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column}
 .page>header{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;border-bottom:1px solid var(--line);background:var(--bg)}
 .page>header h2{flex:1;margin:0;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .page .body{flex:1;overflow:auto;padding:12px 14px calc(30px + env(safe-area-inset-bottom))}
-.btn{border:0;background:var(--acc);color:#fff;border-radius:12px;padding:11px 16px;font-weight:600}
+.page .body.bare{padding:0}
+.btn{border:0;background:var(--acc);color:var(--on-acc);border-radius:12px;padding:11px 16px;font-weight:650;text-decoration:none;display:inline-block;text-align:center}
 .btn.sec{background:var(--chip);color:var(--ink)}
-.btn.dng{background:#a32020}
+.btn.dng{background:var(--dng);color:#fff}
 .btn.sm{padding:7px 12px;font-size:14px}
-.sec-t{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:20px 0 6px}
-.kv{display:grid;grid-template-columns:minmax(100px,38%) 1fr;gap:1px;background:var(--line);border-radius:12px;overflow:hidden}
-.kv>div{background:var(--card);padding:8px 10px;word-break:break-word}
+.sec-t{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc-ink);font-weight:750;margin:22px 0 7px}
+.kv{display:grid;grid-template-columns:minmax(100px,38%) 1fr;gap:1px;background:var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.kv>div{background:var(--card);padding:9px 11px;word-break:break-word}
 .kv>div:nth-child(odd){color:var(--mute);font-size:14px}
+.kv a{color:var(--acc-ink);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chip{background:var(--chip);border:1px solid transparent;border-radius:16px;padding:5px 11px;font-size:14px}
-.chip.on{background:var(--acc);color:#fff}
+.chip.on{background:var(--acc);color:var(--on-acc);font-weight:600}
 .chip i{font-style:normal;opacity:.65;margin-left:4px;font-size:12px}
 label.f{display:block;margin:10px 0 2px;font-size:13px;color:var(--mute)}
 .in{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
@@ -65,21 +76,68 @@ textarea.in{min-height:70px;resize:vertical}
 .res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
 .res small{display:block;color:var(--mute)}
 .bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px}
-.bar div{height:14px;background:var(--acc2);border-radius:7px;min-width:3px}
+.bar div{height:14px;background:var(--acc);border-radius:7px;min-width:3px}
 .bar span:first-child{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.note{background:var(--chip);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--mute);margin:10px 0}
-#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;z-index:99;font-size:14px;max-width:88vw;display:none}
+.note{background:var(--chip);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mute);margin:10px 0}
+.note b{color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#241a0c;color:#fff3df;padding:10px 16px;border-radius:20px;z-index:99;font-size:14px;max-width:88vw;display:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:grid;place-items:center;padding:20px}
 .modal>div{background:var(--card);border-radius:16px;padding:18px;max-width:380px;width:100%}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}
-a{color:var(--acc2)}
+a{color:var(--acc-ink)}
+/* ---- scheda: header con foto ---- */
+.hero{position:relative;height:min(64vh,480px);min-height:300px;overflow:hidden;background:#1a1208;color:#fff}
+.hero .himg,.hero .hbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .hbg{display:none;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);filter:blur(28px) saturate(1.25) brightness(.85)}
+.hero.fit .hbg{display:block}
+.hero.fit .himg{object-fit:contain;padding:calc(58px + env(safe-area-inset-top)) 12px 118px}
+.hero.noph{height:auto;min-height:calc(270px + env(safe-area-inset-top));background:radial-gradient(120% 90% at 75% 5%,#ffc867 0%,#d27b0c 38%,#5a3203 75%,#2a1704 100%)}
+.hicon{position:absolute;inset:env(safe-area-inset-top) 0 96px;display:grid;place-items:center;font-size:92px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+.hb{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(20,12,2,.42);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font-size:18px;display:grid;place-items:center}
+.hb.l{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:2}
+.hbr{position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;display:flex;gap:8px;z-index:2}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:76px 18px 16px;isolation:isolate}
+.cap::before{content:"";position:absolute;inset:0;z-index:-1;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to top,#000 42%,transparent);mask-image:linear-gradient(to top,#000 42%,transparent);background:linear-gradient(to top,rgba(18,11,2,.80),rgba(18,11,2,.38) 62%,rgba(18,11,2,0))}
+.cap small{display:block;color:#ffd08a;font-weight:650;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase}
+.cap h1{margin:3px 0 0;font-size:clamp(22px,6.6vw,34px);line-height:1.12;font-weight:800;letter-spacing:-.01em;text-shadow:0 1px 14px rgba(0,0,0,.35);overflow-wrap:anywhere}
+.hchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.hchip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:4px 10px;font-size:13px}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding:12px 14px 0}
+.thumbs img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none;background:var(--chip);border:2px solid transparent}
+.thumbs img.on{border-color:var(--acc)}
+.dbody{padding:4px 14px calc(30px + env(safe-area-inset-bottom))}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:14px 0 2px}
+.tile{background:var(--card);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);min-width:0}
+.tile small{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.tile b{display:block;font-size:15px;margin-top:2px;overflow-wrap:anywhere;line-height:1.25}
+.desc{line-height:1.55;background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.desc>div{white-space:pre-line}
+.desc>div.cl{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.linkb{border:0;background:none;color:var(--acc-ink);font-weight:650;padding:6px 2px}
+details.more{margin-top:22px}
+details.more>summary{list-style:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc-ink);font-weight:750;padding:8px 0;cursor:pointer}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details.more[open]>summary::before{transform:rotate(90deg)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.viewer{background:#000}
+.vw{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;height:100%}
+.vw img{flex:none;width:100vw;height:100%;object-fit:contain;scroll-snap-align:center}
+/* ---- form ---- */
+.swrow{display:flex;gap:9px;overflow-x:auto;padding:8px 2px 4px}
+.swb{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(127,127,127,.5);background:var(--c)}
+.swb.on{outline:3px solid var(--acc);outline-offset:2px}
+.swbig{width:44px;height:44px;border-radius:12px;flex:none;border:1px solid var(--line);background:var(--c,transparent)}
+.swbig.none{background:repeating-linear-gradient(45deg,var(--chip) 0 6px,var(--card) 6px 12px)}
+.step{margin:8px 0}
 </style>
 </head>
 <body>
 <div id="top">
+  <div class="brand">RDDC<small>collezione vintage</small></div>
   <div class="row">
-    <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, CPU, note…" autocomplete="off">
+    <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
     <button class="ibtn" id="bFil" aria-label="Filtri">⚙︎ <span class="badge" id="nF" hidden></span></button>
     <button class="ibtn" id="bMenu" aria-label="Menu">☰</button>
   </div>
@@ -95,8 +153,8 @@ a{color:var(--acc2)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const spin=m=>`<span class="spin"></span>${esc(m)}`;
 function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',ms)}
 function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m)})}
 
@@ -111,20 +169,62 @@ const DB={
   clear(){DB.mem.clear();return new Promise(res=>{if(!DB.db)return res();const q=DB.tx('readwrite').clear();q.onsuccess=q.onerror=()=>res()})}
 };
 
-/* ============ model ============ */
+/* ============ modello dati ============ */
 const STATI=['Funzionante','Da testare','Da riparare','Non funzionante','Per ricambi'];
-const TIPI=['Computer desktop','All-in-one','Portatile','Server','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Monitor','Stampante','Periferica','Rete','Altro'];
-const MARCHE0=['Apple','Commodore','Atari','IBM','Nokia','Sony','Nintendo','Sega','Microsoft','HP','Compaq','Palm','Olivetti'];
+const TIPI=['Computer desktop','All-in-one','Portatile','Server','Televisore CRT','Monitor CRT','Monitor','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Stampante','Periferica','Rete',
+  'Alimentatore / caricabatterie','Cavo / adattatore','Tastiera','Mouse','Joystick / controller','Accessorio','Manuale / software','Scatola / imballo','Altro'];
+const MARCHE0=['Apple','Commodore','Atari','IBM','Nokia','Sony','Nintendo','Sega','Microsoft','HP','Compaq','Palm','Olivetti',
+  'Grundig','Philips','Telefunken','Mivar','Brionvega','Panasonic','Saba','Blaupunkt','Nordmende','Toshiba','JVC','Sharp','Samsung','Mitsubishi','Hitachi','Loewe','Thomson','Belkin','Logitech'];
+const LUOGHI0=['Damiano','Alex'];
+const TUBI=['Trinitron','Black Trinitron','FD Trinitron (piatto)','Black Matrix','Black Line','Super Planar','FST (Flat Square Tube)','Pure Flat','Shadow mask (delta)','In-line'];
+const AUDIO=['Mono','Stereo','NICAM stereo','Zweiton (A2) stereo','Dolby Surround','Dolby Pro Logic'];
+const CONNETTORI=['MagSafe','MagSafe 2','MagSafe 3','USB-C','USB-A','Micro-USB','Lightning','30-pin dock','ADB','Mini-DIN','FireWire 400','FireWire 800','Thunderbolt','Mini DisplayPort','DVI','Mini-DVI','VGA','HDMI','SCART','RCA (composito)','S-Video','Jack 3,5 mm','IEC C7 (a 8)','IEC C13','Spina barilotto (DC)','Ethernet RJ-45','DB-9','DB-25','Seriale Mini-DIN 8'];
+/* colori: [nome, hex, regex (inglese/italiano) per il riconoscimento, specifico=affidabile anche nella descrizione] */
+const COLORI=[
+ ['Bondi Blue','#0095b6',/bondi/,1],['Blue Dalmatian','#4a7fc1',/dalmatian/,1],['Flower Power','#c45ab3',/flower power/,1],
+ ['Mirtillo (Blueberry)','#2a5db0',/blueberry|mirtillo/,1],['Fragola (Strawberry)','#d42a5b',/strawberry|fragola/,1],['Mandarino (Tangerine)','#f28500',/tangerine|mandarino/,1],
+ ['Uva (Grape)','#6b3fa0',/grape|\buva\b/,1],['Key Lime','#c7e07a',/key lime/,1],['Lime','#8cc63f',/\blime\b/,1],['Indaco (Indigo)','#3b3f8f',/indigo|indaco/,1],
+ ['Rubino (Ruby)','#9b111e',/\bruby\b|rubino/,1],['Salvia (Sage)','#8fae88',/\bsage\b|salvia/,1],['Grafite (Graphite)','#5b5e63',/graphite|grafite/,1],['Neve (Snow)','#eef1f2',/\bsnow\b|\bneve\b/,1],
+ ['Nero siderale','#2e2c2e',/space black|nero siderale/,1],['Grigio siderale','#5f6168',/space gr[ae]y|grigio siderale/,1],['Mezzanotte','#2e3642',/midnight|mezzanotte/,1],['Galassia (Starlight)','#efe3cf',/starlight|galassia/,1],
+ ['Oro rosa','#e8bfb2',/rose gold|oro rosa/,1],['Oro','#e3c9a0',/\bgold\b|\boro\b/,1],['Argento','#c4c6c9',/silver|alumin(i)?um|argento|alluminio/,1],['Platino (beige)','#d8d1bd',/platinum|platino|beige/,1],
+ ['Bianco','#f5f5f2',/\bwhite\b|bianc/],['Nero','#1c1c1e',/\bblack\b|\bner[oa]\b/],['Grigio','#8a8d91',/\bgr[ae]y\b|grigi/],['Blu','#2f5fbf',/\bblue\b|\bblu\b/],['Rosso','#c62828',/\bred\b|ross[oa]/],
+ ['Verde','#2e7d32',/\bgreen\b|verde/],['Giallo','#f2c230',/yellow|giall/],['Arancione','#ef7d1a',/orange|arancio/],['Rosa','#e98bb0',/\bpink\b|\brosa\b/],['Viola','#7b4bb7',/purple|viola/],
+ ['Marrone','#6d4426',/brown|marrone/],['Legno / noce','#8a5a35',/wood|walnut|legno|noce/],['Trasparente','#cfd8dc',/translucent|transparent|trasparente/]
+];
+function nameHex(n){
+  const s=(n||'').trim().toLowerCase();if(!s)return '';
+  const c=COLORI.find(c=>c[0].toLowerCase()===s)||COLORI.find(c=>c[2].test(s));
+  return c?c[1]:(/^#[0-9a-f]{3,8}$/i.test(s)?s:'');
+}
+const colHex=d=>d.colore_hex||nameHex(d.colore);
+function detectColor(txt,specificOnly){
+  const s=(txt||'').toLowerCase();let best='',bi=1e9;
+  for(const c of COLORI){if(specificOnly&&!c[3])continue;const i=s.search(c[2]);if(i>=0&&i<bi){bi=i;best=c[0]}}
+  return best;
+}
+/* tipo di scheda in base alla tipologia */
+function kindOf(t){
+  t=(t||'').toLowerCase();
+  if(/televis|\btv\b|crt|monitor/.test(t))return 'tv';
+  if(/aliment|caricabat|charger|cav[oi]|adattat|accessor|tastier|mouse|joystick|controller|periferic|stampant|manual|software|scatola|imballo|ricamb/.test(t))return 'acc';
+  return 'pc';
+}
+const inch=v=>v&&/\d$/.test(String(v).trim())?String(v).trim()+'"':v;
 const TOP=[['nome','Nome *'],['marca','Marca','list:marche'],['tipologia','Tipologia','list:tipi'],['linea','Linea di prodotto','list:linee'],['anno','Anno (introduzione)','number']];
+/* [titolo, campi, quando] – campo: [chiave, etichetta, tipo, quando]; quando = pc | tv | acc (anche più di uno separati da spazio) */
 const SECTIONS=[
  ['Descrizione',[['descrizione','Descrizione','area']]],
- ['Identificazione',[['modello','Modello (Axxxx)'],['emc','EMC'],['identifier','Model ID / codice'],['ordine','N° ordine / part no.'],['intro','Data introduzione'],['discontinued','Fine produzione'],['seriale','Numero di serie']]],
- ['Hardware',[['cpu','Processore'],['ram','RAM'],['storage','Archiviazione'],['gpu','Grafica'],['display','Display'],['os_orig','OS originale'],['os_max','OS massimo'],['connettivita','Connettività'],['porte','Porte','area'],['batteria','Batteria'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
- ['Collezione',[['luogo','Luogo (dove si trova)','list:luoghi'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']]]
+ ['Identificazione',[['modello','Modello / sigla (es. A1278, M5521, KV-29X5)'],['emc','EMC','','pc'],['identifier','Model ID / codice','','pc'],['ordine','N° ordine / part no.'],['intro','Data introduzione'],['discontinued','Fine produzione'],['seriale','Numero di serie']]],
+ ['Hardware',[['cpu','Processore'],['ram','RAM'],['storage','Archiviazione'],['gpu','Grafica'],['display','Display'],['os_orig','OS originale'],['os_max','OS massimo'],['connettivita','Connettività'],['porte','Porte','area'],['batteria','Batteria']],'pc'],
+ ['Televisore / monitor',[['tv_pollici','Diagonale (pollici)','text'],['tv_tubo','Tubo catodico','list:tubi'],['tv_formato','Formato','select:4:3|16:9|14:9'],['tv_standard','Sistema colore','select:PAL|SECAM|NTSC|PAL/SECAM|Multistandard|Bianco e nero'],['tv_freq','Frequenza','select:50 Hz|60 Hz|100 Hz'],['tv_ingressi','Ingressi (SCART, RF, RCA, S-Video…)','area'],['tv_audio','Audio','list:audio'],['tv_televideo','Televideo','select:Sì|Sì (FasText / TOP)|No'],['tv_telecomando','Telecomando','select:Presente|Mancante|Non previsto'],['tv_canali','Sintonia / canali memorizzabili'],['tv_telaio','Telaio (chassis)'],['tv_consumo','Consumo (W)']],'tv'],
+ ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
+ ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
+ ['Collezione',[['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']]]
 ];
-const FACETS=[['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['luogo','Luogo'],['stato','Stato']];
+const ALLF=SECTIONS.flatMap(s=>s[1]);
+const FACETS=[['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
 const SORTS={nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca'};
-const GROUPS={'':'Nessuno',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',stato:'Stato'};
+const GROUPS={'':'Nessuno',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
 let devices=[];
 let S=LS.get('rd_state',{q:'',sel:{},group:'decennio',sort:'anno_a'});
 S.sel=S.sel||{};
@@ -133,7 +233,7 @@ function val(d,k){
   if(k==='decennio')return d.anno?Math.floor(d.anno/10)*10+'s':'—';
   const v=d[k];return (v===undefined||v===null||v==='')?'—':String(v);
 }
-function idx(d){d._i=[d.nome,d.marca,d.tipologia,d.linea,d.anno,d.modello,d.emc,d.identifier,d.ordine,d.cpu,d.ram,d.storage,d.gpu,d.note,d.seriale,d.luogo,d.descrizione,d.os_orig,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
+function idx(d){d._i=[d.nome,d.marca,d.tipologia,d.linea,d.anno,d.colore,...ALLF.filter(f=>!['descrizione','collegato'].includes(f[0])).map(f=>d[f[0]]),d.descrizione,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
 function pass(d,skip){
   const q=S.q.trim().toLowerCase();
   if(q&&!q.split(/\s+/).every(w=>d._i.includes(w)))return false;
@@ -147,42 +247,46 @@ function sorter(){
 }
 function save(){LS.set('rd_state',S)}
 
-/* ============ main list ============ */
+/* ============ lista principale ============ */
 function render(){
   save();
   const items=devices.filter(d=>pass(d)).sort(sorter());
   const nF=Object.values(S.sel).reduce((n,a)=>n+(a?a.length:0),0);
   const b=$('#nF');b.hidden=!nF;b.textContent=nF;
-  let sum=`<span>${items.length===devices.length?devices.length+' dispositivi':items.length+' di '+devices.length}</span>`;
+  let sum=`<span>${items.length===devices.length?devices.length+' oggetti':items.length+' di '+devices.length}</span>`;
   for(const [k,a] of Object.entries(S.sel))(a||[]).forEach(v=>sum+=`<button class="pill x" data-rm="${esc(k)}" data-v="${esc(v)}">${esc(v)}</button>`);
   $('#sum').innerHTML=sum;
   $('#list').style.setProperty('--hh',$('#top').offsetHeight+'px');
   const L=$('#list');
-  if(!devices.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">🖥️</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo dispositivo.<br>Puoi cercarlo online con il codice Axxxx / EMC.</p></div>`;return}
+  if(!devices.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">📺</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo oggetto:<br>computer, TV CRT, caricabatterie, cavi…</p></div>`;return}
   if(!items.length){L.innerHTML=`<div class="empty">Nessun risultato.</div>`;return}
-  let html='',cur=null;
+  let html='';
   const grp=S.group;
   if(grp){
     const map=new Map();items.forEach(d=>{const g=val(d,grp);if(!map.has(g))map.set(g,[]);map.get(g).push(d)});
-    const keys=[...map.keys()].sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
+    const keys=[...map.keys()].filter(k=>k!=='—').sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
     if(S.sort==='anno_d'&&['anno','decennio'].includes(grp))keys.reverse();
-    for(const k of keys){html+=`<div class="gh">${esc(k)} <small>${map.get(k).length}</small></div>`+map.get(k).map(card).join('')}
+    if(map.has('—'))keys.push('—');
+    const none=['anno','decennio'].includes(grp)?'Senza anno':'Non indicato';
+    for(const k of keys){html+=`<div class="gh">${esc(k==='—'?none:k)} <small>${map.get(k).length}</small></div>`+map.get(k).map(card).join('')}
   }else html=items.map(card).join('');
   L.innerHTML=html;
 }
 function card(d){
+  const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
-  const sub2=[d.tipologia,d.cpu].filter(Boolean).join(' · ');
-  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b><span>${esc(sub)}</span><span>${esc(sub2)}</span></div><div class="yr">${d.anno||''}</div></div>`;
+  const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:d.cpu].filter(Boolean).join(' · ');
+  const meta=[d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
-function icon(d){const t=(d.tipologia||'').toLowerCase();return t.includes('portatil')?'💻':t.includes('smart')?'📱':t.includes('tablet')?'📱':t.includes('music')||t.includes('ipod')?'🎵':t.includes('console')?'🎮':t.includes('foto')?'📷':t.includes('monitor')?'🖵':'🖥️'}
+function icon(d){const t=(d.tipologia||'').toLowerCase();return /televis|\btv\b|crt/.test(t)?'📺':/aliment|caricabat/.test(t)?'🔌':/cav[oi]|adattat/.test(t)?'🔗':/tastier/.test(t)?'⌨️':/mouse/.test(t)?'🖱️':/joystick|controller|console/.test(t)?'🎮':/manual|software/.test(t)?'📘':/scatola|imballo/.test(t)?'📦':/accessor|periferic/.test(t)?'🧩':/stampant/.test(t)?'🖨️':t.includes('portatil')?'💻':/smart|tablet/.test(t)?'📱':/music|ipod/.test(t)?'🎵':t.includes('foto')?'📷':'🖥️'}
 
-/* ============ overlay pages ============ */
+/* ============ pagine sovrapposte ============ */
 const stack=[];
-function openPage(title,body,{actions='',replace=false,mount}={}){
+function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}={}){
   if(replace)swapTop();
-  const el=document.createElement('div');el.className='page';
-  el.innerHTML=`<header><button class="ibtn" data-back aria-label="Indietro">←</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
+  const el=document.createElement('div');el.className='page'+(cls?' '+cls:'');
+  el.innerHTML=bare?`<div class="body bare">${body}</div>`:`<header><button class="ibtn" data-back aria-label="Indietro">←</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
   document.body.append(el);stack.push(el);
   const st={p:stack.length};
   replace?history.replaceState(st,''):history.pushState(st,'');
@@ -194,7 +298,7 @@ addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;whi
 function goBase(cb){const n=(history.state&&history.state.p)||0;if(!n){cb&&cb();return}const once=()=>{removeEventListener('popstate',once);cb&&cb()};addEventListener('popstate',once);history.go(-n)}
 history.replaceState({p:0},'');
 
-/* ============ filters ============ */
+/* ============ filtri ============ */
 function openFilters(){
   const el=openPage('Filtri e ordinamento','',{actions:'<button class="btn sm sec" data-reset>Azzera</button>'});
   const draw=()=>{
@@ -205,9 +309,9 @@ function openFilters(){
       (S.sel[k]||[]).forEach(v=>{if(!cnt.has(v))cnt.set(v,0)});
       const keys=[...cnt.keys()].sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
       if(!keys.length)continue;
-      h+=`<div class="sec-t">${lab}</div><div class="chips">`+keys.map(v=>`<button class="chip ${(S.sel[k]||[]).includes(v)?'on':''}" data-k="${k}" data-v="${esc(v)}">${esc(v)}<i>${cnt.get(v)}</i></button>`).join('')+'</div>';
+      h+=`<div class="sec-t">${lab}</div><div class="chips">`+keys.map(v=>`<button class="chip ${(S.sel[k]||[]).includes(v)?'on':''}" data-k="${k}" data-v="${esc(v)}">${k==='colore'&&v!=='—'?`<i class="sw" style="--c:${esc(nameHex(v)||'transparent')};margin:0 6px 0 0;opacity:1"></i>`:''}${esc(v)}<i>${cnt.get(v)}</i></button>`).join('')+'</div>';
     }
-    $('.body',el).innerHTML=h+`<p class="note">Tocca più valori nello stesso gruppo per combinarli (es. Apple + Commodore). I gruppi diversi si sommano (es. Marca Apple + Decennio 1990s).</p>`;
+    $('.body',el).innerHTML=h+`<p class="note">Tocca più valori nello stesso gruppo per combinarli (es. Apple + Commodore). I gruppi diversi si sommano (es. Luogo Damiano + Decennio 1990s).</p>`;
   };
   draw();
   el.addEventListener('click',e=>{
@@ -218,81 +322,142 @@ function openFilters(){
   el.addEventListener('change',e=>{if(e.target.id==='gSel')S.group=e.target.value;if(e.target.id==='sSel')S.sort=e.target.value;render()});
 }
 
-/* ============ detail ============ */
+/* ============ scheda ============ */
+function keyTiles(d){
+  const k=kindOf(d.tipologia);
+  const t=k==='tv'?[['Diagonale',inch(d.tv_pollici)],['Tubo',d.tv_tubo],['Sistema',d.tv_standard],['Formato',d.tv_formato],['Frequenza',d.tv_freq],['Audio',d.tv_audio],['Ingressi',d.tv_ingressi]]
+   :k==='acc'?[['Va con',(devices.find(x=>x.id===d.collegato)||{}).nome],['Compatibile',d.acc_compat],['Connettore',d.acc_connettore],['Uscita',d.acc_uscita],['Lunghezza',d.acc_lunghezza],['Quantità',d.quantita]]
+   :[['Processore',d.cpu],['RAM',d.ram],['Archiviazione',d.storage],['Display',d.display],['Sistema',d.os_orig],['Grafica',d.gpu]];
+  return t.filter(x=>x[1]).slice(0,6);
+}
+function fieldDisplay(d,k){
+  if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
+  if(k==='collegato'){const o=devices.find(x=>x.id===d.collegato);return o?`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`:'<i>(non più in collezione)</i>'}
+  if(k==='tv_pollici')return esc(inch(d[k]));
+  return esc(d[k]);
+}
 function openDetail(id,replace){
   const d=devices.find(x=>x.id===id);if(!d)return;
-  const kv=rows=>rows.length?`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join('')}</div>`:'';
-  let h='';
-  if(d.foto&&d.foto.length)h+=`<div class="photos">${d.foto.map(f=>`<div class="ph"><img src="${f}" alt=""></div>`).join('')}</div>`;
-  h+=`<h1 style="margin:10px 0 2px;font-size:22px">${esc(d.nome)}</h1><div class="chips">`+[d.marca,d.tipologia,d.linea,d.anno,d.stato].filter(Boolean).map(x=>`<span class="chip">${esc(x)}</span>`).join('')+'</div>';
-  for(const [t,fs] of SECTIONS){
-    const rows=fs.filter(([k])=>d[k]!==undefined&&d[k]!=='').map(([k,l])=>[l,d[k]]);
+  const fit=LS.get('rd_fit',{})[d.id];
+  const ph=d.foto&&d.foto.length?d.foto[0]:'';
+  const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
+  const hchips=[d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
+  let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
+    ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
+    <button class="hb l" data-back aria-label="Indietro">←</button>
+    <div class="hbr">${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
+    <div class="cap">${sub?`<small>${esc(sub)}</small>`:''}<h1>${esc(d.nome)}</h1>${hchips?`<div class="hchips">${hchips}</div>`:''}</div>
+  </div>`;
+  if(d.foto&&d.foto.length>1)h+=`<div class="thumbs">${d.foto.map((f,i)=>`<img src="${f}" alt="" data-view="${i}">`).join('')}</div>`;
+  h+='<div class="dbody">';
+  const tl=keyTiles(d);
+  if(tl.length)h+=`<div class="tiles">${tl.map(([a,b])=>`<div class="tile"><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join('')}</div>`;
+  if(d.descrizione){const long=d.descrizione.length>320;h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}">${esc(d.descrizione)}</div></div>${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}`}
+  const kv=rows=>`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${b}</div>`).join('')}</div>`;
+  for(const [t,fs] of SECTIONS.slice(1)){
+    const rows=fs.filter(([k])=>d[k]!==undefined&&d[k]!==null&&d[k]!=='').map(([k,l])=>[l.replace(/\s*\(es\..*\)$/,''),fieldDisplay(d,k)]);
     if(rows.length)h+=`<div class="sec-t">${t}</div>`+kv(rows);
   }
-  if(d.specs&&d.specs.length)h+=`<div class="sec-t">Tutte le specifiche (${d.specs.length})</div>`+kv(d.specs);
+  const accs=devices.filter(x=>x.collegato===d.id);
+  if(accs.length)h+=`<div class="sec-t">Accessori collegati (${accs.length})</div>`+accs.map(card).join('');
+  if(d.specs&&d.specs.length)h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary>${kv(d.specs.map(([a,b])=>[a,esc(b)]))}</details>`;
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
-  h+=`<div class="row" style="flex-wrap:wrap;margin-top:18px"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>Aggiorna da web</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div>`;
-  openPage(d.nome,h,{replace,mount(el){
+  h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  openPage(d.nome,h,{replace,bare:true,mount(el){
+    const hi=$('.himg',el);
+    if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
-      if(e.target.closest('[data-edit]'))openForm(d);
-      if(e.target.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);render();toast('Duplicato');goBase(()=>openDetail(c.id))}
-      if(e.target.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();toast('Eliminato')}
-      if(e.target.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})}});
+      const t=e.target;
+      if(t.closest('[data-edit]'))openForm(d);
+      const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view);
+      if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
+      if(t.closest('[data-more]')){const ds=$('.desc>div',el);ds.classList.toggle('cl');t.textContent=ds.classList.contains('cl')?'Leggi tutto ▾':'Riduci ▴'}
+      const go=t.closest('[data-go]');if(go){e.preventDefault();openDetail(go.dataset.go)}
+      const cd=t.closest('.card');if(cd)openDetail(cd.dataset.id);
+      if(t.closest('[data-addacc]'))openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome});
+      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);render();toast('Duplicato');goBase(()=>openDetail(c.id))}
+      if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();toast('Eliminato')}
+      const upd=async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})};
+      if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:upd});
+      if(t.closest('[data-paste]'))openImport({code:d.modello||d.emc||d.identifier||'',onResult:upd});
     });
   }});
 }
+function openViewer(foto,i){
+  openPage('',`<div class="vw">${foto.map(f=>`<img src="${f}" alt="">`).join('')}</div><button class="hb l" data-back aria-label="Chiudi">✕</button>`,{bare:true,cls:'viewer',mount(el){const v=$('.vw',el);requestAnimationFrame(()=>v.scrollLeft=i*v.clientWidth)}});
+}
 
-/* ============ form ============ */
+/* ============ modulo ============ */
 function listOpts(kind){
   const u=a=>[...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'it'));
   if(kind==='marche')return u([...MARCHE0,...devices.map(d=>d.marca)]);
   if(kind==='tipi')return u([...TIPI,...devices.map(d=>d.tipologia)]);
   if(kind==='linee')return u(devices.map(d=>d.linea));
-  if(kind==='luoghi')return u(devices.map(d=>d.luogo));
+  if(kind==='luoghi')return u([...LUOGHI0,...devices.map(d=>d.luogo)]);
+  if(kind==='tubi')return u([...TUBI,...devices.map(d=>d.tv_tubo)]);
+  if(kind==='audio')return AUDIO;
+  if(kind==='connettori')return u([...CONNETTORI,...devices.map(d=>d.acc_connettore)]);
+  if(kind==='colori')return u([...COLORI.map(c=>c[0]),...devices.map(d=>d.colore)]);
   return [];
 }
-function fieldHTML(k,l,t,v){
+function fieldHTML(k,l,t,v,d){
   v=v==null?'':v;t=t||'';
-  if(t.startsWith('select:'))return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${t.slice(7).split('|').map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
   if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
-  if(t.startsWith('list:'))return `<label class="f">${l}</label><input class="in" name="${k}" list="dl_${t.slice(5)}" value="${esc(v)}" autocomplete="off">`;
+  if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
+    return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</option>`).join('')}</select>`}
+  if(t==='color'){const hx=d.colore_hex||nameHex(v);
+    return `<label class="f">${l}</label><div class="row"><span class="swbig ${hx?'':'none'}" id="swp" style="--c:${esc(hx)}"></span><input class="in" name="colore" list="dl_colori" value="${esc(v)}" autocomplete="off" placeholder="Es. Mirtillo, Argento, Nero"><label class="ibtn" title="Colore personalizzato">🎨<input type="color" id="cpick" value="${esc(/^#[0-9a-f]{6}$/i.test(hx)?hx:'#f2a531')}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%"></label></div>
+    <input type="hidden" name="colore_hex" value="${esc(d.colore_hex||'')}"><div class="swrow">${COLORI.map((c,i)=>`<button type="button" class="swb ${c[0]===v?'on':''}" data-col="${i}" title="${esc(c[0])}" style="--c:${c[1]}"></button>`).join('')}</div>`}
+  if(t.startsWith('list:')){let x=`<label class="f">${l}</label><input class="in" name="${k}" list="dl_${t.slice(5)}" value="${esc(v)}" autocomplete="off">`;
+    if(k==='luogo')x+=`<div class="chips">${LUOGHI0.map(o=>`<button type="button" class="chip ${o===v?'on':''}" data-luogo="${esc(o)}">📍 ${esc(o)}</button>`).join('')}</div>`;
+    return x}
   return `<label class="f">${l}</label><input class="in" name="${k}" ${t==='number'?'type="number" inputmode="decimal" step="any"':''} value="${esc(v)}">`;
 }
 function openForm(src,{fromLookup=false}={}){
   const d=JSON.parse(JSON.stringify(src||{}));
   const isNew=!devices.some(x=>x.id===d.id);
   let foto=d.foto||[],thumb=d.thumb||'';
-  let h=['marche','tipi','linee','luoghi'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
+  let h=['marche','tipi','linee','luoghi','tubi','audio','connettori','colori'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
   h+=`<form id="f" onsubmit="return false">`;
-  h+=fieldHTML('nome','Nome *','',d.nome);
-  h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k])}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k])}</div>`).join('')+`</div>`;
+  h+=fieldHTML('nome','Nome *','',d.nome,d);
+  h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div>`;
   h+=`<div class="sec-t">Foto</div><div id="ph"></div><div class="row" style="flex-wrap:wrap;margin:8px 0"><button type="button" class="btn sm sec" data-cam>📷 Scatta</button><button type="button" class="btn sm sec" data-gal>🖼️ Galleria</button><button type="button" class="btn sm sec" data-web>🔎 Cerca sul web</button></div><input type="file" id="fCam" accept="image/*" capture="environment" hidden><input type="file" id="fGal" accept="image/*" multiple hidden>`;
-  for(const [t,fs] of SECTIONS){h+=`<div class="sec-t">${t}</div>`+fs.map(([k,l,ty])=>fieldHTML(k,l,ty,d[k])).join('')}
+  for(const [t,fs,w] of SECTIONS){h+=`<div ${w?`data-when="${w}"`:''}><div class="sec-t">${t}</div>`+fs.map(([k,l,ty,fw])=>`<div ${fw?`data-when="${fw}"`:''}>${fieldHTML(k,l,ty,d[k],d)}</div>`).join('')+`</div>`}
   h+=`<div class="sec-t">Altre specifiche</div><label class="f">Una per riga, formato «Etichetta: valore»</label><textarea class="in" name="_specs" style="min-height:140px">${esc((d.specs||[]).map(p=>p[0]+': '+p[1]).join('\n'))}</textarea>`;
-  h+=fieldHTML('fonte','Fonte (URL)','',d.fonte);
+  h+=fieldHTML('fonte','Fonte (URL)','',d.fonte,d);
   h+=`<div class="row" style="margin-top:20px"><button class="btn" style="flex:1" data-save>Salva</button></div></form>`;
-  const acts=`<button class="btn sm sec" data-look>🔎 Cerca dati online</button>`;
-  const el=openPage(isNew?'Nuovo dispositivo':'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
-    const drawPh=()=>{$('#ph',el).innerHTML=foto.length?`<div class="photos sm">${foto.map((f,i)=>`<div class="ph"><img src="${f}" alt=""><button type="button" data-rmf="${i}">✕</button></div>`).join('')}</div>`:'<div class="note">Nessuna foto</div>'};
+  const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button>`;
+  openPage(isNew?'Nuovo oggetto':'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
+    const fm=$('#f',el);
+    const drawPh=()=>{$('#ph',el).innerHTML=foto.length?`<div class="photos sm">${foto.map((f,i)=>`<div class="ph"><img src="${f}" alt=""><button type="button" data-rmf="${i}">✕</button></div>`).join('')}</div><p style="font-size:12px;color:var(--mute);margin:2px 0">La prima foto è lo sfondo della scheda.</p>`:'<div class="note">Nessuna foto</div>'};
     drawPh();
-    const ta=el.querySelector('textarea[name=descrizione]');const bd=document.createElement('button');bd.type='button';bd.className='btn sm sec';bd.style.marginTop='6px';bd.textContent='📖 Prendi da Wikipedia';bd.onclick=()=>{const f=$('#f',el);openDescPicker(((f.marca.value||'')+' '+(f.nome.value||'')).trim(),t=>{ta.value=t})};ta.after(bd);
-    const addFiles=async fs=>{for(const f of fs){try{const u=await shrink(f,1000);foto.push(u);if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh()};
+    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>x.hidden=!x.dataset.when.split(' ').includes(k))};
+    applyKind();fm.tipologia.addEventListener('input',applyKind);fm.tipologia.addEventListener('change',applyKind);
+    const updSw=()=>{const hx=fm.colore_hex.value||nameHex(fm.colore.value);const s=$('#swp',el);s.style.setProperty('--c',hx||'transparent');s.classList.toggle('none',!hx);el.querySelectorAll('.swb').forEach(b=>b.classList.toggle('on',b.title===fm.colore.value))};
+    fm.colore.addEventListener('input',()=>{fm.colore_hex.value='';updSw()});
+    $('#cpick',el).addEventListener('input',e=>{fm.colore_hex.value=e.target.value;if(!fm.colore.value.trim())fm.colore.value='Personalizzato';updSw()});
+    fm.luogo.addEventListener('input',()=>el.querySelectorAll('[data-luogo]').forEach(b=>b.classList.toggle('on',b.dataset.luogo===fm.luogo.value)));
+    const ta=el.querySelector('textarea[name=descrizione]');const bd=document.createElement('button');bd.type='button';bd.className='btn sm sec';bd.style.marginTop='6px';bd.textContent='📖 Prendi da Wikipedia';bd.onclick=()=>openDescPicker(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),t=>{ta.value=t});ta.after(bd);
+    const addFiles=async fs=>{for(const f of fs){try{const u=await shrink(f,1200);foto.push(u);if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh()};
     $('#fCam',el).onchange=e=>addFiles(e.target.files);
     $('#fGal',el).onchange=e=>addFiles(e.target.files);
     el.addEventListener('click',async e=>{
       const t=e.target;
       if(t.closest('[data-cam]'))$('#fCam',el).click();
       if(t.closest('[data-gal]'))$('#fGal',el).click();
+      const sw=t.closest('[data-col]');if(sw){fm.colore.value=COLORI[+sw.dataset.col][0];fm.colore_hex.value='';updSw()}
+      const lg=t.closest('[data-luogo]');if(lg){fm.luogo.value=lg.dataset.luogo;el.querySelectorAll('[data-luogo]').forEach(b=>b.classList.toggle('on',b===lg))}
       if(t.dataset.rmf!==undefined){foto.splice(+t.dataset.rmf,1);if(!foto.length)thumb='';else if(t.dataset.rmf==0)thumb=await shrink(foto[0],180,.75);drawPh()}
-      if(t.closest('[data-web]')){const f=$('#f',el);openImageSearch(((f.marca.value||'')+' '+(f.nome.value||'')).trim(),async url=>{try{const b=await fetchBlob(url);const u=await shrink(b,1000);foto.push(u);if(!thumb)thumb=await shrink(b,180,.75);drawPh();toast('Foto aggiunta')}catch(e){toast('Impossibile scaricare la foto')}})}
-      if(t.closest('[data-look]')){const f=$('#f',el);collect(f);openLookup({prefill:f.modello.value||f.emc.value||f.nome.value,marca:f.marca.value,onResult:async r=>{const cur=collect(f);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
+      if(t.closest('[data-web]')){openImageSearch(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),async url=>{try{const b=await fetchBlob(url);const u=await shrink(b,1200);foto.push(u);if(!thumb)thumb=await shrink(b,180,.75);drawPh();toast('Foto aggiunta')}catch(e){toast('Impossibile scaricare la foto')}})}
+      if(t.closest('[data-look]')){openLookup({prefill:fm.modello.value||fm.emc.value||fm.nome.value,marca:fm.marca.value,onResult:async r=>{const cur=collect(fm);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
       if(t.closest('[data-save]')){
-        const f=$('#f',el);const cur=collect(f);
-        if(!cur.nome){toast('Inserisci il nome');f.nome.focus();return}
+        const cur=collect(fm);
+        if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
         const o=Object.assign({},d,cur,{foto,thumb});
         o.id=o.id||uid();o.creato=o.creato||Date.now();
         const dup=devices.find(x=>x.id!==o.id&&o.modello&&x.modello===o.modello&&x.emc===o.emc&&x.nome===o.nome);
-        if(dup&&isNew&&!await ask('Esiste già un dispositivo identico ("'+dup.nome+'"). Salvare comunque?','Salva'))return;
+        if(dup&&isNew&&!await ask('Esiste già un oggetto identico ("'+dup.nome+'"). Salvare comunque?','Salva'))return;
         idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
         render();goBase(()=>openDetail(o.id));toast('Salvato');
@@ -303,7 +468,8 @@ function openForm(src,{fromLookup=false}={}){
     const o={};
     for(const [k] of TOP)o[k]=f[k].value.trim();
     o.anno=o.anno?parseInt(o.anno,10)||'':'';
-    for(const [,fs] of SECTIONS)for(const [k] of fs)o[k]=f[k].value.trim();
+    for(const [k] of ALLF)o[k]=f[k].value.trim();
+    o.colore_hex=f.colore_hex.value;
     o.fonte=f.fonte.value.trim();
     o.specs=f._specs.value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf(':');return i<0?[l,'']:[l.slice(0,i).trim(),l.slice(i+1).trim()]});
     return o;
@@ -317,15 +483,22 @@ async function shrink(src,max,q=.82){
   return c.toDataURL('image/jpeg',q);
 }
 
-/* ============ add chooser ============ */
+/* ============ scelta "aggiungi" ============ */
 function openAdd(){
-  openPage('Aggiungi dispositivo',`
+  const toForm=async r=>openForm(await mergeFetched({},r,true),{fromLookup:true});
+  openPage('Aggiungi',`
   <p>Come vuoi aggiungerlo?</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
-  <button class="res" data-a="man"><b>✍️ Inserisci a mano</b><small>Per dispositivi senza scheda online.</small></button>`,{mount(el){
-    el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;
-      if(b.dataset.a==='man'){openForm({marca:'Apple'},{fromLookup:true})}
-      else openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:async r=>openForm(await mergeFetched({},r,true),{fromLookup:true})});
+  <button class="res" data-a="paste"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non funziona: copia la pagina del modello da EveryMac e incollala qui.</small></button>
+  <button class="res" data-a="man"><b>✍️ Computer o dispositivo a mano</b><small>Per oggetti senza scheda online.</small></button>
+  <button class="res" data-a="tv"><b>📺 Televisore CRT</b><small>Scheda con pollici, tubo, PAL/NTSC, ingressi SCART/RF…</small></button>
+  <button class="res" data-a="acc"><b>🔌 Accessorio, caricabatterie o cavo</b><small>Con compatibilità, connettore, uscita e il dispositivo a cui appartiene.</small></button>`,{mount(el){
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+      if(a==='man')openForm({marca:'Apple'},{fromLookup:true});
+      if(a==='tv')openForm({tipologia:'Televisore CRT',tv_formato:'4:3',tv_standard:'PAL'},{fromLookup:true});
+      if(a==='acc')openForm({tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
+      if(a==='paste')openImport({replace:true,onResult:toForm});
+      if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
     });
   }});
 }
@@ -355,20 +528,153 @@ async function fetchBlob(url){
 
 /* ============ EveryMac ============ */
 const EM='https://everymac.com';
-const EM_LINEE={macbook_pro:'MacBook Pro',macbook_air:'MacBook Air',macbook:'MacBook',powerbook:'PowerBook',ibook:'iBook',imac:'iMac',mac_mini:'Mac mini',mac_pro:'Mac Pro',power_mac:'Power Mac',emac:'eMac',mac_studio:'Mac Studio',xserve:'Xserve',performa:'Performa',quadra:'Quadra',centris:'Centris',macintosh_lc:'Macintosh LC',macintosh_classic:'Macintosh Classic',powerbook_duo:'PowerBook Duo',macintosh_ii:'Macintosh II',macintosh_se:'Macintosh SE',mac_se:'Macintosh SE',mac_classic:'Macintosh Classic',mac_plus:'Macintosh Plus',power_macintosh:'Power Macintosh'};
+const EM_LINEE={macbook_pro:'MacBook Pro',macbook_air:'MacBook Air',macbook:'MacBook',powerbook:'PowerBook',powerbook_g3:'PowerBook G3',powerbook_g4:'PowerBook G4',ibook:'iBook',ibook_g3:'iBook',ibook_g4:'iBook',imac:'iMac',mac_mini:'Mac mini',mac_pro:'Mac Pro',power_mac:'Power Mac',power_mac_g4:'Power Mac G4',power_mac_g5:'Power Mac G5',emac:'eMac',mac_studio:'Mac Studio',xserve:'Xserve',performa:'Performa',quadra:'Quadra',centris:'Centris',macintosh_lc:'Macintosh LC',mac_lc:'Macintosh LC',macintosh_classic:'Macintosh Classic',powerbook_duo:'PowerBook Duo',macintosh_ii:'Macintosh II',mac_ii:'Macintosh II',macintosh_se:'Macintosh SE',mac_se:'Macintosh SE',mac_classic:'Macintosh Classic',mac_plus:'Macintosh Plus',power_macintosh:'Power Macintosh',ipod:'iPod',iphone:'iPhone',ipad:'iPad',apple_ii:'Apple II',lisa:'Lisa'};
+const EM_LINEE_T=[...new Set([...Object.values(EM_LINEE),'Power Mac G3','Macintosh Portable','Macintosh 128K','Macintosh 512K','Twentieth Anniversary Macintosh','Mac Pro','Apple Workgroup Server'])].sort((a,b)=>b.length-a.length);
 function emTipo(seg){
+  if(/ipod/.test(seg))return 'Lettore musicale';
+  if(/iphone/.test(seg))return 'Smartphone';
+  if(/ipad/.test(seg))return 'Tablet';
   if(/book/.test(seg))return 'Portatile';
-  if(/imac|emac/.test(seg))return 'All-in-one';
-  if(/xserve/.test(seg))return 'Server';
+  if(/imac|emac|classic|mac_se|mac_plus|macintosh_se/.test(seg))return 'All-in-one';
+  if(/xserve|server/.test(seg))return 'Server';
   return 'Computer desktop';
 }
 function emKeyword(q){
-  q=q.trim();
+  q=(q||'').trim();
   if(/^\d{4}$/.test(q))return 'EMC '+q;
-  if(/^a\d{4}$/i.test(q))return q.toUpperCase();
+  if(/^[am]\d{4}$/i.test(q))return q.toUpperCase();
   return q;
 }
 const clean=t=>(t||'').replace(/ /g,' ').replace(/\s+/g,' ').trim();
+const cleanTitle=t=>clean(t).replace(/\s*Specs\s*$/i,'').replace(/^Apple\s+/i,'').replace(/[“”]/g,'"');
+/* etichette note delle tabelle EveryMac (Tech Specs + Ports): servono per separare le coppie quando il testo incollato è tutto su una riga */
+const EM_KNOWN=['Introduction Date','Discontinued Date','Processors','Architecture','Processor Speed','Processor Type','Turbo Boost','Custom Speeds','Processor Upgrade','FPU','System Bus Speed','Cache Bus Speed','ROM/Firmware Type','EFI Architecture','L1 Cache','L2 Cache','L2/L3 Cache','L3 Cache','RAM Type','Min. RAM Speed','Standard RAM','Maximum RAM','Motherboard RAM','RAM Slots','Video Card','VRAM Type','Standard VRAM','Maximum VRAM','Built-in Display','Native Resolution','2nd Display Support','2nd Max. Resolution','Standard Storage','Std. Storage Speed','Storage Dimensions','Storage Interface','Standard Optical','Standard Disk','Standard Modem','Standard Ethernet','Standard AirPort','Standard Wi-Fi','Standard Bluetooth','USB Ports','Firewire Ports','Thunderbolt Ports','Expansion Slots','Expansion Bays','Incl. Keyboard','Incl. Input','Case Type','Form Factor','Apple Order No','Apple Subfamily','Apple Model No','Model ID','Battery Type','Battery Life','Pre-Installed MacOS','Pre-Installed System','Maximum MacOS','Maximum System','Minimum Windows','Maximum Windows','MacOS 9 Support','Windows Support','Dimensions','Avg. Weight','Original Price (US)','Est. Current Retail',
+ 'Video (Monitor)','Floppy (Ext.)','ADB','SCSI','Serial (Standard)','Serial (Geoport)','USB','Firewire','Modem','Ethernet','S-Video Input','S-Video Output','Microphone','Sound In','Sound Out','Headphone','Security (Lock)','Joystick (PC)','Power','Power Adapter','Thunderbolt','HDMI'];
+const EM_KSET=new Set(EM_KNOWN.map(x=>x.toLowerCase()));
+const reEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const EM_ALT=EM_KNOWN.slice().sort((a,b)=>b.length-a.length).map(reEsc).join('|');
+const EM_SPLIT=new RegExp('(^|\\s+)((?:'+EM_ALT+'|Geekbench [^:]{1,24})\\s*:)','g');
+const EM_START=new RegExp('^(?:'+EM_ALT+'|Geekbench [^:]{1,24})\\s*:','i');
+const EM_SKIP=/^(details|also see|note|notes|click|identifiers)$/i;
+const EM_PORTS={'Video (Monitor)':'Video','USB':'USB','Firewire':'FireWire','Thunderbolt':'Thunderbolt','HDMI':'HDMI','Ethernet':'Ethernet','Modem':'Modem','ADB':'ADB','SCSI':'SCSI','Serial (Standard)':'Seriale','Serial (Geoport)':'GeoPort','Floppy (Ext.)':'Floppy esterno','S-Video Input':'S-Video in','S-Video Output':'S-Video out','Sound In':'Audio in','Sound Out':'Audio out','Headphone':'Cuffie','Microphone':'Microfono'};
+
+/* HTML → righe di testo (celle separate da TAB), come farebbe il browser copiando */
+function domLines(root){
+  const SKIP=/^(SCRIPT|STYLE|NOSCRIPT|IFRAME|TEMPLATE|SELECT|OPTION|HEAD|SVG|BUTTON|INPUT|TEXTAREA)$/;
+  const BLK=/^(P|DIV|H[1-6]|LI|UL|OL|TR|TABLE|TBODY|THEAD|TFOOT|SECTION|ARTICLE|HEADER|FOOTER|NAV|ASIDE|MAIN|CENTER|DT|DD|DL|FORM|BLOCKQUOTE|FIGURE|FIGCAPTION|PRE|HR)$/;
+  const out=[];
+  (function w(n){for(const c of n.childNodes){
+    if(c.nodeType===3){out.push(c.nodeValue.replace(/[\s ]+/g,' '));continue}
+    if(c.nodeType!==1)continue;
+    const t=c.tagName.toUpperCase();
+    if(SKIP.test(t))continue;
+    if(t==='BR'){out.push('\n');continue}
+    if(t==='TD'||t==='TH'){w(c);out.push('\t');continue}
+    const b=BLK.test(t);if(b)out.push('\n');w(c);if(b)out.push('\n');
+  }})(root);
+  return out.join('').split('\n').map(l=>l.split('\t').map(x=>x.trim()).filter(Boolean).join('\t')).filter(Boolean);
+}
+/* Analizza le righe (da testo incollato o da HTML) */
+function parseEMLines(raw){
+  const L=raw.map(l=>{let s=String(l).replace(/ /g,' ').replace(/ {2,}/g,' ').trim();if(!s.includes('\t')&&EM_START.test(s))s=s.replace(EM_SPLIT,(m,a,b)=>(a?'\t':'')+b);return s.split('\t').map(x=>x.trim()).filter(Boolean)}).filter(a=>a.length);
+  const isLab=c=>/^[A-Za-z0-9][^:]{0,48}:$/.test(c);
+  let title='',ident='',desc=[],pairs=[],prices=[],mode='',started=false,descEnd=false;
+  for(let i=0;i<L.length;i++){
+    const cells=L[i],line=cells.join(' ');
+    if(/^(original prices\s*[-–]|global original prices for )/i.test(line)){mode='price';continue}
+    if(mode==='price'&&/^popular q/i.test(line)){mode='end';continue}
+    if(mode==='end')continue;
+    if(!title&&cells.length===1&&/\sSpecs$/.test(line)&&line.length>12&&!/^(mac|tech|complete|all|the)\b/i.test(line)){title=cleanTitle(line);continue}
+    if(/^identifiers\s*:/i.test(line)){ident=line.replace(/^identifiers\s*:\s*/i,'');continue}
+    if(/^also see:?$/i.test(line)&&desc.length)descEnd=true;
+    if(!started&&cells.length===1&&line.length>120&&!/:$/.test(line)){if(title&&!descEnd&&desc.join(' ').length<1800&&!/sponsor|click on|buy this|sell this|upgrade this|trade-in/i.test(line))desc.push(line);continue}
+    for(let j=0;j<cells.length;j++){
+      const c=cells[j];let lab,v;
+      if(isLab(c)){
+        lab=c.slice(0,-1);
+        if(j+1<cells.length&&!isLab(cells[j+1]))v=cells[++j];
+        else if(cells.length===1&&i+1<L.length&&L[i+1].length===1&&!isLab(L[i+1][0]))v=L[++i][0];
+        else v='';
+      }else{
+        const m=c.match(/^([A-Za-z0-9][^:]{0,48}):\s+(.+)$/);if(!m)continue;
+        lab=m[1];v=m[2];
+        if(!(EM_KSET.has(lab.trim().toLowerCase())||mode==='price'||/^geekbench/i.test(lab)))continue;
+      }
+      lab=lab.replace(/\*+$/,'').trim();
+      if(EM_KSET.has(lab.toLowerCase()))started=true;
+      if(!started||EM_SKIP.test(lab))continue;
+      v=clean(v).replace(/\*+/g,'').trim();
+      if(!v||/^n\/a$/i.test(v)||v.length>300||lab.length>48)continue;
+      (mode==='price'?prices:pairs).push([lab,v]);
+    }
+  }
+  return {title,ident,desc,pairs,prices,img:'',url:''};
+}
+function parseEMDoc(html,url){
+  const d=new DOMParser().parseFromString(html,'text/html');
+  const p=parseEMLines(domLines(d.body||d.documentElement));
+  const hd=[...d.querySelectorAll('h1,h2,h3')].map(h=>clean(h.textContent)).find(t=>/\sspecs$/i.test(t)&&!/^(mac|tech|complete)\s/i.test(t));
+  if(hd)p.title=cleanTitle(hd);
+  if(!p.title&&d.title&&/specs/i.test(d.title))p.title=cleanTitle(d.title.replace(/\s*\(.*$/,'').replace(/:\s*EveryMac.*$/i,''));
+  const can=d.querySelector('link[rel=canonical],meta[property="og:url"]');
+  p.url=url||(can&&(can.getAttribute('href')||can.getAttribute('content')))||'';
+  let im=d.querySelector('img.comppic');
+  if(!im)im=[...d.querySelectorAll('img[src]')].find(x=>/cpu_pictures\//i.test(x.getAttribute('src'))&&!/owc|cashfor|sell|upgrade/i.test(x.getAttribute('src')));
+  if(im){try{p.img=new URL(im.getAttribute('src'),/^https?:/.test(p.url)?p.url:EM+'/').href}catch(e){}}
+  return p;
+}
+function mapEM(p,url){
+  const P=new Map();p.pairs.forEach(([l,v])=>{const k=l.toLowerCase();if(!P.has(k))P.set(k,v)});
+  const find=re=>{for(const [k,v] of P)if(re.test(k))return v;return ''};
+  const nz=s=>/^(n\/a|none|-+|0|unknown)$/i.test((s||'').trim())?'':(s||'').trim();
+  const f={nome:p.title,marca:'Apple'};
+  const seg=(url.match(/\/systems\/apple\/([^/]+)\//)||[])[1]||'';
+  const ff=nz(find(/^form factor/));
+  const mid=nz(find(/^model id/));
+  const idl=[[/^MacBookPro/,'MacBook Pro'],[/^MacBookAir/,'MacBook Air'],[/^MacBook/,'MacBook'],[/^iMac/,'iMac'],[/^Macmini/,'Mac mini'],[/^MacPro/,'Mac Pro'],[/^Mac\d/,'Mac'],[/^PowerBook/,'PowerBook'],[/^iPod/,'iPod'],[/^iPhone/,'iPhone'],[/^iPad/,'iPad'],[/^RackMac|^Xserve/,'Xserve']].find(([re])=>re.test(mid));
+  f.linea=EM_LINEE[seg]||EM_LINEE_T.find(x=>p.title.toLowerCase().startsWith(x.toLowerCase()))||(idl&&idl[1])||ff.replace(/\s*\(.*\)/,'');
+  if(!f.nome)f.nome=[f.linea||'Mac',nz(find(/^apple subfamily/)),nz(find(/^processor speed/))].filter(Boolean).join(' ').replace(/ (\d[\d.]* [GM]Hz)$/,' – $1');
+  const ct=(find(/^case type/)+' '+p.title+' '+seg).toLowerCase();
+  f.tipologia=/ipod/.test(ct)?'Lettore musicale':/iphone/.test(ct)?'Smartphone':/ipad/.test(ct)?'Tablet':/notebook|laptop|book/.test(ct)?'Portatile':/all-in-one|imac|emac|compact/.test(ct)?'All-in-one':/server|rack|xserve/.test(ct)?'Server':seg?emTipo(seg):'Computer desktop';
+  const mn=find(/^apple model no/);
+  const idp=(p.ident||'').split(/\s+-\s+/).map(s=>s.replace(/\*+/g,'').trim());
+  f.modello=(mn.match(/\b[AM]\d{4}\b/)||[''])[0]||idp.find(x=>/^[AM]\d{4}$/.test(x))||'';
+  f.emc=(mn.match(/EMC\s*(\d{3,4})/i)||[,''])[1]||idp.find(x=>/^\d{4}$/.test(x))||'';
+  f.ordine=nz(find(/^apple order no/))||idp.find(x=>/\/A$/.test(x))||'';
+  f.identifier=nz(find(/^model id/))||idp.find(x=>/^[A-Za-z]+\d+,\d+$/.test(x))||'';
+  f.intro=nz(find(/^introduction date/));
+  f.discontinued=nz(find(/^discontinued date/));
+  const my=(f.intro.match(/\b(19|20)\d\d\b/)||[''])[0];f.anno=my?+my:'';
+  f.cpu=[nz(find(/^processor type/)),nz(find(/^processor speed/))].filter(Boolean).join(' @ ');
+  const nc=nz(find(/^processors$/));if(nc&&/core/i.test(nc)&&!/^1 \(1 core\)$/i.test(nc))f.cpu+=` – ${nc}`;
+  const mx=nz(find(/^maximum ram/));
+  f.ram=[nz(find(/^standard ram/)),nz(find(/^ram type/)),mx?`(max ${mx})`:''].filter(Boolean).join(' ');
+  f.storage=[nz(find(/^standard storage$/)),nz(find(/^std\. storage speed/))].filter(Boolean).join(' ');
+  const opt=nz(find(/^standard optical/));if(opt)f.storage+=(f.storage?' · ':'')+opt;
+  f.gpu=[nz(find(/^video card|^graphics/)),nz(find(/^standard vram/))].filter(Boolean).join(' – ');
+  f.display=[nz(find(/^built-in display/)),nz(find(/^native resolution/))].filter(Boolean).join(' – ');
+  f.os_orig=nz(find(/^pre-installed/));
+  f.os_max=nz(find(/^maximum (macos|os|system)/));
+  const pre=(a,v)=>(v=nz(v))?(v.toLowerCase().includes(a.toLowerCase())?v:a+' '+v):'';
+  f.connettivita=[pre('Ethernet',find(/^standard ethernet/)),pre('Wi-Fi',find(/^standard airport|^standard wi-?fi/)),pre('Bluetooth',find(/^standard bluetooth/)),pre('Modem',find(/^standard modem/))].filter(Boolean).join(' · ');
+  let porte=[];for(const [lab,nm] of Object.entries(EM_PORTS)){const v=nz(P.get(lab.toLowerCase()));if(v)porte.push(`${nm} ${v}`)}
+  if(!porte.length){const usb=nz(find(/^usb ports/)),fw=nz(find(/^firewire ports/));porte=[usb&&'USB '+usb,fw&&'FireWire '+fw].filter(Boolean)}
+  const ex=nz(find(/^expansion slots/));if(ex)porte.push(ex);
+  f.porte=porte.join(' · ');
+  f.batteria=[nz(find(/^battery type/)),nz(find(/^battery life/))].filter(Boolean).join(' – ');
+  const dm=nz(find(/^dimensions/));const dn=dm.match(/^([\d.]+)\s*x\s*([\d.]+)\s*x\s*([\d.]+)/);
+  f.dimensioni=dn?dn.slice(1).map(x=>(parseFloat(x)*2.54).toLocaleString('it',{maximumFractionDigits:1})).join(' × ')+' cm (A×L×P)':dm;
+  const wt=nz(find(/weight/));const kg=wt.match(/([\d.]+)\s*kg/i);
+  f.peso=kg?(parseFloat(kg[1]).toLocaleString('it',{maximumFractionDigits:2})+' kg'):wt;
+  const it=(p.prices.find(([c])=>/^ital/i.test(c))||[])[1]||'';
+  f.prezzo=[nz(find(/^original price/)),nz(it)&&'Italia '+it].filter(Boolean).join(' · ');
+  f.descrizione=p.desc.join('\n\n').slice(0,2000);
+  f.colore=detectColor(p.title+' '+find(/^apple subfamily/))||detectColor(p.desc.join(' '),true);
+  const seen=new Map();
+  const specs=[...p.pairs,...p.prices.map(([c,v])=>['Prezzo '+c,v])].map(([l,v])=>{const n=(seen.get(l)||0)+1;seen.set(l,n);return [n>1?`${l} (${n})`:l,v]});
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  return {fields:f,specs,imageUrl:p.img,fonte:url||''};
+}
 function parseEMSearch(html,base){
   const d=new DOMParser().parseFromString(html,'text/html');
   const m=new Map();
@@ -379,83 +685,129 @@ function parseEMSearch(html,base){
     if(!m.has(href))m.set(href,'');
     if(t&&!/^complete/i.test(t)&&!m.get(href))m.set(href,t);
   });
-  return [...m].map(([href,name])=>({href,name:name||decodeURIComponent(href.split('/').pop().replace(/-specs\.html$/,'').replace(/-/g,' '))}));
+  return [...m].map(([href,name])=>({href,name:name||decodeURIComponent(href.split('/').pop().replace(/-specs\.html$|\.html$/,'').replace(/[-_]/g,' '))}));
 }
-function parseEMSpecs(html,url){
-  const d=new DOMParser().parseFromString(html,'text/html');
-  let hd=[...d.querySelectorAll('h1,h2,h3')].find(h=>/specs/i.test(h.textContent));
-  let title=clean(hd?hd.textContent:(d.title||'').replace(/^EveryMac\.com:?\s*/i,''));
-  title=title.replace(/\s*Specs\s*$/i,'').replace(/[“”]/g,'"');
-  const pairs=[];let stop=false;
-  for(const tr of d.querySelectorAll('tr')){
-    if(stop)break;
-    if(tr.querySelector('tr'))continue;
-    if(hd&&!(hd.compareDocumentPosition(tr)&Node.DOCUMENT_POSITION_FOLLOWING))continue;
-    const cells=[...tr.children].filter(c=>/^t[dh]$/i.test(c.tagName));
-    if(cells.length<2)continue;
-    let l=clean(cells[0].textContent).replace(/:$/,'').replace(/\*+$/,'').trim();
-    let v=clean(cells[1].textContent).replace(/\*+/g,'').trim();
-    if(!l||!v||l.length>45||v.length>240||!/[a-z]/i.test(l))continue;
-    if(/^(details|popular|tech specs)/i.test(l))continue;
-    pairs.push([l,v]);
-    if(/^power adapter$/i.test(l)||pairs.length>140)stop=true;
-  }
-  let img='';
-  const bad=/(banner|logo|sponsor|owc|cash|button|icon|spacer|pixel|ads?\/|adserv|buy|sell|upgrade|\.gif$)/i;
-  for(const im of d.querySelectorAll('img[src]')){
-    if(hd&&!(hd.compareDocumentPosition(im)&Node.DOCUMENT_POSITION_FOLLOWING))continue;
-    const s=im.getAttribute('src');if(!/\.(jpe?g|png)/i.test(s)||bad.test(s))continue;
-    try{img=new URL(s,url).href;break}catch(e){}
-  }
-  return {title,pairs,img};
-}
-function mapEM(p,url){
-  const P=Object.fromEntries(p.pairs);
-  const find=(re)=>{const k=Object.keys(P).find(k=>re.test(k));return k?P[k]:''};
-  const nz=s=>/^(n\/a|none)$/i.test(s||'')?'':(s||'');
-  const f={nome:p.title,marca:'Apple'};
-  const seg=(url.match(/\/systems\/apple\/([^/]+)\//)||[])[1]||'';
-  f.linea=EM_LINEE[seg]||(seg?seg.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):'');
-  f.tipologia=emTipo(seg);
-  const mn=find(/^Apple Model No/i);
-  f.modello=(mn.match(/A\d{4}/)||[''])[0];
-  f.emc=(mn.match(/EMC\s*(\d{4})/i)||[,''])[1];
-  f.ordine=nz(find(/^Apple Order No/i));
-  f.identifier=nz(find(/^Model ID/i));
-  f.intro=nz(find(/^Introduction Date/i));
-  f.discontinued=nz(find(/^Discontinued Date/i));
-  const my=(f.intro.match(/\b(19|20)\d\d\b/)||[''])[0];f.anno=my?+my:'';
-  f.cpu=[nz(find(/^Processor Type/i)),nz(find(/^Processor Speed/i))].filter(Boolean).join(' @ ');
-  const mx=nz(find(/^Maximum RAM/i));
-  f.ram=[nz(find(/^Standard RAM/i)),mx?`(max ${mx})`:''].filter(Boolean).join(' ');
-  f.storage=[nz(find(/^Standard Storage$/i)),nz(find(/^Std\. Storage Speed/i))].filter(Boolean).join(' ');
-  f.gpu=nz(find(/^Video Card|^Graphics/i));
-  f.display=[nz(find(/^Built-in Display/i)),nz(find(/^Native Resolution/i))].filter(Boolean).join(' – ');
-  f.os_orig=nz(find(/^Pre-Installed/i));
-  f.os_max=nz(find(/^Maximum (MacOS|OS|System)/i));
-  f.connettivita=[find(/^Standard Ethernet/i),find(/^Standard AirPort|^Standard Wi-?Fi/i),find(/^Standard Bluetooth/i)].map(nz).filter(Boolean).join(' · ');
-  const usb=nz(find(/^USB Ports/i)),fw=nz(find(/^Firewire Ports/i)),ex=nz(find(/^Expansion Slots/i));
-  f.porte=[usb&&'USB '+usb,fw&&'FireWire '+fw,ex].filter(Boolean).join(' · ');
-  f.batteria=[nz(find(/^Battery Type/i)),nz(find(/^Battery Life/i))].filter(Boolean).join(' – ');
-  f.dimensioni=nz(find(/^Dimensions/i));
-  f.peso=nz(find(/Weight/i));
-  f.prezzo=nz(find(/^Original Price/i));
-  return {fields:f,specs:p.pairs,imageUrl:p.img,fonte:url};
-}
-async function emLookup(q,onPick){
+async function emLookup(q){
   const kw=emKeyword(q);
   const su=`${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(kw)}`;
   const html=await viaProxy(su);
   const links=parseEMSearch(html,su);
   if(links.length>1)return {choices:links};
   if(links.length===1){const h2=await viaProxy(links[0].href);return {result:finishEM(h2,links[0].href)}}
-  if(/Introduction Date/i.test(html)){return {result:finishEM(html,su)}}
+  if(/Introduction Date/i.test(html)){return {result:finishEM(html,'')}}
   return {none:true,url:su};
 }
 function finishEM(html,url){
-  const p=parseEMSpecs(html,url);
-  if(!p.pairs.length)throw new Error('Pagina EveryMac non riconosciuta');
-  return mapEM(p,url);
+  const p=parseEMDoc(html,url);
+  if(p.pairs.length<3)throw new Error('Pagina EveryMac non riconosciuta');
+  return mapEM(p,p.url||url);
+}
+/* pagine salvate .mhtml (Chrome Android: ⋮ → Scarica) */
+function parseMHTML(t){
+  const head=t.slice(0,4000);
+  if(!/multipart\/related/i.test(head))return null;
+  const bm=head.match(/boundary="?([^";\r\n]+)"?/i);if(!bm)return null;
+  let html='',url='';const parts=[];
+  for(const s of t.split('--'+bm[1])){
+    const i=s.search(/\r?\n\r?\n/);if(i<0)continue;
+    const hd=s.slice(0,i),body=s.slice(i).replace(/^\s+/,'');
+    const ct=(hd.match(/Content-Type:\s*([^;\s]+)/i)||[])[1]||'';
+    const cs=(hd.match(/charset="?([\w-]+)/i)||[])[1]||'';
+    const enc=((hd.match(/Content-Transfer-Encoding:\s*(\S+)/i)||[])[1]||'').toLowerCase();
+    const loc=(hd.match(/Content-Location:\s*(\S+)/i)||[])[1]||'';
+    if(/text\/html/i.test(ct)&&!html){html=enc==='quoted-printable'?decodeBytes(qpBytes(body),cs):enc==='base64'?decodeBytes(b64bytes(body),cs):body;url=loc}
+    else if(/^image\//i.test(ct)&&enc==='base64'&&loc)parts.push({loc,ct,body});
+  }
+  return html?{html,url,parts}:null;
+}
+function qpBytes(s){const b=s.replace(/=\r?\n/g,'');const out=[];for(let i=0;i<b.length;i++){const h=b.substr(i+1,2);if(b[i]==='='&&/^[0-9A-F]{2}$/i.test(h)){out.push(parseInt(h,16));i+=2}else out.push(b.charCodeAt(i)&255)}return new Uint8Array(out)}
+/* EveryMac non dichiara il charset: il browser salva spesso in windows-1252 */
+function decodeBytes(u,cs){
+  if(cs){try{return new TextDecoder(cs).decode(u)}catch(e){}}
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(u)}catch(e){return new TextDecoder('windows-1252').decode(u)}
+}
+function b64bytes(s){const bin=atob(s.replace(/[^A-Za-z0-9+/=]/g,''));const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
+/* importazione manuale: html e/o testo incollato */
+function importEM({html='',text='',url='',parts=[]}){
+  const cands=[];
+  if(html){try{cands.push(parseEMDoc(html,url))}catch(e){}}
+  if(text.trim())cands.push(parseEMLines(text.split(/\r?\n/)));
+  if(!cands.length)return null;
+  const best=cands.slice().sort((a,b)=>(b.pairs.length+b.prices.length)-(a.pairs.length+a.prices.length))[0];
+  for(const c of cands){if(!best.title&&c.title)best.title=c.title;if(!best.img&&c.img)best.img=c.img;if(!best.url&&c.url)best.url=c.url;if(!best.desc.length&&c.desc.length)best.desc=c.desc;if(!best.ident&&c.ident)best.ident=c.ident}
+  if(best.pairs.length<3)return null;
+  const u=url||best.url||((text+html).match(/https?:\/\/(?:www\.)?everymac\.com\/systems\/[^\s"'<>]+\.html/)||[])[0]||'';
+  const r=mapEM(best,u);
+  if(r.imageUrl&&parts.length){try{const pn=new URL(r.imageUrl).pathname;const pt=parts.find(x=>x.loc.endsWith(pn));if(pt)r.imageBlob=new Blob([b64bytes(pt.body)],{type:pt.ct})}catch(e){}}
+  return r;
+}
+function previewHTML(r){
+  const f=r.fields;
+  const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo]].filter(x=>x[1]);
+  const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
+  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div><p class="note">${r.specs.length} specifiche trovate${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
+}
+function showPreview(out,r,onResult){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r)}
+
+function openImport({onResult,replace=false,code=''}={}){
+  const h=`<div class="note step"><b>1.</b> Apri la scheda del modello su EveryMac.
+    <div class="row" style="margin-top:8px"><input class="in" id="ic" value="${esc(code)}" placeholder="A1278, EMC 2554, M5521…" autocomplete="off"><a class="btn sm" id="io" target="_blank" rel="noopener" href="${EM}/">Apri ↗</a></div></div>
+  <div class="note step"><b>2.</b> Sulla pagina del modello copia tutto: <b>tieni premuto</b> su una parola → <b>Seleziona tutto</b> → <b>Copia</b>. Da computer: Ctrl+A, Ctrl+C. Va bene anche solo la tabella delle specifiche.<br><small>In alternativa: in Chrome ⋮ → ⬇︎ Scarica, poi «Carica pagina salvata» qui sotto (porta anche la foto).</small></div>
+  <div class="note step"><b>3.</b> Incolla qui: l'app riconosce testo, HTML o link alla pagina.</div>
+  <textarea class="in" id="pt" placeholder="Tieni premuto qui → Incolla" style="min-height:140px"></textarea>
+  <div class="row" style="flex-wrap:wrap;margin:8px 0"><button class="btn sm sec" id="pc">📋 Incolla dagli appunti</button><button class="btn sm sec" id="pf">📄 Carica pagina salvata</button><button class="btn sm sec" id="px">✕ Svuota</button></div>
+  <input type="file" id="pfi" hidden>
+  <button class="btn" id="pa" style="width:100%">Analizza</button>
+  <div id="po" style="margin-top:14px"></div>`;
+  openPage('Incolla da EveryMac',h,{replace,mount(el){
+    let html='',srcUrl='',parts=[];
+    const ta=$('#pt',el),out=$('#po',el),ic=$('#ic',el);
+    const updLink=()=>{const v=ic.value.trim();$('#io',el).href=v?`${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(v))}`:EM+'/'};
+    updLink();ic.oninput=updLink;
+    const analyze=async()=>{
+      const txt=ta.value.trim();
+      if(!txt&&!html){out.innerHTML='';return}
+      if(!html&&/^https?:\/\/(www\.)?everymac\.com\/\S+$/i.test(txt)){
+        out.innerHTML=spin('Scarico la pagina…');
+        try{html=await viaProxy(txt);srcUrl=txt}catch(e){out.innerHTML='<div class="note">Non riesco a scaricare la pagina (i proxy sono bloccati). Apri il link, copia il contenuto e incollalo qui.</div>';return}
+      }
+      let r=null;try{r=importEM({html,text:html?'':txt,url:srcUrl,parts})}catch(e){console.error(e)}
+      if(!r&&html&&txt){try{r=importEM({text:txt})}catch(e){}}
+      if(!r){out.innerHTML='<div class="note"><b>Non ho trovato le specifiche.</b> Assicurati di copiare la pagina <i>del singolo modello</i> (quella con «Introduction Date», «Processor Speed», ecc.), non la pagina dei risultati di ricerca.</div>';return}
+      showPreview(out,r,onResult);
+      out.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    ta.addEventListener('paste',e=>{
+      const cd=e.clipboardData;const hh=cd&&cd.getData('text/html');
+      if(hh){e.preventDefault();html=hh;srcUrl='';parts=[];ta.value=cd.getData('text/plain')||domLines(new DOMParser().parseFromString(hh,'text/html').body).join('\n')}
+      else{html=''}
+      setTimeout(analyze,60);
+    });
+    ta.addEventListener('input',()=>{if(!ta.value.trim()){html='';parts=[];out.innerHTML=''}});
+    $('#pa',el).onclick=analyze;
+    $('#px',el).onclick=()=>{ta.value='';html='';parts=[];srcUrl='';out.innerHTML='';ta.focus()};
+    $('#pc',el).onclick=async()=>{
+      try{
+        html='';parts=[];srcUrl='';let txt='';
+        if(navigator.clipboard.read){for(const it of await navigator.clipboard.read()){if(it.types.includes('text/html'))html=await (await it.getType('text/html')).text();if(it.types.includes('text/plain'))txt=await (await it.getType('text/plain')).text()}}
+        else txt=await navigator.clipboard.readText();
+        ta.value=txt||(html?domLines(new DOMParser().parseFromString(html,'text/html').body).join('\n'):'');
+        if(!ta.value.trim()){toast('Gli appunti sono vuoti');return}
+        analyze();
+      }catch(e){toast('Accesso agli appunti negato: tieni premuto nel riquadro e scegli «Incolla»',4200);ta.focus()}
+    };
+    $('#pf',el).onclick=()=>$('#pfi',el).click();
+    $('#pfi',el).onchange=async e=>{
+      const f=e.target.files[0];if(!f)return;e.target.value='';
+      const t=decodeBytes(new Uint8Array(await f.arrayBuffer()));const mh=parseMHTML(t);
+      if(mh){html=mh.html;srcUrl=mh.url;parts=mh.parts}
+      else if(/<(html|table|tr)[\s>]/i.test(t)){html=t;srcUrl='';parts=[]}
+      else{html='';parts=[];srcUrl=''}
+      ta.value=html?domLines(new DOMParser().parseFromString(html,'text/html').body).join('\n'):t;
+      analyze();
+    };
+    setTimeout(()=>(code?ta:ic).focus(),250);
+  }});
 }
 
 /* ============ Wikipedia / Commons (CORS aperto) ============ */
@@ -481,7 +833,6 @@ async function wikiLoad(title,lang,marca){
   const pg=Object.values(a.query.pages)[0];
   const wt=b&&b.parse&&b.parse.wikitext?b.parse.wikitext['*']:'';
   const pairs=[];
-  // infobox: unisci le righe di continuazione
   const lines=wt.split('\n');let cur=null;
   for(const ln of lines){
     const m=ln.match(/^\s*\|\s*([\w \-]+?)\s*=\s*(.*)$/);
@@ -498,11 +849,12 @@ async function wikiLoad(title,lang,marca){
     cpu:g('cpu','processor'),ram:g('memory','ram'),storage:g('storage','storage capacity'),
     gpu:g('graphics','gpu','video'),display:g('display','screen'),os_orig:g('os','operating system','operating_system'),
     connettivita:g('connectivity','networking'),batteria:g('battery','power'),dimensioni:g('dimensions'),peso:g('weight','mass'),
-    prezzo:g('price','launch price','introductory price'),modello:g('model','model number'),linea:g('family','series','product family','product line')};
+    prezzo:g('price','launch price','introductory price'),modello:g('model','model number'),linea:g('family','series','product family','product line'),
+    colore:detectColor(g('color','colour','colors','colours'))};
   const my=(f.intro.match(/\b(19[5-9]\d|20[0-3]\d)\b/)||[''])[0];f.anno=my?+my:'';
   f.descrizione=pg.extract?pg.extract.split('\n')[0].slice(0,900):'';
-  const ty=g('type','device type').toLowerCase();
-  f.tipologia=/phone/.test(ty)?'Smartphone':/tablet/.test(ty)?'Tablet':/laptop|notebook/.test(ty)?'Portatile':/console/.test(ty)?'Console':/player|ipod/.test(ty)?'Lettore musicale':/camera/.test(ty)?'Fotocamera':/computer/.test(ty)?'Computer desktop':'';
+  const ty=g('type','device type').toLowerCase()+' '+(pg.extract||'').slice(0,200).toLowerCase();
+  f.tipologia=/television|tv set/.test(ty)?'Televisore CRT':/phone/.test(ty)?'Smartphone':/tablet/.test(ty)?'Tablet':/laptop|notebook/.test(ty)?'Portatile':/console/.test(ty)?'Console':/player|ipod/.test(ty)?'Lettore musicale':/camera/.test(ty)?'Fotocamera':/computer/.test(ty)?'Computer desktop':'';
   Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
   return {fields:f,specs,imageUrl:pg.thumbnail?pg.thumbnail.source:'',fonte:pg.fullurl||`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`};
 }
@@ -511,11 +863,11 @@ async function commonsSearch(q){
   return Object.values((j.query&&j.query.pages)||{}).filter(p=>p.imageinfo&&/image\/(jpeg|png|webp)/.test(p.imageinfo[0].mime)).map(p=>({thumb:p.imageinfo[0].thumburl,title:p.title}));
 }
 function openImageSearch(q,onPick){
-  const el=openPage('Cerca foto sul web',`<div class="row"><input class="in" id="iq" value="${esc(q)}"><button class="btn" id="ig">Cerca</button></div><div id="ir" style="margin-top:12px"></div>
+  openPage('Cerca foto sul web',`<div class="row"><input class="in" id="iq" value="${esc(q)}"><button class="btn" id="ig">Cerca</button></div><div id="ir" style="margin-top:12px"></div>
   <p class="note">Risultati da Wikimedia Commons (immagini libere). Per altre fonti: <a id="gl" target="_blank" rel="noopener" href="#">cerca su Google Immagini</a>, salva la foto e aggiungila dalla Galleria.</p>`,{mount(el){
     const go=async()=>{
       const v=$('#iq',el).value.trim();$('#gl',el).href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(v);
-      $('#ir',el).innerHTML='<span class="spin"></span>Cerco…';
+      $('#ir',el).innerHTML=spin('Cerco…');
       try{const r=await commonsSearch(v);$('#ir',el).innerHTML=r.length?`<div class="cgrid">${r.map((x,i)=>`<img src="${esc(x.thumb)}" data-i="${i}" alt="${esc(x.title)}" loading="lazy">`).join('')}</div>`:'Nessuna immagine trovata. Prova con meno parole (es. solo il modello).';el._r=r}
       catch(e){$('#ir',el).textContent='Ricerca non riuscita: '+e.message}
     };
@@ -523,16 +875,15 @@ function openImageSearch(q,onPick){
     el.addEventListener('click',e=>{const i=e.target.closest('img[data-i]');if(i){history.back();onPick(el._r[+i.dataset.i].thumb)}});
   }});
 }
-
 async function openDescPicker(q,cb){
   openPage('Descrizione da Wikipedia',`<div class="row"><input class="in" id="dq" value="${esc(q)}"><button class="btn" id="dg">Cerca</button></div><div id="dr" style="margin-top:12px"></div><p class="note">Testo introduttivo di Wikipedia (italiano, poi inglese). Puoi modificarlo dopo.</p>`,{mount(el){
     const out=$('#dr',el);let res=[];
-    const go=async()=>{const v=$('#dq',el).value.trim();if(!v)return;out.innerHTML='<span class="spin"></span>Cerco…';
+    const go=async()=>{const v=$('#dq',el).value.trim();if(!v)return;out.innerHTML=spin('Cerco…');
       try{res=await wikiSearch(v,'it');res=res.concat(await wikiSearch(v,'en'));
         out.innerHTML=res.length?res.map((x,i)=>`<button class="res" data-i="${i}"><b>${esc(x.title)}</b> <small>${x.lang.toUpperCase()} · ${esc(x.snippet.slice(0,100))}</small></button>`).join(''):'Nessun risultato.'}
       catch(e){out.textContent='Errore di rete: '+e.message}};
     $('#dg',el).onclick=go;$('#dq',el).onkeydown=e=>{if(e.key==='Enter')go()};go();
-    el.addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;const x=res[+b.dataset.i];out.innerHTML='<span class="spin"></span>Carico…';
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;const x=res[+b.dataset.i];out.innerHTML=spin('Carico…');
       try{const j=await wjson(`https://${x.lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(x.title)}&format=json&origin=*`);
         const p=Object.values(j.query.pages)[0];const t=(p.extract||'').split('\n').filter(Boolean).slice(0,2).join('\n\n').slice(0,1200);
         history.back();cb(t+(t?`\n\n(Fonte: Wikipedia ${x.lang.toUpperCase()}, «${x.title}»)`:''))}
@@ -540,24 +891,22 @@ async function openDescPicker(q,cb){
   }});
 }
 
-/* ============ lookup UI ============ */
+/* ============ ricerca online ============ */
 function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
   const isApple=/^apple$/i.test(marca||'Apple');
   const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple?'selected':''}>Apple</option><option value="altro" ${isApple?'':'selected'}>Altra marca</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, EMC 2554, MacBookPro9,2" autocomplete="off"></div>
   <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
+  <button class="res" id="lp" style="margin-top:12px"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non riesce a leggere EveryMac.</small></button>
   <div id="lo" style="margin-top:14px"></div>
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
-    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Nokia 3310</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
+    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
     hint();$('#lb',el).onchange=hint;
     const out=$('#lo',el);
-    const busy=m=>out.innerHTML=`<span class="spin"></span>${esc(m)}`;
-    const preview=r=>{
-      const f=r.fields;
-      const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display]].filter(x=>x[1]);
-      out.innerHTML=`${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" style="max-height:160px;max-width:100%;border-radius:10px;display:block;margin-bottom:8px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${esc(b)}</div>`).join('')}</div><p class="note">${r.specs.length} specifiche trovate. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" id="use" style="width:100%">Usa questi dati</button>`;
-      $('#use',el).onclick=()=>onResult(r);
-    };
+    const busy=m=>out.innerHTML=spin(m);
+    const preview=r=>showPreview(out,r,onResult);
+    const paste=()=>openImport({replace:true,code:$('#lq',el).value.trim(),onResult});
+    $('#lp',el).onclick=paste;
     const wikiFlow=async(q,mc)=>{
       busy('Cerco su Wikipedia…');
       let res=await wikiSearch(q);
@@ -568,6 +917,7 @@ function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
     };
     const go=async()=>{
       const q=$('#lq',el).value.trim();if(!q)return;
+      out.onclick=null;
       const ap=$('#lb',el).value==='apple';
       if(!ap){try{await wikiFlow(q,'')}catch(e){out.textContent='Errore di rete: '+e.message}return}
       busy('Cerco su EveryMac…');
@@ -576,31 +926,32 @@ function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
         if(r.result)return preview(r.result);
         if(r.choices){
           out.innerHTML=`<b>${r.choices.length} modelli corrispondono – scegli:</b>`+r.choices.map((x,i)=>`<button class="res" data-c="${i}"><b>${esc(x.name)}</b></button>`).join('');
-          out.onclick=async e=>{const b=e.target.closest('[data-c]');if(!b)return;const c=r.choices[+b.dataset.c];busy('Carico le specifiche…');try{preview(finishEM(await viaProxy(c.href),c.href))}catch(err){out.textContent='Errore: '+err.message}};
+          out.onclick=async e=>{const b=e.target.closest('[data-c]');if(!b)return;const c=r.choices[+b.dataset.c];busy('Carico le specifiche…');try{preview(finishEM(await viaProxy(c.href),c.href))}catch(err){out.innerHTML=`<p>Errore: ${esc(err.message)}</p><a class="btn sec sm" target="_blank" rel="noopener" href="${esc(c.href)}">Apri la pagina ↗</a> poi usa «Incolla la scheda».`}};
           return;
         }
         await wikiFlow('Apple '+q,'Apple');
       }catch(e){
-        out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Il browser non può leggere EveryMac direttamente: serve un proxy CORS (vedi Menu → Impostazioni). Intanto puoi:</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}" style="text-decoration:none">Apri su EveryMac</a><button class="btn sm" id="lw">Prova con Wikipedia</button></div>`;
+        out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Nessun problema: apri la pagina, copiala e incollala.</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}">Apri su EveryMac ↗</a><button class="btn sm" id="lpp">📋 Incolla la scheda</button><button class="btn sec sm" id="lw">Prova Wikipedia</button></div>`;
+        $('#lpp',el).onclick=paste;
         $('#lw',el).onclick=()=>wikiFlow('Apple '+q,'Apple').catch(er=>out.textContent='Errore: '+er.message);
       }
     };
     $('#lg',el).onclick=go;$('#lq',el).onkeydown=e=>{if(e.key==='Enter')go()};
-    if(prefill&&replaceSelf!==true&&false)go();
     setTimeout(()=>$('#lq',el).focus(),250);
   }});
 }
+const KEEP=['descrizione','colore','colore_hex','luogo','note'];
 async function mergeFetched(base,r,overwrite){
   const m=Object.assign({},base);
-  for(const [k,v] of Object.entries(r.fields)){ if(v===''||v==null)continue; if(overwrite||m[k]===undefined||m[k]==='')m[k]=v }
+  for(const [k,v] of Object.entries(r.fields)){ if(v===''||v==null)continue; if(KEEP.includes(k)&&m[k])continue; if(overwrite||m[k]===undefined||m[k]==='')m[k]=v }
   if(r.specs&&r.specs.length){
     const have=new Map((m.specs||[]).map(p=>[p[0],p[1]]));
     r.specs.forEach(([l,v])=>{if(overwrite||!have.has(l))have.set(l,v)});
     m.specs=[...have];
   }
   if(r.fonte)m.fonte=r.fonte;
-  if(r.imageUrl&&!(m.foto&&m.foto.length)){
-    try{const b=await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1000)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata')}
+  if((r.imageBlob||r.imageUrl)&&!(m.foto&&m.foto.length)){
+    try{const b=r.imageBlob||await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
   }
   return m;
 }
@@ -613,7 +964,7 @@ function openStats(){
     return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${v}</span></div>`).join('');
   };
   const sum=k=>devices.reduce((s,d)=>s+(parseFloat(d[k])||0),0);
-  const h=`<div class="kv"><div>Dispositivi</div><div>${devices.length}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div></div>`+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per stato','stato');
+  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div></div>`+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
   openPage('Statistiche',h);
 }
 
@@ -622,9 +973,9 @@ function dl(name,type,text){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
 }
 function csv(){
-  const cols=['nome','marca','tipologia','linea','anno','modello','emc','identifier','ordine','intro','discontinued','cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','stato','scatola','condizione','acq_anno','acq_prezzo','valore','luogo','seriale','descrizione','note','fonte'];
+  const cols=['nome','marca','tipologia','linea','anno',...ALLF.map(f=>f[0]).filter(k=>k!=='collegato'),'collegato_nome','fonte'];
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
-  return '﻿'+cols.join(';')+'\n'+devices.map(d=>cols.map(c=>q(d[c])).join(';')).join('\n');
+  return '﻿'+cols.join(';')+'\n'+devices.map(d=>cols.map(c=>q(c==='collegato_nome'?(devices.find(x=>x.id===d.collegato)||{}).nome:d[c])).join(';')).join('\n');
 }
 function openMenu(){
   const h=`<div class="sec-t">Collezione</div>
@@ -638,7 +989,7 @@ function openMenu(){
   <div class="sec-t">Impostazioni</div>
   <label class="f">Proxy CORS personale per EveryMac (facoltativo)</label>
   <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
-  <p class="note">Senza questo uso proxy pubblici gratuiti, che a volte sono lenti o bloccati. Nel README c'è un Cloudflare Worker di 10 righe da pubblicare gratis.</p>
+  <p class="note">Senza questo uso proxy pubblici gratuiti, che a volte sono lenti o bloccati. In alternativa usa «Incolla da EveryMac». Nel README c'è un Cloudflare Worker di 10 righe da pubblicare gratis.</p>
   <button class="btn sec" data-m="pxs">Salva proxy</button>
   <div class="sec-t">Zona pericolosa</div>
   <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>`;
@@ -647,21 +998,21 @@ function openMenu(){
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='stats')openStats();
-      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',JSON.stringify({app:'rddc',v:1,devices:devices.map(d=>Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_')))}));toast('Backup scaricato')}
+      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',JSON.stringify({app:'rddc',v:2,devices:devices.map(d=>Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_')))}));toast('Backup scaricato')}
       if(a==='csv'){dl('rddc.csv','text/csv',csv())}
       if(a==='imp')$('#fi',el).click();
       if(a==='pxs'){LS.set('rd_proxy',$('#px',el).value.trim());toast('Salvato')}
-      if(a==='clr'&&await ask('Cancellare TUTTI i dispositivi? Non si può annullare.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};render();toast('Collezione svuotata')}
+      if(a==='clr'&&await ask('Cancellare TUTTI gli oggetti? Non si può annullare.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};render();toast('Collezione svuotata')}
     });
     $('#fi',el).onchange=async e=>{
       try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
         let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
-        render();toast(n+' dispositivi importati')}catch(err){toast('File non valido')}
+        render();toast(n+' oggetti importati')}catch(err){toast('File non valido')}
     };
   }});
 }
 
-/* ============ init ============ */
+/* ============ avvio ============ */
 $('#q').value=S.q||'';
 $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
@@ -671,7 +1022,7 @@ $('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(
   await DB.open();
   devices=await DB.all();devices.forEach(idx);
   render();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
 </body>
