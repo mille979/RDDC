@@ -1022,7 +1022,12 @@ $('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(
   await DB.open();
   devices=await DB.all();devices.forEach(idx);
   render();
-  if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator&&location.protocol!=='file:'){
+    const sw=navigator.serviceWorker,had=!!sw.controller;let done=false;
+    /* nuova versione installata: ricarica subito se non c'è niente aperto, altrimenti avvisa */
+    sw.addEventListener('controllerchange',()=>{if(!had||done)return;done=true;if(!stack.length)location.reload();else toast('Nuova versione dell\'app disponibile: chiudi e riapri per usarla',6000)});
+    sw.register('sw.js',{updateViaCache:'none'}).then(reg=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{})})}).catch(()=>{});
+  }
 })();
 </script>
 </body>
