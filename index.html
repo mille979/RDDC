@@ -19,6 +19,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line)}
 .brand{font:700 15px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.2em;color:var(--acc-ink);text-shadow:0 0 12px var(--glow);padding:2px 2px 9px;display:flex;align-items:baseline;gap:10px}
+.brand{align-items:center}
+.seg{margin-left:auto;display:flex;background:var(--chip);border-radius:11px;padding:3px;gap:2px;text-shadow:none;letter-spacing:0}
+.seg button{border:0;background:none;border-radius:8px;padding:6px 11px;font:650 13px/1 system-ui,sans-serif;color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.seg i{font-style:normal;font-weight:500;opacity:.7;margin-left:4px}
+.prio{color:var(--acc-ink);font-weight:700}
 .brand small{font:600 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-shadow:none}
 .row{display:flex;gap:8px;align-items:center}
 .search{flex:1;min-width:0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
@@ -135,7 +141,7 @@ details.more[open]>summary::before{transform:rotate(90deg)}
 </head>
 <body>
 <div id="top">
-  <div class="brand">RDDC<small>collezione vintage</small></div>
+  <div class="brand">RDDC<div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
   <div class="row">
     <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
     <button class="ibtn" id="bFil" aria-label="Filtri">⚙︎ <span class="badge" id="nF" hidden></span></button>
@@ -219,15 +225,21 @@ const SECTIONS=[
  ['Televisore / monitor',[['tv_pollici','Diagonale (pollici)','text'],['tv_tubo','Tubo catodico','list:tubi'],['tv_formato','Formato','select:4:3|16:9|14:9'],['tv_standard','Sistema colore','select:PAL|SECAM|NTSC|PAL/SECAM|Multistandard|Bianco e nero'],['tv_freq','Frequenza','select:50 Hz|60 Hz|100 Hz'],['tv_ingressi','Ingressi (SCART, RF, RCA, S-Video…)','area'],['tv_audio','Audio','list:audio'],['tv_televideo','Televideo','select:Sì|Sì (FasText / TOP)|No'],['tv_telecomando','Telecomando','select:Presente|Mancante|Non previsto'],['tv_canali','Sintonia / canali memorizzabili'],['tv_telaio','Telaio (chassis)'],['tv_consumo','Consumo (W)']],'tv'],
  ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
- ['Collezione',[['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']]]
+ ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
+ ['Collezione',[['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
-const FACETS=[['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
-const SORTS={nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca'};
-const GROUPS={'':'Nessuno',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
+const FACETS=[['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
+const SORTS={prio:'Priorità (wishlist)',nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca'};
+const GROUPS={'':'Nessuno',w_priorita:'Priorità',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
 let devices=[];
 let S=LS.get('rd_state',{q:'',sel:{},group:'decennio',sort:'anno_a'});
-S.sel=S.sel||{};
+S.sel=S.sel||{};S.view=S.view==='wish'?'wish':'col';
+const isWishView=()=>S.view==='wish';
+const curSort=()=>isWishView()?(S.sortW||'prio'):S.sort;
+const curGroup=()=>isWishView()?(S.groupW??'w_priorita'):S.group;
+const pool=()=>devices.filter(d=>!!d.wish===isWishView());
+const PRIO={Alta:0,Media:1,Bassa:2};
 
 function val(d,k){
   if(k==='decennio')return d.anno?Math.floor(d.anno/10)*10+'s':'—';
@@ -242,30 +254,36 @@ function pass(d,skip){
 }
 function sorter(){
   const c=(a,b)=>String(a||'').localeCompare(String(b||''),'it',{numeric:true,sensitivity:'base'});
-  const s=S.sort;
-  return (a,b)=>s==='anno_a'?((a.anno||9999)-(b.anno||9999))||c(a.nome,b.nome):s==='anno_d'?((b.anno||0)-(a.anno||0))||c(a.nome,b.nome):s==='recenti'?(b.creato||0)-(a.creato||0):s==='marca'?c(a.marca,b.marca)||c(a.nome,b.nome):c(a.nome,b.nome);
+  const s=curSort();
+  return (a,b)=>s==='prio'?((PRIO[a.w_priorita]??3)-(PRIO[b.w_priorita]??3))||c(a.nome,b.nome):s==='anno_a'?((a.anno||9999)-(b.anno||9999))||c(a.nome,b.nome):s==='anno_d'?((b.anno||0)-(a.anno||0))||c(a.nome,b.nome):s==='recenti'?(b.creato||0)-(a.creato||0):s==='marca'?c(a.marca,b.marca)||c(a.nome,b.nome):c(a.nome,b.nome);
 }
 function save(){LS.set('rd_state',S)}
 
 /* ============ lista principale ============ */
 function render(){
   save();
-  const items=devices.filter(d=>pass(d)).sort(sorter());
+  const P=pool(),W=isWishView();
+  document.querySelectorAll('#seg [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));
+  $('#nC').textContent=devices.filter(d=>!d.wish).length;$('#nW').textContent=devices.filter(d=>d.wish).length;
+  const items=P.filter(d=>pass(d)).sort(sorter());
   const nF=Object.values(S.sel).reduce((n,a)=>n+(a?a.length:0),0);
   const b=$('#nF');b.hidden=!nF;b.textContent=nF;
-  let sum=`<span>${items.length===devices.length?devices.length+' oggetti':items.length+' di '+devices.length}</span>`;
+  const unit=W?' desideri':' oggetti';
+  let sum=`<span>${items.length===P.length?P.length+unit:items.length+' di '+P.length}</span>`;
+  if(W){const tot=items.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0);if(tot)sum+=`<span>· budget € ${tot.toLocaleString('it')}</span>`}
   for(const [k,a] of Object.entries(S.sel))(a||[]).forEach(v=>sum+=`<button class="pill x" data-rm="${esc(k)}" data-v="${esc(v)}">${esc(v)}</button>`);
   $('#sum').innerHTML=sum;
   $('#list').style.setProperty('--hh',$('#top').offsetHeight+'px');
   const L=$('#list');
-  if(!devices.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">📺</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo oggetto:<br>computer, TV CRT, caricabatterie, cavi…</p></div>`;return}
+  if(W&&!P.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">💭</div><p><b>La wishlist è vuota</b></p><p>Tocca <b>+</b> per aggiungere un oggetto che stai cercando:<br>priorità, budget e link all'annuncio.<br>Quando lo trovi: «Preso!» e passa in collezione.</p></div>`;return}
+  if(!P.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">📺</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo oggetto:<br>computer, TV CRT, caricabatterie, cavi…</p></div>`;return}
   if(!items.length){L.innerHTML=`<div class="empty">Nessun risultato.</div>`;return}
   let html='';
-  const grp=S.group;
+  const grp=curGroup();
   if(grp){
     const map=new Map();items.forEach(d=>{const g=val(d,grp);if(!map.has(g))map.set(g,[]);map.get(g).push(d)});
-    const keys=[...map.keys()].filter(k=>k!=='—').sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
-    if(S.sort==='anno_d'&&['anno','decennio'].includes(grp))keys.reverse();
+    const keys=[...map.keys()].filter(k=>k!=='—').sort((a,b)=>grp==='w_priorita'?PRIO[a]-PRIO[b]:String(a).localeCompare(String(b),'it',{numeric:true}));
+    if(curSort()==='anno_d'&&['anno','decennio'].includes(grp))keys.reverse();
     if(map.has('—'))keys.push('—');
     const none=['anno','decennio'].includes(grp)?'Senza anno':'Non indicato';
     for(const k of keys){html+=`<div class="gh">${esc(k==='—'?none:k)} <small>${map.get(k).length}</small></div>`+map.get(k).map(card).join('')}
@@ -276,7 +294,7 @@ function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
   const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:d.cpu].filter(Boolean).join(' · ');
-  const meta=[d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
   return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
 function icon(d){const t=(d.tipologia||'').toLowerCase();return /televis|\btv\b|crt/.test(t)?'📺':/aliment|caricabat/.test(t)?'🔌':/cav[oi]|adattat/.test(t)?'🔗':/tastier/.test(t)?'⌨️':/mouse/.test(t)?'🖱️':/joystick|controller|console/.test(t)?'🎮':/manual|software/.test(t)?'📘':/scatola|imballo/.test(t)?'📦':/accessor|periferic/.test(t)?'🧩':/stampant/.test(t)?'🖨️':t.includes('portatil')?'💻':/smart|tablet/.test(t)?'📱':/music|ipod/.test(t)?'🎵':t.includes('foto')?'📷':'🖥️'}
@@ -302,13 +320,13 @@ history.replaceState({p:0},'');
 function openFilters(){
   const el=openPage('Filtri e ordinamento','',{actions:'<button class="btn sm sec" data-reset>Azzera</button>'});
   const draw=()=>{
-    let h=`<div class="grid2"><div><label class="f">Raggruppa per</label><select class="in" id="gSel">${Object.entries(GROUPS).map(([k,v])=>`<option value="${k}" ${S.group===k?'selected':''}>${v}</option>`).join('')}</select></div>
-    <div><label class="f">Ordina per</label><select class="in" id="sSel">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}" ${S.sort===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`;
+    let h=`<div class="grid2"><div><label class="f">Raggruppa per</label><select class="in" id="gSel">${Object.entries(GROUPS).map(([k,v])=>`<option value="${k}" ${curGroup()===k?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div><label class="f">Ordina per</label><select class="in" id="sSel">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}" ${curSort()===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`;
     for(const [k,lab] of FACETS){
-      const cnt=new Map();devices.filter(d=>pass(d,k)).forEach(d=>{const v=val(d,k);cnt.set(v,(cnt.get(v)||0)+1)});
+      const cnt=new Map();pool().filter(d=>pass(d,k)).forEach(d=>{const v=val(d,k);cnt.set(v,(cnt.get(v)||0)+1)});
       (S.sel[k]||[]).forEach(v=>{if(!cnt.has(v))cnt.set(v,0)});
       const keys=[...cnt.keys()].sort((a,b)=>String(a).localeCompare(String(b),'it',{numeric:true}));
-      if(!keys.length)continue;
+      if(!keys.length||(keys.length===1&&keys[0]==='—'&&!(S.sel[k]||[]).length))continue;
       h+=`<div class="sec-t">${lab}</div><div class="chips">`+keys.map(v=>`<button class="chip ${(S.sel[k]||[]).includes(v)?'on':''}" data-k="${k}" data-v="${esc(v)}">${k==='colore'&&v!=='—'?`<i class="sw" style="--c:${esc(nameHex(v)||'transparent')};margin:0 6px 0 0;opacity:1"></i>`:''}${esc(v)}<i>${cnt.get(v)}</i></button>`).join('')+'</div>';
     }
     $('.body',el).innerHTML=h+`<p class="note">Tocca più valori nello stesso gruppo per combinarli (es. Apple + Commodore). I gruppi diversi si sommano (es. Luogo Damiano + Decennio 1990s).</p>`;
@@ -319,7 +337,7 @@ function openFilters(){
     if(c){const k=c.dataset.k,v=c.dataset.v;const a=S.sel[k]=S.sel[k]||[];const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);draw();render()}
     if(e.target.closest('[data-reset]')){S.sel={};S.q='';$('#q').value='';draw();render()}
   });
-  el.addEventListener('change',e=>{if(e.target.id==='gSel')S.group=e.target.value;if(e.target.id==='sSel')S.sort=e.target.value;render()});
+  el.addEventListener('change',e=>{if(e.target.id==='gSel'){if(isWishView())S.groupW=e.target.value;else S.group=e.target.value}if(e.target.id==='sSel'){if(isWishView())S.sortW=e.target.value;else S.sort=e.target.value}render()});
 }
 
 /* ============ scheda ============ */
@@ -334,6 +352,8 @@ function fieldDisplay(d,k){
   if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
   if(k==='collegato'){const o=devices.find(x=>x.id===d.collegato);return o?`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`:'<i>(non più in collezione)</i>'}
   if(k==='tv_pollici')return esc(inch(d[k]));
+  if(k==='w_link')return /^https?:\/\//i.test(d[k])?`<a href="${esc(d[k])}" target="_blank" rel="noopener">${esc(d[k].replace(/^https?:\/\/(www\.)?/,'').slice(0,60))}</a>`:esc(d[k]);
+  if(k==='w_budget')return '€ '+esc(d[k]);
   return esc(d[k]);
 }
 function openDetail(id,replace){
@@ -341,7 +361,7 @@ function openDetail(id,replace){
   const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
   const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
-  const hchips=[d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
+  const hchips=[d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
     <button class="hb l" data-back aria-label="Indietro">←</button>
@@ -362,7 +382,12 @@ function openDetail(id,replace){
   if(accs.length)h+=`<div class="sec-t">Accessori collegati (${accs.length})</div>`+accs.map(card).join('');
   if(d.specs&&d.specs.length)h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary>${kv(d.specs.map(([a,b])=>[a,esc(b)]))}</details>`;
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
-  h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  if(d.wish){
+    const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
+    if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
+    const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
+    h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   openPage(d.nome,h,{replace,bare:true,mount(el){
     const hi=$('.himg',el);
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
@@ -375,8 +400,13 @@ function openDetail(id,replace){
       const go=t.closest('[data-go]');if(go){e.preventDefault();openDetail(go.dataset.go)}
       const cd=t.closest('.card');if(cd)openDetail(cd.dataset.id);
       if(t.closest('[data-addacc]'))openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome});
-      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);render();toast('Duplicato');goBase(()=>openDetail(c.id))}
-      if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();toast('Eliminato')}
+      if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
+        const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
+        if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
+        ['w_priorita','w_budget','w_link','w_note'].forEach(k=>delete o[k]);
+        idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
+      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);render();toast('Duplicato');goBase(()=>openDetail(c.id))}
+      if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();toast('Eliminato')}
       const upd=async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})};
       if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:upd});
       if(t.closest('[data-paste]'))openImport({code:d.modello||d.emc||d.identifier||'',onResult:upd});
@@ -404,7 +434,7 @@ function fieldHTML(k,l,t,v,d){
   v=v==null?'':v;t=t||'';
   if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
   if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
-  if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
+  if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
     return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</option>`).join('')}</select>`}
   if(t==='color'){const hx=d.colore_hex||nameHex(v);
     return `<label class="f">${l}</label><div class="row"><span class="swbig ${hx?'':'none'}" id="swp" style="--c:${esc(hx)}"></span><input class="in" name="colore" list="dl_colori" value="${esc(v)}" autocomplete="off" placeholder="Es. Mirtillo, Argento, Nero"><label class="ibtn" title="Colore personalizzato">🎨<input type="color" id="cpick" value="${esc(/^#[0-9a-f]{6}$/i.test(hx)?hx:'#f2a531')}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%"></label></div>
@@ -428,11 +458,11 @@ function openForm(src,{fromLookup=false}={}){
   h+=fieldHTML('fonte','Fonte (URL)','',d.fonte,d);
   h+=`<div class="row" style="margin-top:20px"><button class="btn" style="flex:1" data-save>Salva</button></div></form>`;
   const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button>`;
-  openPage(isNew?'Nuovo oggetto':'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
+  openPage(isNew?(d.wish?'Nuovo desiderio':'Nuovo oggetto'):'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
     const fm=$('#f',el);
     const drawPh=()=>{$('#ph',el).innerHTML=foto.length?`<div class="photos sm">${foto.map((f,i)=>`<div class="ph"><img src="${f}" alt=""><button type="button" data-rmf="${i}">✕</button></div>`).join('')}</div><p style="font-size:12px;color:var(--mute);margin:2px 0">La prima foto è lo sfondo della scheda.</p>`:'<div class="note">Nessuna foto</div>'};
     drawPh();
-    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>x.hidden=!x.dataset.when.split(' ').includes(k))};
+    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' ');x.hidden=w.includes('wish')?!d.wish:w.includes('own')?!!d.wish:!w.includes(k)})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);fm.tipologia.addEventListener('change',applyKind);
     const updSw=()=>{const hx=fm.colore_hex.value||nameHex(fm.colore.value);const s=$('#swp',el);s.style.setProperty('--c',hx||'transparent');s.classList.toggle('none',!hx);el.querySelectorAll('.swb').forEach(b=>b.classList.toggle('on',b.title===fm.colore.value))};
     fm.colore.addEventListener('input',()=>{fm.colore_hex.value='';updSw()});
@@ -455,7 +485,7 @@ function openForm(src,{fromLookup=false}={}){
         const cur=collect(fm);
         if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
         const o=Object.assign({},d,cur,{foto,thumb});
-        o.id=o.id||uid();o.creato=o.creato||Date.now();
+        o.id=o.id||uid();o.creato=o.creato||Date.now();o.modificato=Date.now();
         const dup=devices.find(x=>x.id!==o.id&&o.modello&&x.modello===o.modello&&x.emc===o.emc&&x.nome===o.nome);
         if(dup&&isNew&&!await ask('Esiste già un oggetto identico ("'+dup.nome+'"). Salvare comunque?','Salva'))return;
         idx(o);await DB.put(o);
@@ -485,18 +515,19 @@ async function shrink(src,max,q=.82){
 
 /* ============ scelta "aggiungi" ============ */
 function openAdd(){
-  const toForm=async r=>openForm(await mergeFetched({},r,true),{fromLookup:true});
-  openPage('Aggiungi',`
-  <p>Come vuoi aggiungerlo?</p>
+  const W=isWishView()?{wish:true,w_priorita:'Media'}:{};
+  const toForm=async r=>openForm(await mergeFetched({...W},r,true),{fromLookup:true});
+  openPage(W.wish?'Aggiungi alla wishlist':'Aggiungi',`
+  <p>${W.wish?'Cosa stai cercando? Puoi già prendere i dati da EveryMac o Wikipedia.':'Come vuoi aggiungerlo?'}</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
   <button class="res" data-a="paste"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non funziona: copia la pagina del modello da EveryMac e incollala qui.</small></button>
   <button class="res" data-a="man"><b>✍️ Computer o dispositivo a mano</b><small>Per oggetti senza scheda online.</small></button>
   <button class="res" data-a="tv"><b>📺 Televisore CRT</b><small>Scheda con pollici, tubo, PAL/NTSC, ingressi SCART/RF…</small></button>
   <button class="res" data-a="acc"><b>🔌 Accessorio, caricabatterie o cavo</b><small>Con compatibilità, connettore, uscita e il dispositivo a cui appartiene.</small></button>`,{mount(el){
     el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
-      if(a==='man')openForm({marca:'Apple'},{fromLookup:true});
-      if(a==='tv')openForm({tipologia:'Televisore CRT',tv_formato:'4:3',tv_standard:'PAL'},{fromLookup:true});
-      if(a==='acc')openForm({tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
+      if(a==='man')openForm({...W,marca:'Apple'},{fromLookup:true});
+      if(a==='tv')openForm({...W,tipologia:'Televisore CRT',tv_formato:'4:3',tv_standard:'PAL'},{fromLookup:true});
+      if(a==='acc')openForm({...W,tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
       if(a==='paste')openImport({replace:true,onResult:toForm});
       if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
     });
@@ -957,14 +988,15 @@ async function mergeFetched(base,r,overwrite){
 }
 
 /* ============ statistiche ============ */
-function openStats(){
+function openStats(){return statsPage(devices.filter(d=>!d.wish),devices.filter(d=>d.wish))}
+function statsPage(devices,wl){
   const bars=(title,k)=>{
     const c=new Map();devices.forEach(d=>{const v=val(d,k);c.set(v,(c.get(v)||0)+1)});
     const a=[...c].sort((x,y)=>y[1]-x[1]).slice(0,12);const mx=Math.max(...a.map(x=>x[1]),1);
     return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${v}</span></div>`).join('');
   };
   const sum=k=>devices.reduce((s,d)=>s+(parseFloat(d[k])||0),0);
-  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div></div>`+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
+  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
   openPage('Statistiche',h);
 }
 
@@ -973,13 +1005,21 @@ function dl(name,type,text){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
 }
 function csv(){
-  const cols=['nome','marca','tipologia','linea','anno',...ALLF.map(f=>f[0]).filter(k=>k!=='collegato'),'collegato_nome','fonte'];
+  const cols=['lista','nome','marca','tipologia','linea','anno',...ALLF.map(f=>f[0]).filter(k=>k!=='collegato'),'collegato_nome','fonte'];
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
-  return '﻿'+cols.join(';')+'\n'+devices.map(d=>cols.map(c=>q(c==='collegato_nome'?(devices.find(x=>x.id===d.collegato)||{}).nome:d[c])).join(';')).join('\n');
+  return '﻿'+cols.join(';')+'\n'+devices.map(d=>cols.map(c=>q(c==='lista'?(d.wish?'Wishlist':'Collezione'):c==='collegato_nome'?(devices.find(x=>x.id===d.collegato)||{}).nome:d[c])).join(';')).join('\n');
 }
 function openMenu(){
   const h=`<div class="sec-t">Collezione</div>
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
+  <div class="sec-t">Database su GitHub</div>
+  <div class="note" id="dbi"></div>
+  <button class="res" data-m="dbsync"><b>🔄 Aggiorna ora dal database GitHub</b><small>Aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente. Le modifiche fatte su questo telefono non vengono perse.</small></button>
+  <button class="res" data-m="dbexp"><b>⬆️ Esporta «collezione.json» da caricare su GitHub</b><small>Poi su GitHub: repository → Add file → Upload files → trascina il file (sostituisce il precedente) → Commit changes.</small></button>
+  <label class="f">Indirizzo del database</label>
+  <input class="in" id="dbu" value="${esc(dbUrl())}" placeholder="collezione.json">
+  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="dba" ${LS.get('rd_db_auto',true)?'checked':''} style="width:20px;height:20px"> Controlla all'avvio dell'app</label>
+  <button class="btn sec" data-m="dbs">Salva impostazioni database</button>
   <div class="sec-t">Backup (importante!)</div>
   <div class="note" id="bk"></div>
   <button class="res" data-m="exp"><b>💾 Esporta backup completo (JSON con foto)</b></button>
@@ -994,15 +1034,19 @@ function openMenu(){
   <div class="sec-t">Zona pericolosa</div>
   <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>`;
   openPage('Menu',h,{mount(el){
+    const dbInfo=()=>{const l=LS.get('rd_db_last',null);$('#dbi',el).innerHTML=`Metti il file <b>collezione.json</b> nel repository GitHub dell'app: viene caricato automaticamente su ogni telefono che usa l'app.`+(l?`<br>Ultimo controllo: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti nel database${l.nuovi||l.agg?` · ${l.nuovi} nuovi, ${l.agg} aggiornati`:''}`:'')};dbInfo();
     (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='stats')openStats();
-      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',JSON.stringify({app:'rddc',v:2,devices:devices.map(d=>Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_')))}));toast('Backup scaricato')}
+      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',exportJSON());toast('Backup scaricato')}
+      if(a==='dbexp'){dl('collezione.json','application/json',exportJSON());toast('Scaricato collezione.json: caricalo nel repository GitHub',4000)}
+      if(a==='dbs'){LS.set('rd_db_url',$('#dbu',el).value.trim()||'collezione.json');LS.set('rd_db_auto',$('#dba',el).checked);LS.set('rd_db_sig','');toast('Salvato')}
+      if(a==='dbsync'){m.disabled=true;await syncDB(true);m.disabled=false;dbInfo()}
       if(a==='csv'){dl('rddc.csv','text/csv',csv())}
       if(a==='imp')$('#fi',el).click();
       if(a==='pxs'){LS.set('rd_proxy',$('#px',el).value.trim());toast('Salvato')}
-      if(a==='clr'&&await ask('Cancellare TUTTI gli oggetti? Non si può annullare.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};render();toast('Collezione svuotata')}
+      if(a==='clr'&&await ask('Cancellare TUTTI gli oggetti (anche la wishlist)? Non si può annullare. Se usi il database GitHub, verrà ricaricato al prossimo avvio.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};LS.set('rd_deleted',[]);LS.set('rd_db_sig','');render();toast('Collezione svuotata')}
     });
     $('#fi',el).onchange=async e=>{
       try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
@@ -1012,9 +1056,42 @@ function openMenu(){
   }});
 }
 
+/* ============ database su GitHub ============ */
+const dbUrl=()=>(LS.get('rd_db_url','collezione.json')||'').trim()||'collezione.json';
+function exportJSON(){return JSON.stringify({app:'rddc',v:3,esportato:Date.now(),devices:devices.map(d=>Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_')))})}
+function markDeleted(id){const a=LS.get('rd_deleted',[]);if(!a.includes(id)){a.push(id);LS.set('rd_deleted',a.slice(-2000))}}
+function hashId(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'db-'+(h>>>0).toString(36)}
+async function syncDB(manual){
+  let j;
+  try{
+    const r=await fetch(new URL(dbUrl(),location.href),{cache:'no-cache'});
+    if(r.status===404){if(manual)toast('Nessun database su GitHub: carica prima «collezione.json» nel repository',4200);return}
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    j=await r.json();
+  }catch(e){if(manual)toast('Database non raggiungibile: '+e.message,4000);return}
+  const arr=Array.isArray(j)?j:j&&j.devices;
+  if(!Array.isArray(arr)){if(manual)toast('Il file del database non è valido');return}
+  const sig=[j.esportato||'',arr.length,arr.reduce((m,d)=>Math.max(m,(d&&(d.modificato||d.creato))||0),0)].join('|');
+  if(!manual&&sig===LS.get('rd_db_sig',''))return;
+  const del=new Set(LS.get('rd_deleted',[]));
+  let nuovi=0,agg=0;
+  for(const d of arr){
+    if(!d||!d.nome)continue;
+    d.id=d.id||hashId([d.nome,d.modello,d.seriale,d.wish?'w':''].join('|'));
+    if(del.has(d.id))continue;
+    const i=devices.findIndex(x=>x.id===d.id);
+    if(i<0){nuovi++}else if((d.modificato||0)>(devices[i].modificato||0)){agg++}else continue;
+    idx(d);await DB.put(d);i<0?devices.push(d):devices[i]=d;
+  }
+  LS.set('rd_db_sig',sig);LS.set('rd_db_last',{t:Date.now(),n:arr.length,nuovi,agg});
+  if(nuovi||agg){render();toast(`Database GitHub: ${nuovi} nuovi, ${agg} aggiornati`,3500)}
+  else if(manual)toast('Già tutto aggiornato ✔︎');
+}
+
 /* ============ avvio ============ */
 $('#q').value=S.q||'';
 $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 $('#list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openDetail(c.dataset.id)});
 $('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
@@ -1022,6 +1099,7 @@ $('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(
   await DB.open();
   devices=await DB.all();devices.forEach(idx);
   render();
+  if(LS.get('rd_db_auto',true)&&location.protocol!=='file:')syncDB(false);
   if('serviceWorker' in navigator&&location.protocol!=='file:'){
     const sw=navigator.serviceWorker,had=!!sw.controller;let done=false;
     /* nuova versione installata: ricarica subito se non c'è niente aperto, altrimenti avvisa */

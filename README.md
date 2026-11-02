@@ -14,6 +14,18 @@ App web installabile (PWA): funziona offline, dati salvati sul telefono (Indexed
 - **Accessori, caricabatterie, cavi**: compatibilità, connettore, uscita V/A/W, lunghezza, quantità e «Va con» (collega l'accessorio a un oggetto della collezione, che lo mostra nella sua scheda)
 - Per tutti: **colore** (riconosciuto in automatico dai dati EveryMac, es. Blueberry → Mirtillo) e **luogo** (scelta rapida *Damiano* / *Alex*)
 
+## Wishlist
+In alto, accanto a «RDDC», si passa da **Collezione** a **Wishlist**. Gli oggetti cercati hanno la stessa scheda (dati da EveryMac/Wikipedia, foto, colore) più priorità, budget massimo, link all'annuncio e note; la lista è raggruppata per priorità e mostra il budget totale.
+Dalla scheda: «Cerca su eBay / Subito», avviso se ce l'hai già, e **«✅ Preso!»** per spostarlo in collezione.
+
+## Database su GitHub (collezione condivisa tra telefoni)
+1. Dal telefono «principale»: Menu → **Esporta «collezione.json»**.
+2. Su GitHub, nel repository dell'app: **Add file → Upload files**, trascina `collezione.json` (sostituisce quello vecchio) → **Commit changes**.
+3. Ogni telefono che apre l'app lo carica in automatico (o Menu → «Aggiorna ora»): aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente.
+
+Le modifiche fatte sul telefono più recenti di quelle del file non vengono sovrascritte, e un oggetto eliminato sul telefono non ricompare. L'indirizzo del file si può cambiare in Menu (es. un `raw.githubusercontent.com/...` di un altro repository pubblico).
+⚠️ Il repository è pubblico (serve per GitHub Pages): il file è leggibile da chiunque conosca l'indirizzo, foto comprese.
+
 ## Incollare i dati da EveryMac (metodo consigliato)
 Quando la ricerca automatica non riesce a leggere EveryMac:
 1. **+** → «Incolla la scheda da EveryMac» (oppure dalla ricerca online / dalla scheda: «📋 Incolla da EveryMac»)
