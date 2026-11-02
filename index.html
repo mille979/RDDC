@@ -163,6 +163,56 @@ details.more[open]>summary::before{transform:rotate(90deg)}
 .ty::before{content:"";position:absolute;left:-28px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px var(--bg),0 0 14px var(--glow)}
 .ty small{font:500 12px system-ui,sans-serif;color:var(--mute);margin-left:8px;letter-spacing:0}
 /* catalogo stampabile */
+/* ===== museo ===== */
+.mubtn{border:0;background:none;font-size:20px;padding:2px 6px;margin-left:2px;filter:drop-shadow(0 0 6px var(--glow))}
+.page.museum{background:#140c06;color:#f6ead6}
+.mu-top{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:linear-gradient(#3a2716,#24170c);box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.mu-top .hb{flex:none}
+.mu-top b{font:700 14px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;color:#ffb547;text-shadow:0 0 10px rgba(255,181,71,.5)}
+.mu-tabs{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);padding:0 14px}
+.mu-tabs::-webkit-scrollbar{display:none}
+.mu-tabs button{flex:none;border:0;background:none;color:#d9c3a0;font-size:13px;padding:7px 10px;border-radius:8px}
+.mu-tabs .on{background:rgba(255,181,71,.18);color:#ffcf7a;font-weight:700}
+.mu-wall{min-height:calc(100% - 60px);padding:4px 0 40px;background:radial-gradient(140% 50% at 50% -10%,rgba(255,214,150,.16),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 7px),linear-gradient(#2b1d12,#1a1009)}
+.mu-shelf{position:relative;height:200px;margin-top:8px;display:flex;justify-content:space-around;align-items:flex-end;padding:0 6px 24px}
+.mu-shelf::before{content:"";position:absolute;inset:-10px 0 18px;background:radial-gradient(28% 70% at 17% 0,rgba(255,226,170,.28),transparent 70%),radial-gradient(28% 70% at 50% 0,rgba(255,226,170,.28),transparent 70%),radial-gradient(28% 70% at 83% 0,rgba(255,226,170,.28),transparent 70%);pointer-events:none}
+.mu-board{position:absolute;left:0;right:0;bottom:0;height:24px;background:linear-gradient(#a8743f,#7b4f27 35%,#4d2f15);box-shadow:0 10px 18px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,220,170,.55)}
+.mu-board::after{content:"";position:absolute;left:0;right:0;top:-10px;height:10px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.35))}
+.mu-obj{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:31%;height:100%;border:0;background:none;padding:0;color:inherit}
+.mu-obj img{max-width:100%;max-height:140px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.55)) brightness(1.04)}
+.mu-obj.frame img{max-height:104px;max-width:92%;border:5px solid #3a2410;outline:2px solid #c99a45;background:#fff;transform:perspective(300px) rotateX(4deg);box-shadow:0 8px 14px rgba(0,0,0,.6);filter:none}
+.mu-obj .emo{font-size:62px;line-height:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.55))}
+.mu-obj::after{content:"";width:70%;height:8px;margin-top:-4px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.55),transparent 70%)}
+.mu-plaque{position:absolute;bottom:-21px;font:650 9px/1 system-ui,sans-serif;letter-spacing:.05em;color:#3a2410;background:linear-gradient(#f3d48c,#c99a45);padding:3px 6px;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.mu-hint{text-align:center;margin:22px 14px 0;font-size:12px;color:#b89f7b}
+.mu-empty{padding:60px 24px;text-align:center;color:#c8b08c}
+/* piedistallo */
+.pl-wrap{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;height:100%;scrollbar-width:none}
+.pl-wrap::-webkit-scrollbar{display:none}
+.pl{flex:none;width:100vw;height:100%;position:relative;overflow:hidden;scroll-snap-align:center;background:radial-gradient(90% 55% at 50% 45%,#2a2622 0%,#0d0b09 70%)}
+.pl .cone{position:absolute;left:50%;top:-40px;width:min(90vw,420px);height:72%;transform:translateX(-50%);background:linear-gradient(rgba(255,236,200,.36),rgba(255,236,200,.06) 80%,transparent);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);filter:blur(10px)}
+.pl .lamp{position:absolute;left:50%;top:-6px;width:60px;height:22px;transform:translateX(-50%);background:linear-gradient(#444,#111);border-radius:0 0 30px 30px;box-shadow:0 8px 20px rgba(255,230,180,.6)}
+.pl .stage{position:absolute;left:0;right:0;top:calc(70px + env(safe-area-inset-top));height:44%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.pl .stage img{max-width:74vw;max-height:calc(100% - 20px);position:relative;z-index:2;margin-bottom:-6px;filter:drop-shadow(0 18px 18px rgba(0,0,0,.6)) brightness(1.06)}
+.pl .stage img.frame{border:7px solid #3a2410;outline:2px solid #c99a45;background:#fff;max-width:64vw;max-height:calc(100% - 40px);filter:drop-shadow(0 18px 18px rgba(0,0,0,.6));margin-bottom:6px}
+.pl .stage .emo{font-size:110px;line-height:1;position:relative;z-index:2;filter:drop-shadow(0 12px 14px rgba(0,0,0,.6))}
+.pl .base{flex:none;width:min(66vw,260px);height:96px;position:relative;background:linear-gradient(90deg,#9f998f,#f4f1ec 42%,#e2ded7 70%,#a49e94);border-radius:0 0 8px 8px;box-shadow:0 30px 40px rgba(0,0,0,.6)}
+.pl .base::before{content:"";position:absolute;left:0;right:0;top:-13px;height:26px;border-radius:50%;background:radial-gradient(ellipse at 50% 35%,#fff,#e6e2db 65%,#cbc6be)}
+.pl .base::after{content:"";position:absolute;left:14%;right:14%;top:-8px;height:12px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.5),transparent 70%)}
+.pl .label{position:absolute;left:16px;right:16px;bottom:calc(22px + env(safe-area-inset-bottom));max-height:36%;overflow:auto;background:#f7f3ea;color:#1c1712;border-radius:4px;padding:14px 16px;box-shadow:0 6px 24px rgba(0,0,0,.5);font-family:Georgia,"Times New Roman",serif}
+.pl .label small{font:700 10px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#9c5a00}
+.pl .label h3{margin:4px 0 4px;font-size:21px;line-height:1.2}
+.pl .label p{margin:0;font-size:13.5px;line-height:1.45;color:#3d342a}
+.pl .label .facts{font:600 12px system-ui,sans-serif;color:#6b5a43;margin-top:6px}
+.pl-bar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 10px 0;pointer-events:none}
+.pl-bar>*{pointer-events:auto}
+.pl-bar .cnt{flex:1;text-align:center;font:600 12px system-ui;color:#bba98e}
+.pl-prog{position:absolute;top:0;left:0;height:3px;background:#ffb547;z-index:6;width:0}
+.pl-prog.run{transition:width linear}
+/* editor scontorno */
+.cut-prev{border-radius:14px;min-height:220px;display:grid;place-items:center;padding:14px;background:repeating-conic-gradient(#d9d2c4 0 25%,#f4efe6 0 50%) 0 0/18px 18px}
+.cut-prev.dark{background:radial-gradient(#3a2716,#140c06)}
+.cut-prev img{max-width:100%;max-height:300px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.4))}
 #print{display:none}
 @media print{
   @page{size:A4;margin:12mm}
@@ -191,7 +241,7 @@ details.more[open]>summary::before{transform:rotate(90deg)}
 </head>
 <body>
 <div id="top">
-  <div class="brand">RDDC<div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
+  <div class="brand">RDDC<button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
   <div class="row">
     <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
     <button class="ibtn" id="bView" aria-label="Cambia vista">▤</button>
@@ -466,7 +516,7 @@ function openDetail(id,replace){
     if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-cut>🏛️ Scontorno per il museo</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   openPage(d.nome,h,{replace,bare:true,mount(el){
     const hi=$('.himg',el);
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
@@ -480,6 +530,7 @@ function openDetail(id,replace){
       const cd=t.closest('.card');if(cd)openDetail(cd.dataset.id);
       if(t.closest('[data-addint]'))openIntervento(d);
       const li=t.closest('[data-int]');if(li)openIntervento(d,(d.interventi||[]).find(x=>x.id===li.dataset.int));
+      if(t.closest('[data-cut]'))openCutout(d);
       if(t.closest('[data-addacc]'))openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome});
       if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
@@ -1142,6 +1193,128 @@ function statsPage(devices,wl){
   openPage('Statistiche',h);
 }
 
+/* ============ scontorno ============ */
+/* toglie lo sfondo uniforme partendo dai bordi (ottimo per foto prodotto su fondo chiaro) e ritaglia l'oggetto */
+async function autoCut(src,tol=14){
+  const bmp=await createImageBitmap(src instanceof Blob?src:await (await fetch(src)).blob());
+  const k=Math.min(3,760/Math.max(bmp.width,bmp.height)),w=Math.max(1,Math.round(bmp.width*k)),h=Math.max(1,Math.round(bmp.height*k));
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,w,h);
+  const D=x.getImageData(0,0,w,h),p=D.data;
+  // colore di sfondo: mediana dei pixel del bordo
+  const bord=[];for(let i=0;i<w;i+=2){bord.push(i,(h-1)*w+i)}for(let j=0;j<h;j+=2){bord.push(j*w,j*w+w-1)}
+  const med=ch=>{const a=bord.map(i=>p[i*4+ch]).sort((m,n)=>m-n);return a[a.length>>1]};const bg=[med(0),med(1),med(2)];
+  const dist=q=>Math.hypot(p[q]-bg[0],p[q+1]-bg[1],p[q+2]-bg[2]);
+  const mark=new Uint8Array(w*h),st=[];const push=i=>{if(!mark[i]&&p[i*4+3]>0&&dist(i*4)<tol){mark[i]=1;st.push(i)}else if(!mark[i]&&p[i*4+3]===0){mark[i]=1;st.push(i)}};
+  for(let i=0;i<w;i++){push(i);push((h-1)*w+i)}for(let j=0;j<h;j++){push(j*w);push(j*w+w-1)}
+  while(st.length){const i=st.pop(),cx=i%w;if(cx>0)push(i-1);if(cx<w-1)push(i+1);if(i>=w)push(i-w);if(i<w*(h-1))push(i+w)}
+  let rem=0,x0=w,y0=h,x1=-1,y1=-1;
+  for(let i=0;i<w*h;i++){const q=i*4;if(mark[i]){p[q+3]=0;rem++;continue}
+    const cx=i%w,cy=(i/w)|0;
+    if((cx>0&&mark[i-1])||(cx<w-1&&mark[i+1])||(i>=w&&mark[i-w])||(i<w*(h-1)&&mark[i+w]))p[q+3]=Math.min(p[q+3],Math.round(255*Math.max(.2,Math.min(1,(dist(q)-tol)/(tol*1.4)))));
+    if(cx<x0)x0=cx;if(cx>x1)x1=cx;if(cy<y0)y0=cy;if(cy>y1)y1=cy}
+  if(x1<0)return {url:'',ratio:1};
+  x.putImageData(D,0,0);
+  const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(c,x0,y0,o.width,o.height,0,0,o.width,o.height);
+  return {url:alphaURL(o),ratio:rem/(w*h)};
+}
+function alphaURL(cv){const u=cv.toDataURL('image/webp',.86);return u.startsWith('data:image/webp')?u:cv.toDataURL('image/png')}
+/* immagine già scontornata (PNG del telefono): ridimensiona e ritaglia i bordi trasparenti */
+async function importCutout(file){
+  const bmp=await createImageBitmap(file);const k=Math.min(1,900/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0,c.width,c.height);
+  const p=x.getImageData(0,0,c.width,c.height).data;let x0=c.width,y0=c.height,x1=-1,y1=-1,tr=0;
+  for(let i=0;i<c.width*c.height;i++){if(p[i*4+3]<16){tr++;continue}const cx=i%c.width,cy=(i/c.width)|0;if(cx<x0)x0=cx;if(cx>x1)x1=cx;if(cy<y0)y0=cy;if(cy>y1)y1=cy}
+  if(tr<c.width*c.height*.03||x1<0)return null;
+  const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(c,x0,y0,o.width,o.height,0,0,o.width,o.height);
+  return alphaURL(o);
+}
+const CUTS=new Map();
+/* immagine per il museo: scontorno salvato, altrimenti automatico se riesce, altrimenti foto in cornice */
+async function museumImg(d){
+  if(d.scontorno)return {url:d.scontorno,cut:true};
+  const ph=d.foto&&d.foto[0];if(!ph)return null;
+  const key=d.id+':'+ph.length;if(CUTS.has(key))return CUTS.get(key);
+  let r={url:ph,cut:false};
+  try{const a=await autoCut(ph);if(a.url&&a.ratio>.12&&a.ratio<.92)r={url:a.url,cut:true}}catch(e){}
+  CUTS.set(key,r);return r;
+}
+function openCutout(d){
+  const fotos=d.foto||[];let sel=0,cur=d.scontorno||'',tol=14;
+  const h=`<p style="margin-top:0">Lo scontorno è l'immagine dell'oggetto senza sfondo usata negli <b>scaffali</b> e sul <b>piedistallo</b> del Museo.</p>
+  <div class="cut-prev" id="cpv"><span id="cpm" style="color:#6d5f4c">${fotos.length?spin('Preparo lo scontorno…'):'Nessuna foto: importa un\'immagine già scontornata.'}</span><img id="cpi" alt="" hidden></div>
+  <div class="row" style="margin:8px 0 0;justify-content:space-between"><small style="color:var(--mute)" id="cps"></small><button class="btn sm sec" id="cbg">Sfondo scuro</button></div>
+  ${fotos.length>1?`<label class="f">Foto da usare</label><div class="chips">${fotos.map((f,i)=>`<button class="chip ${i?'':'on'}" data-ph="${i}" style="padding:2px"><img src="${f}" style="height:44px;border-radius:12px;display:block"></button>`).join('')}</div>`:''}
+  ${fotos.length?`<label class="f">Sensibilità dello scontorno automatico</label><input type="range" id="ctol" min="6" max="80" value="${tol}" style="width:100%"><button class="btn sm sec" id="cauto">✂️ Scontorna automaticamente</button>`:''}
+  <div class="row" style="flex-wrap:wrap;margin-top:16px"><button class="btn" id="cuse" style="flex:1">✅ Usa questo</button><button class="btn sec" id="cimp">📥 Importa PNG scontornato</button>${d.scontorno?'<button class="btn dng" id="cdel">Rimuovi</button>':''}</div>
+  <input type="file" id="cfile" accept="image/png,image/webp,image/*" hidden>
+  <p class="note">Lo scontorno automatico funziona bene con foto su <b>sfondo chiaro e uniforme</b> (come quelle di EveryMac). Per foto fatte in casa usa lo strumento del telefono: in <b>Google Foto</b> tieni premuto sull'oggetto → <i>Copia</i>/<i>Condividi</i> l'oggetto ritagliato, oppure su Samsung <b>Galleria → Estrai oggetto</b>; salvalo come immagine e poi «Importa PNG scontornato».</p>`;
+  openPage('Scontorno per il museo',h,{mount(el){
+    const img=$('#cpi',el),msg=$('#cpm',el);
+    const show=(u,txt)=>{cur=u;img.src=u;img.hidden=!u;msg.hidden=!!u;$('#cps',el).textContent=txt||''};
+    const run=async()=>{if(!fotos.length)return;msg.hidden=false;img.hidden=true;msg.innerHTML=spin('Scontorno…');
+      try{const a=await autoCut(fotos[sel],tol);show(a.url,a.ratio<.12?'⚠️ Sfondo poco uniforme: lo scontorno potrebbe non riuscire, prova a cambiare sensibilità o importa un PNG.':`Sfondo rimosso: ${Math.round(a.ratio*100)}% dell'immagine`)}catch(e){msg.textContent='Scontorno non riuscito'}};
+    if(d.scontorno)show(d.scontorno,'Scontorno salvato');else run();
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-ph]');if(b){sel=+b.dataset.ph;el.querySelectorAll('[data-ph]').forEach(x=>x.classList.toggle('on',x===b));run()}});
+    const r=$('#ctol',el);if(r){let t;r.oninput=()=>{tol=+r.value;clearTimeout(t);t=setTimeout(run,250)}}
+    const a=$('#cauto',el);if(a)a.onclick=run;
+    $('#cbg',el).onclick=()=>$('#cpv',el).classList.toggle('dark');
+    $('#cimp',el).onclick=()=>$('#cfile',el).click();
+    $('#cfile',el).onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+      try{const u=await importCutout(f);if(u)show(u,'Immagine scontornata importata');else{toast('L\'immagine non ha lo sfondo trasparente: provo lo scontorno automatico',4000);const a2=await autoCut(f,tol);show(a2.url,'Scontorno automatico dell\'immagine importata')}}catch(err){toast('Immagine non valida')}};
+    $('#cuse',el).onclick=async()=>{if(!cur){toast('Niente da salvare');return}d.scontorno=cur;CUTS.clear();await saveDev(d);toast('Scontorno salvato 🏛️');history.back()};
+    const del=$('#cdel',el);if(del)del.onclick=async()=>{delete d.scontorno;CUTS.clear();await saveDev(d);toast('Scontorno rimosso');history.back()};
+  }});
+}
+
+/* ============ museo ============ */
+function museumItems(){return devices.filter(d=>!d.wish&&kindOf(d.tipologia)!=='acc').sort((a,b)=>((a.anno||9999)-(b.anno||9999))||String(a.nome).localeCompare(b.nome,'it'))}
+const roomOf=d=>d.anno?Math.floor(d.anno/10)*10+'s':'Senza anno';
+function openMuseum(){
+  const all=museumItems();
+  const rooms=[...new Set(all.map(roomOf))];
+  let room=LS.get('rd_room','');if(!rooms.includes(room))room=rooms[0]||'';
+  const body=`<div class="mu-top"><button class="hb" data-back aria-label="Esci">←</button><b>MUSEO</b><div class="mu-tabs">${rooms.map(r=>`<button data-room="${esc(r)}">${esc(r)}</button>`).join('')}</div><button class="hb" id="muv" aria-label="Visita guidata" title="Visita guidata">▶︎</button></div><div class="mu-wall" id="muw"></div>`;
+  openPage('Museo',body,{bare:true,cls:'museum',mount(el){
+    const wall=$('#muw',el);let gen=0;
+    const draw=async()=>{
+      const my=++gen;LS.set('rd_room',room);
+      el.querySelectorAll('[data-room]').forEach(b=>{b.classList.toggle('on',b.dataset.room===room);if(b.dataset.room===room)b.scrollIntoView({inline:'center',block:'nearest'})});
+      const its=all.filter(d=>roomOf(d)===room);
+      if(!its.length){wall.innerHTML=`<div class="mu-empty"><div style="font-size:56px">🏛️</div><p><b>Il museo è vuoto</b></p><p>Aggiungi oggetti alla collezione (con una foto) e torneranno qui, sugli scaffali della loro decade.</p></div>`;return}
+      let h='';for(let i=0;i<its.length;i+=3)h+=`<div class="mu-shelf">${its.slice(i,i+3).map(d=>`<button class="mu-obj" data-mu="${d.id}"><span class="emo">${icon(d)}</span><span class="mu-plaque">${esc([d.anno,d.nome].filter(Boolean).join(' · '))}</span></button>`).join('')}<div class="mu-board"></div></div>`;
+      wall.innerHTML=h+`<p class="mu-hint">Tocca un oggetto per vederlo sul piedistallo · ▶︎ per la visita guidata</p>`;
+      for(const d of its){const r=await museumImg(d);if(my!==gen)return;const b=wall.querySelector(`[data-mu="${d.id}"]`);if(!r||!b)continue;b.classList.toggle('frame',!r.cut);b.querySelector('.emo').outerHTML=`<img src="${r.url}" alt="">`}
+    };
+    draw();
+    el.addEventListener('click',e=>{const r=e.target.closest('[data-room]');if(r){room=r.dataset.room;draw();return}
+      const o=e.target.closest('[data-mu]');if(o){const its=all.filter(d=>roomOf(d)===room);openPlinth(its,its.findIndex(d=>d.id===o.dataset.mu),false)}
+      if(e.target.closest('#muv'))openPlinth(all,Math.max(0,all.findIndex(d=>roomOf(d)===room)),true)});
+  }});
+}
+function openPlinth(list,start,auto){
+  if(!list.length)return;
+  const slide=d=>{const f=keyTiles(d).slice(0,3).map(([a,b])=>b).join(' · ');const desc=(d.descrizione||'').split(/\n\s*\n/)[0];
+    return `<section class="pl" data-pl="${d.id}"><div class="cone"></div><div class="lamp"></div><div class="stage"><span class="emo">${icon(d)}</span><div class="base"></div></div>
+    <div class="label"><small>${esc([d.marca,d.anno,d.luogo?'Collezione '+d.luogo:''].filter(Boolean).join(' · '))}</small><h3>${esc(d.nome)}</h3>${desc?`<p>${esc(desc.length>320?desc.slice(0,320)+'…':desc)}</p>`:''}${f?`<div class="facts">${esc(f)}</div>`:''}</div></section>`};
+  const body=`<div class="pl-prog" id="plp"></div><div class="pl-bar"><button class="hb" data-back aria-label="Indietro">←</button><span class="cnt" id="plc"></span><button class="hb" id="plplay" aria-label="Visita guidata">${auto?'⏸':'▶︎'}</button><button class="hb" id="plinfo" aria-label="Scheda">ⓘ</button></div><div class="pl-wrap" id="plw">${list.map(slide).join('')}</div>`;
+  openPage('Piedistallo',body,{bare:true,cls:'museum',mount(el){
+    const w=$('#plw',el),bar=$('#plp',el),SEC=8000;let i=start,timer=null,lock=null,done=new Set();
+    const fill=async k=>{for(const j of [k,k+1,k-1,k+2]){const d=list[j];if(!d||done.has(d.id))continue;done.add(d.id);const r=await museumImg(d);if(!r)continue;const s=w.querySelector(`[data-pl="${d.id}"] .emo`);if(s)s.outerHTML=`<img src="${r.url}" class="${r.cut?'':'frame'}" alt="">`}};
+    const upd=()=>{$('#plc',el).textContent=`${i+1} / ${list.length}`;fill(i)};
+    const go=k=>{i=(k+list.length)%list.length;w.scrollTo({left:i*w.clientWidth,behavior:'smooth'});upd()};
+    const prog=()=>{bar.classList.remove('run');bar.style.width='0';void bar.offsetWidth;bar.style.transitionDuration=SEC+'ms';bar.classList.add('run');bar.style.width='100%'};
+    const play=async on=>{clearInterval(timer);timer=null;$('#plplay',el).textContent=on?'⏸':'▶︎';bar.style.width='0';bar.classList.remove('run');
+      if(on){prog();timer=setInterval(()=>{go(i+1);prog()},SEC);try{lock=await navigator.wakeLock.request('screen')}catch(e){}}else if(lock){lock.release().catch(()=>{});lock=null}};
+    requestAnimationFrame(()=>{w.scrollLeft=i*w.clientWidth;upd()});
+    let st;w.addEventListener('scroll',()=>{clearTimeout(st);st=setTimeout(()=>{const k=Math.round(w.scrollLeft/w.clientWidth);if(k!==i){i=k;upd()}},80)});
+    w.addEventListener('pointerdown',()=>{if(timer)play(false)});
+    $('#plplay',el).onclick=()=>play(!timer);
+    $('#plinfo',el).onclick=()=>{play(false);openDetail(list[i].id)};
+    if(auto)play(true);
+    const stop=()=>play(false);addEventListener('popstate',function f(){if(!document.body.contains(el)){stop();removeEventListener('popstate',f)}});
+  }});
+}
+
 /* ============ catalogo PDF ============ */
 function openCatalog(){
   const vis=pool().filter(d=>pass(d)),col=devices.filter(d=>!d.wish),wl=devices.filter(d=>d.wish);
@@ -1296,6 +1469,7 @@ async function localizePhotos(d,fetchPhoto){
   const conv=async u=>{if(typeof u!=='string'||/^(data:|blob:)/.test(u))return u;try{const b=await fetchPhoto(u);return await blobToDataURL(b.type&&b.type.startsWith('image/')?b:new Blob([b],{type:mimeOf(u)}))}catch(e){return u}};
   if(Array.isArray(d.foto))d.foto=await Promise.all(d.foto.map(conv));
   if(d.thumb)d.thumb=await conv(d.thumb);
+  if(d.scontorno)d.scontorno=await conv(d.scontorno);
 }
 /* unisce il contenuto remoto: aggiunge i nuovi, aggiorna i più recenti, applica le eliminazioni */
 async function mergeRemote(arr,tomb,fetchPhoto){
@@ -1347,7 +1521,7 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map();
         const conv=async u=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/png/.test(meta)?'png':/webp/.test(meta)?'webp':'jpg';const path=`foto/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(conv));if(o.thumb)o.thumb=await conv(o.thumb);out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(conv));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
@@ -1400,6 +1574,7 @@ $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 $('#list').addEventListener('click',e=>{if(e.target.closest('#dueB'))return openDue();const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id)});
+$('#bMuseo').onclick=openMuseum;
 $('#bView').onclick=()=>{const k=Object.keys(LAYOUTS);S.layout=k[(k.indexOf(S.layout||'list')+1)%k.length];render();toast('Vista: '+LAYOUTS[S.layout][1],1400)};
 $('#sum').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
 (async()=>{

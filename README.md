@@ -27,6 +27,11 @@ Per creare il token: <https://github.com/settings/personal-access-tokens/new> �
 Le modifiche più recenti fatte sul telefono non vengono mai sovrascritte da dati più vecchi.
 ⚠️ Il repository è pubblico (serve per GitHub Pages): `collezione.json` e le foto sono leggibili da chiunque conosca l'indirizzo.
 
+## Museo 🏛️
+Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per decennio con gli oggetti in vetrina su scaffali di legno, illuminati da faretti, con targhetta. Tocca un oggetto per vederlo sul **piedistallo** (scorri per passare al successivo, ⓘ apre la scheda); ▶︎ avvia la **visita guidata** automatica (lo schermo resta acceso: ideale per un tablet accanto alla collezione). Gli accessori non vanno in vetrina.
+
+Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
+
 ## Altro
 - **Viste**: il pulsante accanto alla ricerca alterna Lista, Griglia (foto grandi) e Linea del tempo.
 - **Registro interventi** nella scheda di ogni oggetto (pulizia, condensatori, batteria PRAM…), con costi e promemoria; quelli in scadenza compaiono in cima alla lista.
