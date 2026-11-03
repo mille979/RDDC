@@ -28,11 +28,15 @@ Le modifiche più recenti fatte sul telefono non vengono mai sovrascritte da dat
 ⚠️ Il repository è pubblico (serve per GitHub Pages): `collezione.json` e le foto sono leggibili da chiunque conosca l'indirizzo.
 
 ## Museo 🏛️
-Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per decennio con gli oggetti in vetrina su scaffali di legno, illuminati da faretti, con targhetta. Tocca un oggetto per vederlo sul **piedistallo** (scorri per passare al successivo, ⓘ apre la scheda); ▶︎ avvia la **visita guidata** automatica (lo schermo resta acceso: ideale per un tablet accanto alla collezione). Gli accessori non vanno in vetrina.
+Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per decennio con gli oggetti in vetrina su scaffali di legno, illuminati da faretti, con targhetta. Si entra con un'apertura a iride dal pulsante e i faretti si accendono scaffale per scaffale. Tocca un oggetto e «vola» sul **piedistallo**, illuminato dal basso (scorri per passare al successivo, ⓘ apre la scheda); ▶︎ avvia la **visita guidata** automatica (lo schermo resta acceso: ideale per un tablet accanto alla collezione). Gli oggetti scontornati hanno un leggero effetto 3D e ruotano un po' inclinando il telefono. Gli accessori non vanno in vetrina.
 
 Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
 
 ## Altro
+- **Tema**: 🌙/☀️ in alto per passare al volo da chiaro a scuro; in Menu → Impostazioni anche «Automatico» (segue il telefono).
+- **Anteprima rapida**: tieni premuto un oggetto nella lista per vedere foto, dati principali e azioni (apri, modifica, piedistallo, elimina).
+- **Icona ☁︎ di sincronizzazione** (con il token GitHub): frecce che girano mentre sincronizza, spunta quando ha finito, freccia per le modifiche da inviare, «!» in caso di errore; toccala per sincronizzare subito.
+- **Doppioni**: per periferiche identiche di due computer, «📋 Copia accessori da…» nella scheda del computer e «✂️ Dividi» sugli accessori con quantità maggiore di 1.
 - **Viste**: il pulsante accanto alla ricerca alterna Lista, Griglia (foto grandi) e Linea del tempo.
 - **Registro interventi** nella scheda di ogni oggetto (pulizia, condensatori, batteria PRAM…), con costi e promemoria; quelli in scadenza compaiono in cima alla lista.
 - **Catalogo PDF**: Menu → «Catalogo PDF» → nella stampa scegli «Salva come PDF».
