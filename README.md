@@ -33,6 +33,11 @@ Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per 
 Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
 
 ## Altro
+- **Da completare**: ogni scheda segnala i dati essenziali mancanti (foto, anno, marca, luogo, stato e, a seconda del tipo, modello/CPU/RAM, pollici o «Va con»). Se un dato non esiste o non si saprà mai, toccane «non si sa»: non conta più come mancante e compare «sconosciuto». Filtro «Completezza» e contatore in alto.
+- **Etichette libere** (#Preferito, #Raro, #Da restaurare… o nuove), filtrabili.
+- **Allegati** nella scheda: manuali PDF, ricevute, foto dell'interno, video (max 15 MB ciascuno); con il token GitHub vanno in `allegati/`.
+- **Prestiti ed esposizioni**: a chi o dove, dal, rientro previsto, note; avviso in cima alla lista (rosso se in ritardo), «È rientrato» e storico.
+- **Valore nel tempo**: ogni valutazione (data, valore, come è stata stimata) resta nello storico; la scheda mostra il grafico, lo scarto dal prezzo pagato e un link ai venduti su eBay. Cambiare il «valore stimato» nel modulo aggiunge da solo una valutazione. In Statistiche: valore della collezione contro speso nel tempo e oggetti più rivalutati.
 - **Tema**: 🌙/☀️ in alto per passare al volo da chiaro a scuro; in Menu → Impostazioni anche «Automatico» (segue il telefono).
 - **Anteprima rapida**: tieni premuto un oggetto nella lista per vedere foto, dati principali e azioni (apri, modifica, piedistallo, elimina).
 - **Icona ☁︎ di sincronizzazione** (con il token GitHub): frecce che girano mentre sincronizza, spunta quando ha finito, freccia per le modifiche da inviare, «!» in caso di errore; toccala per sincronizzare subito.
