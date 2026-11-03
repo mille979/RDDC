@@ -47,6 +47,7 @@ button{cursor:pointer}
 .meta span{display:inline-flex;align-items:center;gap:4px}
 .yr{font-weight:700;color:var(--acc-ink);background:var(--chip);border-radius:10px;padding:3px 8px;font-size:13px;font-variant-numeric:tabular-nums;align-self:flex-start}
 .qty{font-weight:700;color:var(--acc-ink)}
+.meta .lk{color:var(--acc-ink);font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
 .sw{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c,transparent);border:1px solid rgba(127,127,127,.55);flex:none;vertical-align:-1px}
 .empty{text-align:center;color:var(--mute);padding:60px 20px}
 .fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--acc);color:var(--on-acc);font-size:32px;box-shadow:0 4px 18px var(--glow),0 2px 6px rgba(0,0,0,.25);z-index:6}
@@ -345,6 +346,7 @@ const curSort=()=>isWishView()?(S.sortW||'prio'):S.sort;
 const curGroup=()=>isWishView()?(S.groupW??'w_priorita'):S.group;
 const pool=()=>devices.filter(d=>!!d.wish===isWishView());
 const PRIO={Alta:0,Media:1,Bassa:2};
+const linkedTo=d=>d&&d.collegato?devices.find(x=>x.id===d.collegato):null;
 const LAYOUTS={list:['▤','Lista'],grid:['▦','Griglia'],time:['⏳','Linea del tempo']};
 const INT_TIPI=['Pulizia','Revisione / test','Sostituzione condensatori','Batteria PRAM / BIOS','Batteria','Riparazione','Upgrade','Sostituzione disco / SSD','Pasta termica','Retrobright','Taratura / convergenza (CRT)','Altro'];
 async function saveDev(o){o.modificato=Date.now();idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;dirty()}
@@ -407,7 +409,7 @@ function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
   const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:d.cpu].filter(Boolean).join(' · ');
-  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
   return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
 function gcard(d){
@@ -485,7 +487,7 @@ function openDetail(id,replace){
   const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
   const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
-  const hchips=[d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
+  const hchips=[d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,linkedTo(d)&&`<span class="hchip">↳ ${esc(linkedTo(d).nome)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
     <button class="hb l" data-back aria-label="Indietro">←</button>
@@ -516,7 +518,7 @@ function openDetail(id,replace){
     if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn sec" data-addacc>＋ Accessorio</button><button class="btn sec" data-cut>🏛️ Scontorno per il museo</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='acc'?(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}<button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   openPage(d.nome,h,{replace,bare:true,mount(el){
     const hi=$('.himg',el);
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
@@ -531,12 +533,15 @@ function openDetail(id,replace){
       if(t.closest('[data-addint]'))openIntervento(d);
       const li=t.closest('[data-int]');if(li)openIntervento(d,(d.interventi||[]).find(x=>x.id===li.dataset.int));
       if(t.closest('[data-cut]'))openCutout(d);
+      if(t.closest('[data-split]'))return splitItem(d);
+      if(t.closest('[data-copyacc]'))return openCopyAcc(d);
       if(t.closest('[data-addacc]'))openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome});
       if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
         ['w_priorita','w_budget','w_link','w_note'].forEach(k=>delete o[k]);
         idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
+      if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
       if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
       if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();dirty();
         toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
@@ -582,6 +587,41 @@ function openDue(){
     });
   }});
 }
+/* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
+const mainDevices=()=>devices.filter(x=>!x.wish&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
+const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
+function cloneOne(a,extra){const c=JSON.parse(JSON.stringify(a));Object.keys(c).forEach(k=>k[0]==='_'&&delete c[k]);return Object.assign(c,{id:uid(),creato:Date.now(),seriale:'',interventi:[],quantita:1},extra)}
+async function splitItem(d){
+  const n=parseInt(d.quantita,10)||1;if(n<2)return;
+  if(!await ask(`Dividere «${d.nome}» (×${n}) in ${n} oggetti separati? Poi colleghi ognuno al suo dispositivo, con numero di serie e condizioni propri.`,'Dividi'))return;
+  d.quantita=1;await saveDev(d);const list=[d];
+  for(let i=1;i<n;i++){const c=cloneOne(d);await saveDev(c);list.push(c)}
+  render();goBase(()=>openAssign(list));
+}
+function openAssign(list){
+  const h=`<p style="margin-top:0">Ora ci sono ${list.length} «${esc(list[0].nome)}» separati. Indica a cosa appartiene ciascuno:</p>`+list.map((d,i)=>`<div class="res"><b>${esc(d.nome)} · n. ${i+1}</b><label class="f">Va con</label><select class="in" data-as="${d.id}">${devOpts(d.collegato)}</select><label class="f">Numero di serie (facoltativo, per riconoscerli)</label><input class="in" data-ser="${d.id}" value="${esc(d.seriale||'')}" autocomplete="off"></div>`).join('')+`<button class="btn" id="asv" style="width:100%;margin-top:12px">Salva</button><p class="note">Il luogo dell'accessorio diventa quello del computer a cui lo colleghi. Se l'altro computer non è ancora in collezione, aggiungilo e poi collega l'accessorio da «Modifica».</p>`;
+  openPage('A cosa appartengono?',h,{mount(el){$('#asv',el).onclick=async()=>{
+    for(const d of list){const v=$(`[data-as="${d.id}"]`,el).value,sr=$(`[data-ser="${d.id}"]`,el).value.trim(),o=devices.find(x=>x.id===v);
+      if((d.collegato||'')!==v||(d.seriale||'')!==sr){d.collegato=v;d.seriale=sr;if(o&&o.luogo)d.luogo=o.luogo;await saveDev(d)}}
+    render();toast('Collegamenti salvati');const f=list.find(x=>x.collegato);goBase(()=>openDetail(f?f.collegato:list[0].id))}}});
+}
+function openCopyAcc(d){
+  const srcs=mainDevices().filter(x=>x.id!==d.id&&devices.some(a=>a.collegato===x.id&&!a.wish));
+  if(!srcs.length){toast('Nessun altro dispositivo ha accessori collegati');return}
+  let src=(srcs.find(x=>x.linea&&x.linea===d.linea)||srcs[0]).id;
+  openPage('Copia accessori',`<p style="margin-top:0">Per due computer con periferiche identiche: ogni periferica resta un oggetto a sé, collegato al suo computer.</p><label class="f">Prendi gli accessori di</label><select class="in" id="cas">${srcs.map(x=>`<option value="${x.id}" ${x.id===src?'selected':''}>${esc(x.nome)}</option>`).join('')}</select><div id="cal" style="margin-top:10px"></div><p class="note"><b>Prendine 1</b>: un accessorio segnato ×2 sull'altro computer, ma uno è di questo. <b>Copia</b>: questo computer ha il suo, identico. <b>Sposta</b>: era registrato sull'altro per errore.</p><button class="btn" id="cago" style="width:100%;margin-top:12px">Collega a «${esc(d.nome)}»</button>`,{mount(el){
+    const draw=()=>{const accs=devices.filter(a=>a.collegato===src&&!a.wish);
+      $('#cal',el).innerHTML=accs.map(a=>{const q=+a.quantita||1;return `<div class="res"><b>${esc(a.nome)}${q>1?` <span class="qty">×${q}</span>`:''}</b><small>${esc([a.tipologia,a.modello].filter(Boolean).join(' · '))}</small><select class="in" data-ca="${a.id}" style="margin-top:6px">
+        ${q>1?`<option value="take" selected>Prendine 1 dei ${q} (era suo)</option>`:''}<option value="copy" ${q>1?'':'selected'}>Copia (ne ha uno uguale)</option><option value="move">Sposta (era suo)</option><option value="skip">Non toccare</option></select></div>`}).join('')};
+    draw();$('#cas',el).onchange=e=>{src=e.target.value;draw()};
+    $('#cago',el).onclick=async()=>{let n=0;
+      for(const s of el.querySelectorAll('[data-ca]')){const a=devices.find(x=>x.id===s.dataset.ca);if(!a||s.value==='skip')continue;
+        if(s.value==='move'){a.collegato=d.id;if(d.luogo)a.luogo=d.luogo;await saveDev(a)}
+        else{if(s.value==='take'){a.quantita=Math.max(1,(+a.quantita||1)-1);await saveDev(a)}await saveDev(cloneOne(a,{collegato:d.id,luogo:d.luogo||a.luogo}))}
+        n++}
+      render();toast(n?`${n} accessori collegati a «${d.nome}»`:'Nessun accessorio scelto');if(n)goBase(()=>openDetail(d.id))};
+  }});
+}
 function openViewer(foto,i){
   openPage('',`<div class="vw">${foto.map(f=>`<img src="${f}" alt="">`).join('')}</div><button class="hb l" data-back aria-label="Chiudi">✕</button>`,{bare:true,cls:'viewer',mount(el){const v=$('.vw',el);requestAnimationFrame(()=>v.scrollLeft=i*v.clientWidth)}});
 }
@@ -604,7 +644,7 @@ function fieldHTML(k,l,t,v,d){
   if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
   if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
   if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
-    return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</option>`).join('')}</select>`}
+    return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('')}</select>`}
   if(t==='color'){const hx=d.colore_hex||nameHex(v);
     return `<label class="f">${l}</label><div class="row"><span class="swbig ${hx?'':'none'}" id="swp" style="--c:${esc(hx)}"></span><input class="in" name="colore" list="dl_colori" value="${esc(v)}" autocomplete="off" placeholder="Es. Mirtillo, Argento, Nero"><label class="ibtn" title="Colore personalizzato">🎨<input type="color" id="cpick" value="${esc(/^#[0-9a-f]{6}$/i.test(hx)?hx:'#f2a531')}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%"></label></div>
     <input type="hidden" name="colore_hex" value="${esc(d.colore_hex||'')}"><div class="swrow">${COLORI.map((c,i)=>`<button type="button" class="swb ${c[0]===v?'on':''}" data-col="${i}" title="${esc(c[0])}" style="--c:${c[1]}"></button>`).join('')}</div>`}
@@ -655,8 +695,8 @@ function openForm(src,{fromLookup=false}={}){
         if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
         const o=Object.assign({},d,cur,{foto,thumb});
         o.id=o.id||uid();o.creato=o.creato||Date.now();o.modificato=Date.now();
-        const dup=devices.find(x=>x.id!==o.id&&o.modello&&x.modello===o.modello&&x.emc===o.emc&&x.nome===o.nome);
-        if(dup&&isNew&&!await ask('Esiste già un oggetto identico ("'+dup.nome+'"). Salvare comunque?','Salva'))return;
+        const dup=devices.find(x=>x.id!==o.id&&!!x.wish===!!o.wish&&x.nome===o.nome&&(x.modello||'')===(o.modello||'')&&(x.emc||'')===(o.emc||'')&&(x.collegato||'')===(o.collegato||'')&&(x.seriale||'')===(o.seriale||''));
+        if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
         idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
         dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');
