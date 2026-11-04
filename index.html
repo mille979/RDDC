@@ -83,6 +83,22 @@ textarea.in{min-height:70px;resize:vertical}
 .photos img{height:200px;max-width:86vw;border-radius:12px;display:block;object-fit:contain;background:var(--chip)}
 .photos.sm img{height:84px}
 .ph button{position:absolute;top:4px;right:4px;border:0;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;width:26px;height:26px}
+/* foto nel modulo: griglia riordinabile, copertina, trascina e rilascia */
+#ph{border:2px dashed transparent;border-radius:16px;padding:4px;margin:-4px;transition:border-color .2s,background .2s}
+#ph.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.pht{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow);touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab;transition:transform .2s,opacity .2s}
+.pht img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.pht.cov{outline:3px solid var(--acc);outline-offset:-3px}
+.pht .cvb{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(20,12,2,.75));color:#ffd08a;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:12px 6px 4px;text-align:center}
+.pht button{position:absolute;top:4px;border:0;background:rgba(20,12,2,.62);color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;display:grid;place-items:center}
+.pht .rm{right:4px}.pht .st{left:4px;color:#ffd08a}
+.pht.dragging{opacity:.25}
+.pht.ghost{position:fixed;z-index:80;pointer-events:none;transform:scale(1.08) rotate(-2deg);box-shadow:0 14px 34px rgba(0,0,0,.4);opacity:.95}
+.phadd{aspect-ratio:1;border:2px dashed var(--line);border-radius:12px;background:none;color:var(--mute);font-size:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.phadd small{font-size:11px}
+.phhint{font-size:12px;color:var(--mute);margin:6px 2px 0}
+.vcov{white-space:nowrap;position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3}
 .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .cgrid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:var(--chip)}
 .res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
@@ -693,7 +709,7 @@ function openDetail(id,replace){
     el.addEventListener('click',async e=>{
       const t=e.target;
       if(t.closest('[data-edit]'))openForm(d);
-      const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view);
+      const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
       if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
       if(t.closest('[data-more]')){const ds=$('.desc>div',el);ds.classList.toggle('cl');t.textContent=ds.classList.contains('cl')?'Leggi tutto ▾':'Riduci ▴'}
       const go=t.closest('[data-go]');if(go){e.preventDefault();openDetail(go.dataset.go)}
@@ -922,8 +938,12 @@ async function openAtt(d,id,download){
   if(!download&&/^video/.test(a.mime))return openPage(a.nome,`<video src="${url}" controls playsinline style="width:100%;max-height:72vh;border-radius:12px;background:#000"></video>`);
   const l=document.createElement('a');l.href=url;if(download)l.download=a.nome;else{l.target='_blank';l.rel='noopener'}document.body.append(l);l.click();l.remove();
 }
-function openViewer(foto,i){
-  openPage('',`<div class="vw">${foto.map(f=>`<img src="${f}" alt="">`).join('')}</div><button class="hb l" data-back aria-label="Chiudi">✕</button>`,{bare:true,cls:'viewer',mount(el){const v=$('.vw',el);requestAnimationFrame(()=>v.scrollLeft=i*v.clientWidth)}});
+function openViewer(foto,i,{onCover}={}){
+  openPage('',`<div class="vw">${foto.map(f=>`<img src="${f}" alt="">`).join('')}</div><button class="hb l" data-back aria-label="Chiudi">✕</button>${onCover&&foto.length>1?'<button class="btn vcov" id="vcov"></button>':''}`,{bare:true,cls:'viewer',mount(el){const v=$('.vw',el);
+    const b=$('#vcov',el),cur=()=>Math.round(v.scrollLeft/(v.clientWidth||1));
+    const upd=()=>{if(!b)return;const k=cur();b.textContent=k?'★ Usa come copertina':'★ È la copertina';b.disabled=!k;b.classList.toggle('sec',!k)};
+    requestAnimationFrame(()=>{v.scrollLeft=i*v.clientWidth;upd()});v.addEventListener('scroll',()=>{clearTimeout(upd.t);upd.t=setTimeout(upd,60)});
+    if(b)b.onclick=()=>{const k=cur();if(k)onCover(k)}}});
 }
 
 /* ============ modulo ============ */
@@ -971,7 +991,38 @@ function openForm(src,{fromLookup=false,focus=''}={}){
   const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button>`;
   openPage(isNew?(d.wish?'Nuovo desiderio':'Nuovo oggetto'):'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
     const fm=$('#f',el);
-    const drawPh=()=>{$('#ph',el).innerHTML=foto.length?`<div class="photos sm">${foto.map((f,i)=>`<div class="ph"><img src="${f}" alt=""><button type="button" data-rmf="${i}">✕</button></div>`).join('')}</div><p style="font-size:12px;color:var(--mute);margin:2px 0">La prima foto è lo sfondo della scheda.</p>`:'<div class="note">Nessuna foto</div>'};
+    const drawPh=()=>{$('#ph',el).innerHTML=`<div class="phgrid">${foto.map((f,i)=>`<div class="pht ${i?'':'cov'}" data-pi="${i}"><img src="${f}" alt="" draggable="false">${i?`<button type="button" class="st" data-cov="${i}" aria-label="Usa come copertina" title="Usa come copertina">★</button>`:'<span class="cvb">Copertina</span>'}<button type="button" class="rm" data-rmf="${i}" aria-label="Rimuovi">✕</button></div>`).join('')}<button type="button" class="phadd" data-gal>＋<small>Aggiungi</small></button></div><p class="phhint">${foto.length>1?'Trascina per riordinare (col dito: tieni premuto e sposta) · ★ = copertina · ':''}Puoi anche trascinare qui le foto o incollarle.</p>`};
+    const setCover=async()=>{thumb=foto.length?await shrink(foto[0],180,.75):''};
+    /* riordino: col mouse si trascina subito, col dito dopo una breve pressione (così la pagina scorre normalmente) */
+    let drag=null;
+    const startDrag=(tile,e)=>{const r=tile.getBoundingClientRect(),g=tile.cloneNode(true);g.classList.add('ghost');Object.assign(g.style,{width:r.width+'px',height:r.height+'px',left:r.left+'px',top:r.top+'px'});document.body.append(g);
+      tile.classList.add('dragging');drag={tile,g,dx:e.clientX-r.left,dy:e.clientY-r.top,on:true};try{navigator.vibrate&&navigator.vibrate(10)}catch(er){}};
+    const phEl=$('#ph',el);
+    phEl.addEventListener('pointerdown',e=>{const tile=e.target.closest('.pht');if(!tile||e.target.closest('button')||foto.length<2)return;
+      const st={tile,x:e.clientX,y:e.clientY,id:e.pointerId};drag={pending:st};
+      if(e.pointerType!=='mouse')st.t=setTimeout(()=>{if(drag&&drag.pending===st)startDrag(tile,e)},280)});
+    const onMove=e=>{if(!drag)return;
+      if(drag.pending){const st=drag.pending;if(Math.hypot(e.clientX-st.x,e.clientY-st.y)>8){if(e.pointerType==='mouse')startDrag(st.tile,e);else{clearTimeout(st.t);drag=null}}return}
+      e.preventDefault();drag.g.style.left=(e.clientX-drag.dx)+'px';drag.g.style.top=(e.clientY-drag.dy)+'px';
+      const over=document.elementFromPoint(e.clientX,e.clientY),tg=over&&over.closest('.pht');
+      if(tg&&tg!==drag.tile&&tg.parentNode===drag.tile.parentNode){const r=tg.getBoundingClientRect(),after=e.clientX>r.left+r.width/2;tg.parentNode.insertBefore(drag.tile,after?tg.nextSibling:tg)}};
+    const onUp=async()=>{if(!drag)return;const d0=drag;drag=null;if(d0.pending){clearTimeout(d0.pending.t);return}
+      d0.g.remove();d0.tile.classList.remove('dragging');
+      const order=[...phEl.querySelectorAll('.pht')].map(x=>+x.dataset.pi);
+      if(order.some((v,i)=>v!==i)){const was0=foto[0];foto=order.map(i=>foto[i]);if(foto[0]!==was0)await setCover()}drawPh()};
+    addEventListener('pointermove',onMove,{passive:false});addEventListener('pointerup',onUp);addEventListener('pointercancel',onUp);
+    phEl.addEventListener('touchmove',e=>{if(drag&&drag.on)e.preventDefault()},{passive:false});
+    el._close=()=>{removeEventListener('pointermove',onMove);removeEventListener('pointerup',onUp);removeEventListener('pointercancel',onUp)};
+    /* trascina e rilascia: file dal computer o da un'altra app, oppure un'immagine da un'altra pagina */
+    phEl.addEventListener('dragover',e=>{if(drag)return;e.preventDefault();phEl.classList.add('over')});
+    phEl.addEventListener('dragleave',e=>{if(!phEl.contains(e.relatedTarget))phEl.classList.remove('over')});
+    phEl.addEventListener('drop',async e=>{e.preventDefault();phEl.classList.remove('over');const dt=e.dataTransfer;
+      const fs=[...(dt.files||[])].filter(f=>/^image\//.test(f.type));
+      if(fs.length)return addFiles(fs);
+      const url=(dt.getData('text/uri-list')||dt.getData('text/plain')||'').split('\n').find(x=>/^https?:/.test(x.trim()));
+      if(url){toast('Scarico la foto…');try{await addFiles([await fetchBlob(url.trim())])}catch(er){toast('Impossibile scaricare la foto: salvala e trascinala come file')}}
+      else toast('Trascina un\'immagine')});
+    el.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>/^image\//.test(f.type));if(fs.length){e.preventDefault();addFiles(fs)}});
     drawPh();
     const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' ');x.hidden=w.includes('wish')?!d.wish:w.includes('own')?!!d.wish:!w.includes(k)})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);
@@ -993,7 +1044,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     $('#cpick',el).addEventListener('input',e=>{fm.colore_hex.value=e.target.value;if(!fm.colore.value.trim())fm.colore.value='Personalizzato';updSw()});
     fm.luogo.addEventListener('input',()=>el.querySelectorAll('[data-luogo]').forEach(b=>b.classList.toggle('on',b.dataset.luogo===fm.luogo.value)));
     const ta=el.querySelector('textarea[name=descrizione]');const bd=document.createElement('button');bd.type='button';bd.className='btn sm sec';bd.style.marginTop='6px';bd.textContent='📖 Prendi da Wikipedia';bd.onclick=()=>openDescPicker(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),t=>{ta.value=t});ta.after(bd);
-    const addFiles=async fs=>{for(const f of fs){try{const u=await shrink(f,1200);foto.push(u);if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh()};
+    const addFiles=async fs=>{let n=0;for(const f of fs){try{const u=await shrink(f,1200);foto.push(u);n++;if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh();if(n>1)toast(n+' foto aggiunte')};
     $('#fCam',el).onchange=e=>addFiles(e.target.files);
     $('#fGal',el).onchange=e=>addFiles(e.target.files);
     el.addEventListener('click',async e=>{
@@ -1002,7 +1053,8 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       if(t.closest('[data-gal]'))$('#fGal',el).click();
       const sw=t.closest('[data-col]');if(sw){fm.colore.value=COLORI[+sw.dataset.col][0];fm.colore_hex.value='';updSw()}
       const lg=t.closest('[data-luogo]');if(lg){fm.luogo.value=lg.dataset.luogo;el.querySelectorAll('[data-luogo]').forEach(b=>b.classList.toggle('on',b===lg))}
-      if(t.dataset.rmf!==undefined){foto.splice(+t.dataset.rmf,1);if(!foto.length)thumb='';else if(t.dataset.rmf==0)thumb=await shrink(foto[0],180,.75);drawPh()}
+      const rmb=t.closest('[data-rmf]');if(rmb){const k=+rmb.dataset.rmf;foto.splice(k,1);if(!k)await setCover();drawPh()}
+      const cvb=t.closest('[data-cov]');if(cvb){const k=+cvb.dataset.cov;foto.unshift(foto.splice(k,1)[0]);await setCover();drawPh();toast('Nuova copertina ★')}
       if(t.closest('[data-web]')){openImageSearch(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),async url=>{try{const b=await fetchBlob(url);const u=await shrink(b,1200);foto.push(u);if(!thumb)thumb=await shrink(b,180,.75);drawPh();toast('Foto aggiunta')}catch(e){toast('Impossibile scaricare la foto')}})}
       if(t.closest('[data-look]')){openLookup({prefill:fm.modello.value||fm.emc.value||fm.nome.value,marca:fm.marca.value,onResult:async r=>{const cur=collect(fm);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
       if(t.closest('[data-save]')){
