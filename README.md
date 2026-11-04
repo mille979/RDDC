@@ -33,6 +33,7 @@ Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per 
 Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
 
 ## Altro
+- **Condividi → RDDC**: da Galleria Samsung, Google Foto o qualunque app, «Condividi» → RDDC; l'app chiede se creare un oggetto nuovo o aggiungere le foto (e i PDF come allegati) a uno esistente. Se RDDC non compare tra le app di condivisione, rimuovi l'app dalla schermata Home e reinstallala da Chrome (Android legge la nuova impostazione all'installazione). Le foto in formato HEIC non sono leggibili dal browser.
 - **Foto**: nel modulo si possono trascinare le foto (dal computer o da un'altra app) o incollarle; si riordinano trascinandole (col dito: tieni premuto e sposta). La prima è la **copertina**: ★ su una miniatura, o «Usa come copertina» nel visualizzatore della scheda.
 - **Da completare**: ogni scheda segnala i dati essenziali mancanti (foto, anno, marca, luogo, stato e, a seconda del tipo, modello/CPU/RAM, pollici o «Va con»). Se un dato non esiste o non si saprà mai, toccane «non si sa»: non conta più come mancante e compare «sconosciuto». Filtro «Completezza» e contatore in alto.
 - **Etichette libere** (#Preferito, #Raro, #Da restaurare… o nuove), filtrabili.

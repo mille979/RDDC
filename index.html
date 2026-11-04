@@ -816,6 +816,49 @@ function openCopyAcc(d){
       render();toast(n?`${n} accessori collegati a «${d.nome}»`:'Nessun accessorio scelto');if(n)goBase(()=>openDetail(d.id))};
   }});
 }
+/* ===== foto e file condivisi da altre app (Condividi → RDDC) ===== */
+const isHeic=f=>/hei[cf]/i.test(f.type||'')||/\.hei[cf]$/i.test(f.name||'');
+const HEIC_MSG='Foto in formato HEIC: il browser non riesce a leggerla. Nella Fotocamera Samsung disattiva «Immagini ad alta efficienza», oppure condividila convertita in JPEG.';
+const isImgFile=f=>(/^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(f.name||''))&&!isHeic(f);
+async function readShared(){
+  const c=await caches.open('rddc-share'),out=[];let meta={};
+  for(const k of await c.keys()){const r=await c.match(k);if(/\/meta$/.test(k.url)){try{meta=await r.json()}catch(e){}continue}
+    const b=await r.blob();out.push(new File([b],decodeURIComponent(r.headers.get('x-name')||'file'),{type:b.type||r.headers.get('content-type')||''}))}
+  await caches.delete('rddc-share');return {files:out,meta};
+}
+async function sharedToData(files){
+  const foto=[],allegati=[];let thumb='',skip=0;
+  for(const f of files){
+    if(isImgFile(f)){try{foto.push(await shrink(f,1200));if(!thumb)thumb=await shrink(f,180,.75);continue}catch(e){}}
+    if(f.size>ATT_MAX){skip++;continue}
+    allegati.push({id:uid(),nome:f.name||'file',mime:f.type||'application/octet-stream',size:f.size,data:await blobToDataURL(f),t:today()});
+  }
+  if(skip)toast(`${skip} file troppo grandi (max 15 MB) non aggiunti`,4000);
+  return {foto,thumb,allegati};
+}
+function openShared({files,meta}){
+  const imgs=files.filter(isImgFile),others=files.filter(f=>!isImgFile(f)),urls=[];
+  const link=[meta.url,meta.text].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
+  const h=`${imgs.length?`<div class="phgrid" style="margin-bottom:10px">${imgs.map(f=>{const u=URL.createObjectURL(f);urls.push(u);return `<div class="pht"><img src="${u}" alt=""></div>`}).join('')}</div>`:''}
+    ${others.length?`<div class="log" style="margin-bottom:10px">${others.map(f=>`<div class="att"><span class="ai">${isHeic(f)?'🖼️':attIcon({mime:f.type})}</span><span class="an"><b>${esc(f.name)}</b><small>${isHeic(f)?'HEIC: diventa un allegato':esc(f.type||'file')+' · '+fmtSize(f.size)}</small></span></div>`).join('')}</div>`:''}
+    ${!files.length&&link?`<p class="note">Ricevuto un link: ${esc(link[0])}</p>`:''}
+    ${files.length?`<p style="margin:4px 0 8px">${imgs.length?`${imgs.length} foto`:''}${imgs.length&&others.length?' e ':''}${others.length?`${others.length} ${others.length===1?'file (allegato)':'file (allegati)'}`:''}: dove li metto?</p>
+    <button class="btn" data-sh="new" style="width:100%">➕ Nuovo oggetto</button>
+    <label class="f" style="margin-top:14px">…oppure aggiungili a un oggetto esistente</label><input class="in" id="shq" placeholder="Cerca per nome, modello…" autocomplete="off"><div id="shl"></div>`:''}`;
+  openPage('Ricevuto da un\'altra app',h,{mount(el){
+    el._close=()=>urls.forEach(u=>URL.revokeObjectURL(u));
+    const list=()=>{const q=($('#shq',el)||{value:''}).value.trim().toLowerCase();const r=devices.filter(d=>!q||q.split(/\s+/).every(w=>d._i.includes(w))).sort((a,b)=>(b.modificato||0)-(a.modificato||0)).slice(0,30);
+      const l=$('#shl',el);if(l)l.innerHTML=r.map(d=>`<button class="res" data-sh="${d.id}"><b>${esc(d.nome)}</b><small>${esc([d.marca,d.anno,d.wish?'wishlist':d.luogo].filter(Boolean).join(' · '))}</small></button>`).join('')||'<p class="note">Nessun oggetto trovato</p>'};
+    list();const q=$('#shq',el);if(q)q.oninput=list;
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-sh]');if(!b)return;b.disabled=true;toast('Preparo le foto…');
+      const {foto,thumb,allegati}=await sharedToData(files);
+      if(b.dataset.sh==='new'){openForm({foto,thumb,allegati,tipologia:'',marca:''},{fromLookup:true});return}
+      const d=devices.find(x=>x.id===b.dataset.sh);if(!d)return;
+      d.foto=[...(d.foto||[]),...foto];if(!d.thumb&&thumb)d.thumb=thumb;if(allegati.length)d.allegati=[...(d.allegati||[]),...allegati];
+      await saveDev(d);render();toast(`Aggiunti a «${d.nome}»`);goBase(()=>openDetail(d.id))});
+  }});
+}
+
 /* ===== valore nel tempo ===== */
 function seedVal(o,old){o.valori=(o.valori||[]).slice();if(!o.valori.length&&old&&+old.valore)o.valori.push({id:uid(),data:new Date(old.modificato||old.creato||Date.now()).toISOString().slice(0,10),valore:+old.valore,fonte:'Stima iniziale'})}
 function valSeries(d,extend=true){
@@ -991,7 +1034,8 @@ function openForm(src,{fromLookup=false,focus=''}={}){
   const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button>`;
   openPage(isNew?(d.wish?'Nuovo desiderio':'Nuovo oggetto'):'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
     const fm=$('#f',el);
-    const drawPh=()=>{$('#ph',el).innerHTML=`<div class="phgrid">${foto.map((f,i)=>`<div class="pht ${i?'':'cov'}" data-pi="${i}"><img src="${f}" alt="" draggable="false">${i?`<button type="button" class="st" data-cov="${i}" aria-label="Usa come copertina" title="Usa come copertina">★</button>`:'<span class="cvb">Copertina</span>'}<button type="button" class="rm" data-rmf="${i}" aria-label="Rimuovi">✕</button></div>`).join('')}<button type="button" class="phadd" data-gal>＋<small>Aggiungi</small></button></div><p class="phhint">${foto.length>1?'Trascina per riordinare (col dito: tieni premuto e sposta) · ★ = copertina · ':''}Puoi anche trascinare qui le foto o incollarle.</p>`};
+    let dropDiag='';
+    const drawPh=()=>{$('#ph',el).innerHTML=(dropDiag?`<div class="note" style="margin:0 0 8px">${dropDiag}</div>`:'')+`<div class="phgrid">${foto.map((f,i)=>`<div class="pht ${i?'':'cov'}" data-pi="${i}"><img src="${f}" alt="" draggable="false">${i?`<button type="button" class="st" data-cov="${i}" aria-label="Usa come copertina" title="Usa come copertina">★</button>`:'<span class="cvb">Copertina</span>'}<button type="button" class="rm" data-rmf="${i}" aria-label="Rimuovi">✕</button></div>`).join('')}<button type="button" class="phadd" data-gal>＋<small>Aggiungi</small></button></div><p class="phhint">${foto.length>1?'Trascina per riordinare (col dito: tieni premuto e sposta) · ★ = copertina · ':''}Puoi anche trascinare qui le foto o incollarle.</p>`};
     const setCover=async()=>{thumb=foto.length?await shrink(foto[0],180,.75):''};
     /* riordino: col mouse si trascina subito, col dito dopo una breve pressione (così la pagina scorre normalmente) */
     let drag=null;
@@ -1017,11 +1061,17 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     phEl.addEventListener('dragover',e=>{if(drag)return;e.preventDefault();phEl.classList.add('over')});
     phEl.addEventListener('dragleave',e=>{if(!phEl.contains(e.relatedTarget))phEl.classList.remove('over')});
     phEl.addEventListener('drop',async e=>{e.preventDefault();phEl.classList.remove('over');const dt=e.dataTransfer;
-      const fs=[...(dt.files||[])].filter(f=>/^image\//.test(f.type));
-      if(fs.length)return addFiles(fs);
-      const url=(dt.getData('text/uri-list')||dt.getData('text/plain')||'').split('\n').find(x=>/^https?:/.test(x.trim()));
-      if(url){toast('Scarico la foto…');try{await addFiles([await fetchBlob(url.trim())])}catch(er){toast('Impossibile scaricare la foto: salvala e trascinala come file')}}
-      else toast('Trascina un\'immagine')});
+      /* tutto va letto subito, prima di qualunque attesa: dopo il rilascio il browser svuota i dati */
+      const got=[...(dt.files||[])];
+      for(const it of dt.items||[])if(it.kind==='file'){const f=it.getAsFile();if(f&&!got.some(g=>g.name===f.name&&g.size===f.size))got.push(f)}
+      const types=[...(dt.types||[])],html=dt.getData('text/html')||'',txt=(dt.getData('text/uri-list')||dt.getData('text/plain')||'');
+      const imgs=got.filter(f=>/^image\//.test(f.type)||(!f.type&&(/\.(jpe?g|png|webp|gif|avif|bmp|hei[cf])$/i.test(f.name||'')||f.size>0)));
+      if(imgs.length){dropDiag='';return addFiles(imgs)}
+      const src=(html.match(/<img[^>]+src=["']([^"']+)["']/i)||[])[1];
+      const url=src||txt.split('\n').map(x=>x.trim()).find(x=>/^(https?:|data:image)/.test(x));
+      if(url&&/^(https?:|data:image)/.test(url)){toast('Scarico la foto…');try{dropDiag='';await addFiles([/^data:/.test(url)?await (await fetch(url)).blob():await fetchBlob(url)])}catch(er){toast('Impossibile scaricare la foto')}return}
+      dropDiag=`Il rilascio è arrivato senza un'immagine leggibile (ricevuto: ${esc(types.join(', ')||'nessun dato')}${got.length?', file: '+got.map(f=>esc((f.name||'?')+' '+(f.type||'senza tipo'))).join('; '):''}${url&&!/^https?:/.test(url)?', indirizzo '+esc(url.slice(0,40)):''}). Dalla galleria usa <b>Condividi → RDDC</b>.`;
+      drawPh()});
     el.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>/^image\//.test(f.type));if(fs.length){e.preventDefault();addFiles(fs)}});
     drawPh();
     const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' ');x.hidden=w.includes('wish')?!d.wish:w.includes('own')?!!d.wish:!w.includes(k)})};
@@ -1044,7 +1094,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     $('#cpick',el).addEventListener('input',e=>{fm.colore_hex.value=e.target.value;if(!fm.colore.value.trim())fm.colore.value='Personalizzato';updSw()});
     fm.luogo.addEventListener('input',()=>el.querySelectorAll('[data-luogo]').forEach(b=>b.classList.toggle('on',b.dataset.luogo===fm.luogo.value)));
     const ta=el.querySelector('textarea[name=descrizione]');const bd=document.createElement('button');bd.type='button';bd.className='btn sm sec';bd.style.marginTop='6px';bd.textContent='📖 Prendi da Wikipedia';bd.onclick=()=>openDescPicker(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),t=>{ta.value=t});ta.after(bd);
-    const addFiles=async fs=>{let n=0;for(const f of fs){try{const u=await shrink(f,1200);foto.push(u);n++;if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast('Immagine non valida')}}drawPh();if(n>1)toast(n+' foto aggiunte')};
+    const addFiles=async fs=>{let n=0;for(const f of fs){try{const u=await shrink(f,1200);foto.push(u);n++;if(!thumb)thumb=await shrink(f,180,.75)}catch(e){toast(isHeic(f)?HEIC_MSG:'Immagine non valida',6000)}}drawPh();if(n>1)toast(n+' foto aggiunte')};
     $('#fCam',el).onchange=e=>addFiles(e.target.files);
     $('#fGal',el).onchange=e=>addFiles(e.target.files);
     el.addEventListener('click',async e=>{
@@ -2068,6 +2118,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
 (async()=>{
   await DB.open();
   devices=await DB.all();devices.forEach(idx);
+  if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
     if(ghOn())ghSync(false);else if(LS.get('rd_db_auto',true))syncDB(false);
