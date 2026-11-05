@@ -503,7 +503,22 @@ const PRIO={Alta:0,Media:1,Bassa:2};
 const linkedTo=d=>d&&d.collegato?devices.find(x=>x.id===d.collegato):null;
 const LAYOUTS={list:['▤','Lista'],grid:['▦','Griglia'],time:['⏳','Linea del tempo']};
 const INT_TIPI=['Pulizia','Revisione / test','Sostituzione condensatori','Batteria PRAM / BIOS','Batteria','Riparazione','Upgrade','Sostituzione disco / SSD','Pasta termica','Retrobright','Taratura / convergenza (CRT)','Altro'];
-async function saveDev(o){o.modificato=Date.now();idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;dirty()}
+/* sincronizzazione per campo: ogni modifica locale ricorda l'ora dei soli campi cambiati (o.fts) */
+const SIG=new Map();
+function strHash(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+'.'+t.length}
+function fieldSig(o){const r={};for(const k of Object.keys(o))if(k[0]!=='_'&&k!=='fts'&&k!=='modificato'&&o[k]!==undefined)r[k]=strHash(JSON.stringify(o[k]));return r}
+function stamp(o){const prev=SIG.get(o.id),cur=fieldSig(o),now=Date.now();
+  if(!o.fts){const base=o.modificato||o.creato||0;o.fts={};for(const k of Object.keys(prev||{}))o.fts[k]=base}else o.fts=Object.assign({},o.fts);
+  for(const k of new Set([...Object.keys(cur),...Object.keys(prev||{})]))if(!prev||prev[k]!==cur[k])o.fts[k]=now;
+  for(const k of Object.keys(o.fts))if(!(k in cur)&&prev&&!(k in prev))delete o.fts[k];
+  SIG.set(o.id,cur)}
+const stable=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((a,y)=>(a[y]=x[y],a),{}):x);
+function fieldMerge(l,r){const lf=l.fts||{},rf=r.fts||{},out=Object.assign({},l),fts=Object.assign({},lf);let changed=false;const keys=[];
+  for(const k of new Set([...Object.keys(l),...Object.keys(r)])){if(k[0]==='_'||k==='fts'||k==='modificato'||k==='id')continue;
+    const lt=l.fts?(lf[k]??0):(l.modificato||0),rt=r.fts?(rf[k]??0):(r.modificato||0);
+    if(rt>lt&&stable(r[k])!==stable(l[k])){if(r[k]===undefined)delete out[k];else out[k]=r[k];fts[k]=rt;changed=true;keys.push(k)}}
+  out.fts=fts;out.modificato=Math.max(l.modificato||0,r.modificato||0);return {out,changed,keys}}
+async function saveDev(o){stamp(o);o.modificato=Date.now();idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;dirty()}
 const dueList=()=>{const lim=addDays(today(),14);return devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).filter(i=>i.prossimo&&!i.fatto&&i.prossimo<=lim).map(i=>({d,i}))).sort((a,b)=>a.i.prossimo.localeCompare(b.i.prossimo))};
 
 /* campi essenziali per la «completezza»; ognuno può essere segnato «non si sa» */
@@ -739,11 +754,11 @@ function openDetail(id,replace){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
         ['w_priorita','w_budget','w_link','w_note'].forEach(k=>delete o[k]);
-        idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
+        stamp(o);idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
       if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
-      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
+      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';stamp(c);idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
       if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();dirty();
-        toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
+        toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
       const upd=async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})};
       if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:upd});
       if(t.closest('[data-paste]'))openImport({code:d.modello||d.emc||d.identifier||'',onResult:upd});
@@ -1170,7 +1185,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         if(!o.wish&&o.valore!==''&&String(+o.valore)!==String(+d.valore||'')){seedVal(o,d);o.valori.push({id:uid(),data:today(),valore:+o.valore,fonte:'Stima personale'})}
         const dup=devices.find(x=>x.id!==o.id&&!!x.wish===!!o.wish&&x.nome===o.nome&&(x.modello||'')===(o.modello||'')&&(x.emc||'')===(o.emc||'')&&(x.collegato||'')===(o.collegato||'')&&(x.seriale||'')===(o.seriale||''));
         if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
-        idx(o);await DB.put(o);
+        stamp(o);idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
         dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');
       }
@@ -1997,7 +2012,7 @@ function openMenu(){
     });
     $('#fi',el).onchange=async e=>{
       try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
-        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
+        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();stamp(d);idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
         render();dirty();toast(n+' oggetti importati')}catch(err){toast('File non valido')}
     };
   }});
@@ -2044,10 +2059,12 @@ async function mergeRemote(arr,tomb,fetchPhoto){
     if(!d||!d.nome)continue;
     d.id=d.id||hashId([d.nome,d.modello,d.seriale,d.wish?'w':''].join('|'));
     if(del.has(d.id)&&(d.modificato||0)<=del.get(d.id))continue;
-    const i=devices.findIndex(x=>x.id===d.id);
-    if(i<0)nuovi++;else if((d.modificato||0)>(devices[i].modificato||0))agg++;else continue;
-    await localizePhotos(d,fetchPhoto);
-    idx(d);await DB.put(d);const k=devices.findIndex(x=>x.id===d.id);k<0?devices.push(d):devices[k]=d;
+    const i=devices.findIndex(x=>x.id===d.id);let o=d;
+    if(i<0)nuovi++;
+    else{const m=fieldMerge(devices[i],d);if(!m.changed)continue;agg++;o=m.out;
+      if(!m.keys.some(k=>['foto','thumb','scontorno'].includes(k))){idx(o);await DB.put(o);devices[i]=o;SIG.set(o.id,fieldSig(o));continue}}
+    await localizePhotos(o,fetchPhoto);
+    idx(o);await DB.put(o);const k=devices.findIndex(x=>x.id===o.id);k<0?devices.push(o):devices[k]=o;SIG.set(o.id,fieldSig(o));
   }
   return {nuovi,agg,canc};
 }
@@ -2081,19 +2098,26 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map();
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(conv));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
         const remElim=[...tombsOf(remote)].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         n=out.length;
-        if(!files.size&&tmap.has('collezione.json')&&JSON.stringify(remSorted)===JSON.stringify(out)&&JSON.stringify(remElim)===JSON.stringify(elim))break;
+        /* file in foto/ e allegati/ (e nelle vecchie cartelle numerate) che nessun oggetto usa più */
+        const FILE_RE=/(?:^|\/)((?:foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5})$/,refs=new Set();
+        const ref=u=>{if(typeof u==='string'){const m=u.match(FILE_RE);if(m)refs.add(m[1])}};
+        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);(o.allegati||[]).forEach(a=>ref(a.data))}
+        for(const p of files.keys())refs.add(p);
+        const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5}$/.test(p)&&!refs.has(p));
+        if(!files.size&&!orphans.length&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
         const entries=[];
         for(const [path,b64] of files)entries.push({path,mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha});
         const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
+        for(const p of orphans)entries.push({path:p,mode:'100644',type:'blob',sha:null});
         const nt=await gh('git/trees',{method:'POST',body:{base_tree:treeSha,tree:entries}});
-        const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''})`,tree:nt.sha,parents:[head]}});
+        const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''}${orphans.length?`, ${orphans.length} file non usati rimossi`:''})`,tree:nt.sha,parents:[head]}});
         try{await gh(`git/refs/heads/${c.branch}`,{method:'PATCH',body:{sha:nc.sha,force:false}})}
         catch(e){if((e.status===422||e.status===409)&&attempt<3)continue;throw e}
         inviati=out.length;nfoto=files.size;break;
@@ -2142,7 +2166,7 @@ $('#list').addEventListener('pointermove',e=>{if(lp&&!lp.fired&&Math.hypot(e.cli
 ['pointerup','pointercancel'].forEach(t=>addEventListener(t,lpEnd));
 $('#list').addEventListener('contextmenu',e=>{if(e.target.closest('[data-id]'))e.preventDefault()});
 async function delWithUndo(d){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();dirty();
-  toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
+  toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
 function openPeek(id,src){
   const d=devices.find(x=>x.id===id);if(!d||document.querySelector('.peek'))return;
   const ph=(d.foto&&d.foto[0])||'',tl=keyTiles(d).slice(0,4),sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
@@ -2177,7 +2201,7 @@ $('#bView').onclick=()=>{const k=Object.keys(LAYOUTS);S.layout=k[(k.indexOf(S.la
 $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(true);return}if(e.target.closest('[data-inc]')){S.sel.completezza=['Da completare'];render();return}const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
 (async()=>{
   await DB.open();
-  devices=await DB.all();devices.forEach(idx);
+  devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
