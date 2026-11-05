@@ -646,7 +646,7 @@ function keyTiles(d){
   const t=k==='tv'?[['Diagonale',inch(d.tv_pollici)],['Tubo',d.tv_tubo],['Sistema',d.tv_standard],['Formato',d.tv_formato],['Frequenza',d.tv_freq],['Audio',d.tv_audio],['Ingressi',d.tv_ingressi]]
    :k==='acc'?[['Va con',(devices.find(x=>x.id===d.collegato)||{}).nome],['Compatibile',d.acc_compat],['Connettore',d.acc_connettore],['Uscita',d.acc_uscita],['Lunghezza',d.acc_lunghezza],['Quantità',d.quantita]]
    :[['Processore',d.cpu],['RAM',d.ram],['Archiviazione',d.storage],['Display',d.display],['Sistema',d.os_orig],['Grafica',d.gpu]];
-  return t.filter(x=>x[1]).slice(0,6);
+  return t.filter(x=>x[1]).slice(0,6).map(([a,b])=>[a,trVal(b,d)]);
 }
 function fieldDisplay(d,k){
   if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
@@ -656,6 +656,7 @@ function fieldDisplay(d,k){
   if(k==='w_budget')return '€ '+esc(d[k]);
   if(k==='tags')return (d.tags||[]).map(t=>`<span class="chip" style="font-size:13px;padding:2px 9px">#${esc(t)}</span>`).join(' ');
   if(k==='valore'||k==='acq_prezzo')return '€ '+Number(d[k]).toLocaleString('it');
+  if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
 }
 function openDetail(id,replace){
@@ -676,7 +677,8 @@ function openDetail(id,replace){
   if(ms.length)h+=`<div class="note incn"><b>✎ Da completare</b><div class="chips" style="margin:6px 0 2px">${ms.map(k=>`<span class="mchip"><button data-fix="${k}">${ESS_LAB[k]||k}</button><button data-unk="${k}" title="Segna come sconosciuto">non si sa</button></span>`).join('')}</div><small>Tocca un dato per inserirlo, oppure «non si sa» se è ignoto o non esiste.</small></div>`;
   const tl=keyTiles(d);
   if(tl.length)h+=`<div class="tiles">${tl.map(([a,b])=>`<div class="tile"><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join('')}</div>`;
-  if(d.descrizione){const long=d.descrizione.length>320;h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}">${esc(d.descrizione)}</div></div>${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}`}
+  if(d.descrizione){const long=d.descrizione.length>320;
+    h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}" id="dsct">${esc(d.descrizione)}</div></div><div class="row" style="flex-wrap:wrap;gap:4px">${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}${d.descrizione_orig?'<button class="linkb" data-orig>Mostra originale</button>':''}</div>`}
   const kv=rows=>`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${b}</div>`).join('')}</div>`;
   for(const [t,fs] of SECTIONS.slice(1)){
     const ig=d.ignoti||[];
@@ -693,7 +695,8 @@ function openDetail(id,replace){
   h+=attHTML(d);
   const accs=devices.filter(x=>x.collegato===d.id);
   if(accs.length)h+=`<div class="sec-t">Accessori collegati (${accs.length})</div>`+accs.map(card).join('');
-  if(d.specs&&d.specs.length)h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary>${kv(d.specs.map(([a,b])=>[a,esc(b)]))}</details>`;
+  if(d.specs&&d.specs.length){
+    h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary><div id="spk">${kv(d.specs.map(([a,b])=>[trLabel(a),esc(trVal(b,d))]))}</div><div class="row" style="flex-wrap:wrap;gap:4px">${trOn()?'<button class="linkb" data-spo>Mostra originale</button>':''}</div></details>`}
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
   if(d.wish){
     const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
@@ -711,6 +714,8 @@ function openDetail(id,replace){
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
       if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
+      if(t.closest('[data-orig]')){const b=t.closest('[data-orig]'),x=$('#dsct',el),o=b.dataset.on!=='1';x.textContent=o?d.descrizione_orig:d.descrizione;b.dataset.on=o?'1':'0';b.textContent=o?'Mostra traduzione':'Mostra originale';x.classList.remove('cl');return}
+      if(t.closest('[data-spo]')){const b=t.closest('[data-spo]'),o=b.dataset.on!=='1';$('#spk',el).innerHTML=kv(d.specs.map(([a,v])=>o?[a,esc(v)]:[trLabel(a),esc(trVal(v,d))]));b.dataset.on=o?'1':'0';b.textContent=o?'Mostra in italiano':'Mostra originale';return}
       if(t.closest('[data-more]')){const ds=$('.desc>div',el);ds.classList.toggle('cl');t.textContent=ds.classList.contains('cl')?'Leggi tutto ▾':'Riduci ▴'}
       const go=t.closest('[data-go]');if(go){e.preventDefault();openDetail(go.dataset.go)}
       const cd=t.closest('.card');if(cd)openDetail(cd.dataset.id);
@@ -858,6 +863,56 @@ function openShared({files,meta}){
       await saveDev(d);render();toast(`Aggiunti a «${d.nome}»`);goBase(()=>openDetail(d.id))});
   }});
 }
+
+/* ===== traduzioni: dizionario integrato (istantaneo, offline) + traduttore per i testi lunghi ===== */
+const TR_L={'Introduction Date':'Data di introduzione','Discontinued Date':'Fine produzione','Processors':'Processori','Architecture':'Architettura','Processor Speed':'Velocità processore','Processor Type':'Tipo di processore','Custom Speeds':'Velocità opzionali','Processor Upgrade':'Aggiornamento processore','System Bus Speed':'Velocità bus di sistema','Cache Bus Speed':'Velocità bus cache','ROM/Firmware Type':'Tipo ROM/firmware','ROM/Firmware Size':'Dimensione ROM/firmware','EFI Architecture':'Architettura EFI','L1 Cache':'Cache L1','L2 Cache':'Cache L2','L2/L3 Cache':'Cache L2/L3','L3 Cache':'Cache L3','RAM Type':'Tipo di RAM','Min. RAM Speed':'Velocità minima RAM','Standard RAM':'RAM di serie','Maximum RAM':'RAM massima','Motherboard RAM':'RAM sulla scheda madre','Onboard RAM':'RAM integrata','RAM Slots':'Slot RAM','Video Card':'Scheda video','VRAM Type':'Tipo VRAM','Standard VRAM':'VRAM di serie','Maximum VRAM':'VRAM massima','Built-in Display':'Schermo integrato','Native Resolution':'Risoluzione nativa','Display Resolution':'Risoluzione schermo','2nd Display Support':'Secondo monitor','2nd Max. Resolution':'Risoluzione max secondo monitor','Standard Storage':'Archiviazione di serie','Storage Capacity':'Capacità','Std. Storage Speed':'Velocità archiviazione','Storage Dimensions':'Formato disco','Storage Interface':'Interfaccia disco','Standard Optical':'Unità ottica','Standard Disk':'Unità disco','Standard Modem':'Modem','Standard Ethernet':'Ethernet','Standard AirPort':'AirPort (Wi-Fi)','Standard Wi-Fi':'Wi-Fi','Standard Wireless':'Wireless','Standard Bluetooth':'Bluetooth','USB Ports':'Porte USB','Firewire Ports':'Porte FireWire','Thunderbolt Ports':'Porte Thunderbolt','Expansion Slots':'Slot di espansione','Expansion Bays':'Alloggiamenti di espansione','Incl. Keyboard':'Tastiera inclusa','Incl. Input':'Puntamento incluso','Incl. Accessories':'Accessori inclusi','Case Type':'Tipo di case','Form Factor':'Formato','Apple Order No':'N° d\'ordine Apple','Apple Subfamily':'Sottofamiglia Apple','Apple Model No':'N° modello Apple','Battery Type':'Tipo di batteria','Battery Life':'Autonomia','Battery Life (Music)':'Autonomia (musica)','Battery Life (Video)':'Autonomia (video)','Battery Life (Voice)':'Autonomia (chiamate)','Standby Time':'Autonomia in standby','Full-Charge Time':'Tempo di ricarica completa','Pre-Installed MacOS':'macOS preinstallato','Pre-Installed System':'Sistema preinstallato','Pre-Installed OS':'Sistema preinstallato','Maximum MacOS':'macOS massimo','Maximum System':'Sistema massimo','Maximum OS':'Sistema massimo','Minimum Windows':'Windows minimo','Maximum Windows':'Windows massimo','MacOS 9 Support':'Supporto Mac OS 9','Windows Support':'Supporto Windows','Mac Support':'Compatibilità Mac','Audio Support':'Formati audio','Photo Support':'Formati foto','Video Support':'Formati video','USB Support':'Supporto USB','Firewire Support':'Supporto FireWire','Dimensions':'Dimensioni','Avg. Weight':'Peso medio','Weight':'Peso','Original Price (US)':'Prezzo originale (USA)','Original Price':'Prezzo originale','Est. Current Retail':'Valore attuale stimato (EveryMac)','Video (Monitor)':'Video (monitor)','Floppy (Ext.)':'Floppy (esterno)','Serial (Standard)':'Seriale (standard)','Serial (Geoport)':'Seriale (GeoPort)','S-Video Input':'Ingresso S-Video','S-Video Output':'Uscita S-Video','Microphone':'Microfono','Sound In':'Ingresso audio','Sound Out':'Uscita audio','Headphone':'Cuffie','Security (Lock)':'Antifurto (lock)','Power':'Alimentazione','Power Adapter':'Alimentatore','Connectivity':'Connettività','Ports':'Porte','Housing Color':'Colore della scocca','Camera':'Fotocamera','Cell Network':'Rete cellulare','Song Capacity':'Capienza brani','Photo Capacity':'Capienza foto','Predecessor':'Predecessore','Successor':'Successore','Release date':'Data di uscita','Discontinued':'Fine produzione','Introduced':'Introdotto','Os':'Sistema operativo','Related':'Correlati','Name':'Nome','Manufacturer':'Produttore','Developer':'Sviluppatore','Type':'Tipo','Media':'Supporti','Cpu':'Processore','Storage':'Archiviazione','Memory':'Memoria','Display':'Schermo','Sound':'Audio','Branding':'Marchio','Family':'Famiglia','Switch':'Interruttori','Keycaps':'Tasti','Interface':'Interfaccia'};
+const TR_C={'Italy':'Italia','United States':'Stati Uniti','United Kingdom':'Regno Unito','Germany':'Germania','France':'Francia','Spain':'Spagna','Switzerland':'Svizzera','Belgium':'Belgio','Netherlands':'Paesi Bassi','Denmark':'Danimarca','Finland':'Finlandia','Ireland':'Irlanda','Luxembourg':'Lussemburgo','Norway':'Norvegia','Portugal':'Portogallo','Sweden':'Svezia','Brazil':'Brasile','Mexico':'Messico','Japan':'Giappone','China':'Cina','New Zealand':'Nuova Zelanda','Korea':'Corea','The Philippines':'Filippine','Philippines':'Filippine','Thailand':'Thailandia','Poland':'Polonia','Czech Republic':'Repubblica Ceca','Greece':'Grecia','Hungary':'Ungheria','Turkey':'Turchia','Russia':'Russia','South Africa':'Sudafrica','United Arab Emirates':'Emirati Arabi Uniti','Saudi Arabia':'Arabia Saudita','Israel':'Israele','Chile':'Cile'};
+const TR_W={'None':'Nessuno','N/A':'n.d.','Yes':'Sì','Unknown':'Sconosciuto','Integrated':'Integrata','Soldered':'Saldato','Notebook':'Portatile','Handheld':'Palmare','Full-size':'Completa','Optional':'Opzionale','Built-in':'Integrato','Internal':'Interno','External':'Esterno','Dual/Mirroring':'Doppio / duplicato','Mirroring':'Duplicato','Boot/Virtualization':'Boot Camp / virtualizzazione','Virtualization':'Virtualizzazione','Removable':'Rimovibile','Non-Removable':'Non rimovibile'};
+const MESI={January:'gennaio',February:'febbraio',March:'marzo',April:'aprile',May:'maggio',June:'giugno',July:'luglio',August:'agosto',September:'settembre',October:'ottobre',November:'novembre',December:'dicembre'};
+const MESI_RE=Object.keys(MESI).join('|');
+const TR_T=[[new RegExp('\\b('+MESI_RE+') (\\d{1,2}), (\\d{4})\\b','g'),(m,a,b,c)=>b+' '+MESI[a]+' '+c],[new RegExp('\\b('+MESI_RE+') (\\d{4})\\b','g'),(m,a,b)=>MESI[a]+' '+b],
+  [/\bLithium[- ]Ion\b/gi,'ioni di litio'],[/\bLithium[- ]Polymer\b|\bLi-?Poly\b/gi,'litio-polimero'],[/\bHours\b/g,'ore'],[/\bHour\b/g,'ora'],[/\bMinutes\b/g,'minuti'],[/\bCores\b/g,'core'],[/\bMegapixels?\b/g,'megapixel'],
+  [/\bWidescreen\b/g,'panoramico'],[/\bOptional\b/g,'opzionale'],[/\bBuilt-in\b/g,'integrato'],[/\bInternal\b/g,'interno'],[/\bExternal\b/g,'esterno'],[/\bIntegrated\b/g,'integrata'],[/\bSoldered\b/g,'saldato'],[/\bNone\b/g,'nessuno'],
+  [/\bColor\b/g,'a colori'],[/\bSpace Gr[ae]y\b/g,'grigio siderale'],[/\bMetallic\b/g,'metallizzato'],[/\bInertial\b/g,'inerziale'],[/\bKeyboard\b/g,'tastiera'],[/\bUnknown\b/g,'sconosciuto'],[/\bCard Slot\b/g,'slot per schede'],[/\bfront\b/g,'anteriore'],[/\brear\b/g,'posteriore'],[/\(Rear\)/g,'(posteriore)'],[/\(Front\)/g,'(anteriore)']];
+const trOn=()=>LS.get('rd_tr',true);
+const EN_RE=/\b(the|and|with|from|that|does|not|for|only|can|supports?|however|which|this|was|were|has|have|are|is)\b/gi;
+const isLongEn=v=>{v=String(v||'');return v.length>50&&(v.match(EN_RE)||[]).length>=3};
+function trLabel(l){if(!trOn())return l;const m=String(l).match(/^(.*?)( \(\d+\))?$/),b=m[1],suf=m[2]||'';if(/^Prezzo /.test(b)){const c=b.slice(7);return 'Prezzo '+(TR_C[c]||c)+suf}return (TR_L[b]||b)+suf}
+function trVal(v,d){if(v==null||v===''||!trOn())return v;const t=String(v);if(d&&d.trad&&d.trad[t])return d.trad[t];if(TR_W[t.trim()])return TR_W[t.trim()];if(isLongEn(t))return t;let r=t;for(const [re,x] of TR_T)r=r.replace(re,x);return r}
+const decodeHTML=t=>{const x=document.createElement('textarea');x.innerHTML=t;return x.value};
+function splitChunks(t,max=450){const out=[];let cur='';for(const s of t.split(/(?<=[.!?;])\s+/)){if((cur+' '+s).trim().length>max&&cur){out.push(cur);cur=s}else cur=(cur?cur+' ':'')+s}if(cur)out.push(cur);return out.flatMap(c=>c.length>max?c.match(new RegExp('.{1,'+max+'}(\\s|$)','g')):[c])}
+async function myMemory(t){let r='';for(const part of splitChunks(t)){const res=await fetch('https://api.mymemory.translated.net/get?langpair=en%7Cit&q='+encodeURIComponent(part),{signal:AbortSignal.timeout(25000)});const j=await res.json();
+  if(j.quotaFinished||+j.responseStatus===429)throw new Error('quota');if(+j.responseStatus!==200)throw new Error(j.responseDetails||'errore del servizio');r+=(r?' ':'')+decodeHTML(j.responseData.translatedText)}return r}
+let TRANSLATOR=null,TR_BG=null;
+/* traduttore integrato del browser: si usa solo se è già pronto; altrimenti si scarica in sottofondo e intanto si usa il servizio */
+const withTimeout=(pr,ms)=>Promise.race([pr,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),ms))]);
+async function getTranslator(){if(TRANSLATOR)return TRANSLATOR;
+  try{if(!('Translator' in self))return null;const opt={sourceLanguage:'en',targetLanguage:'it'};const av=await withTimeout(Translator.availability(opt),3000);
+    if(av==='available'){TRANSLATOR=await withTimeout(Translator.create(opt),8000);return TRANSLATOR}
+    if((av==='downloadable'||av==='downloading')&&!TR_BG)TR_BG=Translator.create(opt).then(t=>{TRANSLATOR=t}).catch(()=>{});
+  }catch(e){}
+  return null}
+let PRE=null;
+async function preTr(){if(PRE)return PRE;try{const r=await fetch('traduzioni.json',{cache:'no-cache'});PRE=r.ok?await r.json():{}}catch(e){PRE={}}return PRE}
+async function translateText(t,onProg){const pre=await preTr(),h=await sha1hex(new TextEncoder().encode(String(t)));if(pre[h])return pre[h];
+  const tr=await getTranslator();const paras=String(t).split(/\n\s*\n/);const out=[];for(const p of paras)out.push(p.trim()?(tr?await withTimeout(tr.translate(p),20000).catch(()=>myMemory(p)):await myMemory(p)):p);return out.join('\n\n')}
+/* cosa resta da tradurre in un oggetto: la descrizione (se inglese) e i valori-frase delle specifiche */
+function toTranslate(d){const list=[];if(d.descrizione&&!d.descrizione_orig&&isLongEn(d.descrizione))list.push({k:'desc',t:d.descrizione});
+  for(const [,v] of d.specs||[])if(isLongEn(v)&&!(d.trad&&d.trad[v])&&!list.some(x=>x.t===v))list.push({k:'spec',t:v});return list}
+async function translateDevice(d,onProg){const list=toTranslate(d);if(!list.length)return 0;let n=0;
+  for(const x of list){onProg&&onProg(`Traduco ${++n}/${list.length}…`);const it=await translateText(x.t,onProg);
+    if(x.k==='desc'){d.descrizione_orig=d.descrizione;d.descrizione=it}else{d.trad=Object.assign({},d.trad,{[x.t]:it})}}
+  await saveDev(d);return list.length}
+let trRunning=false;
+async function autoTranslate(){
+  if(trRunning||!trOn()||!navigator.onLine||LS.get('rd_tr_block',0)>Date.now())return;
+  const todo=devices.filter(d=>toTranslate(d).length);if(!todo.length)return;
+  trRunning=true;let n=0;
+  try{for(const d of todo){if(await translateDevice(d))n++}}
+  catch(e){LS.set('rd_tr_block',Date.now()+(/quota/.test(e.message)?6*3600e3:30*60e3))}
+  finally{trRunning=false;if(n){render();toast(n===1?'1 descrizione tradotta in italiano':`${n} oggetti tradotti in italiano`)}}
+}
+const trErr=e=>/quota/.test(e.message)?'Limite giornaliero del servizio di traduzione raggiunto: riprova domani (le traduzioni fatte restano salvate).':'Traduzione non riuscita: '+e.message;
 
 /* ===== valore nel tempo ===== */
 function seedVal(o,old){o.valori=(o.valori||[]).slice();if(!o.valori.length&&old&&+old.valore)o.valori.push({id:uid(),data:new Date(old.modificato||old.creato||Date.now()).toISOString().slice(0,10),valore:+old.valore,fonte:'Stima iniziale'})}
@@ -1634,6 +1689,8 @@ async function mergeFetched(base,r,overwrite){
     m.specs=[...have];
   }
   if(r.fonte)m.fonte=r.fonte;
+  if(trOn()&&m.descrizione&&m.descrizione===r.fields.descrizione&&isLongEn(m.descrizione)){
+    try{toast('Traduco la descrizione…',8000);const it=await translateText(m.descrizione);m.descrizione_orig=m.descrizione;m.descrizione=it}catch(e){/* riproverà da sola in seguito */}}
   if((r.imageBlob||r.imageUrl)&&!(m.foto&&m.foto.length)){
     try{const b=r.imageBlob||await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
   }
@@ -1861,6 +1918,7 @@ function openMenu(){
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
+
   <div class="sec-t">Database su GitHub</div>
   <div class="note" id="dbi"></div>
   <button class="res" data-m="dbsync"><b>🔄 Sincronizza ora</b><small id="dbsm"></small></button>
@@ -1888,6 +1946,7 @@ function openMenu(){
   <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
   <input type="file" id="fi" accept=".json,application/json" hidden>
   <div class="sec-t">Impostazioni</div>
+  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
   <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
   <label class="f">Proxy personale per la ricerca su EveryMac</label>
   <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
@@ -1909,6 +1968,7 @@ function openMenu(){
       $('#dbi',el).innerHTML=(ghOn()?`Sincronizzazione automatica con <b>${esc(ghCfg().repo)}</b> attiva.`:`Il file <b>collezione.json</b> nel repository GitHub dell'app viene caricato automaticamente su ogni telefono.`)+(l?`<br>Ultima sincronizzazione: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti${l.nuovi||l.agg||l.canc?` · ricevuti ${l.nuovi} nuovi, ${l.agg} aggiornati${l.canc?', '+l.canc+' eliminati':''}`:''}${l.inviati?` · inviati ${l.inviati} oggetti${l.foto?' e '+l.foto+' foto':''}`:''}`:'');
       $('#dbsm',el).textContent=ghOn()?'Riceve le novità dagli altri telefoni e invia le tue modifiche.':'Aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente. Le modifiche fatte su questo telefono non vengono perse.'};dbInfo();
     (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
+    const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
@@ -1949,7 +2009,7 @@ function exportJSON(){return JSON.stringify({app:'rddc',v:3,esportato:Date.now()
 function markDeleted(id){const a=LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id);a.push({id,t:Date.now()});LS.set('rd_deleted',a.slice(-3000))}
 function unmarkDeleted(id){LS.set('rd_deleted',LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id))}
 const deletedMap=()=>new Map(LS.get('rd_deleted',[]).map(x=>typeof x==='string'?[x,0]:[x.id,x.t]));
-function dirty(){LS.set('rd_dirty',Date.now());if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
+function dirty(){LS.set('rd_dirty',Date.now());clearTimeout(dirty.tr);dirty.tr=setTimeout(autoTranslate,4000);if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
 const SYNC_SVG={
   run:'<g class="sy"><path d="M9.4 14.6a2.7 2.7 0 0 1 4.6-2.5"/><path d="M14.6 14.4a2.7 2.7 0 0 1-4.6 2.3"/><path d="M14.3 10.6v1.6h-1.6"/><path d="M9.7 18.4v-1.6h1.6"/></g>',
   ok:'<path class="sy" d="M9.4 14.6l1.8 1.8 3.4-3.6"/>',dirty:'<path class="sy" d="M12 17v-4.8M9.9 14.2l2.1-2.1 2.1 2.1"/>',err:'<path class="sy" d="M12 11.8v2.9M12 17v.1"/>'};
@@ -2121,7 +2181,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
-    if(ghOn())ghSync(false);else if(LS.get('rd_db_auto',true))syncDB(false);
+    Promise.resolve(ghOn()?ghSync(false):LS.get('rd_db_auto',true)?syncDB(false):0).finally(()=>setTimeout(autoTranslate,1500));
     document.addEventListener('visibilitychange',()=>{if(!ghOn())return;if(document.visibilityState==='hidden'&&LS.get('rd_dirty',0))ghSync(false);if(document.visibilityState==='visible'&&!syncing)ghSync(false)});
   }
   if('serviceWorker' in navigator&&location.protocol!=='file:'){
