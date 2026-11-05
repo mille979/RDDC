@@ -105,6 +105,7 @@ textarea.in{min-height:70px;resize:vertical}
 .res small{display:block;color:var(--mute)}
 .bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px}
 .bar div{height:14px;background:var(--acc);border-radius:7px;min-width:3px}
+.bar span:last-child{white-space:nowrap}
 .bar span:first-child{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .note{background:var(--chip);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mute);margin:10px 0}
 .note b{color:var(--ink)}
@@ -355,6 +356,40 @@ html.vt-pl::view-transition-new(root){animation:vt-fade-in .45s ease both}
 .att .an b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
 .att .an small{color:var(--mute);font-size:12px}
 .att .ab{border:0;background:none;width:38px;height:38px;border-radius:10px;color:var(--mute);font-size:16px}
+.sn{font-size:12.5px;color:var(--mute);margin-top:4px;line-height:1.4}
+.sn small{opacity:.8}
+.lnkbox{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);margin-top:6px;padding:4px 0}
+.lnk{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:14px;border-top:1px solid var(--line)}
+.lnk:first-child{border-top:0}
+.lnk input{width:18px;height:18px;flex:none}
+/* selezione multipla */
+.selc{position:relative}
+.card.selc{padding-left:46px}
+.selc::before{content:"";position:absolute;left:12px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;border:2px solid var(--mute);background:var(--card);z-index:2}
+.gcard.selc::before{top:12px;left:auto;right:10px;margin-top:0}
+.selc.on::before{background:var(--acc);border-color:var(--acc);box-shadow:inset 0 0 0 3px var(--card)}
+.selc.on{box-shadow:0 0 0 2px var(--acc),var(--shadow)}
+#bulk[hidden],.fab[hidden]{display:none!important}
+#bulk{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;gap:6px;overflow-x:auto;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--card);box-shadow:0 -4px 18px rgba(0,0,0,.18);scrollbar-width:none}
+#bulk button{flex:none;border:0;border-radius:12px;padding:10px 13px;background:var(--chip);color:var(--ink);font-weight:600;font-size:14px}
+#bulk button:disabled{opacity:.4}
+#bulk .dng{background:var(--dng);color:#fff}
+/* confronto */
+.cmp{display:grid;gap:1px;background:var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:13.5px}
+.cmp>div{background:var(--card);padding:8px 9px;word-break:break-word}
+.cmp>.lab{color:var(--mute);font-size:12.5px}
+.cmp>.hd{text-align:center;font-weight:700}
+.cmp>.hd img{width:100%;aspect-ratio:1;object-fit:contain;background:#fff;border-radius:8px;margin-bottom:4px}
+.cmp>.df{background:color-mix(in srgb,var(--acc) 14%,var(--card))}
+/* inventario */
+.inv{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:8px 8px 8px 10px;margin:6px 0;box-shadow:var(--shadow)}
+.inv .th{width:46px;height:46px;font-size:22px}
+.inv .ii{flex:1;min-width:0}.inv .ii b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.inv .ii small{color:var(--mute);font-size:12px}
+.inv button{flex:none;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:17px}
+.inv.ok{opacity:.55}.inv.ok [data-iv=ok]{background:var(--acc2);color:#fff;border-color:transparent}
+.inv.no [data-iv=no]{background:var(--dng);color:#fff;border-color:transparent}
+.inv.mv{opacity:.55}.inv.mv [data-iv=mv]{background:var(--acc);color:var(--on-acc);border-color:transparent}
+.invbar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden;margin:6px 0 10px}.invbar i{display:block;height:100%;background:var(--acc2)}
 #print{display:none}
 @media print{
   @page{size:A4;margin:12mm}
@@ -394,6 +429,7 @@ html.vt-pl::view-transition-new(root){animation:vt-fade-in .45s ease both}
 </div>
 <div id="list"></div>
 <button class="fab" id="fab" aria-label="Aggiungi">+</button>
+<div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="del" class="dng">🗑</button></div>
 <div id="toast"></div>
 <div id="print"></div>
 
@@ -437,7 +473,8 @@ const DB={
 
 /* ============ modello dati ============ */
 const STATI=['Funzionante','Da testare','Da riparare','Non funzionante','Per ricambi'];
-const TIPI=['Computer desktop','All-in-one','Portatile','Server','Televisore CRT','Monitor CRT','Monitor','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Stampante','Periferica','Rete',
+const PART_CAT=['RAM','Disco / SSD','Batteria','Alimentatore','Scheda logica','Schermo / pannello','Tastiera / trackpad','Unità ottica','Ventola / dissipatore','Cavo / flat','Scheda di espansione','Altro'];
+const TIPI=['Ricambio','Computer desktop','All-in-one','Portatile','Server','Televisore CRT','Monitor CRT','Monitor','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Stampante','Periferica','Rete',
   'Alimentatore / caricabatterie','Cavo / adattatore','Tastiera','Mouse','Joystick / controller','Accessorio','Manuale / software','Scatola / imballo','Altro'];
 const MARCHE0=['Apple','Commodore','Atari','IBM','Nokia','Sony','Nintendo','Sega','Microsoft','HP','Compaq','Palm','Olivetti',
   'Grundig','Philips','Telefunken','Mivar','Brionvega','Panasonic','Saba','Blaupunkt','Nordmende','Toshiba','JVC','Sharp','Samsung','Mitsubishi','Hitachi','Loewe','Thomson','Belkin','Logitech'];
@@ -472,7 +509,8 @@ function detectColor(txt,specificOnly){
 function kindOf(t){
   t=(t||'').toLowerCase();
   if(/televis|\btv\b|crt|monitor/.test(t))return 'tv';
-  if(/aliment|caricabat|charger|cav[oi]|adattat|accessor|tastier|mouse|joystick|controller|periferic|stampant|manual|software|scatola|imballo|ricamb/.test(t))return 'acc';
+  if(/ricamb/.test(t))return 'part';
+  if(/aliment|caricabat|charger|cav[oi]|adattat|accessor|tastier|mouse|joystick|controller|periferic|stampant|manual|software|scatola|imballo/.test(t))return 'acc';
   return 'pc';
 }
 const inch=v=>v&&/\d$/.test(String(v).trim())?String(v).trim()+'"':v;
@@ -483,14 +521,15 @@ const SECTIONS=[
  ['Identificazione',[['modello','Modello / sigla (es. A1278, M5521, KV-29X5)'],['emc','EMC','','pc'],['identifier','Model ID / codice','','pc'],['ordine','N° ordine / part no.'],['intro','Data introduzione'],['discontinued','Fine produzione'],['seriale','Numero di serie']]],
  ['Hardware',[['cpu','Processore'],['ram','RAM'],['storage','Archiviazione'],['gpu','Grafica'],['display','Display'],['os_orig','OS originale'],['os_max','OS massimo'],['connettivita','Connettività'],['porte','Porte','area'],['batteria','Batteria']],'pc'],
  ['Televisore / monitor',[['tv_pollici','Diagonale (pollici)','text'],['tv_tubo','Tubo catodico','list:tubi'],['tv_formato','Formato','select:4:3|16:9|14:9'],['tv_standard','Sistema colore','select:PAL|SECAM|NTSC|PAL/SECAM|Multistandard|Bianco e nero'],['tv_freq','Frequenza','select:50 Hz|60 Hz|100 Hz'],['tv_ingressi','Ingressi (SCART, RF, RCA, S-Video…)','area'],['tv_audio','Audio','list:audio'],['tv_televideo','Televideo','select:Sì|Sì (FasText / TOP)|No'],['tv_telecomando','Telecomando','select:Presente|Mancante|Non previsto'],['tv_canali','Sintonia / canali memorizzabili'],['tv_telaio','Telaio (chassis)'],['tv_consumo','Consumo (W)']],'tv'],
+ ['Ricambio',[['part_cat','Categoria','select:'+PART_CAT.join('|')],['part_spec','Specifica (es. DDR3 PC3-8500 SO-DIMM 4 GB)'],['compat','Compatibile con (computer della collezione)','links'],['part_compat','Compatibile anche con (modelli, anni, codici: es. A1278, MacBookPro9,2)','area']],'part'],
  ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
  ['Collezione',[['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
-const FACETS=[['completezza','Completezza'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
-const SORTS={prio:'Priorità (wishlist)',nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca'};
+const FACETS=[['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
+const SORTS={prio:'Priorità (wishlist)',nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca',valore_d:'Valore ↓',riv_d:'Rivalutazione ↓',acq_d:'Acquistati di recente',possesso:'Posseduti da più tempo'};
 const GROUPS={'':'Nessuno',w_priorita:'Priorità',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
 let devices=[];
 let S=LS.get('rd_state',{q:'',sel:{},group:'decennio',sort:'anno_a'});
@@ -500,18 +539,34 @@ const curSort=()=>isWishView()?(S.sortW||'prio'):S.sort;
 const curGroup=()=>isWishView()?(S.groupW??'w_priorita'):S.group;
 const pool=()=>devices.filter(d=>!!d.wish===isWishView());
 const PRIO={Alta:0,Media:1,Bassa:2};
+let SELM=null;
 const linkedTo=d=>d&&d.collegato?devices.find(x=>x.id===d.collegato):null;
 const LAYOUTS={list:['▤','Lista'],grid:['▦','Griglia'],time:['⏳','Linea del tempo']};
 const INT_TIPI=['Pulizia','Revisione / test','Sostituzione condensatori','Batteria PRAM / BIOS','Batteria','Riparazione','Upgrade','Sostituzione disco / SSD','Pasta termica','Retrobright','Taratura / convergenza (CRT)','Altro'];
-async function saveDev(o){o.modificato=Date.now();idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;dirty()}
+/* sincronizzazione per campo: ogni modifica locale ricorda l'ora dei soli campi cambiati (o.fts) */
+const SIG=new Map();
+function strHash(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+'.'+t.length}
+function fieldSig(o){const r={};for(const k of Object.keys(o))if(k[0]!=='_'&&k!=='fts'&&k!=='modificato'&&o[k]!==undefined)r[k]=strHash(JSON.stringify(o[k]));return r}
+function stamp(o){const prev=SIG.get(o.id),cur=fieldSig(o),now=Date.now();
+  if(!o.fts){const base=o.modificato||o.creato||0;o.fts={};for(const k of Object.keys(prev||{}))o.fts[k]=base}else o.fts=Object.assign({},o.fts);
+  for(const k of new Set([...Object.keys(cur),...Object.keys(prev||{})]))if(!prev||prev[k]!==cur[k])o.fts[k]=now;
+  for(const k of Object.keys(o.fts))if(!(k in cur)&&prev&&!(k in prev))delete o.fts[k];
+  SIG.set(o.id,cur)}
+const stable=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((a,y)=>(a[y]=x[y],a),{}):x);
+function fieldMerge(l,r){const lf=l.fts||{},rf=r.fts||{},out=Object.assign({},l),fts=Object.assign({},lf);let changed=false;const keys=[];
+  for(const k of new Set([...Object.keys(l),...Object.keys(r)])){if(k[0]==='_'||k==='fts'||k==='modificato'||k==='id')continue;
+    const lt=l.fts?(lf[k]??0):(l.modificato||0),rt=r.fts?(rf[k]??0):(r.modificato||0);
+    if(rt>lt&&stable(r[k])!==stable(l[k])){if(r[k]===undefined)delete out[k];else out[k]=r[k];fts[k]=rt;changed=true;keys.push(k)}}
+  out.fts=fts;out.modificato=Math.max(l.modificato||0,r.modificato||0);return {out,changed,keys}}
+async function saveDev(o){stamp(o);o.modificato=Date.now();idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;dirty()}
 const dueList=()=>{const lim=addDays(today(),14);return devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).filter(i=>i.prossimo&&!i.fatto&&i.prossimo<=lim).map(i=>({d,i}))).sort((a,b)=>a.i.prossimo.localeCompare(b.i.prossimo))};
 
 /* campi essenziali per la «completezza»; ognuno può essere segnato «non si sa» */
-const ESS={all:['foto','anno','marca','luogo','stato'],pc:['modello','cpu','ram'],tv:['modello','tv_pollici'],acc:['collegato']};
+const ESS={all:['foto','anno','marca','luogo','stato'],part0:['luogo'],pc:['modello','cpu','ram'],tv:['modello','tv_pollici'],acc:['collegato'],part:['part_cat']};
 const ESS_ALL=[...new Set(Object.values(ESS).flat())];
-const ESS_LAB={foto:'Foto',anno:'Anno',marca:'Marca',luogo:'Luogo',stato:'Stato',modello:'Modello',cpu:'Processore',ram:'RAM',tv_pollici:'Pollici',collegato:'Va con'};
+const ESS_LAB={foto:'Foto',anno:'Anno',marca:'Marca',luogo:'Luogo',stato:'Stato',modello:'Modello',cpu:'Processore',ram:'RAM',tv_pollici:'Pollici',collegato:'Va con',part_cat:'Categoria'};
 const hasVal=(d,k)=>k==='foto'?!!(d.foto&&d.foto.length):!(d[k]===undefined||d[k]===null||d[k]==='');
-function missing(d){if(d.wish)return [];const ig=d.ignoti||[];return [...ESS.all,...(ESS[kindOf(d.tipologia)]||[])].filter(k=>!hasVal(d,k)&&!ig.includes(k))}
+function missing(d){if(d.wish)return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[])].filter(k=>!hasVal(d,k)&&!ig.includes(k))}
 const TAGS0=['Preferito','Raro','Da restaurare','Da vendere','Regalo'];
 const loanOverdue=d=>!!(d.prestito&&d.prestito.al&&d.prestito.al<today());
 function vals(d,k){if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];return [val(d,k)]}
@@ -532,6 +587,11 @@ function pass(d,skip){
 function sorter(){
   const c=(a,b)=>String(a||'').localeCompare(String(b||''),'it',{numeric:true,sensitivity:'base'});
   const s=curSort();
+  const num=v=>parseFloat(v)||0,riv=d=>+d.valore&&+d.acq_prezzo?(+d.valore-+d.acq_prezzo):-1e9;
+  if(s==='valore_d')return (a,b)=>num(b.valore)-num(a.valore)||c(a.nome,b.nome);
+  if(s==='riv_d')return (a,b)=>riv(b)-riv(a)||c(a.nome,b.nome);
+  if(s==='acq_d')return (a,b)=>(+b.acq_anno||0)-(+a.acq_anno||0)||(b.creato||0)-(a.creato||0);
+  if(s==='possesso')return (a,b)=>(+a.acq_anno||9999)-(+b.acq_anno||9999)||c(a.nome,b.nome);
   return (a,b)=>s==='prio'?((PRIO[a.w_priorita]??3)-(PRIO[b.w_priorita]??3))||c(a.nome,b.nome):s==='anno_a'?((a.anno||9999)-(b.anno||9999))||c(a.nome,b.nome):s==='anno_d'?((b.anno||0)-(a.anno||0))||c(a.nome,b.nome):s==='recenti'?(b.creato||0)-(a.creato||0):s==='marca'?c(a.marca,b.marca)||c(a.nome,b.nome):c(a.nome,b.nome);
 }
 function save(){LS.set('rd_state',S)}
@@ -547,6 +607,10 @@ function render(){
   const b=$('#nF');b.hidden=!nF;b.textContent=nF;
   const unit=W?' desideri':' oggetti';
   let sum=`<span>${items.length===P.length?P.length+unit:items.length+' di '+P.length}</span>`;
+  render.items=items.map(d=>d.id);
+  if(SELM)sum=`<span><b>${SELM.size}</b> selezionati</span><button class="pill" data-selall>Tutti (${items.length})</button><button class="pill" data-selnone>Fine</button>`;
+  else if(items.length)sum+=`<button class="pill" data-selon>☑︎ Seleziona</button>`;
+  $('#fab').hidden=!!SELM;$('#bulk').hidden=!SELM;if(SELM){const n=SELM.size;$('#bulk').querySelectorAll('button').forEach(b=>b.disabled=b.dataset.b==='cmp'?(n<2||n>3):!n)}
   if(W){const tot=items.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0);if(tot)sum+=`<span>· budget € ${tot.toLocaleString('it')}</span>`}
   for(const [k,a] of Object.entries(S.sel))(a||[]).forEach(v=>sum+=`<button class="pill x" data-rm="${esc(k)}" data-v="${esc(v)}">${esc(v)}</button>`);
   const writeSum=()=>{$('#sum').innerHTML=sum+'<button id="syncS" class="sync" hidden aria-label="Sincronizza ora"></button>';updSync(syncing?'run':undefined,true)};writeSum();
@@ -574,12 +638,13 @@ function render(){
     for(const k of keys){html+=`<div class="gh">${esc(k==='—'?none:k)} <small>${map.get(k).length}</small></div>`+block(map.get(k))}
   }else html+=block(items);
   L.innerHTML=html;
+  if(SELM)L.querySelectorAll('[data-id]').forEach(c=>{c.classList.add('selc');c.classList.toggle('on',SELM.has(c.dataset.id))});
 }
 function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
-  const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:d.cpu].filter(Boolean).join(' · ');
-  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:kd==='part'?[d.part_cat,d.part_spec].filter(Boolean).join(' · '):d.cpu].filter(Boolean).join(' · ');
+  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
   return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
 function gcard(d){
@@ -593,7 +658,7 @@ function timeline(items){
   const ys=[...m.keys()].filter(y=>y!=='—').sort((a,b)=>desc?b-a:a-b);if(m.has('—'))ys.push('—');
   return `<div class="tl">${ys.map(y=>`<div class="ty">${y==='—'?'Senza anno':y}<small>${m.get(y).length}</small></div>`+m.get(y).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it')).map(card).join('')).join('')}</div>`;
 }
-function icon(d){const t=(d.tipologia||'').toLowerCase();return /televis|\btv\b|crt/.test(t)?'📺':/aliment|caricabat/.test(t)?'🔌':/cav[oi]|adattat/.test(t)?'🔗':/tastier/.test(t)?'⌨️':/mouse/.test(t)?'🖱️':/joystick|controller|console/.test(t)?'🎮':/manual|software/.test(t)?'📘':/scatola|imballo/.test(t)?'📦':/accessor|periferic/.test(t)?'🧩':/stampant/.test(t)?'🖨️':t.includes('portatil')?'💻':/smart|tablet/.test(t)?'📱':/music|ipod/.test(t)?'🎵':t.includes('foto')?'📷':'🖥️'}
+function icon(d){const t=(d.tipologia||'').toLowerCase();return /ricamb/.test(t)?'🔩':/televis|\btv\b|crt/.test(t)?'📺':/aliment|caricabat/.test(t)?'🔌':/cav[oi]|adattat/.test(t)?'🔗':/tastier/.test(t)?'⌨️':/mouse/.test(t)?'🖱️':/joystick|controller|console/.test(t)?'🎮':/manual|software/.test(t)?'📘':/scatola|imballo/.test(t)?'📦':/accessor|periferic/.test(t)?'🧩':/stampant/.test(t)?'🖨️':t.includes('portatil')?'💻':/smart|tablet/.test(t)?'📱':/music|ipod/.test(t)?'🎵':t.includes('foto')?'📷':'🖥️'}
 
 /* ============ pagine sovrapposte ============ */
 const stack=[];
@@ -646,9 +711,34 @@ function keyTiles(d){
   const t=k==='tv'?[['Diagonale',inch(d.tv_pollici)],['Tubo',d.tv_tubo],['Sistema',d.tv_standard],['Formato',d.tv_formato],['Frequenza',d.tv_freq],['Audio',d.tv_audio],['Ingressi',d.tv_ingressi]]
    :k==='acc'?[['Va con',(devices.find(x=>x.id===d.collegato)||{}).nome],['Compatibile',d.acc_compat],['Connettore',d.acc_connettore],['Uscita',d.acc_uscita],['Lunghezza',d.acc_lunghezza],['Quantità',d.quantita]]
    :[['Processore',d.cpu],['RAM',d.ram],['Archiviazione',d.storage],['Display',d.display],['Sistema',d.os_orig],['Grafica',d.gpu]];
-  return t.filter(x=>x[1]).slice(0,6);
+  return t.filter(x=>x[1]).slice(0,6).map(([a,b])=>[a,trVal(b,d)]);
 }
+/* numero di serie Apple → fabbrica e periodo di produzione (formati a 11 e 12 caratteri, fino al 2021) */
+const SN_PLANT={'CK':'Cork, Irlanda','FC':'Fountain, Colorado (USA)','F':'Fremont, California (USA)','XA':'Stati Uniti','XB':'Stati Uniti','G8':'Stati Uniti','QT':'Taiwan','UV':'Taiwan','EE':'Taiwan','CY':'Corea','PT':'Corea','RN':'Messico','SG':'Singapore','E':'Singapore','VM':'Repubblica Ceca (Foxconn)','W8':'Shanghai, Cina','YM':'Cina (Foxconn)','7J':'Cina (Foxconn)','1C':'Cina','4H':'Cina','QP':'Cina','GQ':'Cina','ZM':'Cina','RM':'ricondizionato da Apple'};
+const SN_Y12='CDFGHJKLMNPQRSTVWXYZ',SN_W12='123456789CDFGHJKLMNPQRTVWXY';
+const MESI_IT=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+function weekMonth(y,w){const d=new Date(y,0,1+(w-1)*7+3);return MESI_IT[d.getMonth()]+' '+y}
+function decodeSerial(sn,anno){
+  const s=String(sn||'').trim().toUpperCase().replace(/[\s-]/g,'');if(!s)return null;
+  const near=(c)=>{if(!c.length)return null;if(!anno)return c[0];return c.slice().sort((a,b)=>Math.abs(a-anno)-Math.abs(b-anno))[0]};
+  const plant=(c,one)=>SN_PLANT[c.slice(0,2)]||(one&&SN_PLANT[c[0]])||(/^[CDFGHWY]/.test(c)?'Cina (codice '+c+')':'codice '+c);
+  if(/^[A-Z0-9]{12}$/.test(s)){const yi=SN_Y12.indexOf(s[3]),wi=SN_W12.indexOf(s[4]);if(yi<0||wi<0)return {raw:s,nota:'Formato a 12 caratteri non riconosciuto'};
+    const y0=2010+Math.floor(yi/2),half=yi%2,y=near([y0,y0+10].filter(x=>x<=2021))||y0,w=wi+1+(half?26:0);
+    return {raw:s,fabbrica:plant(s.slice(0,3)),anno:y,settimana:w,quando:`${weekMonth(y,w)} (settimana ${w})`,modello:s.slice(8),formato:12}}
+  if(/^[A-Z0-9]{2}\d{3}[A-Z0-9]{6}$/.test(s)||/^[A-Z0-9]{2}\d{3}[A-Z0-9]{3,6}$/.test(s)&&s.length===11){const yd=+s[2],w=+s.slice(3,5);if(w<1||w>53)return {raw:s,nota:'Settimana non valida'};
+    const y=near([1990+yd,2000+yd,2010+yd].filter(x=>x>=1997&&x<=2012))||2000+yd;
+    return {raw:s,fabbrica:plant(s.slice(0,2),true),anno:y,settimana:w,quando:`${weekMonth(y,w)} (settimana ${w})`,modello:s.slice(8),formato:11}}
+  if(/^[A-Z0-9]{10}$/.test(s))return {raw:s,nota:'Seriale casuale (Apple dal 2021): non contiene fabbrica né data'};
+  return null;
+}
+function serialHTML(d){const r=decodeSerial(d.seriale,d.anno);if(!r)return '';
+  if(r.nota)return `<div class="sn">ℹ️ ${esc(r.nota)}</div>`;
+  const warn=d.anno&&r.anno&&Math.abs(r.anno-d.anno)>3?` · ⚠️ lontano dall'anno del modello (${d.anno})`:'';
+  return `<div class="sn">🏭 ${esc(r.fabbrica)} · 📅 ${esc(r.quando)}${r.modello?` · codice modello ${esc(r.modello)}`:''}${warn}<small> (indicativo)</small></div>`}
 function fieldDisplay(d,k){
+  if(k==='seriale')return esc(d.seriale)+serialHTML(d);
+  if(k==='luogo')return esc(d.luogo)+(d.verificato?`<div class="sn">✓ verificato il ${fmtD(d.verificato)}</div>`:'');
+  if(k==='compat')return (d.compat||[]).map(id=>devices.find(x=>x.id===id)).filter(Boolean).map(o=>`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`).join(', ')||'—';
   if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
   if(k==='collegato'){const o=devices.find(x=>x.id===d.collegato);return o?`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`:'<i>(non più in collezione)</i>'}
   if(k==='tv_pollici')return esc(inch(d[k]));
@@ -656,6 +746,7 @@ function fieldDisplay(d,k){
   if(k==='w_budget')return '€ '+esc(d[k]);
   if(k==='tags')return (d.tags||[]).map(t=>`<span class="chip" style="font-size:13px;padding:2px 9px">#${esc(t)}</span>`).join(' ');
   if(k==='valore'||k==='acq_prezzo')return '€ '+Number(d[k]).toLocaleString('it');
+  if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
 }
 function openDetail(id,replace){
@@ -676,7 +767,8 @@ function openDetail(id,replace){
   if(ms.length)h+=`<div class="note incn"><b>✎ Da completare</b><div class="chips" style="margin:6px 0 2px">${ms.map(k=>`<span class="mchip"><button data-fix="${k}">${ESS_LAB[k]||k}</button><button data-unk="${k}" title="Segna come sconosciuto">non si sa</button></span>`).join('')}</div><small>Tocca un dato per inserirlo, oppure «non si sa» se è ignoto o non esiste.</small></div>`;
   const tl=keyTiles(d);
   if(tl.length)h+=`<div class="tiles">${tl.map(([a,b])=>`<div class="tile"><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join('')}</div>`;
-  if(d.descrizione){const long=d.descrizione.length>320;h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}">${esc(d.descrizione)}</div></div>${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}`}
+  if(d.descrizione){const long=d.descrizione.length>320;
+    h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}" id="dsct">${esc(d.descrizione)}</div></div><div class="row" style="flex-wrap:wrap;gap:4px">${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}${d.descrizione_orig?'<button class="linkb" data-orig>Mostra originale</button>':''}</div>`}
   const kv=rows=>`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${b}</div>`).join('')}</div>`;
   for(const [t,fs] of SECTIONS.slice(1)){
     const ig=d.ignoti||[];
@@ -686,21 +778,27 @@ function openDetail(id,replace){
   }
   if(!d.wish){
     h+=valoreHTML(d)+loanHTML(d);
+    const mv=(d.spostamenti||[]).slice().reverse();
+    if(mv.length)h+=`<details class="more"><summary>Spostamenti (${mv.length})</summary><div class="log">${mv.map(x=>`<div class="li"><span class="ld">${fmtD(x.data)}</span><span class="lb"><b>${esc(x.da||'—')} → ${esc(x.a||'—')}</b></span></div>`).join('')}</div></details>`;
     const ints=(d.interventi||[]).slice().sort((a,b)=>String(b.data||'').localeCompare(a.data||''));
     const spesa=ints.reduce((s,i)=>s+(parseFloat(i.costo)||0),0);
     h+=`<div class="sec-t">Registro interventi${ints.length?` (${ints.length}${spesa?' · € '+spesa.toLocaleString('it'):''})`:''}</div>`+(ints.length?`<div class="log">${ints.map(i=>`<button class="li" data-int="${i.id}"><span class="ld">${fmtD(i.data)||'—'}</span><span class="lb"><b>${esc(i.tipo||'Intervento')}</b>${i.desc?`<span>${esc(i.desc)}</span>`:''}${i.costo||i.prossimo?`<small>${[i.costo?'€ '+esc(i.costo):'',i.prossimo?(i.fatto?'✔︎ promemoria fatto':(i.prossimo<today()?'⚠️ scaduto ':'⏰ prossimo ')+fmtD(i.prossimo)):''].filter(Boolean).join(' · ')}</small>`:''}</span></button>`).join('')}</div>`:'')+`<button class="btn sm sec" data-addint style="margin-top:8px">＋ Aggiungi intervento</button>`;
   }
   h+=attHTML(d);
+  if(['pc','tv'].includes(kindOf(d.tipologia))&&!d.wish){const {sure,maybe}=partsFor(d);
+    if(sure.length||maybe.length)h+=`<div class="sec-t">Ricambi in magazzino per questo oggetto (${sure.length+maybe.length})</div>`+sure.map(card).join('')+(maybe.length?`<p class="note" style="margin-bottom:4px">Forse compatibili (per modello o specifiche):</p>`+maybe.map(card).join(''):'');}
+  if(kindOf(d.tipologia)==='part'&&d.montato_su){const m=devices.find(x=>x.id===d.montato_su);h+=`<div class="note">🔧 Montato su ${m?`<a href="#" data-go="${m.id}">${esc(m.nome)}</a>`:'un oggetto non più in collezione'}${d.montato_il?' il '+fmtD(d.montato_il):''}.</div>`}
   const accs=devices.filter(x=>x.collegato===d.id);
   if(accs.length)h+=`<div class="sec-t">Accessori collegati (${accs.length})</div>`+accs.map(card).join('');
-  if(d.specs&&d.specs.length)h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary>${kv(d.specs.map(([a,b])=>[a,esc(b)]))}</details>`;
+  if(d.specs&&d.specs.length){
+    h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary><div id="spk">${kv(d.specs.map(([a,b])=>[trLabel(a),esc(trVal(b,d))]))}</div><div class="row" style="flex-wrap:wrap;gap:4px">${trOn()?'<button class="linkb" data-spo>Mostra originale</button>':''}</div></details>`}
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
   if(d.wish){
     const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
     if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='acc'?(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   openPage(d.nome,h,{replace,bare:true,mount(el){
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
@@ -711,6 +809,8 @@ function openDetail(id,replace){
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
       if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
+      if(t.closest('[data-orig]')){const b=t.closest('[data-orig]'),x=$('#dsct',el),o=b.dataset.on!=='1';x.textContent=o?d.descrizione_orig:d.descrizione;b.dataset.on=o?'1':'0';b.textContent=o?'Mostra traduzione':'Mostra originale';x.classList.remove('cl');return}
+      if(t.closest('[data-spo]')){const b=t.closest('[data-spo]'),o=b.dataset.on!=='1';$('#spk',el).innerHTML=kv(d.specs.map(([a,v])=>o?[a,esc(v)]:[trLabel(a),esc(trVal(v,d))]));b.dataset.on=o?'1':'0';b.textContent=o?'Mostra in italiano':'Mostra originale';return}
       if(t.closest('[data-more]')){const ds=$('.desc>div',el);ds.classList.toggle('cl');t.textContent=ds.classList.contains('cl')?'Leggi tutto ▾':'Riduci ▴'}
       const go=t.closest('[data-go]');if(go){e.preventDefault();openDetail(go.dataset.go)}
       const cd=t.closest('.card');if(cd)openDetail(cd.dataset.id);
@@ -728,17 +828,19 @@ function openDetail(id,replace){
       const li=t.closest('[data-int]');if(li)openIntervento(d,(d.interventi||[]).find(x=>x.id===li.dataset.int));
       if(t.closest('[data-cut]'))openCutout(d);
       if(t.closest('[data-split]'))return splitItem(d);
+      if(t.closest('[data-mount]'))return openMount(d);
+      if(t.closest('[data-cmp]'))return pickCompare(d);
       if(t.closest('[data-copyacc]'))return openCopyAcc(d);
       if(t.closest('[data-addacc]'))openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome});
       if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
         ['w_priorita','w_budget','w_link','w_note'].forEach(k=>delete o[k]);
-        idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
+        stamp(o);idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
       if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
-      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
+      if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';stamp(c);idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
       if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();dirty();
-        toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
+        toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
       const upd=async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})};
       if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:upd});
       if(t.closest('[data-paste]'))openImport({code:d.modello||d.emc||d.identifier||'',onResult:upd});
@@ -782,7 +884,7 @@ function openDue(){
   }});
 }
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
-const mainDevices=()=>devices.filter(x=>!x.wish&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
+const mainDevices=()=>devices.filter(x=>!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
 const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
 function cloneOne(a,extra){const c=JSON.parse(JSON.stringify(a));Object.keys(c).forEach(k=>k[0]==='_'&&delete c[k]);return Object.assign(c,{id:uid(),creato:Date.now(),seriale:'',interventi:[],quantita:1},extra)}
 async function splitItem(d){
@@ -796,7 +898,7 @@ function openAssign(list){
   const h=`<p style="margin-top:0">Ora ci sono ${list.length} «${esc(list[0].nome)}» separati. Indica a cosa appartiene ciascuno:</p>`+list.map((d,i)=>`<div class="res"><b>${esc(d.nome)} · n. ${i+1}</b><label class="f">Va con</label><select class="in" data-as="${d.id}">${devOpts(d.collegato)}</select><label class="f">Numero di serie (facoltativo, per riconoscerli)</label><input class="in" data-ser="${d.id}" value="${esc(d.seriale||'')}" autocomplete="off"></div>`).join('')+`<button class="btn" id="asv" style="width:100%;margin-top:12px">Salva</button><p class="note">Il luogo dell'accessorio diventa quello del computer a cui lo colleghi. Se l'altro computer non è ancora in collezione, aggiungilo e poi collega l'accessorio da «Modifica».</p>`;
   openPage('A cosa appartengono?',h,{mount(el){$('#asv',el).onclick=async()=>{
     for(const d of list){const v=$(`[data-as="${d.id}"]`,el).value,sr=$(`[data-ser="${d.id}"]`,el).value.trim(),o=devices.find(x=>x.id===v);
-      if((d.collegato||'')!==v||(d.seriale||'')!==sr){d.collegato=v;d.seriale=sr;if(o&&o.luogo)d.luogo=o.luogo;await saveDev(d)}}
+      if((d.collegato||'')!==v||(d.seriale||'')!==sr){d.collegato=v;d.seriale=sr;if(o&&o.luogo)setLuogo(d,o.luogo);await saveDev(d)}}
     render();toast('Collegamenti salvati');const f=list.find(x=>x.collegato);goBase(()=>openDetail(f?f.collegato:list[0].id))}}});
 }
 function openCopyAcc(d){
@@ -810,7 +912,7 @@ function openCopyAcc(d){
     draw();$('#cas',el).onchange=e=>{src=e.target.value;draw()};
     $('#cago',el).onclick=async()=>{let n=0;
       for(const s of el.querySelectorAll('[data-ca]')){const a=devices.find(x=>x.id===s.dataset.ca);if(!a||s.value==='skip')continue;
-        if(s.value==='move'){a.collegato=d.id;if(d.luogo)a.luogo=d.luogo;await saveDev(a)}
+        if(s.value==='move'){a.collegato=d.id;if(d.luogo)setLuogo(a,d.luogo);await saveDev(a)}
         else{if(s.value==='take'){a.quantita=Math.max(1,(+a.quantita||1)-1);await saveDev(a)}await saveDev(cloneOne(a,{collegato:d.id,luogo:d.luogo||a.luogo}))}
         n++}
       render();toast(n?`${n} accessori collegati a «${d.nome}»`:'Nessun accessorio scelto');if(n)goBase(()=>openDetail(d.id))};
@@ -818,8 +920,8 @@ function openCopyAcc(d){
 }
 /* ===== foto e file condivisi da altre app (Condividi → RDDC) ===== */
 const isHeic=f=>/hei[cf]/i.test(f.type||'')||/\.hei[cf]$/i.test(f.name||'');
-const HEIC_MSG='Foto in formato HEIC: il browser non riesce a leggerla. Nella Fotocamera Samsung disattiva «Immagini ad alta efficienza», oppure condividila convertita in JPEG.';
-const isImgFile=f=>(/^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(f.name||''))&&!isHeic(f);
+const HEIC_MSG='Foto HEIC: conversione non riuscita (la prima volta serve internet per scaricare il convertitore). In alternativa, nella Fotocamera Samsung disattiva «Immagini ad alta efficienza».';
+const isImgFile=f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|avif|bmp|hei[cf])$/i.test(f.name||'');
 async function readShared(){
   const c=await caches.open('rddc-share'),out=[];let meta={};
   for(const k of await c.keys()){const r=await c.match(k);if(/\/meta$/.test(k.url)){try{meta=await r.json()}catch(e){}continue}
@@ -839,7 +941,7 @@ async function sharedToData(files){
 function openShared({files,meta}){
   const imgs=files.filter(isImgFile),others=files.filter(f=>!isImgFile(f)),urls=[];
   const link=[meta.url,meta.text].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
-  const h=`${imgs.length?`<div class="phgrid" style="margin-bottom:10px">${imgs.map(f=>{const u=URL.createObjectURL(f);urls.push(u);return `<div class="pht"><img src="${u}" alt=""></div>`}).join('')}</div>`:''}
+  const h=`${imgs.length?`<div class="phgrid" style="margin-bottom:10px">${imgs.map(f=>{if(isHeic(f))return `<div class="pht" style="display:grid;place-items:center;font-size:12px;color:#555">🖼️ HEIC</div>`;const u=URL.createObjectURL(f);urls.push(u);return `<div class="pht"><img src="${u}" alt=""></div>`}).join('')}</div>`:''}
     ${others.length?`<div class="log" style="margin-bottom:10px">${others.map(f=>`<div class="att"><span class="ai">${isHeic(f)?'🖼️':attIcon({mime:f.type})}</span><span class="an"><b>${esc(f.name)}</b><small>${isHeic(f)?'HEIC: diventa un allegato':esc(f.type||'file')+' · '+fmtSize(f.size)}</small></span></div>`).join('')}</div>`:''}
     ${!files.length&&link?`<p class="note">Ricevuto un link: ${esc(link[0])}</p>`:''}
     ${files.length?`<p style="margin:4px 0 8px">${imgs.length?`${imgs.length} foto`:''}${imgs.length&&others.length?' e ':''}${others.length?`${others.length} ${others.length===1?'file (allegato)':'file (allegati)'}`:''}: dove li metto?</p>
@@ -858,6 +960,56 @@ function openShared({files,meta}){
       await saveDev(d);render();toast(`Aggiunti a «${d.nome}»`);goBase(()=>openDetail(d.id))});
   }});
 }
+
+/* ===== traduzioni: dizionario integrato (istantaneo, offline) + traduttore per i testi lunghi ===== */
+const TR_L={'Introduction Date':'Data di introduzione','Discontinued Date':'Fine produzione','Processors':'Processori','Architecture':'Architettura','Processor Speed':'Velocità processore','Processor Type':'Tipo di processore','Custom Speeds':'Velocità opzionali','Processor Upgrade':'Aggiornamento processore','System Bus Speed':'Velocità bus di sistema','Cache Bus Speed':'Velocità bus cache','ROM/Firmware Type':'Tipo ROM/firmware','ROM/Firmware Size':'Dimensione ROM/firmware','EFI Architecture':'Architettura EFI','L1 Cache':'Cache L1','L2 Cache':'Cache L2','L2/L3 Cache':'Cache L2/L3','L3 Cache':'Cache L3','RAM Type':'Tipo di RAM','Min. RAM Speed':'Velocità minima RAM','Standard RAM':'RAM di serie','Maximum RAM':'RAM massima','Motherboard RAM':'RAM sulla scheda madre','Onboard RAM':'RAM integrata','RAM Slots':'Slot RAM','Video Card':'Scheda video','VRAM Type':'Tipo VRAM','Standard VRAM':'VRAM di serie','Maximum VRAM':'VRAM massima','Built-in Display':'Schermo integrato','Native Resolution':'Risoluzione nativa','Display Resolution':'Risoluzione schermo','2nd Display Support':'Secondo monitor','2nd Max. Resolution':'Risoluzione max secondo monitor','Standard Storage':'Archiviazione di serie','Storage Capacity':'Capacità','Std. Storage Speed':'Velocità archiviazione','Storage Dimensions':'Formato disco','Storage Interface':'Interfaccia disco','Standard Optical':'Unità ottica','Standard Disk':'Unità disco','Standard Modem':'Modem','Standard Ethernet':'Ethernet','Standard AirPort':'AirPort (Wi-Fi)','Standard Wi-Fi':'Wi-Fi','Standard Wireless':'Wireless','Standard Bluetooth':'Bluetooth','USB Ports':'Porte USB','Firewire Ports':'Porte FireWire','Thunderbolt Ports':'Porte Thunderbolt','Expansion Slots':'Slot di espansione','Expansion Bays':'Alloggiamenti di espansione','Incl. Keyboard':'Tastiera inclusa','Incl. Input':'Puntamento incluso','Incl. Accessories':'Accessori inclusi','Case Type':'Tipo di case','Form Factor':'Formato','Apple Order No':'N° d\'ordine Apple','Apple Subfamily':'Sottofamiglia Apple','Apple Model No':'N° modello Apple','Battery Type':'Tipo di batteria','Battery Life':'Autonomia','Battery Life (Music)':'Autonomia (musica)','Battery Life (Video)':'Autonomia (video)','Battery Life (Voice)':'Autonomia (chiamate)','Standby Time':'Autonomia in standby','Full-Charge Time':'Tempo di ricarica completa','Pre-Installed MacOS':'macOS preinstallato','Pre-Installed System':'Sistema preinstallato','Pre-Installed OS':'Sistema preinstallato','Maximum MacOS':'macOS massimo','Maximum System':'Sistema massimo','Maximum OS':'Sistema massimo','Minimum Windows':'Windows minimo','Maximum Windows':'Windows massimo','MacOS 9 Support':'Supporto Mac OS 9','Windows Support':'Supporto Windows','Mac Support':'Compatibilità Mac','Audio Support':'Formati audio','Photo Support':'Formati foto','Video Support':'Formati video','USB Support':'Supporto USB','Firewire Support':'Supporto FireWire','Dimensions':'Dimensioni','Avg. Weight':'Peso medio','Weight':'Peso','Original Price (US)':'Prezzo originale (USA)','Original Price':'Prezzo originale','Est. Current Retail':'Valore attuale stimato (EveryMac)','Video (Monitor)':'Video (monitor)','Floppy (Ext.)':'Floppy (esterno)','Serial (Standard)':'Seriale (standard)','Serial (Geoport)':'Seriale (GeoPort)','S-Video Input':'Ingresso S-Video','S-Video Output':'Uscita S-Video','Microphone':'Microfono','Sound In':'Ingresso audio','Sound Out':'Uscita audio','Headphone':'Cuffie','Security (Lock)':'Antifurto (lock)','Power':'Alimentazione','Power Adapter':'Alimentatore','Connectivity':'Connettività','Ports':'Porte','Housing Color':'Colore della scocca','Camera':'Fotocamera','Cell Network':'Rete cellulare','Song Capacity':'Capienza brani','Photo Capacity':'Capienza foto','Predecessor':'Predecessore','Successor':'Successore','Release date':'Data di uscita','Discontinued':'Fine produzione','Introduced':'Introdotto','Os':'Sistema operativo','Related':'Correlati','Name':'Nome','Manufacturer':'Produttore','Developer':'Sviluppatore','Type':'Tipo','Media':'Supporti','Cpu':'Processore','Storage':'Archiviazione','Memory':'Memoria','Display':'Schermo','Sound':'Audio','Branding':'Marchio','Family':'Famiglia','Switch':'Interruttori','Keycaps':'Tasti','Interface':'Interfaccia'};
+const TR_C={'Italy':'Italia','United States':'Stati Uniti','United Kingdom':'Regno Unito','Germany':'Germania','France':'Francia','Spain':'Spagna','Switzerland':'Svizzera','Belgium':'Belgio','Netherlands':'Paesi Bassi','Denmark':'Danimarca','Finland':'Finlandia','Ireland':'Irlanda','Luxembourg':'Lussemburgo','Norway':'Norvegia','Portugal':'Portogallo','Sweden':'Svezia','Brazil':'Brasile','Mexico':'Messico','Japan':'Giappone','China':'Cina','New Zealand':'Nuova Zelanda','Korea':'Corea','The Philippines':'Filippine','Philippines':'Filippine','Thailand':'Thailandia','Poland':'Polonia','Czech Republic':'Repubblica Ceca','Greece':'Grecia','Hungary':'Ungheria','Turkey':'Turchia','Russia':'Russia','South Africa':'Sudafrica','United Arab Emirates':'Emirati Arabi Uniti','Saudi Arabia':'Arabia Saudita','Israel':'Israele','Chile':'Cile'};
+const TR_W={'None':'Nessuno','N/A':'n.d.','Yes':'Sì','Unknown':'Sconosciuto','Integrated':'Integrata','Soldered':'Saldato','Notebook':'Portatile','Handheld':'Palmare','Full-size':'Completa','Optional':'Opzionale','Built-in':'Integrato','Internal':'Interno','External':'Esterno','Dual/Mirroring':'Doppio / duplicato','Mirroring':'Duplicato','Boot/Virtualization':'Boot Camp / virtualizzazione','Virtualization':'Virtualizzazione','Removable':'Rimovibile','Non-Removable':'Non rimovibile'};
+const MESI={January:'gennaio',February:'febbraio',March:'marzo',April:'aprile',May:'maggio',June:'giugno',July:'luglio',August:'agosto',September:'settembre',October:'ottobre',November:'novembre',December:'dicembre'};
+const MESI_RE=Object.keys(MESI).join('|');
+const TR_T=[[new RegExp('\\b('+MESI_RE+') (\\d{1,2}), (\\d{4})\\b','g'),(m,a,b,c)=>b+' '+MESI[a]+' '+c],[new RegExp('\\b('+MESI_RE+') (\\d{4})\\b','g'),(m,a,b)=>MESI[a]+' '+b],
+  [/\bLithium[- ]Ion\b/gi,'ioni di litio'],[/\bLithium[- ]Polymer\b|\bLi-?Poly\b/gi,'litio-polimero'],[/\bHours\b/g,'ore'],[/\bHour\b/g,'ora'],[/\bMinutes\b/g,'minuti'],[/\bCores\b/g,'core'],[/\bMegapixels?\b/g,'megapixel'],
+  [/\bWidescreen\b/g,'panoramico'],[/\bOptional\b/g,'opzionale'],[/\bBuilt-in\b/g,'integrato'],[/\bInternal\b/g,'interno'],[/\bExternal\b/g,'esterno'],[/\bIntegrated\b/g,'integrata'],[/\bSoldered\b/g,'saldato'],[/\bNone\b/g,'nessuno'],
+  [/\bColor\b/g,'a colori'],[/\bSpace Gr[ae]y\b/g,'grigio siderale'],[/\bMetallic\b/g,'metallizzato'],[/\bInertial\b/g,'inerziale'],[/\bKeyboard\b/g,'tastiera'],[/\bUnknown\b/g,'sconosciuto'],[/\bCard Slot\b/g,'slot per schede'],[/\bfront\b/g,'anteriore'],[/\brear\b/g,'posteriore'],[/\(Rear\)/g,'(posteriore)'],[/\(Front\)/g,'(anteriore)']];
+const trOn=()=>LS.get('rd_tr',true);
+const EN_RE=/\b(the|and|with|from|that|does|not|for|only|can|supports?|however|which|this|was|were|has|have|are|is)\b/gi;
+const isLongEn=v=>{v=String(v||'');return v.length>50&&(v.match(EN_RE)||[]).length>=3};
+function trLabel(l){if(!trOn())return l;const m=String(l).match(/^(.*?)( \(\d+\))?$/),b=m[1],suf=m[2]||'';if(/^Prezzo /.test(b)){const c=b.slice(7);return 'Prezzo '+(TR_C[c]||c)+suf}return (TR_L[b]||b)+suf}
+function trVal(v,d){if(v==null||v===''||!trOn())return v;const t=String(v);if(d&&d.trad&&d.trad[t])return d.trad[t];if(TR_W[t.trim()])return TR_W[t.trim()];if(isLongEn(t))return t;let r=t;for(const [re,x] of TR_T)r=r.replace(re,x);return r}
+const decodeHTML=t=>{const x=document.createElement('textarea');x.innerHTML=t;return x.value};
+function splitChunks(t,max=450){const out=[];let cur='';for(const s of t.split(/(?<=[.!?;])\s+/)){if((cur+' '+s).trim().length>max&&cur){out.push(cur);cur=s}else cur=(cur?cur+' ':'')+s}if(cur)out.push(cur);return out.flatMap(c=>c.length>max?c.match(new RegExp('.{1,'+max+'}(\\s|$)','g')):[c])}
+async function myMemory(t){let r='';for(const part of splitChunks(t)){const res=await fetch('https://api.mymemory.translated.net/get?langpair=en%7Cit&q='+encodeURIComponent(part),{signal:AbortSignal.timeout(25000)});const j=await res.json();
+  if(j.quotaFinished||+j.responseStatus===429)throw new Error('quota');if(+j.responseStatus!==200)throw new Error(j.responseDetails||'errore del servizio');r+=(r?' ':'')+decodeHTML(j.responseData.translatedText)}return r}
+let TRANSLATOR=null,TR_BG=null;
+/* traduttore integrato del browser: si usa solo se è già pronto; altrimenti si scarica in sottofondo e intanto si usa il servizio */
+const withTimeout=(pr,ms)=>Promise.race([pr,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),ms))]);
+async function getTranslator(){if(TRANSLATOR)return TRANSLATOR;
+  try{if(!('Translator' in self))return null;const opt={sourceLanguage:'en',targetLanguage:'it'};const av=await withTimeout(Translator.availability(opt),3000);
+    if(av==='available'){TRANSLATOR=await withTimeout(Translator.create(opt),8000);return TRANSLATOR}
+    if((av==='downloadable'||av==='downloading')&&!TR_BG)TR_BG=Translator.create(opt).then(t=>{TRANSLATOR=t}).catch(()=>{});
+  }catch(e){}
+  return null}
+let PRE=null;
+async function preTr(){if(PRE)return PRE;try{const r=await fetch('traduzioni.json',{cache:'no-cache'});PRE=r.ok?await r.json():{}}catch(e){PRE={}}return PRE}
+async function translateText(t,onProg){const pre=await preTr(),h=await sha1hex(new TextEncoder().encode(String(t)));if(pre[h])return pre[h];
+  const tr=await getTranslator();const paras=String(t).split(/\n\s*\n/);const out=[];for(const p of paras)out.push(p.trim()?(tr?await withTimeout(tr.translate(p),20000).catch(()=>myMemory(p)):await myMemory(p)):p);return out.join('\n\n')}
+/* cosa resta da tradurre in un oggetto: la descrizione (se inglese) e i valori-frase delle specifiche */
+function toTranslate(d){const list=[];if(d.descrizione&&!d.descrizione_orig&&isLongEn(d.descrizione))list.push({k:'desc',t:d.descrizione});
+  for(const [,v] of d.specs||[])if(isLongEn(v)&&!(d.trad&&d.trad[v])&&!list.some(x=>x.t===v))list.push({k:'spec',t:v});return list}
+async function translateDevice(d,onProg){const list=toTranslate(d);if(!list.length)return 0;let n=0;
+  for(const x of list){onProg&&onProg(`Traduco ${++n}/${list.length}…`);const it=await translateText(x.t,onProg);
+    if(x.k==='desc'){d.descrizione_orig=d.descrizione;d.descrizione=it}else{d.trad=Object.assign({},d.trad,{[x.t]:it})}}
+  await saveDev(d);return list.length}
+let trRunning=false;
+async function autoTranslate(){
+  if(trRunning||!trOn()||!navigator.onLine||LS.get('rd_tr_block',0)>Date.now())return;
+  const todo=devices.filter(d=>toTranslate(d).length);if(!todo.length)return;
+  trRunning=true;let n=0;
+  try{for(const d of todo){if(await translateDevice(d))n++}}
+  catch(e){LS.set('rd_tr_block',Date.now()+(/quota/.test(e.message)?6*3600e3:30*60e3))}
+  finally{trRunning=false;if(n){render();toast(n===1?'1 descrizione tradotta in italiano':`${n} oggetti tradotti in italiano`)}}
+}
+const trErr=e=>/quota/.test(e.message)?'Limite giornaliero del servizio di traduzione raggiunto: riprova domani (le traduzioni fatte restano salvate).':'Traduzione non riuscita: '+e.message;
 
 /* ===== valore nel tempo ===== */
 function seedVal(o,old){o.valori=(o.valori||[]).slice();if(!o.valori.length&&old&&+old.valore)o.valori.push({id:uid(),data:new Date(old.modificato||old.creato||Date.now()).toISOString().slice(0,10),valore:+old.valore,fonte:'Stima iniziale'})}
@@ -981,6 +1133,29 @@ async function openAtt(d,id,download){
   if(!download&&/^video/.test(a.mime))return openPage(a.nome,`<video src="${url}" controls playsinline style="width:100%;max-height:72vh;border-radius:12px;background:#000"></video>`);
   const l=document.createElement('a');l.href=url;if(download)l.download=a.nome;else{l.target='_blank';l.rel='noopener'}document.body.append(l);l.click();l.remove();
 }
+/* ===== magazzino ricambi ===== */
+const inStock=p=>kindOf(p.tipologia)==='part'&&!p.wish&&!p.montato_su;
+function partsFor(d){
+  const parts=devices.filter(inStock),sure=parts.filter(p=>(p.compat||[]).includes(d.id));
+  const keys=[d.modello,d.identifier,d.emc&&'EMC '+d.emc].filter(x=>x&&String(x).length>=4).map(x=>String(x).toLowerCase());
+  const ramT=(String(d.ram||'').match(/PC\d?-?\d{3,5}|DDR\d?L?/gi)||[]).map(x=>x.toLowerCase());
+  const maybe=parts.filter(p=>!sure.includes(p)&&(()=>{const t=(String(p.part_compat||'')+' '+String(p.part_spec||'')).toLowerCase();
+    return keys.some(k=>t.includes(k))||(p.part_cat==='RAM'&&ramT.some(r=>t.includes(r)))})());
+  return {sure,maybe};
+}
+function openMount(p){
+  const comp=new Set(p.compat||[]),list=mainDevices().filter(x=>['pc','tv'].includes(kindOf(x.tipologia))).sort((a,b)=>(comp.has(b.id)-comp.has(a.id))||String(a.nome).localeCompare(b.nome,'it'));
+  openPage('Monta su…',`<p style="margin-top:0">Su quale computer monti «${esc(p.nome)}»? Registro un intervento nella sua scheda${+p.quantita>1?' e tolgo un pezzo dal magazzino':' e segno il ricambio come montato'}.</p><input class="in" id="mq" placeholder="Cerca…" autocomplete="off"><div id="ml"></div>`,{mount(el){
+    const draw=()=>{const q=$('#mq',el).value.trim().toLowerCase();$('#ml',el).innerHTML=list.filter(x=>!q||x._i.includes(q)).map(x=>`<button class="res" data-m2="${x.id}"><b>${comp.has(x.id)?'✓ ':''}${esc(x.nome)}</b><small>${esc([x.anno,x.luogo].filter(Boolean).join(' · '))}${comp.has(x.id)?' · compatibile':''}</small></button>`).join('')||'<p class="note">Nessun computer trovato</p>'};
+    draw();$('#mq',el).oninput=draw;
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-m2]');if(!b)return;const m=devices.find(x=>x.id===b.dataset.m2);
+      if(!await ask(`Montare «${p.nome}» su «${m.nome}»?`,'Monta'))return;
+      (m.interventi=m.interventi||[]).push({id:uid(),data:today(),tipo:/RAM|Disco|Scheda di esp/.test(p.part_cat||'')?'Upgrade':'Sostituzione',desc:`Montato: ${p.nome}${p.part_spec?' ('+p.part_spec+')':''}`});
+      await saveDev(m);
+      if(+p.quantita>1){p.quantita=+p.quantita-1;await saveDev(p)}else{p.montato_su=m.id;p.montato_il=today();await saveDev(p)}
+      render();toast('Montato 🔧 e registrato negli interventi');goBase(()=>openDetail(m.id))});
+  }});
+}
 function openViewer(foto,i,{onCover}={}){
   openPage('',`<div class="vw">${foto.map(f=>`<img src="${f}" alt="">`).join('')}</div><button class="hb l" data-back aria-label="Chiudi">✕</button>${onCover&&foto.length>1?'<button class="btn vcov" id="vcov"></button>':''}`,{bare:true,cls:'viewer',mount(el){const v=$('.vw',el);
     const b=$('#vcov',el),cur=()=>Math.round(v.scrollLeft/(v.clientWidth||1));
@@ -1005,10 +1180,12 @@ function listOpts(kind){
 function fieldHTML(k,l,t,v,d){
   v=v==null?'':v;t=t||'';
   if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
+  if(t==='links'){const cur=Array.isArray(v)?v:[];const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&['pc','tv'].includes(kindOf(x.tipologia))).sort((a,b)=>(cur.includes(b.id)-cur.includes(a.id))||String(a.nome).localeCompare(b.nome,'it'));
+    return `<label class="f">${l}</label><input class="in" id="lnkq" placeholder="Cerca un computer…" autocomplete="off"><div class="lnkbox" id="lnkbox">${opts.map(x=>`<label class="lnk"><input type="checkbox" value="${x.id}" ${cur.includes(x.id)?'checked':''}> ${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</label>`).join('')||'<small style="color:var(--mute)">Nessun computer in collezione</small>'}</div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='tags'){const cur=Array.isArray(v)?v:[];const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[]),...cur])];
     return `<label class="f">${l}</label><div class="chips" id="tagbox">${all.map(x=>`<button type="button" class="chip ${cur.includes(x)?'on':''}" data-tag="${esc(x)}">#${esc(x)}</button>`).join('')}</div><div class="row"><input class="in" id="newtag" placeholder="Nuova etichetta (es. Da pulire)" autocomplete="off"><button type="button" class="btn sm sec" id="addtag">＋</button></div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
-  if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&kindOf(x.tipologia)!=='acc').sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
+  if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
     return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('')}</select>`}
   if(t==='color'){const hx=d.colore_hex||nameHex(v);
     return `<label class="f">${l}</label><div class="row"><span class="swbig ${hx?'':'none'}" id="swp" style="--c:${esc(hx)}"></span><input class="in" name="colore" list="dl_colori" value="${esc(v)}" autocomplete="off" placeholder="Es. Mirtillo, Argento, Nero"><label class="ibtn" title="Colore personalizzato">🎨<input type="color" id="cpick" value="${esc(/^#[0-9a-f]{6}$/i.test(hx)?hx:'#f2a531')}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%"></label></div>
@@ -1076,6 +1253,11 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     drawPh();
     const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' ');x.hidden=w.includes('wish')?!d.wish:w.includes('own')?!!d.wish:!w.includes(k)})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);
+    /* compatibilità multipla dei ricambi */
+    const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
+      $('#lnkq',el).oninput=e=>{const q=e.target.value.trim().toLowerCase();lb.querySelectorAll('.lnk').forEach(x=>x.hidden=!!q&&!x.textContent.toLowerCase().includes(q))}}
+    /* numero di serie decodificato mentre lo scrivi */
+    if(fm.seriale){const out=document.createElement('div');out.className='sn';fm.seriale.after(out);const dec=()=>{out.innerHTML=serialHTML({seriale:fm.seriale.value,anno:+fm.anno.value||0}).replace(/^<div class="sn">|<\/div>$/g,'')};dec();fm.seriale.addEventListener('input',dec)}
     /* etichette */
     const tagsIn=fm.tags,tb=$('#tagbox',el),setTags=()=>{tagsIn.value=JSON.stringify([...tb.querySelectorAll('.on')].map(b=>b.dataset.tag))};
     tb.addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(b){b.classList.toggle('on');setTags()}});
@@ -1111,11 +1293,12 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         const cur=collect(fm);
         if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
         const o=Object.assign({},d,cur,{foto,thumb});
+        if(!isNew&&(d.luogo||'')!==(o.luogo||''))o.spostamenti=[...(d.spostamenti||[]),{data:today(),da:d.luogo||'',a:o.luogo||''}];
         o.id=o.id||uid();o.creato=o.creato||Date.now();o.modificato=Date.now();
         if(!o.wish&&o.valore!==''&&String(+o.valore)!==String(+d.valore||'')){seedVal(o,d);o.valori.push({id:uid(),data:today(),valore:+o.valore,fonte:'Stima personale'})}
         const dup=devices.find(x=>x.id!==o.id&&!!x.wish===!!o.wish&&x.nome===o.nome&&(x.modello||'')===(o.modello||'')&&(x.emc||'')===(o.emc||'')&&(x.collegato||'')===(o.collegato||'')&&(x.seriale||'')===(o.seriale||''));
         if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
-        idx(o);await DB.put(o);
+        stamp(o);idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
         dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');
       }
@@ -1127,6 +1310,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     o.anno=o.anno?parseInt(o.anno,10)||'':'';
     for(const [k] of ALLF)o[k]=f[k].value.trim();
     try{o.tags=JSON.parse(f.tags.value||'[]')}catch(e){o.tags=[]}
+    try{o.compat=JSON.parse(f.compat.value||'[]')}catch(e){o.compat=[]}
     o.ignoti=[...f.querySelectorAll('.unk.on')].map(b=>b.dataset.unkt);
     o.colore_hex=f.colore_hex.value;
     o.fonte=f.fonte.value.trim();
@@ -1134,7 +1318,11 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     return o;
   }
 }
+let HEIC_LIB=null;
+function loadHeic(){if(HEIC_LIB)return HEIC_LIB;HEIC_LIB=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';sc.onload=()=>window.heic2any?res(window.heic2any):rej(new Error('libreria'));sc.onerror=()=>{HEIC_LIB=null;rej(new Error('rete'))};document.head.append(sc)});return HEIC_LIB}
+async function heicToJpeg(b){const lib=await loadHeic();toast('Converto la foto HEIC…',4000);const r=await lib({blob:b,toType:'image/jpeg',quality:.9});return Array.isArray(r)?r[0]:r}
 async function shrink(src,max,q=.82){
+  if(src instanceof Blob&&isHeic(src))src=await heicToJpeg(src);
   const bmp=await createImageBitmap(src instanceof Blob?src:await (await fetch(src)).blob());
   const s=Math.min(1,max/Math.max(bmp.width,bmp.height));
   const c=document.createElement('canvas');c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);
@@ -1634,6 +1822,8 @@ async function mergeFetched(base,r,overwrite){
     m.specs=[...have];
   }
   if(r.fonte)m.fonte=r.fonte;
+  if(trOn()&&m.descrizione&&m.descrizione===r.fields.descrizione&&isLongEn(m.descrizione)){
+    try{toast('Traduco la descrizione…',8000);const it=await translateText(m.descrizione);m.descrizione_orig=m.descrizione;m.descrizione=it}catch(e){/* riproverà da sola in seguito */}}
   if((r.imageBlob||r.imageUrl)&&!(m.foto&&m.foto.length)){
     try{const b=r.imageBlob||await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
   }
@@ -1654,7 +1844,17 @@ function statsPage(devices,wl){
   const cs=collSeries();
   const h2=`<div class="sec-t">Valore della collezione nel tempo</div>`+(cs.ok?`<div class="chart" id="cvch"></div><details class="more" style="margin-top:4px"><summary>Tabella</summary><div class="kv">${cs.val.filter(p=>!p.virt).map(p=>`<div>${fmtD(new Date(p.t).toISOString())}</div><div>€ ${p.v.toLocaleString('it')}</div>`).join('')}</div></details>`:`<p class="note">Il grafico appare quando ci sono almeno due valutazioni (o un valore e un prezzo pagato). Aggiungile dalla sezione «Valore» delle schede.</p>`)
     +(tops.length?`<div class="sec-t">Rispetto al prezzo pagato</div><div class="log">${tops.map(({d,g})=>`<button class="li" data-go="${d.id}"><span class="lb"><b>${esc(d.nome)}</b><small>pagato € ${(+d.acq_prezzo).toLocaleString('it')} · ora € ${(+d.valore).toLocaleString('it')}</small></span><span class="ld" style="text-align:right;margin-left:auto">${g>=0?'▲':'▼'} € ${Math.abs(g).toLocaleString('it')}</span></button>`).join('')}</div>`:'');
-  openPage('Statistiche',h2+h,{mount(el){const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
+  const sb=(title,key,valf,fmt)=>{const c=new Map();devices.forEach(d=>{const k=key(d);if(k==null||k==='')return;c.set(k,(c.get(k)||0)+valf(d))});
+    const a=[...c].filter(x=>x[1]).sort((x,y)=>String(x[0]).localeCompare(String(y[0]),'it',{numeric:true}));if(!a.length)return '';const mx=Math.max(...a.map(x=>x[1]),1);
+    return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${fmt(v)}</span></div>`).join('')};
+  const eur=v=>'€ '+Math.round(v).toLocaleString('it'),yNow=new Date().getFullYear();
+  const owned=devices.filter(d=>+d.acq_anno),avg=owned.length?owned.reduce((s,d)=>s+(yNow-+d.acq_anno),0)/owned.length:0;
+  const oldest=owned.slice().sort((a,b)=>+a.acq_anno-+b.acq_anno).slice(0,5);
+  const ver=devices.filter(d=>d.verificato&&d.verificato>=addDays(today(),-365)).length,never=devices.filter(d=>!d.verificato).length;
+  const h3=sb('Spesa per anno di acquisto',d=>d.acq_anno,d=>parseFloat(d.acq_prezzo)||0,eur)+sb('Valore per luogo',d=>d.luogo||'—',d=>parseFloat(d.valore)||0,eur)
+    +(owned.length?`<div class="sec-t">Da quanto li possiedi</div><div class="kv"><div>In media</div><div>${avg.toLocaleString('it',{maximumFractionDigits:1})} anni</div>${oldest.map(d=>`<div>${esc(d.nome)}</div><div>dal ${d.acq_anno} (${yNow-+d.acq_anno} anni)</div>`).join('')}</div>`:'')
+    +`<div class="sec-t">Inventario</div><div class="kv"><div>Verificati nell'ultimo anno</div><div>${ver}</div><div>Mai verificati</div><div>${never}</div></div>`;
+  openPage('Statistiche',h2+h+h3,{mount(el){const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
     el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
 }
 
@@ -1861,6 +2061,8 @@ function openMenu(){
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
+  <button class="res" data-m="inv"><b>📋 Inventario</b><small>Controlla luogo per luogo cosa c'è davvero${LS.get('rd_inv',null)?' · inventario in corso':''}</small></button>
+
   <div class="sec-t">Database su GitHub</div>
   <div class="note" id="dbi"></div>
   <button class="res" data-m="dbsync"><b>🔄 Sincronizza ora</b><small id="dbsm"></small></button>
@@ -1888,6 +2090,7 @@ function openMenu(){
   <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
   <input type="file" id="fi" accept=".json,application/json" hidden>
   <div class="sec-t">Impostazioni</div>
+  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
   <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
   <label class="f">Proxy personale per la ricerca su EveryMac</label>
   <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
@@ -1909,12 +2112,14 @@ function openMenu(){
       $('#dbi',el).innerHTML=(ghOn()?`Sincronizzazione automatica con <b>${esc(ghCfg().repo)}</b> attiva.`:`Il file <b>collezione.json</b> nel repository GitHub dell'app viene caricato automaticamente su ogni telefono.`)+(l?`<br>Ultima sincronizzazione: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti${l.nuovi||l.agg||l.canc?` · ricevuti ${l.nuovi} nuovi, ${l.agg} aggiornati${l.canc?', '+l.canc+' eliminati':''}`:''}${l.inviati?` · inviati ${l.inviati} oggetti${l.foto?' e '+l.foto+' foto':''}`:''}`:'');
       $('#dbsm',el).textContent=ghOn()?'Riceve le novità dagli altri telefoni e invia le tue modifiche.':'Aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente. Le modifiche fatte su questo telefono non vengono perse.'};dbInfo();
     (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
+    const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
       if(a==='stats')openStats();
       if(a==='cat')openCatalog();
       if(a==='due')openDue();
+      if(a==='inv')openInventory();
       if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',exportJSON());toast('Backup scaricato')}
       if(a==='dbexp'){dl('collezione.json','application/json',exportJSON());toast('Scaricato collezione.json: caricalo nel repository GitHub',4000)}
       if(a==='dbs'){LS.set('rd_db_url',$('#dbu',el).value.trim()||'collezione.json');LS.set('rd_db_auto',$('#dba',el).checked);LS.set('rd_db_sig','');toast('Salvato')}
@@ -1937,7 +2142,7 @@ function openMenu(){
     });
     $('#fi',el).onchange=async e=>{
       try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
-        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
+        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();stamp(d);idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
         render();dirty();toast(n+' oggetti importati')}catch(err){toast('File non valido')}
     };
   }});
@@ -1949,7 +2154,7 @@ function exportJSON(){return JSON.stringify({app:'rddc',v:3,esportato:Date.now()
 function markDeleted(id){const a=LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id);a.push({id,t:Date.now()});LS.set('rd_deleted',a.slice(-3000))}
 function unmarkDeleted(id){LS.set('rd_deleted',LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id))}
 const deletedMap=()=>new Map(LS.get('rd_deleted',[]).map(x=>typeof x==='string'?[x,0]:[x.id,x.t]));
-function dirty(){LS.set('rd_dirty',Date.now());if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
+function dirty(){LS.set('rd_dirty',Date.now());clearTimeout(dirty.tr);dirty.tr=setTimeout(autoTranslate,4000);if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
 const SYNC_SVG={
   run:'<g class="sy"><path d="M9.4 14.6a2.7 2.7 0 0 1 4.6-2.5"/><path d="M14.6 14.4a2.7 2.7 0 0 1-4.6 2.3"/><path d="M14.3 10.6v1.6h-1.6"/><path d="M9.7 18.4v-1.6h1.6"/></g>',
   ok:'<path class="sy" d="M9.4 14.6l1.8 1.8 3.4-3.6"/>',dirty:'<path class="sy" d="M12 17v-4.8M9.9 14.2l2.1-2.1 2.1 2.1"/>',err:'<path class="sy" d="M12 11.8v2.9M12 17v.1"/>'};
@@ -1984,10 +2189,12 @@ async function mergeRemote(arr,tomb,fetchPhoto){
     if(!d||!d.nome)continue;
     d.id=d.id||hashId([d.nome,d.modello,d.seriale,d.wish?'w':''].join('|'));
     if(del.has(d.id)&&(d.modificato||0)<=del.get(d.id))continue;
-    const i=devices.findIndex(x=>x.id===d.id);
-    if(i<0)nuovi++;else if((d.modificato||0)>(devices[i].modificato||0))agg++;else continue;
-    await localizePhotos(d,fetchPhoto);
-    idx(d);await DB.put(d);const k=devices.findIndex(x=>x.id===d.id);k<0?devices.push(d):devices[k]=d;
+    const i=devices.findIndex(x=>x.id===d.id);let o=d;
+    if(i<0)nuovi++;
+    else{const m=fieldMerge(devices[i],d);if(!m.changed)continue;agg++;o=m.out;
+      if(!m.keys.some(k=>['foto','thumb','scontorno'].includes(k))){idx(o);await DB.put(o);devices[i]=o;SIG.set(o.id,fieldSig(o));continue}}
+    await localizePhotos(o,fetchPhoto);
+    idx(o);await DB.put(o);const k=devices.findIndex(x=>x.id===o.id);k<0?devices.push(o):devices[k]=o;SIG.set(o.id,fieldSig(o));
   }
   return {nuovi,agg,canc};
 }
@@ -2021,19 +2228,26 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map();
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(conv));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
         const remElim=[...tombsOf(remote)].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         n=out.length;
-        if(!files.size&&tmap.has('collezione.json')&&JSON.stringify(remSorted)===JSON.stringify(out)&&JSON.stringify(remElim)===JSON.stringify(elim))break;
+        /* file in foto/ e allegati/ (e nelle vecchie cartelle numerate) che nessun oggetto usa più */
+        const FILE_RE=/(?:^|\/)((?:foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5})$/,refs=new Set();
+        const ref=u=>{if(typeof u==='string'){const m=u.match(FILE_RE);if(m)refs.add(m[1])}};
+        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);(o.allegati||[]).forEach(a=>ref(a.data))}
+        for(const p of files.keys())refs.add(p);
+        const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5}$/.test(p)&&!refs.has(p));
+        if(!files.size&&!orphans.length&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
         const entries=[];
         for(const [path,b64] of files)entries.push({path,mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha});
         const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
+        for(const p of orphans)entries.push({path:p,mode:'100644',type:'blob',sha:null});
         const nt=await gh('git/trees',{method:'POST',body:{base_tree:treeSha,tree:entries}});
-        const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''})`,tree:nt.sha,parents:[head]}});
+        const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''}${orphans.length?`, ${orphans.length} file non usati rimossi`:''})`,tree:nt.sha,parents:[head]}});
         try{await gh(`git/refs/heads/${c.branch}`,{method:'PATCH',body:{sha:nc.sha,force:false}})}
         catch(e){if((e.status===422||e.status===409)&&attempt<3)continue;throw e}
         inviati=out.length;nfoto=files.size;break;
@@ -2075,14 +2289,88 @@ $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');i
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 /* pressione lunga su un elemento della lista → anteprima (stile 3D Touch) */
 let lp=null,lpSwallow=0;
-$('#list').addEventListener('pointerdown',e=>{const c=e.target.closest('[data-id]');if(!c||e.button>0)return;
+$('#list').addEventListener('pointerdown',e=>{const c=e.target.closest('[data-id]');if(!c||e.button>0||SELM)return;
   c.classList.add('pressing');lp={c,x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp.fired=true;c.classList.remove('pressing');try{navigator.vibrate&&navigator.vibrate(12)}catch(er){}openPeek(c.dataset.id,c)},480)}});
 const lpEnd=ev=>{if(!lp)return;clearTimeout(lp.t);lp.c.classList.remove('pressing');if(lp.fired&&ev&&ev.type==='pointerup')lpSwallow=Date.now()+600;lp=null};
 $('#list').addEventListener('pointermove',e=>{if(lp&&!lp.fired&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10)lpEnd()});
 ['pointerup','pointercancel'].forEach(t=>addEventListener(t,lpEnd));
 $('#list').addEventListener('contextmenu',e=>{if(e.target.closest('[data-id]'))e.preventDefault()});
+/* ===== selezione multipla e modifiche in blocco ===== */
+function startSel(id){if(SELM)return;SELM=new Set(id?[id]:[]);history.pushState({p:0,sel:1},'');render()}
+function endSel(){if(!SELM)return;SELM=null;render();if(history.state&&history.state.sel)history.back()}
+addEventListener('popstate',()=>{if(SELM&&!(history.state&&history.state.sel)&&!stack.length){SELM=null;render()}});
+function setLuogo(d,nuovo){nuovo=(nuovo||'').trim();if((d.luogo||'')===nuovo)return false;(d.spostamenti=d.spostamenti||[]).push({data:today(),da:d.luogo||'',a:nuovo});d.luogo=nuovo;return true}
+const selected=()=>[...(SELM||[])].map(id=>devices.find(x=>x.id===id)).filter(Boolean);
+async function bulkDone(msg){SELM=null;render();toast(msg,3500);goBase(()=>{render();if(history.state&&history.state.sel)history.back()})}
+$('#bulk').addEventListener('click',async e=>{const b=e.target.closest('[data-b]');if(!b||b.disabled)return;const L=selected(),n=L.length,a=b.dataset.b;
+  if(a==='cmp')return openCompare(L);
+  if(a==='ver'){for(const d of L){d.verificato=today();await saveDev(d)}SELM=null;render();toast(`${n} oggetti verificati oggi ✓`);if(history.state&&history.state.sel)history.back();return}
+  if(a==='del'){if(!await ask(`Eliminare ${n} oggetti?`,'Elimina',true))return;for(const d of L){await DB.del(d.id);markDeleted(d.id)}devices=devices.filter(x=>!L.includes(x));SELM=null;render();dirty();if(history.state&&history.state.sel)history.back();
+    toast(`Eliminati ${n} oggetti`,7000,{label:'ANNULLA',fn:async()=>{for(const d of L){unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d)}render();dirty();toast('Ripristinati')}});return}
+  if(a==='luogo'){const ls=[...new Set([...LUOGHI0,...devices.map(d=>d.luogo).filter(Boolean)])];
+    openPage(`Luogo di ${n} oggetti`,`<div class="chips">${ls.map(l=>`<button class="chip" data-l="${esc(l)}">📍 ${esc(l)}</button>`).join('')}</div><label class="f">…oppure un altro luogo</label><div class="row"><input class="in" id="bl" autocomplete="off"><button class="btn" id="blok">Sposta</button></div><p class="note">Ogni spostamento resta nello storico dell'oggetto.</p>`,{mount(el){
+      const go=async l=>{let k=0;for(const d of L)if(setLuogo(d,l)){await saveDev(d);k++}bulkDone(`${k} oggetti spostati a ${l||'nessun luogo'}`)};
+      el.addEventListener('click',e=>{const c=e.target.closest('[data-l]');if(c)go(c.dataset.l)});$('#blok',el).onclick=()=>go($('#bl',el).value)}});return}
+  if(a==='stato')return openPage(`Stato di ${n} oggetti`,`<div class="chips">${STATI.map(x=>`<button class="chip" data-st="${esc(x)}">${esc(x)}</button>`).join('')}</div>`,{mount(el){el.addEventListener('click',async e=>{const c=e.target.closest('[data-st]');if(!c)return;for(const d of L){d.stato=c.dataset.st;await saveDev(d)}bulkDone(`Stato «${c.dataset.st}» per ${n} oggetti`)})}});
+  if(a==='tag'){const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[])])],has=[...new Set(L.flatMap(d=>d.tags||[]))];
+    openPage(`Etichette di ${n} oggetti`,`<div class="sec-t">Aggiungi a tutti</div><div class="chips">${all.map(t=>`<button class="chip" data-ta="${esc(t)}">＋ #${esc(t)}</button>`).join('')}</div><div class="row"><input class="in" id="nt" placeholder="Nuova etichetta" autocomplete="off"><button class="btn sm sec" id="ntb">＋</button></div>${has.length?`<div class="sec-t">Togli a tutti</div><div class="chips">${has.map(t=>`<button class="chip" data-tr2="${esc(t)}">− #${esc(t)}</button>`).join('')}</div>`:''}<button class="btn" id="tgok" style="width:100%;margin-top:16px">Fatto</button>`,{mount(el){
+      const add=async t=>{t=t.trim().replace(/^#/,'');if(!t)return;for(const d of L)if(!(d.tags||[]).includes(t)){d.tags=[...(d.tags||[]),t];await saveDev(d)}render();toast(`#${t} aggiunta`)};
+      el.addEventListener('click',async e=>{const x=e.target.closest('[data-ta]');if(x)return add(x.dataset.ta);const y=e.target.closest('[data-tr2]');if(y){const t=y.dataset.tr2;for(const d of L)if((d.tags||[]).includes(t)){d.tags=d.tags.filter(z=>z!==t);await saveDev(d)}y.remove();render();toast(`#${t} tolta`)}});
+      $('#ntb',el).onclick=()=>{add($('#nt',el).value);$('#nt',el).value=''};$('#tgok',el).onclick=()=>bulkDone('Etichette aggiornate')}});}
+});
+/* ===== confronto affiancato ===== */
+function openCompare(list){
+  const n=list.length,F=[['Anno','anno'],['Tipologia','tipologia'],['Marca','marca'],['Modello','modello'],['Model ID','identifier'],['Processore','cpu'],['RAM','ram'],['Archiviazione','storage'],['Grafica','gpu'],['Schermo','display'],['Sistema originale','os_orig'],['Sistema massimo','os_max'],['Porte','porte'],['Batteria','batteria'],['Peso','peso'],['Colore','colore'],['Luogo','luogo'],['Stato','stato'],['Condizione','condizione'],['Pagato (€)','acq_prezzo'],['Valore stimato (€)','valore'],['Numero di serie','seriale']];
+  const rows=F.map(([l,k])=>[l,list.map(d=>trVal(d[k],d)||'')]);
+  const labs=[];list.forEach(d=>(d.specs||[]).forEach(([l])=>{if(!labs.includes(l))labs.push(l)}));
+  const specRows=labs.map(l=>[trLabel(l),list.map(d=>{const p=(d.specs||[]).find(x=>x[0]===l);return p?trVal(p[1],d):''})]);
+  const grid=(rs,only)=>rs.filter(([,v])=>v.some(Boolean)&&(!only||new Set(v).size>1)).map(([l,v])=>{const df=new Set(v).size>1;return `<div class="lab">${esc(l)}</div>`+v.map(x=>`<div class="${df?'df':''}">${esc(x)||'—'}</div>`).join('')}).join('');
+  const head=`<div class="lab"></div>`+list.map(d=>`<div class="hd"><a href="#" data-go="${d.id}" style="color:inherit;text-decoration:none">${(d.foto&&d.foto[0])?`<img src="${d.foto[0]}" alt="">`:`<div style="font-size:34px">${icon(d)}</div>`}${esc(d.nome)}</a></div>`).join('');
+  const cols=`grid-template-columns:minmax(80px,24%) repeat(${n},1fr)`;
+  openPage('Confronto',`<label class="row" style="gap:10px;font-size:14px;margin:0 0 10px"><input type="checkbox" id="onlyd" style="width:20px;height:20px"> Mostra solo le differenze</label><div id="cmpb"></div>`,{mount(el){
+    const draw=()=>{const o=$('#onlyd',el).checked;$('#cmpb',el).innerHTML=`<div class="cmp" style="${cols}">${head+grid(rows,o)}</div>${specRows.length?`<div class="sec-t">Tutte le specifiche</div><div class="cmp" style="${cols}">${grid(specRows,o)}</div>`:''}<p class="note">Le righe evidenziate hanno valori diversi.</p>`};
+    draw();$('#onlyd',el).onchange=draw;el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();openDetail(g.dataset.go)}});
+  }});
+}
+function pickCompare(d){
+  openPage('Confronta con…',`<input class="in" id="cq" placeholder="Cerca…" autocomplete="off"><div id="cl"></div>`,{replace:false,mount(el){
+    const draw=()=>{const q=$('#cq',el).value.trim().toLowerCase();const r=devices.filter(x=>x.id!==d.id&&(!q||x._i.includes(q))).sort((a,b)=>(kindOf(b.tipologia)===kindOf(d.tipologia))-(kindOf(a.tipologia)===kindOf(d.tipologia))||String(a.nome).localeCompare(b.nome,'it')).slice(0,40);
+      $('#cl',el).innerHTML=r.map(x=>`<button class="res" data-c2="${x.id}"><b>${esc(x.nome)}</b><small>${esc([x.tipologia,x.anno,x.luogo].filter(Boolean).join(' · '))}</small></button>`).join('')};
+    draw();$('#cq',el).oninput=draw;el.addEventListener('click',e=>{const b=e.target.closest('[data-c2]');if(b)openCompare([d,devices.find(x=>x.id===b.dataset.c2)])})}});
+}
+/* ===== inventario per luogo ===== */
+function openInventory(){
+  const inv=LS.get('rd_inv',null),own=devices.filter(d=>!d.wish);
+  const ls=[...new Set(own.map(d=>d.luogo||''))].sort((a,b)=>(LUOGHI0.indexOf(b)>-1)-(LUOGHI0.indexOf(a)>-1)||a.localeCompare(b,'it'));
+  openPage('Inventario',`${inv?`<button class="res" data-ri><b>↻ Riprendi l'inventario di ${esc(inv.luogo||'senza luogo')}</b><small>iniziato il ${fmtD(inv.start)} · ${Object.keys(inv.st).length} controllati</small></button>`:''}
+    <p>Scegli il luogo da controllare: per ogni oggetto segni se c'è, se non lo trovi o se in realtà è altrove.</p>${ls.map(l=>`<button class="res" data-il="${esc(l)}"><b>📍 ${esc(l||'Senza luogo')}</b><small>${own.filter(d=>(d.luogo||'')===l).length} oggetti</small></button>`).join('')}`,{mount(el){
+    el.addEventListener('click',e=>{const r=e.target.closest('[data-ri]');if(r)return runInventory(inv);const b=e.target.closest('[data-il]');if(b)runInventory({luogo:b.dataset.il,start:today(),st:{}})})}});
+}
+function runInventory(inv){
+  LS.set('rd_inv',inv);
+  const items=devices.filter(d=>!d.wish&&((d.luogo||'')===inv.luogo||inv.st[d.id])).sort((a,b)=>String(a.tipologia||'').localeCompare(b.tipologia||'','it')||String(a.nome).localeCompare(b.nome,'it'));
+  openPage('Inventario · '+(inv.luogo||'senza luogo'),`<div id="ivp"></div><label class="row" style="gap:10px;font-size:14px;margin:4px 0 8px"><input type="checkbox" id="ivt" style="width:20px;height:20px"> Solo da controllare</label><div id="ivl"></div><button class="btn" id="ivend" style="width:100%;margin-top:12px">Concludi l'inventario</button>`,{replace:true,mount(el){
+    const draw=()=>{const done=items.filter(d=>inv.st[d.id]).length,only=$('#ivt',el).checked;
+      $('#ivp',el).innerHTML=`<b>${done} / ${items.length}</b> controllati · ${items.filter(d=>inv.st[d.id]==='ok').length} presenti · ${items.filter(d=>inv.st[d.id]==='no').length} non trovati · ${items.filter(d=>inv.st[d.id]==='mv').length} altrove<div class="invbar"><i style="width:${items.length?done/items.length*100:0}%"></i></div>`;
+      $('#ivl',el).innerHTML=items.filter(d=>!only||!inv.st[d.id]).map(d=>`<div class="inv ${inv.st[d.id]||''}" data-ivd="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ii"><b>${esc(d.nome)}</b><small>${esc([d.tipologia,inv.st[d.id]==='mv'?'→ '+d.luogo:'',d.verificato?'verificato il '+fmtD(d.verificato):'mai verificato'].filter(Boolean).join(' · '))}</small></div><button data-iv="ok" aria-label="C'è">✓</button><button data-iv="no" aria-label="Non trovato">✗</button><button data-iv="mv" aria-label="È altrove">↪︎</button></div>`).join('')||'<p class="note">Tutto controllato ✓</p>'};
+    draw();$('#ivt',el).onchange=draw;
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-iv]');if(!b)return;const d=devices.find(x=>x.id===b.closest('[data-ivd]').dataset.ivd),a=b.dataset.iv;
+      if(a==='ok'){inv.st[d.id]='ok';d.verificato=today();await saveDev(d)}
+      if(a==='no')inv.st[d.id]=inv.st[d.id]==='no'?undefined:'no';
+      if(a==='mv'){const ls=[...new Set([...LUOGHI0,...devices.map(x=>x.luogo).filter(Boolean)])].filter(l=>l!==inv.luogo);const l=await chooseLuogo(ls);if(l==null)return;setLuogo(d,l);d.verificato=today();inv.st[d.id]='mv';await saveDev(d)}
+      Object.keys(inv.st).forEach(k=>inv.st[k]===undefined&&delete inv.st[k]);LS.set('rd_inv',inv);render();draw()});
+    $('#ivend',el).onclick=()=>{const miss=items.filter(d=>inv.st[d.id]==='no'),todo=items.filter(d=>!inv.st[d.id]);
+      openPage('Riepilogo inventario',`<div class="kv"><div>Presenti</div><div>${items.filter(d=>inv.st[d.id]==='ok').length}</div><div>Spostati altrove</div><div>${items.filter(d=>inv.st[d.id]==='mv').length}</div><div>Non trovati</div><div>${miss.length}</div><div>Non controllati</div><div>${todo.length}</div></div>
+        ${miss.length?`<div class="sec-t">Non trovati</div>${miss.map(card).join('')}<button class="btn sec" id="ivtag" style="width:100%;margin-top:8px">Aggiungi #Da cercare ai non trovati</button>`:''}<button class="btn" id="ivclose" style="width:100%;margin-top:12px">Chiudi l'inventario</button>`,{mount(e2){
+        const t=$('#ivtag',e2);if(t)t.onclick=async()=>{for(const d of miss)if(!(d.tags||[]).includes('Da cercare')){d.tags=[...(d.tags||[]),'Da cercare'];await saveDev(d)}render();toast('#Da cercare aggiunta');t.disabled=true};
+        $('#ivclose',e2).onclick=()=>{LS.set('rd_inv',null);render();toast('Inventario chiuso ✓');goBase()}}})};
+  }});
+}
+function chooseLuogo(ls){return new Promise(res=>{const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div><p><b>Dove si trova?</b></p><div class="chips">${ls.map(l=>`<button class="chip" data-cl="${esc(l)}">📍 ${esc(l)}</button>`).join('')}</div><div class="row"><input class="in" id="cln" placeholder="Altro luogo"><button class="btn sm" id="clo">OK</button></div><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn sec" data-n>Annulla</button></div></div>`;
+  m.onclick=e=>{const c=e.target.closest('[data-cl]');if(c){m.remove();res(c.dataset.cl)}else if(e.target.closest('#clo')){const v=$('#cln',m).value.trim();if(v){m.remove();res(v)}}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m)})}
 async function delWithUndo(d){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();dirty();
-  toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
+  toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
 function openPeek(id,src){
   const d=devices.find(x=>x.id===id);if(!d||document.querySelector('.peek'))return;
   const ph=(d.foto&&d.foto[0])||'',tl=keyTiles(d).slice(0,4),sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
@@ -2092,7 +2380,7 @@ function openPeek(id,src){
   const m=document.createElement('div');m.className='peek';
   m.innerHTML=`<div class="pk-card"><div class="pk-hero ${ph?'':'noph'}">${ph?`<img src="${ph}" alt="">`:icon(d)}<div class="pk-cap">${sub?`<small>${esc(sub)}</small>`:''}<b>${esc(d.nome)}</b></div></div>
     <div class="pk-body">${chips.length?`<div class="chips">${chips.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`:''}${tl.length?`<div class="pk-tiles">${tl.map(([a,b])=>`<div><small>${esc(a)}</small><span>${esc(b)}</span></div>`).join('')}</div>`:''}${desc?`<p>${esc(desc.length>170?desc.slice(0,170)+'…':desc)}</p>`:''}</div></div>
-    <div class="pk-acts"><button data-pk="open">Apri la scheda<i>›</i></button><button data-pk="edit">Modifica<i>✎</i></button>${canMu?'<button data-pk="mu">Sul piedistallo<i>🏛️</i></button>':''}<button data-pk="del" class="dng">Elimina<i>🗑</i></button></div>`;
+    <div class="pk-acts"><button data-pk="open">Apri la scheda<i>›</i></button><button data-pk="edit">Modifica<i>✎</i></button><button data-pk="sel">Seleziona più oggetti<i>☑︎</i></button>${canMu?'<button data-pk="mu">Sul piedistallo<i>🏛️</i></button>':''}<button data-pk="del" class="dng">Elimina<i>🗑</i></button></div>`;
   const r=src.getBoundingClientRect();m.style.setProperty('--ox',Math.round(r.left+r.width/2-(innerWidth-Math.min(innerWidth*.92,380))/2)+'px');m.style.setProperty('--oy','30%');
   document.body.append(m);requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('on')));
   history.pushState({p:stack.length,pk:1},'');
@@ -2104,24 +2392,29 @@ function openPeek(id,src){
     if(!b){if(!e.target.closest('.pk-card'))close();else{await close();openDetail(d.id)}return}
     const a=b.dataset.pk;await close();
     if(a==='open')openDetail(d.id);
+    if(a==='sel')startSel(d.id);
     if(a==='edit')openForm(d);
     if(a==='mu')vt('vt-pl',()=>openPlinth([d],0,false));
     if(a==='del'&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true))delWithUndo(d);
   });
 }
-$('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;return}if(e.target.closest('#dueB'))return openDue();
+$('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;return}
+  if(SELM){const c=e.target.closest('[data-id]');if(c){SELM.has(c.dataset.id)?SELM.delete(c.dataset.id):SELM.add(c.dataset.id);render()}return}if(e.target.closest('#dueB'))return openDue();
   if(e.target.closest('#loanB')){S.sel.fuori=['In prestito','In esposizione'];render();scrollTo(0,0);return}const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id)});
 $('#bMuseo').onclick=openMuseum;
 $('#bTheme').onclick=e=>setTheme(isDark()?'light':'dark',e.currentTarget);
 $('#bView').onclick=()=>{const k=Object.keys(LAYOUTS);S.layout=k[(k.indexOf(S.layout||'list')+1)%k.length];render();toast('Vista: '+LAYOUTS[S.layout][1],1400)};
-$('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(true);return}if(e.target.closest('[data-inc]')){S.sel.completezza=['Da completare'];render();return}const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
+$('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(true);return}
+  if(e.target.closest('[data-selon]'))return startSel();
+  if(e.target.closest('[data-selall]')){(render.items||[]).forEach(id=>SELM.add(id));return render()}
+  if(e.target.closest('[data-selnone]'))return endSel();if(e.target.closest('[data-inc]')){S.sel.completezza=['Da completare'];render();return}const b=e.target.closest('[data-rm]');if(!b)return;const a=S.sel[b.dataset.rm]||[];S.sel[b.dataset.rm]=a.filter(x=>x!==b.dataset.v);render()});
 (async()=>{
   await DB.open();
-  devices=await DB.all();devices.forEach(idx);
+  devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
-    if(ghOn())ghSync(false);else if(LS.get('rd_db_auto',true))syncDB(false);
+    Promise.resolve(ghOn()?ghSync(false):LS.get('rd_db_auto',true)?syncDB(false):0).finally(()=>setTimeout(autoTranslate,1500));
     document.addEventListener('visibilitychange',()=>{if(!ghOn())return;if(document.visibilityState==='hidden'&&LS.get('rd_dirty',0))ghSync(false);if(document.visibilityState==='visible'&&!syncing)ghSync(false)});
   }
   if('serviceWorker' in navigator&&location.protocol!=='file:'){
