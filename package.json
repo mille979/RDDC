@@ -1,0 +1,11 @@
+{
+  "name": "rddc",
+  "private": true,
+  "description": "RDDC – catalogo collezione vintage (prove automatiche)",
+  "scripts": {
+    "test": "node tests/run.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

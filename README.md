@@ -24,7 +24,7 @@ Per creare il token: <https://github.com/settings/personal-access-tokens/new> �
 
 **Manuale** – Menu → «Esporta collezione.json», poi su GitHub *Add file → Upload files*. Chi non ha il token (solo lettura) riceve comunque tutto all'avvio.
 
-Le modifiche più recenti fatte sul telefono non vengono mai sovrascritte da dati più vecchi.
+Le modifiche vengono unite **campo per campo**: se sui due telefoni si cambiano campi diversi dello stesso oggetto (es. luogo da una parte, note dall'altra) si tengono entrambe; sullo stesso campo vince la modifica più recente. Le foto e gli allegati che non usa più nessuno vengono tolti dal repository alla sincronizzazione.
 ⚠️ Il repository è pubblico (serve per GitHub Pages): `collezione.json` e le foto sono leggibili da chiunque conosca l'indirizzo.
 
 ## Museo 🏛️
@@ -32,9 +32,18 @@ Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per 
 
 Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
 
+## Gestione della collezione
+- **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
+- **Confronto affiancato** di 2 o 3 oggetti: dalla selezione «⇆ Confronta», o dalla scheda «⇆ Confronta con…». «Mostra solo le differenze» nasconde le righe uguali.
+- **Inventario** (Menu → 📋 Inventario): scegli un luogo e per ogni oggetto segna ✓ c'è, ✗ non trovato o ↪︎ è altrove (sceglie il nuovo luogo). Si può interrompere e riprendere; alla fine il riepilogo permette di aggiungere #Da cercare ai non trovati. Ogni oggetto ricorda la data dell'ultima verifica.
+- **Storico spostamenti**: ogni cambio di luogo (dal modulo, in blocco, dall'inventario o collegando un accessorio) resta nella scheda, in «Spostamenti».
+- **Numero di serie Apple**: sotto il seriale la scheda mostra fabbrica e periodo di produzione (formati a 11 e 12 caratteri, fino al 2021; indicativo), con un avviso se non torna con l'anno del modello.
+- **Magazzino ricambi**: tipologia «Ricambio» con categoria (RAM, batteria, alimentatore…), specifica, computer compatibili della collezione e altri modelli compatibili (codici, Model ID). La scheda di ogni computer elenca i ricambi in magazzino che vanno bene (sicuri e probabili); «🔧 Monta su…» registra l'intervento sul computer e scala la quantità.
+- **Statistiche**: spesa per anno di acquisto, valore per luogo, da quanto possiedi gli oggetti, verifiche dell'inventario. Nuovi ordinamenti: valore, rivalutazione, acquistati di recente, posseduti da più tempo.
+
 ## Altro
 - **In italiano**: etichette, valori e date importati da EveryMac e Wikipedia sono mostrati in italiano (dizionario integrato, offline). Le descrizioni e le frasi lunghe vengono tradotte **una volta sola**, in automatico, e la traduzione resta salvata e sincronizzata; l'originale si vede con «Mostra originale». Le traduzioni dell'arretrato sono già pronte in `traduzioni.json`; per i testi nuovi l'app usa il traduttore del telefono, se disponibile, o il servizio gratuito MyMemory (circa 5.000 caratteri al giorno: se il limite è raggiunto riprova da sola più tardi). Si può disattivare in Menu → Impostazioni.
-- **Condividi → RDDC**: da Galleria Samsung, Google Foto o qualunque app, «Condividi» → RDDC; l'app chiede se creare un oggetto nuovo o aggiungere le foto (e i PDF come allegati) a uno esistente. Se RDDC non compare tra le app di condivisione, rimuovi l'app dalla schermata Home e reinstallala da Chrome (Android legge la nuova impostazione all'installazione). Le foto in formato HEIC non sono leggibili dal browser.
+- **Condividi → RDDC**: da Galleria Samsung, Google Foto o qualunque app, «Condividi» → RDDC; l'app chiede se creare un oggetto nuovo o aggiungere le foto (e i PDF come allegati) a uno esistente. Se RDDC non compare tra le app di condivisione, rimuovi l'app dalla schermata Home e reinstallala da Chrome (Android legge la nuova impostazione all'installazione). Le foto in formato HEIC vengono convertite in JPEG (il convertitore si scarica solo la prima volta che serve).
 - **Foto**: nel modulo si possono trascinare le foto (dal computer o da un'altra app) o incollarle; si riordinano trascinandole (col dito: tieni premuto e sposta). La prima è la **copertina**: ★ su una miniatura, o «Usa come copertina» nel visualizzatore della scheda.
 - **Da completare**: ogni scheda segnala i dati essenziali mancanti (foto, anno, marca, luogo, stato e, a seconda del tipo, modello/CPU/RAM, pollici o «Va con»). Se un dato non esiste o non si saprà mai, toccane «non si sa»: non conta più come mancante e compare «sconosciuto». Filtro «Completezza» e contatore in alto.
 - **Etichette libere** (#Preferito, #Raro, #Da restaurare… o nuove), filtrabili.
@@ -74,6 +83,9 @@ export default {
 }
 ```
 Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
+
+## Prove automatiche
+`npm test` avvia l'app in Chromium (Playwright) e controlla le funzioni principali, compresa la sincronizzazione con una finta API GitHub. Le prove partono da sole su ogni pull request (GitHub Actions, `.github/workflows/test.yml`).
 
 ## Backup
 I dati stanno solo sul dispositivo: Menu → "Esporta backup completo" ogni tanto (include le foto).
