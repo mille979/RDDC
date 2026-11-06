@@ -42,6 +42,20 @@ Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e unifo
 
 Ogni risultato mostra da quale fonte arriva; nell'anteprima si vede la fonte prima di usare i dati.
 
+## Più pezzi identici: gli esemplari
+Due mouse uguali, uno funzionante e uno rotto? Non servono due schede: nella scheda dell'oggetto, sezione **Esemplari**, «Dividi in N esemplari» (se la quantità è più di 1) o «Aggiungi un secondo esemplare». I dati del modello (anno, specifiche, foto, descrizione) restano in comune; ogni esemplare ha i suoi: **funzionamento, condizione estetica, scatola, numero di serie (decodificato), luogo, prezzo pagato, note** e un'etichetta per riconoscerlo.
+- La quantità si aggiorna da sola; nella lista compare «🧩 2 esemplari · 1 funzionante, 1 non funzionante»
+- I filtri per stato, luogo e scatola trovano l'oggetto se **almeno un esemplare** corrisponde
+- «Separa» trasforma un esemplare in un oggetto a sé; eliminando gli esemplari fino a uno, la scheda torna normale
+- Doppioni già inseriti come oggetti separati: selezionali e usa **«⧉ Unisci come esemplari»** (foto, allegati, interventi ed etichette vengono riuniti; c'è «Annulla»)
+
+## Ricerca per nome
+In «Cerca dati online» (Apple) si può scrivere il **nome** (iMac G3, PowerBook G4 12, iPod classic…): l'app mostra i modelli corrispondenti con codice e identificativo (elenco preso da The Apple Wiki, scaricato una volta e poi disponibile offline per 30 giorni) e cerca i dati con il codice scelto. Anche nel modulo di un oggetto nuovo, mentre scrivi il nome compaiono suggerimenti: modelli, accessori del dizionario e oggetti che hai già (per evitare doppioni).
+
+## Annunci nella wishlist (Vinted, Subito, eBay…)
+Dall'app dell'annuncio: **Condividi → RDDC**, oppure **+** → «🏷️ Da un annuncio» e incolla il link. L'app legge un'anteprima (titolo, prezzo, foto) e permette di creare un **nuovo desiderio** o di aggiungere l'annuncio a uno esistente. Ogni desiderio raccoglie più annunci con foto, prezzo e sito; nella lista compare «🏷️ 2 annunci · da € 90 ✓» (la spunta indica che è nel budget). «↻ Aggiorna prezzi» rilegge gli annunci; con «Preso!» il prezzo dell'annuncio diventa il prezzo pagato.
+Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con riserva microlink.io). Alcuni siti a volte le bloccano: in quel caso titolo (dal testo condiviso) e prezzo si completano a mano.
+
 ## Gestione della collezione
 - **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
 - **Confronto affiancato** di 2 o 3 oggetti: dalla selezione «⇆ Confronta», o dalla scheda «⇆ Confronta con…». «Mostra solo le differenze» nasconde le righe uguali.

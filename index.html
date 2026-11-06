@@ -37,6 +37,12 @@ button{cursor:pointer}
 .ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative;text-decoration:none;display:inline-grid;place-items:center}
 .badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:var(--on-acc);border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px}
 #sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ann{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);margin:6px 0;padding:6px 6px 6px 8px}
+.ann a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+.ann img,.ann a>i{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none;background:var(--chip);display:grid;place-items:center;font-style:normal;font-size:24px}
+.ann span{flex:1;min-width:0}.ann b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ann small{color:var(--mute);font-size:12px}
+.ann em{font-style:normal;font-weight:800;color:var(--acc-ink,var(--ink));white-space:nowrap}
+.nsug{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}.nsug:empty{display:none}
 .accr{display:flex;gap:10px;align-items:center}.accr img{width:52px;height:40px;object-fit:contain;background:#fff;border-radius:8px;flex:none}.accr>span{min-width:0}
 .src{font-style:normal;font-size:11px;font-weight:700;background:var(--chip);border-radius:6px;padding:1px 6px;margin-right:4px;white-space:nowrap}
 .pill{background:var(--chip);border-radius:14px;padding:3px 10px;font-size:13px;border:0}
@@ -431,7 +437,7 @@ html.vt-pl::view-transition-new(root){animation:vt-fade-in .45s ease both}
 </div>
 <div id="list"></div>
 <button class="fab" id="fab" aria-label="Aggiungi">+</button>
-<div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="del" class="dng">🗑</button></div>
+<div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="merge">⧉ Unisci come esemplari</button><button data-b="del" class="dng">🗑</button></div>
 <div id="toast"></div>
 <div id="print"></div>
 
@@ -568,10 +574,10 @@ const ESS={all:['foto','anno','marca','luogo','stato'],part0:['luogo'],pc:['mode
 const ESS_ALL=[...new Set(Object.values(ESS).flat())];
 const ESS_LAB={foto:'Foto',anno:'Anno',marca:'Marca',luogo:'Luogo',stato:'Stato',modello:'Modello',cpu:'Processore',ram:'RAM',tv_pollici:'Pollici',collegato:'Va con',part_cat:'Categoria'};
 const hasVal=(d,k)=>k==='foto'?!!(d.foto&&d.foto.length):!(d[k]===undefined||d[k]===null||d[k]==='');
-function missing(d){if(d.wish)return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[])].filter(k=>!hasVal(d,k)&&!ig.includes(k))}
+function missing(d){if(d.wish)return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[])].filter(k=>!(k==='stato'&&hasUnits(d)?d.esemplari.every(u=>u.stato):hasVal(d,k))&&!ig.includes(k))}
 const TAGS0=['Preferito','Raro','Da restaurare','Da vendere','Regalo'];
 const loanOverdue=d=>!!(d.prestito&&d.prestito.al&&d.prestito.al<today());
-function vals(d,k){if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];return [val(d,k)]}
+function vals(d,k){if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];if(hasUnits(d)&&['stato','luogo','scatola'].includes(k))return [...new Set(d.esemplari.map(u=>u[k]||(k==='luogo'?d.luogo:'')||'—'))];return [val(d,k)]}
 function val(d,k){
   if(k==='completezza')return d.wish?'—':missing(d).length?'Da completare':'Completa';
   if(k==='fuori')return d.wish?'—':d.prestito?(d.prestito.tipo==='Esposizione'?'In esposizione':'In prestito'):'In casa';
@@ -579,7 +585,7 @@ function val(d,k){
   if(k==='decennio')return d.anno?Math.floor(d.anno/10)*10+'s':'—';
   const v=d[k];return (v===undefined||v===null||v==='')?'—':String(v);
 }
-function idx(d){d._i=[...(d.interventi||[]).flatMap(i=>[i.tipo,i.desc]),...(d.tags||[]),...(d.allegati||[]).map(a=>a.nome),d.prestito&&d.prestito.a,d.nome,d.marca,d.tipologia,d.linea,d.anno,d.colore,...ALLF.filter(f=>!['descrizione','collegato'].includes(f[0])).map(f=>d[f[0]]),d.descrizione,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
+function idx(d){d._i=[...(d.esemplari||[]).flatMap(u=>[u.etichetta,u.stato,u.seriale,u.condizione,u.note]),...(d.annunci||[]).flatMap(a=>[a.titolo,a.sito]),...(d.interventi||[]).flatMap(i=>[i.tipo,i.desc]),...(d.tags||[]),...(d.allegati||[]).map(a=>a.nome),d.prestito&&d.prestito.a,d.nome,d.marca,d.tipologia,d.linea,d.anno,d.colore,...ALLF.filter(f=>!['descrizione','collegato'].includes(f[0])).map(f=>d[f[0]]),d.descrizione,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
 function pass(d,skip){
   const q=S.q.trim().toLowerCase();
   if(q&&!q.split(/\s+/).every(w=>d._i.includes(w)))return false;
@@ -612,7 +618,7 @@ function render(){
   render.items=items.map(d=>d.id);
   if(SELM)sum=`<span><b>${SELM.size}</b> selezionati</span><button class="pill" data-selall>Tutti (${items.length})</button><button class="pill" data-selnone>Fine</button>`;
   else if(items.length)sum+=`<button class="pill" data-selon>☑︎ Seleziona</button>`;
-  $('#fab').hidden=!!SELM;$('#bulk').hidden=!SELM;if(SELM){const n=SELM.size;$('#bulk').querySelectorAll('button').forEach(b=>b.disabled=b.dataset.b==='cmp'?(n<2||n>3):!n)}
+  $('#fab').hidden=!!SELM;$('#bulk').hidden=!SELM;if(SELM){const n=SELM.size;$('#bulk').querySelectorAll('button').forEach(b=>b.disabled=b.dataset.b==='cmp'?(n<2||n>3):b.dataset.b==='merge'?n<2:!n)}
   if(W){const tot=items.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0);if(tot)sum+=`<span>· budget € ${tot.toLocaleString('it')}</span>`}
   for(const [k,a] of Object.entries(S.sel))(a||[]).forEach(v=>sum+=`<button class="pill x" data-rm="${esc(k)}" data-v="${esc(v)}">${esc(v)}</button>`);
   const writeSum=()=>{$('#sum').innerHTML=sum+'<button id="syncS" class="sync" hidden aria-label="Sincronizza ora"></button>';updSync(syncing?'run':undefined,true)};writeSum();
@@ -646,8 +652,9 @@ function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
   const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:kd==='part'?[d.part_cat,d.part_spec].filter(Boolean).join(' · '):d.cpu].filter(Boolean).join(' · ');
-  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.w_link?'<span>🔗 annuncio</span>':''].join(''):[d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
-  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
+  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',annMeta(d)].join(''):[hasUnits(d)?`<span class="tg">🧩 ${d.esemplari.length} esemplari · ${esc(unitsSummary(d))}</span>`:'',d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  const ai=!d.thumb&&d.wish&&(d.annunci||[]).find(a=>a.img);
+  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:ai?`<img src="${esc(ai.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
 function gcard(d){
   const ph=(d.foto&&d.foto[0])||d.thumb;
@@ -774,12 +781,12 @@ function openDetail(id,replace){
   const kv=rows=>`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${b}</div>`).join('')}</div>`;
   for(const [t,fs] of SECTIONS.slice(1)){
     const ig=d.ignoti||[];
-    const rows=fs.filter(([k])=>!(k==='valore'&&!d.wish)).filter(([k])=>k==='tags'?(d.tags||[]).length:(d[k]!==undefined&&d[k]!==null&&d[k]!=='')||ig.includes(k)).map(([k,l])=>[l.replace(/\s*\(es\..*\)$/,''),hasVal(d,k)?fieldDisplay(d,k):'<i style="color:var(--mute)">sconosciuto</i>']);
+    const rows=fs.filter(([k])=>!(k==='valore'&&!d.wish)&&!(hasUnits(d)&&UNIT_KEYS.includes(k))).filter(([k])=>k==='tags'?(d.tags||[]).length:(d[k]!==undefined&&d[k]!==null&&d[k]!==''&&!(Array.isArray(d[k])&&!d[k].length))||ig.includes(k)).map(([k,l])=>[l.replace(/\s*\(es\..*\)$/,''),hasVal(d,k)?fieldDisplay(d,k):'<i style="color:var(--mute)">sconosciuto</i>']);
     if(t==='Identificazione')['anno','marca'].forEach(k=>{if(ig.includes(k)&&!hasVal(d,k))rows.unshift([ESS_LAB[k],'<i style="color:var(--mute)">sconosciuto</i>'])});
     if(rows.length)h+=`<div class="sec-t">${t}</div>`+kv(rows);
   }
   if(!d.wish){
-    h+=valoreHTML(d)+loanHTML(d);
+    h+=unitsHTML(d)+valoreHTML(d)+loanHTML(d);
     const mv=(d.spostamenti||[]).slice().reverse();
     if(mv.length)h+=`<details class="more"><summary>Spostamenti (${mv.length})</summary><div class="log">${mv.map(x=>`<div class="li"><span class="ld">${fmtD(x.data)}</span><span class="lb"><b>${esc(x.da||'—')} → ${esc(x.a||'—')}</b></span></div>`).join('')}</div></details>`;
     const ints=(d.interventi||[]).slice().sort((a,b)=>String(b.data||'').localeCompare(a.data||''));
@@ -796,11 +803,12 @@ function openDetail(id,replace){
     h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary><div id="spk">${kv(d.specs.map(([a,b])=>[trLabel(a),esc(trVal(b,d))]))}</div><div class="row" style="flex-wrap:wrap;gap:4px">${trOn()?'<button class="linkb" data-spo>Mostra originale</button>':''}</div></details>`}
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
   if(d.wish){
+    h+=annunciHTML(d);
     const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
     if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   openPage(d.nome,h,{replace,bare:true,mount(el){
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
@@ -830,6 +838,12 @@ function openDetail(id,replace){
       const li=t.closest('[data-int]');if(li)openIntervento(d,(d.interventi||[]).find(x=>x.id===li.dataset.int));
       if(t.closest('[data-cut]'))openCutout(d);
       if(t.closest('[data-split]'))return splitItem(d);
+      if(t.closest('[data-unit-new]'))return startUnits(d);
+      if(t.closest('[data-unit-add]'))return openUnit(d);
+      const un=t.closest('[data-unit]');if(un)return openUnit(d,d.esemplari.find(x=>x.id===un.dataset.unit));
+      if(t.closest('[data-annadd]'))return askListing(d);
+      const ar=t.closest('[data-annrm]');if(ar){e.preventDefault();const a=(d.annunci||[]).find(x=>x.id===ar.dataset.annrm);if(a&&await ask(`Togliere l'annuncio «${a.titolo||a.url}»?`,'Togli',true)){d.annunci=d.annunci.filter(x=>x!==a);await saveDev(d);render();return openDetail(d.id,true)}return}
+      if(t.closest('[data-annupd]'))return refreshListings(d);
       if(t.closest('[data-mount]'))return openMount(d);
       if(t.closest('[data-cmp]'))return pickCompare(d);
       if(t.closest('[data-copyacc]'))return openCopyAcc(d);
@@ -837,7 +851,9 @@ function openDetail(id,replace){
       if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
-        ['w_priorita','w_budget','w_link','w_note'].forEach(k=>delete o[k]);
+        if(o.annunci&&o.annunci.length===1&&!o.acq_prezzo&&o.annunci[0].prezzo)o.acq_prezzo=o.annunci[0].prezzo;
+        if(o.annunci&&o.annunci.length)o.note=[o.note,'Annunci seguiti: '+o.annunci.map(a=>[a.sito,a.prezzo?'€ '+a.prezzo:'',a.url].filter(Boolean).join(' ')).join('; ')].filter(Boolean).join('\n');
+        ['w_priorita','w_budget','w_link','w_note','annunci'].forEach(k=>delete o[k]);
         stamp(o);idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
       if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
       if(t.closest('[data-dup]')){const c=JSON.parse(JSON.stringify(d));c.id=uid();c.creato=c.modificato=Date.now();c.seriale='';c.nome+=' (copia)';stamp(c);idx(c);await DB.put(c);devices.push(c);dirty();render();toast('Duplicato');goBase(()=>openDetail(c.id))}
@@ -885,10 +901,123 @@ function openDue(){
     });
   }});
 }
+/* ===== annunci (Vinted, Subito, eBay…) nella wishlist ===== */
+const siteName=u=>{const h=((String(u).match(/^https?:\/\/(?:www\.|m\.)?([^/]+)/)||[])[1]||'').toLowerCase();return /vinted/.test(h)?'Vinted':/subito/.test(h)?'Subito':/ebay/.test(h)?'eBay':/facebook/.test(h)?'Facebook Marketplace':/wallapop/.test(h)?'Wallapop':/kijiji/.test(h)?'Kijiji':h};
+const parsePrice=t=>{t=String(t||'').replace(/\s/g,'');if(!t)return '';if(/,\d{1,2}$/.test(t))t=t.replace(/\./g,'').replace(',','.');else t=t.replace(/[.,](?=\d{3}\b)/g,'');const n=parseFloat(t);return isFinite(n)?String(Math.round(n*100)/100):''};
+const findPrice=t=>{const m=String(t||'').match(/(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)\s?€|€\s?(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)|EUR\s?(\d+(?:[.,]\d{1,2})?)/i);return m?parsePrice(m[1]||m[2]||m[3]):''};
+const annTitle=t=>clean(String(t||'').replace(/\s*[|–-]\s*(Vinted|Subito(\.it)?|eBay|Facebook)\b.*$/i,'').replace(/^(Guarda|Dai un'occhiata a)[^:]*:\s*/i,''));
+async function linkPreview(url,hint=''){
+  const r={id:uid(),url,sito:siteName(url),titolo:'',prezzo:'',img:'',desc:'',data:today()};
+  try{const res=await fetch('https://r.jina.ai/'+url,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(25000)});
+    const BLK=/just a moment|attention required|access denied|security check|verify you are human|captcha|forbidden/i;
+    if(res.ok){const j=await res.json(),d=j.data||{},c=d.content||'';if(BLK.test(d.title||'')||BLK.test(c.slice(0,300)))throw new Error('anteprima bloccata dal sito');r.titolo=d.title||'';r.desc=d.description||'';r.prezzo=findPrice(c)||findPrice(r.desc);
+      const im=[...c.matchAll(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g)].map(m=>m[1]).find(u=>!/\.svg|logo|icon|avatar|static|placeholder|badge/i.test(u));if(im)r.img=im}}catch(e){}
+  if(!r.titolo||!r.img){try{const j=await wjson('https://api.microlink.io/?url='+encodeURIComponent(url));const d=j.data||{};if(!/just a moment|attention required|access denied|security check/i.test(d.title||''))r.titolo=r.titolo||d.title||'';r.desc=r.desc||d.description||'';r.img=r.img||(d.image&&d.image.url)||'';r.prezzo=r.prezzo||findPrice(d.description)}catch(e){}}
+  const h=clean(String(hint||'').replace(/https?:\/\/\S+/g,''));
+  r.titolo=annTitle(r.titolo)||annTitle(h);r.prezzo=r.prezzo||findPrice(h);r.desc=clean(r.desc).slice(0,400);
+  return r;
+}
+function annMeta(d){const a=(d.annunci||[]).filter(x=>x.prezzo);if(!(d.annunci||[]).length)return d.w_link?'<span>🔗 annuncio</span>':'';
+  const min=a.length?Math.min(...a.map(x=>+x.prezzo)):null,ok=min!=null&&+d.w_budget&&min<=+d.w_budget;
+  return `<span class="${ok?'lk':''}">🏷️ ${d.annunci.length===1?'1 annuncio':d.annunci.length+' annunci'}${min!=null?` · ${a.length>1?'da ':''}€ ${min.toLocaleString('it')}`:''}${ok?' ✓':''}</span>`}
+function annCard(a,rm){return `<div class="ann"><a href="${esc(a.url)}" target="_blank" rel="noopener">${a.img?`<img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('i'),{textContent:'🏷️'}))">`:'<i>🏷️</i>'}<span><b>${esc(a.titolo||a.url)}</b><small>${esc([a.sito,a.data?fmtD(a.data):''].filter(Boolean).join(' · '))}</small></span>${a.prezzo?`<em>€ ${(+a.prezzo).toLocaleString('it')}</em>`:''}</a>${rm?`<button class="ibtn" data-annrm="${a.id}" aria-label="Togli">✕</button>`:''}</div>`}
+function annunciHTML(d){const L=(d.annunci||[]);
+  return `<div class="sec-t">Annunci${L.length?` (${L.length})`:''}</div>${L.map(a=>annCard(a,true)).join('')}<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px"><button class="btn sm sec" data-annadd>＋ Aggiungi link di un annuncio</button>${L.length?'<button class="btn sm sec" data-annupd>↻ Aggiorna prezzi</button>':''}</div>${L.length?'':'<p class="note">Suggerimento: dall\'app Vinted o Subito usa «Condividi» → RDDC per aggiungere l\'annuncio al volo.</p>'}`}
+async function refreshListings(d){toast('Aggiorno gli annunci…',8000);let k=0;
+  for(const a of d.annunci||[]){const r=await linkPreview(a.url);if(r.prezzo&&r.prezzo!==a.prezzo){a.prezzo_prima=a.prezzo;a.prezzo=r.prezzo;k++}if(r.img&&!a.img)a.img=r.img;a.agg=today()}
+  await saveDev(d);render();toast(k?`${k} prezzi cambiati`:'Prezzi invariati');openDetail(d.id,true)}
+function askListing(target){
+  openPage('Link di un annuncio',`<p style="margin-top:0">Incolla l'indirizzo di un annuncio (Vinted, Subito, eBay, Marketplace…).</p><div class="row"><input class="in" id="lu" placeholder="https://…" inputmode="url" autocomplete="off"><button class="btn sm sec" id="lpst">📋</button></div><button class="btn" id="lgo" style="width:100%;margin-top:10px">Continua</button>`,{mount(el){
+    $('#lpst',el).onclick=async()=>{try{$('#lu',el).value=await navigator.clipboard.readText()}catch(e){toast('Tieni premuto nel campo → Incolla')}};
+    $('#lgo',el).onclick=()=>{const m=$('#lu',el).value.match(/https?:\/\/\S+/);if(!m)return toast('Non sembra un link');openListing(m[0],$('#lu',el).value,{replace:true,target})}}});
+}
+function openListing(url,hint,{replace=false,target=null}={}){
+  openPage('Annuncio',`<div id="lv">${spin('Leggo l\'annuncio…')}</div>`,{replace,mount(el){
+    const box=$('#lv',el);
+    linkPreview(url,hint).then(a=>{
+      const wl=devices.filter(x=>x.wish).sort((x,y)=>(y.modificato||0)-(x.modificato||0));
+      box.innerHTML=`${annCard(a)}${a.desc?`<p class="note">${esc(a.desc)}</p>`:''}
+      <label class="f">Titolo</label><input class="in" id="at" value="${esc(a.titolo)}" autocomplete="off">
+      <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}"></div></div>
+      ${!a.img&&!a.prezzo?'<p class="note">Non sono riuscito a leggere l\'anteprima (alcuni siti la bloccano): completa titolo e prezzo a mano.</p>':''}
+      ${target?`<button class="btn" data-to="${target.id}" style="width:100%;margin-top:14px">Aggiungi a «${esc(target.nome)}»</button>`:`<button class="btn" data-to="new" style="width:100%;margin-top:14px">💭 Nuovo desiderio nella wishlist</button>
+      ${wl.length?`<label class="f" style="margin-top:14px">…oppure aggiungilo a un desiderio esistente</label><input class="in" id="wq" placeholder="Cerca nella wishlist…" autocomplete="off"><div id="wl"></div>`:''}`}`;
+      const drawWl=()=>{const l=$('#wl',el);if(!l)return;const q=$('#wq',el).value.trim().toLowerCase();l.innerHTML=wl.filter(x=>!q||x._i.includes(q)).slice(0,20).map(x=>`<button class="res" data-to="${x.id}"><b>${esc(x.nome)}</b><small>${esc([x.w_priorita&&'★ '+x.w_priorita,x.w_budget&&'≤ € '+x.w_budget,(x.annunci||[]).length&&x.annunci.length+' annunci'].filter(Boolean).join(' · '))}</small></button>`).join('')};
+      drawWl();const wq=$('#wq',el);if(wq)wq.oninput=drawWl;
+      box.addEventListener('click',async e=>{const b=e.target.closest('[data-to]');if(!b)return;b.disabled=true;
+        Object.assign(a,{titolo:$('#at',el).value.trim(),prezzo:parsePrice($('#ap',el).value),sito:$('#as',el).value.trim()});
+        if(b.dataset.to==='new'){const d={id:uid(),wish:true,w_priorita:'Media',nome:a.titolo||'Annuncio '+a.sito,w_link:a.url,annunci:[a],creato:Date.now()};
+          if(a.img){try{const bl=await fetchBlob(a.img);d.foto=[await shrink(bl,1200)];d.thumb=await shrink(bl,180,.75)}catch(er){}}
+          S.view='wish';openForm(d,{fromLookup:true});toast('Controlla il nome (puoi anche usare «Dati online») e salva',4000);return}
+        const d=devices.find(x=>x.id===b.dataset.to);if(!d)return;(d.annunci=d.annunci||[]).push(a);if(!d.w_link)d.w_link=a.url;
+        if(!(d.foto&&d.foto.length)&&a.img){try{const bl=await fetchBlob(a.img);d.foto=[await shrink(bl,1200)];d.thumb=await shrink(bl,180,.75)}catch(er){}}
+        await saveDev(d);render();toast(`Annuncio aggiunto a «${d.nome}»`);goBase(()=>openDetail(d.id))});
+    });
+  }});
+}
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
 const mainDevices=()=>devices.filter(x=>!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
 const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
 function cloneOne(a,extra){const c=JSON.parse(JSON.stringify(a));Object.keys(c).forEach(k=>k[0]==='_'&&delete c[k]);return Object.assign(c,{id:uid(),creato:Date.now(),seriale:'',interventi:[],quantita:1},extra)}
+/* ===== esemplari: più pezzi identici, ognuno con i suoi dati (funzionamento, estetica, scatola, seriale, luogo) ===== */
+const UNIT_KEYS=['stato','condizione','scatola','seriale','quantita'];
+const hasUnits=d=>Array.isArray(d&&d.esemplari)&&d.esemplari.length>0;
+function unitsSummary(d){const c=new Map();d.esemplari.forEach(u=>{const s=(u.stato||'stato ?').toLowerCase();c.set(s,(c.get(s)||0)+1)});return [...c].map(([s,n])=>n+' '+s).join(', ')}
+function unitFrom(o,keepSerial){return {id:uid(),etichetta:'',stato:o.stato||'',condizione:o.condizione||'',scatola:o.scatola||'',seriale:keepSerial?o.seriale||'':'',luogo:o.luogo||'',acq_prezzo:keepSerial?o.acq_prezzo||'':'',note:''}}
+function syncUnits(d){if(!hasUnits(d))return;d.quantita=d.esemplari.length;const ls=[...new Set(d.esemplari.map(u=>u.luogo||''))];if(ls.length===1&&ls[0]&&ls[0]!==(d.luogo||''))setLuogo(d,ls[0])}
+function unitsHTML(d){
+  if(d.wish)return '';
+  if(!hasUnits(d))return `<div class="sec-t">Esemplari</div><p class="note" style="margin-bottom:8px">Hai più pezzi identici ma diversi tra loro (uno funziona, uno no; uno con la scatola…)? Registra i dati di ogni singolo esemplare: i dati del modello restano in comune.</p><button class="btn sm sec" data-unit-new>＋ ${+d.quantita>1?`Dividi in ${+d.quantita} esemplari`:'Aggiungi un secondo esemplare'}</button>`;
+  return `<div class="sec-t">Esemplari (${d.esemplari.length}) · ${esc(unitsSummary(d))}</div><div class="log">${d.esemplari.map((u,i)=>{const sn=u.seriale?decodeSerial(u.seriale,d.anno):null;
+    return `<button class="li" data-unit="${u.id}"><span class="ld">#${i+1}</span><span class="lb"><b>${esc(u.etichetta||u.stato||'Esemplare '+(i+1))}</b><span>${esc([u.etichetta?u.stato:'',u.scatola?'scatola: '+u.scatola:'',u.luogo?'📍 '+u.luogo:'',u.acq_prezzo?'€ '+u.acq_prezzo:''].filter(Boolean).join(' · '))}</span>${u.seriale?`<small>SN ${esc(u.seriale)}${sn&&sn.quando?' · '+esc(sn.quando):''}</small>`:''}${u.condizione||u.note?`<small>${esc([u.condizione,u.note].filter(Boolean).join(' — '))}</small>`:''}</span></button>`}).join('')}</div><button class="btn sm sec" data-unit-add style="margin-top:8px">＋ Aggiungi esemplare</button>`;
+}
+async function startUnits(d){
+  const n=Math.max(parseInt(d.quantita,10)||1,1);
+  d.esemplari=Array.from({length:n},(_,i)=>unitFrom(d,i===0));
+  if(n>1){syncUnits(d);await saveDev(d);render();toast(`${n} esemplari creati: ora completa i dati di ognuno`,3500);return openDetail(d.id,true)}
+  syncUnits(d);openUnit(d,null,true);
+}
+function openUnit(d,u,fresh){
+  const isNew=!u;const v=u||Object.assign(unitFrom(d,false),{stato:''});const i=isNew?d.esemplari.length+1:d.esemplari.indexOf(u)+1;
+  const ls=[...new Set([...LUOGHI0,...devices.map(x=>x.luogo).filter(Boolean)])];
+  const h=`<p style="margin:0 0 6px;color:var(--mute)">${esc(d.nome)} · esemplare n. ${i}</p>
+  <label class="f">Etichetta (facoltativa, per riconoscerlo)</label><input class="in" id="u_et" value="${esc(v.etichetta)}" placeholder="Es. quello ingiallito, quello con la scatola" autocomplete="off">
+  <div class="grid2"><div><label class="f">Funzionamento</label><select class="in" id="u_st"><option value="">—</option>${STATI.map(x=>`<option ${x===v.stato?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
+  <div><label class="f">Scatola / accessori</label><select class="in" id="u_sc"><option value="">—</option>${['Sì','No','Parziale'].map(x=>`<option ${x===v.scatola?'selected':''}>${x}</option>`).join('')}</select></div></div>
+  <label class="f">Condizione estetica</label><textarea class="in" id="u_co" placeholder="Graffi, ingiallimento, crepe…">${esc(v.condizione)}</textarea>
+  <label class="f">Numero di serie</label><input class="in" id="u_sn" value="${esc(v.seriale)}" autocomplete="off"><div class="sn" id="u_snd"></div>
+  <div class="grid2"><div><label class="f">Luogo</label><input class="in" id="u_lu" list="dl_ul" value="${esc(v.luogo)}" autocomplete="off"><datalist id="dl_ul">${ls.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
+  <div><label class="f">Pagato (€)</label><input class="in" type="number" inputmode="decimal" step="any" id="u_pr" value="${esc(v.acq_prezzo)}"></div></div>
+  <label class="f">Note</label><textarea class="in" id="u_no" placeholder="Difetti, riparazioni, provenienza…">${esc(v.note)}</textarea>
+  <div class="row" style="margin-top:18px;flex-wrap:wrap"><button class="btn" id="u_ok" style="flex:1">Salva</button>${isNew?'':'<button class="btn sec" id="u_out">Separa</button><button class="btn dng" id="u_del">Elimina</button>'}</div>
+  ${isNew?'':'<p class="note">«Separa» lo trasforma in un oggetto a sé (con gli stessi dati del modello).</p>'}`;
+  openPage(isNew?'Nuovo esemplare':'Esemplare',h,{mount(el){
+    const sd=()=>{$('#u_snd',el).innerHTML=serialHTML({seriale:$('#u_sn',el).value,anno:d.anno}).replace(/^<div class="sn">|<\/div>$/g,'')};sd();$('#u_sn',el).oninput=sd;
+    const done=async msg=>{if(d.esemplari.length===1){const x=d.esemplari[0];['stato','condizione','scatola','seriale'].forEach(k=>{if(x[k])d[k]=x[k];else delete d[k]});if(x.luogo)setLuogo(d,x.luogo);if(x.note)d.note=[d.note,x.note].filter(Boolean).join('\n');delete d.esemplari;d.quantita=1}
+      syncUnits(d);await saveDev(d);render();toast(msg);goBase(()=>openDetail(d.id))};
+    $('#u_ok',el).onclick=async()=>{const o={etichetta:$('#u_et',el).value.trim(),stato:$('#u_st',el).value,scatola:$('#u_sc',el).value,condizione:$('#u_co',el).value.trim(),seriale:$('#u_sn',el).value.trim(),luogo:$('#u_lu',el).value.trim(),acq_prezzo:$('#u_pr',el).value.trim(),note:$('#u_no',el).value.trim()};
+      if(isNew)d.esemplari.push(Object.assign(v,o));else Object.assign(u,o);await done(isNew?'Esemplare aggiunto':'Esemplare aggiornato')};
+    const del=$('#u_del',el);if(del)del.onclick=async()=>{if(!await ask(`Eliminare l'esemplare n. ${i}?`,'Elimina',true))return;d.esemplari=d.esemplari.filter(x=>x!==u);await done('Esemplare eliminato')};
+    const out=$('#u_out',el);if(out)out.onclick=async()=>{if(!await ask(`Separare l'esemplare n. ${i} in un oggetto a sé?`,'Separa'))return;
+      const c=cloneOne(d,{stato:u.stato,condizione:u.condizione,scatola:u.scatola,seriale:u.seriale,luogo:u.luogo,acq_prezzo:u.acq_prezzo||d.acq_prezzo,note:u.note,foto:d.foto,thumb:d.thumb});delete c.esemplari;
+      await saveDev(c);d.esemplari=d.esemplari.filter(x=>x!==u);await done('Separato in un nuovo oggetto')};
+  }});
+}
+async function mergeAsUnits(L){
+  const main=L[0],others=L.slice(1);
+  if(!await ask(`Unire ${L.length} oggetti in «${main.nome}» con ${L.length} esemplari? I dati del modello sono quelli di «${main.nome}»; di ogni oggetto restano stato, estetica, scatola, seriale, luogo, prezzo e note. Foto, allegati e interventi vengono riuniti.`,'Unisci'))return false;
+  const snap=[...L,...devices.filter(x=>L.slice(1).some(o=>o.id===x.collegato))].map(x=>JSON.parse(JSON.stringify(x)));
+  const units=d=>hasUnits(d)?d.esemplari:[Object.assign(unitFrom(d,true),{note:d.note&&d!==main?d.note:''})];
+  main.esemplari=L.flatMap(units);
+  for(const o of others){main.foto=[...new Set([...(main.foto||[]),...(o.foto||[])])];if(!main.thumb&&o.thumb)main.thumb=o.thumb;
+    if(o.allegati)main.allegati=[...(main.allegati||[]),...o.allegati];if(o.interventi)main.interventi=[...(main.interventi||[]),...o.interventi];
+    if(o.tags)main.tags=[...new Set([...(main.tags||[]),...o.tags])];
+    for(const a of devices.filter(x=>x.collegato===o.id)){a.collegato=main.id;await saveDev(a)}
+    await DB.del(o.id);markDeleted(o.id)}
+  devices=devices.filter(x=>!others.includes(x));syncUnits(main);await saveDev(main);render();
+  toast(`Uniti in «${main.nome}» (${main.esemplari.length} esemplari)`,7000,{label:'ANNULLA',fn:async()=>{for(const o of snap){unmarkDeleted(o.id);o.modificato=Date.now();stamp(o);idx(o);await DB.put(o);const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o}render();dirty();toast('Annullato')}});
+  return true;
+}
 async function splitItem(d){
   const n=parseInt(d.quantita,10)||1;if(n<2)return;
   if(!await ask(`Dividere «${d.nome}» (×${n}) in ${n} oggetti separati? Poi colleghi ognuno al suo dispositivo, con numero di serie e condizioni propri.`,'Dividi'))return;
@@ -941,6 +1070,8 @@ async function sharedToData(files){
   return {foto,thumb,allegati};
 }
 function openShared({files,meta}){
+  const lk=[meta.url,meta.text,meta.title].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
+  if(!files.length&&lk)return openListing(lk[0],[meta.title,meta.text].filter(Boolean).join(' '));
   const imgs=files.filter(isImgFile),others=files.filter(f=>!isImgFile(f)),urls=[];
   const link=[meta.url,meta.text].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
   const h=`${imgs.length?`<div class="phgrid" style="margin-bottom:10px">${imgs.map(f=>{if(isHeic(f))return `<div class="pht" style="display:grid;place-items:center;font-size:12px;color:#555">🖼️ HEIC</div>`;const u=URL.createObjectURL(f);urls.push(u);return `<div class="pht"><img src="${u}" alt=""></div>`}).join('')}</div>`:''}
@@ -1258,6 +1389,16 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     /* compatibilità multipla dei ricambi */
     const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
       $('#lnkq',el).oninput=e=>{const q=e.target.value.trim().toLowerCase();lb.querySelectorAll('.lnk').forEach(x=>x.hidden=!!q&&!x.textContent.toLowerCase().includes(q))}}
+    /* suggerimenti mentre scrivi il nome (solo per oggetti nuovi) */
+    if(isNew){const sg=document.createElement('div');sg.className='nsug';fm.nome.after(sg);let tmr;
+      const look=(code,tipo)=>openLookup({prefill:code,marca:fm.marca.value||'Apple',tipologia:tipo||fm.tipologia.value,auto:true,onResult:async r=>{const cur=collect(fm);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}});
+      const draw=async()=>{const q=fm.nome.value.trim();if(q.length<3){sg.innerHTML='';return}
+        const idxL=AWIDX||(navigator.onLine?await awIndex().catch(()=>[]):[]);if(fm.nome.value.trim()!==q)return;
+        const m=nameMatches(q,idxL||[],4),acc=Object.entries(ACC_DB).filter(([,v])=>nameMatches(q,[[v[0]]]).length).slice(0,3),own=devices.filter(x=>x.id!==d.id&&String(x.nome).toLowerCase().includes(q.toLowerCase())).slice(0,2);
+        sg.innerHTML=m.map((x,i)=>`<button type="button" class="chip" data-sg="${esc(x[2]||x[1])}">🔎 ${esc(x[0])}</button>`).join('')+acc.map(([k,v])=>`<button type="button" class="chip" data-sga="${k}">🔌 ${esc(v[0])}</button>`).join('')+own.map(x=>`<button type="button" class="chip" data-sgo="${x.id}">${x.wish?'💭':'📦'} già presente: ${esc(x.nome)}</button>`).join('')};
+      fm.nome.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(draw,300)});
+      sg.addEventListener('click',e=>{const a=e.target.closest('[data-sg]'),b=e.target.closest('[data-sga]'),c=e.target.closest('[data-sgo]');
+        if(a)look(a.dataset.sg);if(b)look(b.dataset.sga,'Accessorio');if(c)openDetail(c.dataset.sgo)})}
     /* numero di serie decodificato mentre lo scrivi */
     if(fm.seriale){const out=document.createElement('div');out.className='sn';fm.seriale.after(out);const dec=()=>{out.innerHTML=serialHTML({seriale:fm.seriale.value,anno:+fm.anno.value||0}).replace(/^<div class="sn">|<\/div>$/g,'')};dec();fm.seriale.addEventListener('input',dec)}
     /* etichette */
@@ -1295,6 +1436,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         const cur=collect(fm);
         if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
         const o=Object.assign({},d,cur,{foto,thumb});
+        if(hasUnits(o))o.quantita=o.esemplari.length;
         if(!isNew&&(d.luogo||'')!==(o.luogo||''))o.spostamenti=[...(d.spostamenti||[]),{data:today(),da:d.luogo||'',a:o.luogo||''}];
         o.id=o.id||uid();o.creato=o.creato||Date.now();o.modificato=Date.now();
         if(!o.wish&&o.valore!==''&&String(+o.valore)!==String(+d.valore||'')){seedVal(o,d);o.valori.push({id:uid(),data:today(),valore:+o.valore,fonte:'Stima personale'})}
@@ -1313,6 +1455,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     for(const [k] of ALLF)o[k]=f[k].value.trim();
     try{o.tags=JSON.parse(f.tags.value||'[]')}catch(e){o.tags=[]}
     try{o.compat=JSON.parse(f.compat.value||'[]')}catch(e){o.compat=[]}
+    if(!o.compat.length)o.compat=undefined;
     o.ignoti=[...f.querySelectorAll('.unk.on')].map(b=>b.dataset.unkt);
     o.colore_hex=f.colore_hex.value;
     o.fonte=f.fonte.value.trim();
@@ -1340,6 +1483,7 @@ function openAdd(){
   <p>${W.wish?'Cosa stai cercando? Puoi già prendere i dati da EveryMac o Wikipedia.':'Come vuoi aggiungerlo?'}</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
   <button class="res" data-a="lookacc"><b>🔌 Cerca un accessorio o un ricambio</b><small>Codice (A1424, M5769), codice prodotto, codice a barre o nome: dizionario interno, The Apple Wiki, Wikipedia, iFixit, Icecat.</small></button>
+  <button class="res" data-a="link"><b>🏷️ Da un annuncio (Vinted, Subito, eBay…)</b><small>Incolla il link: titolo, prezzo e foto finiscono nella wishlist. Dalle app: Condividi → RDDC.</small></button>
   <button class="res" data-a="paste"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non funziona: copia la pagina del modello da EveryMac e incollala qui.</small></button>
   <button class="res" data-a="man"><b>✍️ Computer o dispositivo a mano</b><small>Per oggetti senza scheda online.</small></button>
   <button class="res" data-a="tv"><b>📺 Televisore CRT</b><small>Scheda con pollici, tubo, PAL/NTSC, ingressi SCART/RF…</small></button>
@@ -1349,6 +1493,7 @@ function openAdd(){
       if(a==='tv')openForm({...W,tipologia:'Televisore CRT',tv_formato:'4:3',tv_standard:'PAL'},{fromLookup:true});
       if(a==='acc')openForm({...W,tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
       if(a==='paste')openImport({replace:true,onResult:toForm});
+      if(a==='link')askListing();
       if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
       if(a==='lookacc')openLookup({prefill:'',marca:'',tipologia:'Accessorio',replaceSelf:true,onResult:toForm});
     });
@@ -1954,10 +2099,17 @@ async function ifixitLoad(title,marca){
 
 /* ---- The Apple Wiki: tabelle «Models/…» (numero A → modello, identificativo, codici d'ordine) ---- */
 const TAW='https://theapplewiki.com/api.php';
+function wikiCell(c){let rs=1,cs=1;const m=c.match(/^\s*((?:(?:rowspan|colspan|style|class|align|scope|width|valign)\s*=\s*(?:"[^"]*"|[^\s|]+)\s*)+)(?:\|(?!\|)\s*)?/i);
+  if(m){rs=+((m[1].match(/rowspan\s*=\s*"?(\d+)/i)||[])[1]||1);cs=+((m[1].match(/colspan\s*=\s*"?(\d+)/i)||[])[1]||1);c=c.slice(m[0].length)}return {t:c.trim(),rs,cs}}
+/* tabella wiki → righe complete (le celle con rowspan/colspan vengono ripetute dove servono) */
 function wikiTable(wt){
   const tabs=[];for(const t of wt.split(/\n\{\|/).slice(1)){const body=t.split(/\n\|\}/)[0];const rows=body.split(/\n\|-[^\n]*/);
-    const hdr=[];const R=[];
-    rows.forEach(r=>{const cells=[];r.split('\n').forEach(l=>{if(/^\s*!/.test(l))l.replace(/^\s*!/,'').split('!!').forEach(c=>hdr.push(wclean(c.replace(/^[^|[]*\|(?!\|)/,''))));else if(/^\s*\|/.test(l)&&!/^\s*\|[-}+]/.test(l))l.replace(/^\s*\|/,'').split('||').forEach(c=>cells.push(c.replace(/^\s*(?:rowspan|colspan|style|class|align)[^|]*\|/i,'')))});if(cells.length)R.push(cells)});
+    const hdr=[],R=[],carry=[];
+    rows.forEach(r=>{const cells=[];r.split('\n').forEach(l=>{if(/^\s*!/.test(l))l.replace(/^\s*!/,'').split('!!').forEach(c=>hdr.push(wclean(wikiCell(c).t)));else if(/^\s*\|/.test(l)&&!/^\s*\|[-}+]/.test(l))l.replace(/^\s*\|/,'').split('||').forEach(c=>cells.push(wikiCell(c)))});
+      if(!cells.length)return;const out=[];let col=0,k=0;const n=Math.max(hdr.length,1);
+      while(col<n||k<cells.length){if(carry[col]&&carry[col].left>0){out[col]=carry[col].t;carry[col].left--;col++;continue}
+        if(k>=cells.length)break;const c=cells[k++];for(let z=0;z<c.cs;z++){out[col]=c.t;carry[col]=c.rs>1?{t:c.t,left:c.rs-1}:null;col++}}
+      R.push(out.map(x=>x||''))});
     tabs.push({hdr,rows:R})}
   return tabs;
 }
@@ -2005,6 +2157,25 @@ async function icecatLoad(q,marca){
   return {fields:f,specs,imageUrl:d.Image&&(d.Image.Pic500x500||d.Image.HighPic)||'',fonte:'https://icecat.biz/it/p/'+encodeURIComponent((g.Brand||'').toLowerCase())+'/'+encodeURIComponent(g.BrandPartCode||'')+'/'+(g.IcecatId||''),fonteNome:'Icecat – catalogo prodotti'};
 }
 
+/* ---- ricerca per nome: indice nomi → codici dalle tabelle «Models/…» di The Apple Wiki (scaricato una volta, poi offline per 30 giorni) ---- */
+const AW_PAGES=['Models/Mac','Models/iPhone','Models/iPad','Models/iPad Air','Models/iPad Pro','Models/iPad mini','Models/iPod','Models/iPod touch','Models/Apple Watch','Models/Apple TV','Models/AirPods','Models/HomePod'];
+let AWIDX=null,AWLOAD=null;
+function awIndex(){
+  if(AWIDX)return Promise.resolve(AWIDX);
+  const c=LS.get('rd_awidx',null);if(c&&c.v===2&&c.t>Date.now()-30*864e5&&c.l.length)return Promise.resolve(AWIDX=c.l);
+  if(AWLOAD)return AWLOAD;
+  AWLOAD=(async()=>{const out=new Map();
+    await Promise.all(AW_PAGES.map(async pg=>{try{const p=await wjson(`${TAW}?action=parse&page=${encodeURIComponent(pg)}&prop=wikitext&format=json&origin=*`);
+      for(const t of wikiTable(p.parse.wikitext['*'])){const H=t.hdr.map(h=>h.toLowerCase().replace(/"/g,''));const ci=H.findIndex(h=>/number/.test(h)&&/^(a|m)\b/.test(h)),ii=H.indexOf('identifier')>=0?H.indexOf('identifier'):H.indexOf('internal name');if(ci<0&&ii<0)continue;
+        for(const r of t.rows){const name=wclean(r[0]).replace(/\s+/g,' ').trim();if(!name||/^[\d(]/.test(name)||name.length>80)continue;
+          const code=ci>=0?((wclean(r[ci]||'').match(/\b[AM]\d{4}[A-Z]{0,2}\b/)||[''])[0]):'',id=ii>=0?((wclean(r[ii]||'').match(/[A-Za-z]+\d*,\d+/)||[''])[0]):'';
+          if((code||id)&&!out.has(name))out.set(name,[name,code,id,pg.slice(7)])}}}catch(e){}}));
+    const l=[...out.values()];if(l.length){AWIDX=l;LS.set('rd_awidx',{v:2,t:Date.now(),l})}AWLOAD=null;return l})();
+  return AWLOAD;
+}
+const looksLikeCode=q=>/\b[AM]\d{4}\b/i.test(q)||/^\s*\d{4}\s*$/.test(q)||/[A-Za-z]+\d*,\d+/.test(q)||/^\s*[A-Z]{1,2}\d{3,4}[A-Z]{0,2}(\/[A-Z])?\s*$/i.test(q);
+function nameMatches(q,list,max=8){const tk=q.toLowerCase().replace(/["“”]/g,'').split(/\s+/).filter(Boolean);if(!tk.length)return [];
+  return list.map(x=>{const n=x[0].toLowerCase();if(!tk.every(w=>n.includes(w)))return null;return {x,sc:(n.startsWith(tk[0])?0:5)+n.length-tk.join(' ').length}}).filter(Boolean).sort((a,b)=>a.sc-b.sc).slice(0,max).map(y=>y.x)}
 /* ---- ricerca combinata ---- */
 async function accSearch(q,marca){
   const code=accCode(q),list=[],notes=[];
@@ -2023,15 +2194,15 @@ async function accSearch(q,marca){
 }
 
 /* ============ ricerca online ============ */
-function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf}){
+function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,auto=false}){
   const isApple=/^apple$/i.test(marca||'Apple'),isAcc=['acc','part'].includes(kindOf(tipologia))&&!!tipologia;
-  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, EMC 2554, MacBookPro9,2" autocomplete="off"></div>
+  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, MacBookPro9,2 o il nome" autocomplete="off"></div>
   <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
   <button class="res" id="lp" style="margin-top:12px"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non riesce a leggere EveryMac.</small></button>
   <div id="lo" style="margin-top:14px"></div>
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
-    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
+    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: scrivi il <b>nome</b> (es. iMac G3, PowerBook G4 12) e scegli il modello, oppure cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, MacBookPro9,2 o il nome (es. iMac G3)':'Marca e modello'};
     hint();$('#lb',el).onchange=hint;
     const out=$('#lo',el);
     const busy=m=>out.innerHTML=spin(m);
@@ -2056,6 +2227,15 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf}
         out.onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const x=list[+b.dataset.a];busy('Carico la scheda…');try{preview(await x.load())}catch(err){out.textContent=/429/.test(err.message)?'Il servizio ha ricevuto troppe richieste: riprova tra un minuto.':'Errore: '+err.message}};
       }catch(e){out.textContent='Errore di rete: '+e.message}return}
       if(!ap){try{await wikiFlow(q,'')}catch(e){out.textContent='Errore di rete: '+e.message}return}
+      if(!looksLikeCode(q)){busy('Cerco il modello per nome…');
+        let m=[];try{m=nameMatches(q,await awIndex(),10)}catch(e){}
+        const acc=Object.entries(ACC_DB).filter(([,v])=>nameMatches(q,[[v[0]]]).length).slice(0,4);
+        if(m.length||acc.length){out.innerHTML='<b>Quale modello?</b>'+m.map((x,i)=>`<button class="res" data-nm="${i}"><b>${esc(x[0])}</b><small><i class="src">${esc(x[3])}</i> ${esc([x[1],x[2]].filter(Boolean).join(' · '))}</small></button>`).join('')+acc.map(([k,v])=>`<button class="res" data-na="${k}"><b>${esc(v[0])}</b><small><i class="src">Accessorio</i> ${k}${v[2]?' · '+v[2]:''}</small></button>`).join('')+`<button class="res" data-nw><b>🔎 Cerca «${esc(q)}» su Wikipedia</b></button><p class="note">Elenco dei modelli da The Apple Wiki: scegli e cerco i dati con il codice.</p>`;
+          out.onclick=e=>{const a=e.target.closest('[data-nm]'),b=e.target.closest('[data-na]');
+            if(a){const x=m[+a.dataset.nm];$('#lq',el).value=x[2]||x[1];go();return}
+            if(b){$('#lb',el).value='acc';hint();$('#lq',el).value=b.dataset.na;go();return}
+            if(e.target.closest('[data-nw]'))wikiFlow('Apple '+q,'Apple').catch(er=>out.textContent='Errore: '+er.message)};return}
+        try{await wikiFlow('Apple '+q,'Apple')}catch(e){out.textContent='Errore di rete: '+e.message}return}
       busy('Cerco su EveryMac…');
       try{
         const r=await emLookup(q);
@@ -2073,7 +2253,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf}
       }
     };
     $('#lg',el).onclick=go;$('#lq',el).onkeydown=e=>{if(e.key==='Enter')go()};
-    setTimeout(()=>$('#lq',el).focus(),250);
+    if(auto&&prefill)setTimeout(go,50);else setTimeout(()=>$('#lq',el).focus(),250);
   }});
 }
 const KEEP=['descrizione','colore','colore_hex','luogo','note'];
@@ -2568,6 +2748,7 @@ const selected=()=>[...(SELM||[])].map(id=>devices.find(x=>x.id===id)).filter(Bo
 async function bulkDone(msg){SELM=null;render();toast(msg,3500);goBase(()=>{render();if(history.state&&history.state.sel)history.back()})}
 $('#bulk').addEventListener('click',async e=>{const b=e.target.closest('[data-b]');if(!b||b.disabled)return;const L=selected(),n=L.length,a=b.dataset.b;
   if(a==='cmp')return openCompare(L);
+  if(a==='merge'){if(await mergeAsUnits(L)){SELM=null;render();if(history.state&&history.state.sel)history.back()}return}
   if(a==='ver'){for(const d of L){d.verificato=today();await saveDev(d)}SELM=null;render();toast(`${n} oggetti verificati oggi ✓`);if(history.state&&history.state.sel)history.back();return}
   if(a==='del'){if(!await ask(`Eliminare ${n} oggetti?`,'Elimina',true))return;for(const d of L){await DB.del(d.id);markDeleted(d.id)}devices=devices.filter(x=>!L.includes(x));SELM=null;render();dirty();if(history.state&&history.state.sel)history.back();
     toast(`Eliminati ${n} oggetti`,7000,{label:'ANNULLA',fn:async()=>{for(const d of L){unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d)}render();dirty();toast('Ripristinati')}});return}
