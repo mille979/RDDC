@@ -59,7 +59,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
   async function phone(name, opts = {}) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block', ...opts });
     await ctx.route('https://api.github.com/**', ghApi);
-    await ctx.route(/^https:\/\/(api\.mymemory|cdn\.jsdelivr|[^/]*everymac)/, r => r.abort());
+    await ctx.route(/^https:\/\/(api\.mymemory|cdn\.jsdelivr|[^/]*everymac|[^/]*wikipedia\.org|www\.ifixit\.com|theapplewiki\.com|live\.icecat\.biz|api\.microlink\.io)/, r => r.abort());
     const p = await ctx.newPage();
     p.on('pageerror', e => errors.push(`${name}: ${e.message}`));
     await p.goto(URL0); await p.waitForFunction(() => typeof devices !== 'undefined' && typeof saveDev === 'function');
@@ -175,6 +175,76 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const ref = gh.ref; await sync(A); await sync(B); await sync(A);
     eq(gh.ref, ref, 'nessun commit inutile');
     await A.context().close(); await B.context().close();
+  });
+
+  await test('accessori: dizionario dei codici e scelta della sezione giusta nelle pagine raggruppate', async () => {
+    const r = await p.evaluate(() => {
+      const l = accLocal('a1424'), m = accLocal('Mouse M5769');
+      const secs = ['Magic Mouse', 'Magic Mouse – 1st generation (A1296)', 'Magic Mouse – 2nd generation (A1657)', 'Apple Pro Mouse (M5769)'];
+      const best = q => secs.slice().sort((a, b) => secScore(q, b) - secScore(q, a))[0];
+      return [l.fields.nome, l.fields.acc_connettore, m.fields.nome, best('Magic Mouse 2'), best('A1296'), best('apple pro mouse'), accTipo('Apple keyboards'), accTipo('MagSafe')];
+    });
+    eq(r, ['Alimentatore MagSafe 2 da 85 W', 'MagSafe 2', 'Apple Pro Mouse', 'Magic Mouse – 2nd generation (A1657)', 'Magic Mouse – 1st generation (A1296)', 'Apple Pro Mouse (M5769)', 'Tastiera', 'Alimentatore / caricabatterie'], 'risultati');
+  });
+
+  await test('accessori: ricerca dal menu «+» compila il modulo (anche senza rete)', async () => {
+    await p.click('#fab'); await p.click('[data-a="lookacc"]');
+    await p.fill('#lq', 'A1424'); await p.click('#lg');
+    await p.waitForSelector('[data-a="0"]', { timeout: 20000 });
+    await p.click('[data-a="0"]'); await p.waitForSelector('[data-use]'); await p.click('[data-use]');
+    await p.waitForSelector('#f', { timeout: 20000 });
+    const v = await p.evaluate(() => ['nome', 'tipologia', 'modello', 'acc_connettore', 'acc_uscita'].map(n => document.querySelector(`#f [name="${n}"]`).value));
+    eq(v, ['Alimentatore MagSafe 2 da 85 W', 'Alimentatore / caricabatterie', 'A1424', 'MagSafe 2', '20 V 4,25 A – 85 W'], 'modulo');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('esemplari: un oggetto, più pezzi con dati propri (dividi, filtri, unisci, annulla)', async () => {
+    await seed(p, [{ id: 'm1', nome: 'Apple Pro Mouse', marca: 'Apple', tipologia: 'Mouse', anno: 2000, quantita: 2, stato: 'Funzionante', luogo: 'Alex' },
+      { id: 'k1', nome: 'Apple Pro Keyboard', tipologia: 'Tastiera', stato: 'Funzionante', luogo: 'Alex', seriale: 'KY1' },
+      { id: 'k2', nome: 'Apple Pro Keyboard', tipologia: 'Tastiera', stato: 'Non funzionante', luogo: 'Damiano', note: 'tasto E rotto' }]);
+    await p.evaluate(() => openDetail('m1')); await p.click('[data-unit-new]'); await p.waitForTimeout(300);
+    const id2 = await p.evaluate(() => devices.find(d => d.id === 'm1').esemplari[1].id);
+    await p.click(`[data-unit="${id2}"]`); await p.selectOption('#u_st', 'Non funzionante'); await p.fill('#u_lu', 'Damiano'); await p.click('#u_ok'); await p.waitForTimeout(400);
+    eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'm1'); return [d.quantita, unitsSummary(d), vals(d, 'luogo')]; }), [2, '1 funzionante, 1 non funzionante', ['Alex', 'Damiano']], 'esemplari');
+    eq(await p.evaluate(() => { S.sel = { stato: ['Non funzionante'] }; const r = devices.filter(d => pass(d)).map(d => d.id).sort(); S.sel = {}; return r; }), ['k2', 'm1'], 'filtro per stato');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+    await p.click('[data-selon]'); await p.click('[data-id="k1"]'); await p.click('[data-id="k2"]'); await p.click('[data-b="merge"]'); await p.click('.modal [data-y]'); await p.waitForTimeout(400);
+    eq(await p.evaluate(() => [devices.some(x => x.id === 'k2'), devices.find(x => x.id === 'k1').esemplari.map(u => u.stato + '/' + u.luogo)]), [false, ['Funzionante/Alex', 'Non funzionante/Damiano']], 'unione');
+    await p.click('#toast button'); await p.waitForTimeout(300);
+    eq(await p.evaluate(() => [devices.some(x => x.id === 'k2'), !!devices.find(x => x.id === 'k1').esemplari]), [true, false], 'annulla unione');
+  });
+
+  await test('ricerca per nome: tabelle dei modelli con rowspan e scelta del modello', async () => {
+    const r = await p.evaluate(() => {
+      const wt = '\n{| class="wikitable"\n! Generation\n! "A" or "M" Number\n! Internal Name\n! Color\n|-\n| iMac G3\n| rowspan="2" | M4984\n| rowspan="2" | iMac,1\n| Bondi Blue\n|-\n| iMac G3 (Fruit Colors)\n| Blueberry\n|}';
+      const t = wikiTable(wt)[0];
+      const idx = [['iMac G3', 'M4984', 'iMac,1', 'Mac'], ['iMac G3 (Fruit Colors)', 'M4984', 'iMac,1', 'Mac'], ['iMac G4 (Flat Panel)', '', 'PowerMac4,2', 'Mac'], ['PowerBook G4 (12-inch DVI)', 'A1010', '', 'Mac']];
+      return [t.rows[1], nameMatches('imac g3', idx).map(x => x[0]), nameMatches('powerbook 12', idx).map(x => x[1]), looksLikeCode('iMac G3'), looksLikeCode('PowerMac2,1'), looksLikeCode('A1424')];
+    });
+    eq(r, [['iMac G3 (Fruit Colors)', 'M4984', 'iMac,1', 'Blueberry'], ['iMac G3', 'iMac G3 (Fruit Colors)'], ['A1010'], false, true, true], 'risultati');
+  });
+
+  await test('annunci: link condiviso → anteprima → nuovo desiderio con prezzo', async () => {
+    await p.route('https://r.jina.ai/**', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ data: { title: 'Macintosh Classic II | Vinted', description: 'Funzionante', content: '![](https://x/logo.svg) Prezzo 1.180,50 € ' } }) }));
+    await p.evaluate(() => openShared({ files: [], meta: { title: '', text: 'Guarda: https://www.vinted.it/items/1-mac', url: '' } }));
+    await p.waitForSelector('[data-to="new"]');
+    eq(await p.evaluate(() => [$('#at').value, $('#ap').value, $('#as').value]), ['Macintosh Classic II', '1180.5', 'Vinted'], 'anteprima');
+    await p.fill('#ap', '150'); await p.click('[data-to="new"]'); await p.waitForSelector('#f');
+    await p.fill('#f [name=w_budget]', '200'); await p.evaluate(() => document.querySelector('[data-save]').click()); await p.waitForTimeout(500);
+    const r = await p.evaluate(() => { const d = devices.find(x => x.wish && x.nome === 'Macintosh Classic II'); return [d.annunci.length, d.annunci[0].prezzo, d.w_link, annMeta(d).replace(/<[^>]+>/g, '')]; });
+    eq(r, [1, '150', 'https://www.vinted.it/items/1-mac', '🏷️ 1 annuncio · € 150 ✓'], 'desiderio');
+    await p.unroute('https://r.jina.ai/**'); await p.evaluate(() => { S.view = 'col'; goBase(); render(); }); await p.waitForTimeout(300);
+  });
+
+  await test('annunci da screenshot: dal testo letto a titolo, prezzo, descrizione', async () => {
+    const r = await p.evaluate(() => {
+      const ocr = '12:41 87%\n< Indietro Condividi Salva\nMacintosh Classic Il con tastiera e\nmouse\n180 €\nMilano (MI) - Oggi alle 10:15\nSpedizione disponibile\nDescrizione\nVendo Macintosh Classic Il perfettamente funzionante,\navvia System 7.1.\nCaratteristiche\nCondizione Usato - Buone condizioni\nAnnunci simili\niMac G3 Bondi 90 €\nContatta';
+      const ebay = 'eBay\nApple iMac G3 233 MHz Bondi Blue\nEUR 249,00\nSpedizione gratuita\nDescrizione dell\'oggetto\nFunziona, tastiera inclusa\nInformazioni sul venditore';
+      const a = parseListingText(ocr), b = parseListingText(ebay);
+      return [a.titolo, a.prezzo, a.luogo, a.condizione, a.desc, b.titolo, b.prezzo, b.sito, b.desc, annTitle('Guarda Apple iMac G3 su eBay!')];
+    });
+    eq(r, ['Macintosh Classic II con tastiera e mouse', '180', 'Milano (MI)', 'Usato - Buone condizioni', 'Vendo Macintosh Classic II perfettamente funzionante, avvia System 7.1.',
+      'Apple iMac G3 233 MHz Bondi Blue', '249', 'eBay', 'Funziona, tastiera inclusa', 'Apple iMac G3'], 'lettura');
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
