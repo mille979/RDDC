@@ -37,6 +37,8 @@ button{cursor:pointer}
 .ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative;text-decoration:none;display:inline-grid;place-items:center}
 .badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:var(--on-acc);border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px}
 #sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.accr{display:flex;gap:10px;align-items:center}.accr img{width:52px;height:40px;object-fit:contain;background:#fff;border-radius:8px;flex:none}.accr>span{min-width:0}
+.src{font-style:normal;font-size:11px;font-weight:700;background:var(--chip);border-radius:6px;padding:1px 6px;margin-right:4px;white-space:nowrap}
 .pill{background:var(--chip);border-radius:14px;padding:3px 10px;font-size:13px;border:0}
 .pill.x::after{content:" ✕";opacity:.6}
 #list{padding:4px 12px 110px}
@@ -842,7 +844,7 @@ function openDetail(id,replace){
       if(t.closest('[data-del]')&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true)){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();goBase();dirty();
         toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
       const upd=async r=>{const m=await mergeFetched(d,r,true);openForm(m,{fromLookup:true})};
-      if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,onResult:upd});
+      if(t.closest('[data-upd]'))openLookup({prefill:d.modello||d.emc||d.nome,marca:d.marca,tipologia:d.tipologia,onResult:upd});
       if(t.closest('[data-paste]'))openImport({code:d.modello||d.emc||d.identifier||'',onResult:upd});
     });
   }});
@@ -1288,7 +1290,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       const rmb=t.closest('[data-rmf]');if(rmb){const k=+rmb.dataset.rmf;foto.splice(k,1);if(!k)await setCover();drawPh()}
       const cvb=t.closest('[data-cov]');if(cvb){const k=+cvb.dataset.cov;foto.unshift(foto.splice(k,1)[0]);await setCover();drawPh();toast('Nuova copertina ★')}
       if(t.closest('[data-web]')){openImageSearch(((fm.marca.value||'')+' '+(fm.nome.value||'')).trim(),async url=>{try{const b=await fetchBlob(url);const u=await shrink(b,1200);foto.push(u);if(!thumb)thumb=await shrink(b,180,.75);drawPh();toast('Foto aggiunta')}catch(e){toast('Impossibile scaricare la foto')}})}
-      if(t.closest('[data-look]')){openLookup({prefill:fm.modello.value||fm.emc.value||fm.nome.value,marca:fm.marca.value,onResult:async r=>{const cur=collect(fm);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
+      if(t.closest('[data-look]')){openLookup({prefill:fm.modello.value||fm.emc.value||fm.nome.value,marca:fm.marca.value,tipologia:fm.tipologia.value,onResult:async r=>{const cur=collect(fm);cur.foto=foto;cur.thumb=thumb;const m=await mergeFetched(Object.assign({},d,cur),r,false);openForm(m,{fromLookup:true})}})}
       if(t.closest('[data-save]')){
         const cur=collect(fm);
         if(!cur.nome){toast('Inserisci il nome');fm.nome.focus();return}
@@ -1337,6 +1339,7 @@ function openAdd(){
   openPage(W.wish?'Aggiungi alla wishlist':'Aggiungi',`
   <p>${W.wish?'Cosa stai cercando? Puoi già prendere i dati da EveryMac o Wikipedia.':'Come vuoi aggiungerlo?'}</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
+  <button class="res" data-a="lookacc"><b>🔌 Cerca un accessorio o un ricambio</b><small>Codice (A1424, M5769), codice prodotto, codice a barre o nome: dizionario interno, The Apple Wiki, Wikipedia, iFixit, Icecat.</small></button>
   <button class="res" data-a="paste"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non funziona: copia la pagina del modello da EveryMac e incollala qui.</small></button>
   <button class="res" data-a="man"><b>✍️ Computer o dispositivo a mano</b><small>Per oggetti senza scheda online.</small></button>
   <button class="res" data-a="tv"><b>📺 Televisore CRT</b><small>Scheda con pollici, tubo, PAL/NTSC, ingressi SCART/RF…</small></button>
@@ -1347,6 +1350,7 @@ function openAdd(){
       if(a==='acc')openForm({...W,tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
       if(a==='paste')openImport({replace:true,onResult:toForm});
       if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
+      if(a==='lookacc')openLookup({prefill:'',marca:'',tipologia:'Accessorio',replaceSelf:true,onResult:toForm});
     });
   }});
 }
@@ -1615,9 +1619,9 @@ function diagnose(txt,html){
 }
 function previewHTML(r){
   const f=r.fields;
-  const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo]].filter(x=>x[1]);
+  const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo],['Tipologia',f.tipologia],['Connettore',f.acc_connettore],['Uscita',f.acc_uscita],['Compatibile con',f.acc_compat],['Codice prodotto',f.ordine]].filter(x=>x[1]);
   const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
-  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div><p class="note">${r.specs.length} specifiche trovate${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
+  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.specs.length} specifiche trovate${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
 }
 function showPreview(out,r,onResult){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r)}
 
@@ -1763,16 +1767,271 @@ async function openDescPicker(q,cb){
   }});
 }
 
+/* ============ accessori e ricambi: fonti dati ============ */
+/* dizionario interno (offline) dei codici Apple più comuni: codice → [nome, tipologia, anno, campi extra] */
+const AL='Alimentatore / caricabatterie',TS='Tastiera',MO='Mouse',PE='Periferica',AC='Accessorio',RE='Rete',CV='Cavo / adattatore';
+const ACC_DB={
+ A1021:['Alimentatore Apple 65 W (PowerBook G4 / iBook)',AL,2003,{acc_uscita:'24,5 V 2,65 A – 65 W',acc_compat:'PowerBook G4, iBook G3/G4'}],
+ A1172:['Alimentatore MagSafe 85 W',AL,2006,{acc_connettore:'MagSafe',acc_uscita:'18,5 V 4,6 A – 85 W',acc_compat:'MacBook Pro 15" e 17" con MagSafe'}],
+ A1222:['Alimentatore MagSafe 85 W',AL,'',{acc_connettore:'MagSafe',acc_uscita:'18,5 V 4,6 A – 85 W',acc_compat:'MacBook Pro 15" e 17" con MagSafe'}],
+ A1343:['Alimentatore MagSafe 85 W',AL,'',{acc_connettore:'MagSafe',acc_uscita:'18,5 V 4,6 A – 85 W',acc_compat:'MacBook Pro 15" e 17" con MagSafe'}],
+ A1184:['Alimentatore MagSafe 60 W',AL,2006,{acc_connettore:'MagSafe',acc_uscita:'16,5 V 3,65 A – 60 W',acc_compat:'MacBook e MacBook Pro 13" con MagSafe'}],
+ A1330:['Alimentatore MagSafe 60 W',AL,'',{acc_connettore:'MagSafe',acc_uscita:'16,5 V 3,65 A – 60 W',acc_compat:'MacBook e MacBook Pro 13" con MagSafe'}],
+ A1344:['Alimentatore MagSafe 60 W',AL,'',{acc_connettore:'MagSafe',acc_uscita:'16,5 V 3,65 A – 60 W',acc_compat:'MacBook e MacBook Pro 13" con MagSafe'}],
+ A1244:['Alimentatore MagSafe 45 W',AL,2008,{acc_connettore:'MagSafe',acc_uscita:'14,5 V 3,1 A – 45 W',acc_compat:'MacBook Air con MagSafe'}],
+ A1374:['Alimentatore MagSafe 45 W',AL,'',{acc_connettore:'MagSafe',acc_uscita:'14,5 V 3,1 A – 45 W',acc_compat:'MacBook Air con MagSafe'}],
+ A1436:['Alimentatore MagSafe 2 da 45 W',AL,2012,{acc_connettore:'MagSafe 2',acc_uscita:'14,85 V 3,05 A – 45 W',acc_compat:'MacBook Air con MagSafe 2'}],
+ A1435:['Alimentatore MagSafe 2 da 60 W',AL,2012,{acc_connettore:'MagSafe 2',acc_uscita:'16,5 V 3,65 A – 60 W',acc_compat:'MacBook Pro 13" Retina con MagSafe 2'}],
+ A1424:['Alimentatore MagSafe 2 da 85 W',AL,2012,{acc_connettore:'MagSafe 2',acc_uscita:'20 V 4,25 A – 85 W',acc_compat:'MacBook Pro 15" Retina con MagSafe 2'}],
+ A1540:['Alimentatore USB-C da 29 W',AL,2015,{acc_connettore:'USB-C',acc_uscita:'14,5 V 2 A / 5,2 V 2,4 A – 29 W',acc_compat:'MacBook 12" e dispositivi USB-C'}],
+ A1882:['Alimentatore USB-C da 30 W',AL,2018,{acc_connettore:'USB-C',acc_uscita:'20 V 1,5 A – 30 W',acc_compat:'MacBook Air, iPad, iPhone'}],
+ A1718:['Alimentatore USB-C da 61 W',AL,2016,{acc_connettore:'USB-C',acc_uscita:'20,3 V 3 A – 61 W',acc_compat:'MacBook Pro 13" USB-C'}],
+ A1947:['Alimentatore USB-C da 61 W',AL,2018,{acc_connettore:'USB-C',acc_uscita:'20,3 V 3 A – 61 W',acc_compat:'MacBook Pro 13" USB-C'}],
+ A1719:['Alimentatore USB-C da 87 W',AL,2016,{acc_connettore:'USB-C',acc_uscita:'20,2 V 4,3 A – 87 W',acc_compat:'MacBook Pro 15" USB-C'}],
+ A2166:['Alimentatore USB-C da 96 W',AL,2019,{acc_connettore:'USB-C',acc_uscita:'20,5 V 4,7 A – 96 W',acc_compat:'MacBook Pro 16"'}],
+ A2452:['Alimentatore USB-C da 140 W',AL,2021,{acc_connettore:'USB-C',acc_uscita:'28 V 5 A – 140 W',acc_compat:'MacBook Pro 16" (2021 e successivi)'}],
+ A2305:['Alimentatore USB-C da 20 W',AL,2020,{acc_connettore:'USB-C',acc_uscita:'9 V 2,22 A / 5 V 3 A – 20 W',acc_compat:'iPhone, iPad'}],
+ A1720:['Alimentatore USB-C da 18 W',AL,2018,{acc_connettore:'USB-C',acc_uscita:'9 V 2 A / 5 V 3 A – 18 W',acc_compat:'iPhone, iPad'}],
+ A1385:['Alimentatore USB da 5 W',AL,'',{acc_connettore:'USB-A',acc_uscita:'5 V 1 A – 5 W',acc_compat:'iPhone, iPod'}],
+ A1265:['Alimentatore USB da 5 W',AL,2008,{acc_connettore:'USB-A',acc_uscita:'5 V 1 A – 5 W',acc_compat:'iPhone, iPod'}],
+ A1357:['Alimentatore USB da 10 W',AL,2010,{acc_connettore:'USB-A',acc_uscita:'5,1 V 2,1 A – 10 W',acc_compat:'iPad, iPhone, iPod'}],
+ A1401:['Alimentatore USB da 12 W',AL,'',{acc_connettore:'USB-A',acc_uscita:'5,2 V 2,4 A – 12 W',acc_compat:'iPad, iPhone, iPod'}],
+ M0100:['Macintosh Mouse',MO,1984,{acc_connettore:'DB-9'}],
+ G5431:['Apple Desktop Bus Mouse',MO,1986,{acc_connettore:'ADB'}],
+ M2706:['Apple Desktop Bus Mouse II',MO,1993,{acc_connettore:'ADB'}],
+ M4848:['Apple USB Mouse («hockey puck»)',MO,1998,{acc_connettore:'USB-A',acc_compat:'iMac G3 e Mac con USB'}],
+ M5769:['Apple Pro Mouse',MO,2000,{acc_connettore:'USB-A'}],
+ A1015:['Apple Wireless Mouse',MO,2003,{acc_connettore:'Bluetooth'}],
+ A1152:['Apple Mighty Mouse',MO,2005,{acc_connettore:'USB-A'}],
+ A1197:['Apple Wireless Mighty Mouse',MO,2006,{acc_connettore:'Bluetooth'}],
+ A1296:['Magic Mouse',MO,2009,{acc_connettore:'Bluetooth'}],
+ A1657:['Magic Mouse 2',MO,2015,{acc_connettore:'Lightning (ricarica), Bluetooth'}],
+ A3204:['Magic Mouse (USB-C)',MO,2024,{acc_connettore:'USB-C (ricarica), Bluetooth'}],
+ A1339:['Magic Trackpad',PE,2010,{acc_connettore:'Bluetooth'}],
+ A1535:['Magic Trackpad 2',PE,2015,{acc_connettore:'Lightning (ricarica), Bluetooth'}],
+ M0110:['Macintosh Keyboard',TS,1984,{}],
+ M0110A:['Macintosh Plus Keyboard',TS,1986,{}],
+ M0116:['Apple Keyboard (ADB)',TS,1987,{acc_connettore:'ADB'}],
+ M0115:['Apple Extended Keyboard',TS,1987,{acc_connettore:'ADB'}],
+ M3501:['Apple Extended Keyboard II',TS,1990,{acc_connettore:'ADB'}],
+ M1242:['Apple Adjustable Keyboard',TS,1993,{acc_connettore:'ADB'}],
+ M2980:['AppleDesign Keyboard',TS,1993,{acc_connettore:'ADB'}],
+ M2452:['Apple USB Keyboard',TS,1998,{acc_connettore:'USB-A',acc_compat:'iMac G3 e Mac con USB'}],
+ M7803:['Apple Pro Keyboard',TS,2000,{acc_connettore:'USB-A'}],
+ A1048:['Apple Keyboard (bianca)',TS,2003,{acc_connettore:'USB-A'}],
+ A1016:['Apple Wireless Keyboard',TS,2003,{acc_connettore:'Bluetooth'}],
+ A1243:['Apple Keyboard con tastierino numerico (alluminio)',TS,2007,{acc_connettore:'USB-A'}],
+ A1242:['Apple Keyboard (alluminio, compatta)',TS,2007,{acc_connettore:'USB-A'}],
+ A1255:['Apple Wireless Keyboard (alluminio)',TS,2007,{acc_connettore:'Bluetooth'}],
+ A1314:['Apple Wireless Keyboard (alluminio)',TS,2009,{acc_connettore:'Bluetooth'}],
+ A1644:['Magic Keyboard',TS,2015,{acc_connettore:'Lightning (ricarica), Bluetooth'}],
+ A1843:['Magic Keyboard con tastierino numerico',TS,2017,{acc_connettore:'Lightning (ricarica), Bluetooth'}],
+ A1156:['Apple Remote (bianco)',AC,2005,{}],
+ A1294:['Apple Remote (alluminio)',AC,2009,{}],
+ A1472:['EarPods con jack 3,5 mm',AC,2012,{acc_connettore:'Jack 3,5 mm',ordine:'MD827ZM/A'}],
+ A1748:['EarPods con connettore Lightning',AC,2016,{acc_connettore:'Lightning',ordine:'MMTN2ZM/A'}],
+ A3046:['EarPods con connettore USB-C',AC,2023,{acc_connettore:'USB-C',ordine:'MTJY3ZM/A'}],
+ A1379:['Apple USB SuperDrive',PE,2008,{acc_connettore:'USB-A'}],
+ A1277:['Adattatore Apple da USB a Ethernet',CV,2008,{acc_connettore:'USB-A'}],
+ A1433:['Adattatore Apple da Thunderbolt a Gigabit Ethernet',CV,2012,{acc_connettore:'Thunderbolt'}],
+ A1084:['AirPort Express',RE,2004,{}],A1264:['AirPort Express (802.11n)',RE,2008,{}],A1392:['AirPort Express (2ª generazione)',RE,2012,{}],
+ A1143:['AirPort Extreme (802.11n)',RE,2007,{}],A1521:['AirPort Extreme (802.11ac)',RE,2013,{}],
+ A1254:['Time Capsule',RE,2008,{}],A1470:['AirPort Time Capsule (802.11ac)',RE,2013,{}],
+ M5757:['AirPort Base Station (Graphite)',RE,1999,{}]
+};
+const accCode=q=>{const m=String(q||'').toUpperCase().match(/\b([AMG]\d{4}[A-Z]?)\b/);return m?m[1]:''};
+function accLocal(q){const c=accCode(q);let k=c&&(ACC_DB[c]?c:ACC_DB[c.replace(/[A-Z]$/,'')]?c.replace(/[A-Z]$/,''):'');
+  if(!k)return null;const [nome,tipologia,anno,x]=ACC_DB[k];
+  const fields=Object.assign({nome,marca:'Apple',tipologia,modello:k},anno?{anno}:{},x);
+  return {fields,specs:[],imageUrl:'',fonte:'',fonteNome:'Dizionario RDDC (offline)'}}
+const accTipo=t=>{t=String(t||'').toLowerCase();return /trackpad/.test(t)?PE:/mouse|mice|pointing/.test(t)?MO:/keyboard|tastier/.test(t)?TS:/magsafe|power adapter|charger|alimentat|caricabat|power supply/.test(t)?AL:/cable|cavo|adapter|adattat|lightning|connector|dongle/.test(t)?CV:/airport|router|base station|time capsule|network/.test(t)?RE:/headphone|earbud|earpod|airpods|cuffi|auricolar|remote|pencil|speaker|altoparlant/.test(t)?AC:/monitor|display/.test(t)?'Monitor':''};
+const plain=html=>{const d=new DOMParser().parseFromString('<div>'+html+'</div>','text/html');d.querySelectorAll('sup,style,script,.mw-editsection,.reference').forEach(x=>x.remove());return clean(d.body.textContent.replace(/\[\d+\]/g,''))};
+const yearNear=t=>{const m=String(t||'').match(/(introduc|releas|launch|announc|debut|annunciat|presentat|lanciat|uscit)[^.]{0,60}/i);return m?yearOf(m[0]):''};
+const yearOf=t=>{const m=String(t||'').match(/\b(19[5-9]\d|20[0-3]\d)\b/);return m?+m[1]:''};
+
+/* ---- Wikipedia: molte pagine raggruppano più modelli (tutti i mouse, tutte le tastiere…): si cerca la sezione giusta ---- */
+function infoboxPairs(wt){
+  const pairs=[];let cur=null,inBox=false;
+  for(const ln of wt.split('\n')){
+    if(/\{\{\s*Infobox/i.test(ln)){inBox=true;continue}
+    const m=ln.match(/^\s*\|\s*([\w \-]+?)\s*=\s*(.*)$/);
+    if(m){cur=[m[1].toLowerCase().trim(),m[2]];pairs.push(cur)}
+    else if(cur&&ln.trim()&&!/^\s*(\}\}|\{\{)/.test(ln)&&!/^\s*\|/.test(ln)&&pairs.length<90)cur[1]+=' '+ln.trim();
+    else if(/^\s*\}\}\s*$/.test(ln)){cur=null;inBox=false}
+  }
+  const P={},specs=[];
+  for(const [k,v0] of pairs){const v=wclean(v0);if(!v||/^(image|caption|logo|alt|image_size|imagesize|image_upright|website|footnotes|name)$/.test(k))continue;if(!(k in P)){P[k]=v;specs.push([k.replace(/[_-]/g,' ').replace(/^\w/,c=>c.toUpperCase()),v])}}
+  return {P,specs};
+}
+const wsecLine=s=>clean(String(s||'').replace(/<[^>]+>/g,''));
+function secScore(q,line){
+  const code=accCode(q),L=line.toLowerCase();let s=0;
+  if(code&&L.includes(code.toLowerCase()))s+=3;
+  const tk=q.toLowerCase().replace(/[^\p{L}\p{N} ]/gu,' ').split(/\s+/).filter(w=>w.length>1&&!/^(apple|the|di|il|la|con|per|and)$/.test(w)&&w!==code.toLowerCase());
+  const n=(q.match(/(?:^|\s)([1-9])(?:st|nd|rd|th|ª|°)?(?=\s|$)/i)||[])[1];
+  if(n&&new RegExp('(^|\\D)'+n+'(st|nd|rd|th|ª|°)?\\s*(generation|generazione|gen\\b)','i').test(L))s+=1.5;
+  if(tk.length){const hit=tk.filter(w=>new RegExp('(^|[^\\p{L}\\p{N}])'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'u').test(L)).length;s+=hit/tk.length*2}
+  return s;
+}
+async function wikiAccSearch(q){
+  const out=[],seen=new Set(),code=accCode(q),onlyCode=!!code&&q.trim().toUpperCase()===code;
+  const add=e=>{const k=e.lang+'|'+e.title+'|'+(e.sec?e.sec.index:'');if(seen.has(k))return;seen.add(k);out.push(e)};
+  for(const lang of ['en','it']){
+    const base=`https://${lang}.wikipedia.org/w/api.php`;
+    // 1) un rinvio con #sezione porta dritto al modello (es. «Apple Pro Mouse» → «Apple pointing devices#Apple Pro Mouse»)
+    const rd=await wjson(`${base}?action=query&titles=${encodeURIComponent(q)}&redirects=1&format=json&origin=*`).catch(()=>null);
+    const r0=rd&&rd.query&&rd.query.redirects&&rd.query.redirects[0];
+    const s=await wjson(`${base}?action=query&list=search&srsearch=${encodeURIComponent(q)}&srlimit=5&srprop=snippet|sectiontitle&format=json&origin=*`).catch(()=>null);
+    const titles=[...new Set([r0&&r0.to,...((s&&s.query&&s.query.search)||[]).map(x=>x.title)].filter(Boolean))].slice(0,3);
+    const snip=new Map(((s&&s.query&&s.query.search)||[]).map(x=>[x.title,x.snippet.replace(/<[^>]+>/g,'')]));
+    const secs=await Promise.all(titles.map(t=>wjson(`${base}?action=parse&page=${encodeURIComponent(t)}&prop=sections&redirects=1&format=json&origin=*`).then(j=>j.parse?j.parse.sections:[]).catch(()=>[])));
+    titles.forEach((t,i)=>{
+      const S=secs[i].map(x=>({index:x.index,level:+x.level,line:wsecLine(x.line),anchor:x.anchor}));
+      const parentOf=j=>{for(let k=j-1;k>=0;k--)if(S[k].level<S[j].level)return S[k].index;return ''};
+      const full=(x,j)=>{let p=x.line;for(let k=j-1;k>=0;k--)if(S[k].level<x.level){if(/generation|generazione|model|version|^\d/i.test(x.line))p=S[k].line+' – '+x.line;break}return p};
+      let best=null;
+      if(r0&&r0.to===t&&r0.tofragment){const j=S.findIndex(x=>x.anchor===r0.tofragment.replace(/ /g,'_')||x.line===r0.tofragment);if(j>=0)best={x:S[j],j,sc:9}}
+      if(!best&&S.length>=4)S.forEach((x,j)=>{if(/^(references|see also|external links|notes|bibliografia|note|voci correlate|collegamenti esterni|history|storia)$/i.test(x.line))return;const sc=secScore(q,full(x,j));if(sc>=1.2&&(!best||sc>best.sc))best={x,j,sc}});
+      if(best&&onlyCode&&!best.x.line.toUpperCase().includes(code))best=null;
+      if(best)add({lang,title:t,sec:{index:best.x.index,parent:parentOf(best.j),line:full(best.x,best.j)},snippet:'sezione della pagina «'+t+'»',score:best.sc+1});
+      const sn=snip.get(t)||'',sc=onlyCode?(t.toUpperCase().includes(code)||(sn.toUpperCase().includes(code)&&/apple|mac|ipod|iphone|ipad/i.test(t+sn))?3:0):secScore(q,t+' '+sn);if(sc>=1)add({lang,title:t,snippet:snip.get(t)||'',score:secScore(q,t)});
+    });
+    if(out.length)break;
+  }
+  return out.sort((a,b)=>b.score-a.score).slice(0,6);
+}
+async function wikiAccLoad(e,marca){
+  if(!e.sec){const r=await wikiLoad(e.title,e.lang,marca);r.fields.tipologia=r.fields.tipologia||accTipo(e.title);r.fonteNome='Wikipedia '+e.lang.toUpperCase();return r}
+  const base=`https://${e.lang}.wikipedia.org/w/api.php`;
+  const j=await wjson(`${base}?action=parse&page=${encodeURIComponent(e.title)}&section=${e.sec.index}&prop=text|wikitext&redirects=1&format=json&origin=*`);
+  const html=j.parse.text['*'],wt=j.parse.wikitext['*'];
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  doc.querySelectorAll('sup,style,.mw-editsection,.navbox,.reflist,.hatnote').forEach(x=>x.remove());
+  const paras=[...doc.querySelectorAll('p')].map(p=>clean(p.textContent.replace(/\[\d+\]/g,''))).filter(t=>t.length>40);
+  const pickImg=dd=>[...dd.querySelectorAll('img')].find(i=>(+i.getAttribute('width')||0)>=100);
+  let img='',im=pickImg(doc);
+  if(!im&&e.sec.parent){const pj=await wjson(`${base}?action=parse&page=${encodeURIComponent(e.title)}&section=${e.sec.parent}&prop=text&redirects=1&format=json&origin=*`).catch(()=>null);if(pj&&pj.parse)im=pickImg(new DOMParser().parseFromString(pj.parse.text['*'],'text/html'))}
+  if(!im){const pi=await wjson(`${base}?action=query&titles=${encodeURIComponent(e.title)}&prop=pageimages&piprop=thumbnail&pithumbsize=800&redirects=1&format=json&origin=*`).catch(()=>null);const pg=pi&&Object.values(pi.query.pages||{})[0];if(pg&&pg.thumbnail)img=pg.thumbnail.source}
+  if(im){const ss=(im.getAttribute('srcset')||'').split(',').map(s=>s.trim().split(' ')[0]).filter(Boolean);img=(ss.pop()||im.getAttribute('src')||'');if(img.startsWith('//'))img='https:'+img;img=img.replace('://thumb.wikimedia.org/','://upload.wikimedia.org/')}
+  const {P,specs}=/\{\{\s*Infobox/i.test(wt)?infoboxPairs(wt):{P:{},specs:[]};
+  const g=(...ks)=>{for(const k of ks)if(P[k])return P[k];return ''};
+  const line=e.sec.line,codes=line.match(/\(([^)]*\b[AMG]\d{4}[^)]*)\)/);
+  const nome=clean(line.replace(/\s*\([^)]*\b[AMG]\d{4}[^)]*\)/,''))||e.title;
+  const intro=g('released','release date','introduced','first release date');
+  const f={nome,marca:marca||(/apple|mac|ipod|iphone|ipad|airport|airpods|magsafe|earpods/i.test(e.title+' '+line)?'Apple':''),tipologia:accTipo(e.title+' '+line),
+    modello:codes?codes[1].replace(/\s*\/\s*/g,', '):g('model','model number'),intro,discontinued:g('discontinued'),connettivita:g('connectivity','connection'),
+    dimensioni:g('dimensions'),peso:g('weight','mass'),prezzo:g('price','introductory price'),descrizione:paras.slice(0,2).join('\n\n').slice(0,1200)};
+  f.anno=yearOf(intro)||yearNear(paras.join(' '))||'';
+  f.colore=detectColor(g('color','colour')+' '+paras.join(' '),true);
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  return {fields:f,specs,imageUrl:img,fonte:`https://${e.lang}.wikipedia.org/wiki/${encodeURIComponent(e.title.replace(/ /g,'_'))}#${encodeURIComponent((j.parse.sections&&j.parse.sections[0]&&j.parse.sections[0].anchor)||'')}`,fonteNome:`Wikipedia ${e.lang.toUpperCase()} – «${e.title}», sezione «${line}»`};
+}
+
+/* ---- iFixit (scheda del dispositivo: identificazione e specifiche) ---- */
+const IFX='https://www.ifixit.com/api/2.0';
+async function ifixitSearch(q){const j=await wjson(`${IFX}/search/${encodeURIComponent(q)}?filter=category&limit=6`);
+  return (j.results||[]).filter(x=>x.namespace==='CATEGORY').map(x=>({title:x.title,snippet:x.summary||x.text||'',thumb:x.image&&x.image.thumbnail}))}
+function ifxText(s){return clean(String(s||'').replace(/\[(?:link|guide|product|wiki)\|[^|\]]*\|([^|\]]*)[^\]]*\]/gi,'$1').replace(/\[(https?:[^|\]]*)\|([^|\]]*)[^\]]*\]/g,'$2').replace(/\[\[([^\]|]*\|)?([^\]]*)\]\]/g,'$2').replace(/'{2,}|\*{3}|\[\/?\w+\]/g,'').replace(/<[^>]+>/g,''))}
+async function ifixitLoad(title,marca){
+  const d=await wjson(`${IFX}/wikis/CATEGORY/${encodeURIComponent(title)}`);
+  const secs=[];let cur={t:'',lines:[]};secs.push(cur);
+  for(const ln of String(d.contents_raw||'').split('\n')){const m=ln.match(/^\s*==+\s*(.*?)\s*==+\s*$/);if(m){cur={t:m[1],lines:[]};secs.push(cur)}else cur.lines.push(ln)}
+  const intro=secs.filter(s=>!/spec|additional|troubleshoot|link|resource|guide|repair/i.test(s.t)).flatMap(s=>s.lines).filter(l=>l.trim()&&!/^\s*[*#]/.test(l)&&!/^\s*\[/.test(l)).map(ifxText).filter(t=>t.length>30);
+  const specs=[];
+  for(const s of secs.filter(s=>/spec|identif|technical/i.test(s.t))){let lab='';
+    for(const ln of s.lines){const h=ln.match(/^\s*\*{3}(.+?):?\s*\*{3}\s*$/)||ln.match(/^\s*'''(.+?):?'''\s*$/);if(h){lab=ifxText(h[1]).replace(/:$/,'');continue}
+      const b=ln.match(/^\s*\*+\s*(.+)$/);if(!b)continue;const t=ifxText(b[1]);if(!t)continue;
+      const kv=t.match(/^([^:–-]{2,40})\s*[:–-]\s+(.+)$/);
+      if(lab){const p=specs.find(x=>x[0]===lab);p?p[1]+='; '+t:specs.push([lab,t])}else if(kv)specs.push([kv[1],kv[2]]);else specs.push(['Specifiche',t])}}
+  const anc=(d.ancestors||[]).map(a=>a.title).join(' ');
+  const desc=intro.slice(0,2).join('\n\n')||d.description||'';
+  const f={nome:d.display_title||d.title,marca:marca||(/apple/i.test(anc+' '+d.title)?'Apple':''),tipologia:accTipo(d.title+' '+anc),descrizione:desc.slice(0,1200),anno:yearNear(d.description)||yearNear(desc)};
+  const cd=accCode(d.title+' '+desc);if(cd)f.modello=cd;
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  const im=d.image||{};
+  return {fields:f,specs,imageUrl:im.large||im.standard||im.medium||'',fonte:'https://www.ifixit.com/Device/'+encodeURIComponent(d.title.replace(/ /g,'_')),fonteNome:'iFixit – «'+(d.display_title||d.title)+'»'};
+}
+
+/* ---- The Apple Wiki: tabelle «Models/…» (numero A → modello, identificativo, codici d'ordine) ---- */
+const TAW='https://theapplewiki.com/api.php';
+function wikiTable(wt){
+  const tabs=[];for(const t of wt.split(/\n\{\|/).slice(1)){const body=t.split(/\n\|\}/)[0];const rows=body.split(/\n\|-[^\n]*/);
+    const hdr=[];const R=[];
+    rows.forEach(r=>{const cells=[];r.split('\n').forEach(l=>{if(/^\s*!/.test(l))l.replace(/^\s*!/,'').split('!!').forEach(c=>hdr.push(wclean(c.replace(/^[^|[]*\|(?!\|)/,''))));else if(/^\s*\|/.test(l)&&!/^\s*\|[-}+]/.test(l))l.replace(/^\s*\|/,'').split('||').forEach(c=>cells.push(c.replace(/^\s*(?:rowspan|colspan|style|class|align)[^|]*\|/i,'')))});if(cells.length)R.push(cells)});
+    tabs.push({hdr,rows:R})}
+  return tabs;
+}
+async function appleWikiSearch(code){
+  const j=await wjson(`${TAW}?action=query&list=search&srsearch=${encodeURIComponent(code)}&srlimit=8&format=json&origin=*`);
+  const pages=(j.query.search||[]).map(x=>x.title).filter(t=>/^Models\//.test(t)).slice(0,2);const out=[];
+  for(const pg of pages){const p=await wjson(`${TAW}?action=parse&page=${encodeURIComponent(pg)}&prop=wikitext&format=json&origin=*`);
+    for(const t of wikiTable(p.parse.wikitext['*']))for(const r of t.rows){const ix=r.findIndex(c=>new RegExp('\\b'+code+'\\b','i').test(c));if(ix<0)continue;
+      const gen=r[0]&&r[0].match(/\[\[([^\]|]*)(?:\|([^\]]*))?\]\]/);const name=wclean(r[0]);
+      out.push({title:name,page:gen?gen[1]:name,code,row:t.hdr.map((h,i)=>[h,wclean(r[i]||'')]).filter(x=>x[0]&&x[1]&&x[1]!=='—'),snippet:wclean(r[ix]).slice(0,120)})}}
+  return out.slice(0,4);
+}
+async function appleWikiLoad(e){
+  const row=Object.fromEntries(e.row.map(([h,v])=>[h.toLowerCase(),v]));
+  const p=await wjson(`${TAW}?action=parse&page=${encodeURIComponent(e.page)}&prop=wikitext|images&redirects=1&format=json&origin=*`).catch(()=>null);
+  const wt=p&&p.parse?p.parse.wikitext['*']:'';
+  const parts=wt.split(/\n==+\s*/);const intro=wclean((parts[0]||'').replace(/\[\[File:[^\]]*\]\]/gi,'').replace(/<code>|<\/code>/g,'')).replace(/\s+/g,' ');
+  const specs=e.row.slice();let lab='';
+  for(const s of parts.slice(1)){const t=s.split('\n')[0].replace(/=+\s*$/,'').trim();if(!/spec|compat|application processor/i.test(t))continue;
+    if(!/spec/i.test(t)){const x=wclean(s.split('\n').slice(1).join(' '));if(x)specs.push([t,x]);continue}
+    for(const ln of s.split('\n').slice(1)){const m=ln.match(/^(\*+)\s*(.+)$/);if(!m)continue;const v=wclean(m[2]);if(m[1].length===1){lab=v.replace(/:$/,'');if(/:\s*\S/.test(v)){const [a,...b]=v.split(':');specs.push([a.trim(),b.join(':').trim()]);lab=''}}else if(lab){const q=specs.find(x=>x[0]===lab);q?q[1]+='; '+v:specs.push([lab,v])}}}
+  let img='';const fn=(wt.match(/\[\[File:([^\]|]+)/i)||[])[1];
+  if(fn){const ii=await wjson(`${TAW}?action=query&titles=${encodeURIComponent('File:'+fn)}&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`).catch(()=>null);const pg=ii&&Object.values(ii.query.pages)[0];img=pg&&pg.imageinfo?pg.imageinfo[0].thumburl||pg.imageinfo[0].url:''}
+  const fam=e.page.replace(/\s*\(.*$/,'');let alt=[];
+  try{const w=await wjson(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(e.page+'|'+fam)}&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=800&format=json&origin=*`);alt=Object.values(w.query.pages||{}).map(x=>x.thumbnail&&x.thumbnail.source).filter(Boolean)}catch(_){}
+  const f={nome:e.title,marca:'Apple',tipologia:accTipo(e.page+' '+e.title)||'Accessorio',modello:e.code,identifier:row['identifier']||'',ordine:row['model']||row['order number']||'',descrizione:intro.slice(0,1200),anno:yearNear(intro)||yearOf(intro)};
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  return {fields:f,specs,imageUrl:img,imageAlt:alt,fonte:'https://theapplewiki.com/wiki/'+encodeURIComponent(e.page.replace(/ /g,'_')),fonteNome:'The Apple Wiki – «'+e.title+'»'};
+}
+
+/* ---- Icecat (catalogo prodotti: per codice prodotto o codice a barre; solo le marche che aderiscono a Open Icecat) ---- */
+async function icecatLoad(q,marca){
+  q=q.trim();let u=`https://live.icecat.biz/api?UserName=openicecat-live&Language=it`;
+  if(/^\d{8,14}$/.test(q))u+='&GTIN='+q;
+  else{let b=marca,c=q;if(!b){const m=q.match(/^([A-Za-zÀ-ÿ][\w&.-]*)\s+(\S.*)$/);if(!m)return null;b=m[1];c=m[2]}else c=q.replace(new RegExp('^'+b.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s+','i'),'');if(!/\d/.test(c))return null;u+='&Brand='+encodeURIComponent(b)+'&ProductCode='+encodeURIComponent(c.trim())}
+  const r=await fetch(u,{signal:AbortSignal.timeout(15000)});const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.data)return {err:/restriction|limited|app_key/i.test(j.Message||j.msg||'')?'marca non disponibile nel catalogo libero':'non trovato'};
+  const d=j.data,g=d.GeneralInfo||{};const specs=[];
+  (d.FeaturesGroups||[]).forEach(fg=>(fg.Features||[]).forEach(x=>{const n=x.Feature&&x.Feature.Name&&x.Feature.Name.Value;if(n&&x.PresentationValue)specs.push([n,x.PresentationValue])}));
+  const sp=k=>(specs.find(x=>x[0]===k)||[])[1]||'';
+  const desc=plain((g.Description&&g.Description.LongDesc)||(g.SummaryDescription&&g.SummaryDescription.LongSummaryDescription)||'');
+  const cat=g.Category&&g.Category.Name?g.Category.Name.Value:'';
+  const f={nome:g.Title||g.ProductName,marca:g.Brand,tipologia:accTipo(cat+' '+(g.Title||'')),ordine:g.BrandPartCode,anno:yearOf(g.ReleaseDate),descrizione:desc.slice(0,1200),colore:detectColor(sp('Colore del prodotto')),peso:sp('Peso'),acc_lunghezza:sp('Lunghezza cavo'),acc_connettore:sp('Connettore 1')||sp('Connettore'),acc_uscita:sp('Potenza in uscita')||sp('Potenza')};
+  Object.keys(f).forEach(k=>{if(f[k]===''||f[k]==null)delete f[k]});
+  return {fields:f,specs,imageUrl:d.Image&&(d.Image.Pic500x500||d.Image.HighPic)||'',fonte:'https://icecat.biz/it/p/'+encodeURIComponent((g.Brand||'').toLowerCase())+'/'+encodeURIComponent(g.BrandPartCode||'')+'/'+(g.IcecatId||''),fonteNome:'Icecat – catalogo prodotti'};
+}
+
+/* ---- ricerca combinata ---- */
+async function accSearch(q,marca){
+  const code=accCode(q),list=[],notes=[];
+  const loc=accLocal(q);if(loc)list.push({src:'📘 Dizionario RDDC',title:loc.fields.nome,snippet:[loc.fields.modello,loc.fields.anno,loc.fields.acc_uscita].filter(Boolean).join(' · '),load:async()=>loc});
+  const job=(name,p)=>p.catch(e=>{notes.push(name+' non raggiungibile');return null});
+  const [aw,ifx,wk,ic]=await Promise.all([
+    code&&/^A/.test(code)?job('The Apple Wiki',appleWikiSearch(code)):null,
+    job('iFixit',ifixitSearch(q)),
+    job('Wikipedia',wikiAccSearch(q)),
+    (/^\d{8,14}$/.test(q.trim())||(/\d/.test(q)&&/[A-Za-z]/.test(q)&&!/^apple$/i.test(marca||'')&&!code))?job('Icecat',icecatLoad(q,marca&&!/^apple$/i.test(marca)?marca:'')):null]);
+  (aw||[]).forEach(e=>list.push({src:'The Apple Wiki',title:e.title,snippet:e.snippet,load:()=>appleWikiLoad(e)}));
+  if(ic&&ic.fields)list.push({src:'Icecat',title:ic.fields.nome,snippet:[ic.fields.ordine,ic.fields.anno].filter(Boolean).join(' · '),load:async()=>ic});else if(ic&&ic.err)notes.push('Icecat: '+ic.err);
+  (wk||[]).forEach(e=>list.push({src:'Wikipedia '+e.lang.toUpperCase(),title:e.sec?e.title+' › '+e.sec.line:e.title,snippet:e.snippet,sec:!!e.sec,load:()=>wikiAccLoad(e,marca)}));
+  (ifx||[]).filter(e=>secScore(q,e.title+' '+e.snippet)>=1).forEach(e=>list.push({src:'iFixit',title:e.title,snippet:e.snippet,thumb:e.thumb,load:()=>ifixitLoad(e.title,marca)}));
+  return {list,notes};
+}
+
 /* ============ ricerca online ============ */
-function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
-  const isApple=/^apple$/i.test(marca||'Apple');
-  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple?'selected':''}>Apple</option><option value="altro" ${isApple?'':'selected'}>Altra marca</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, EMC 2554, MacBookPro9,2" autocomplete="off"></div>
+function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf}){
+  const isApple=/^apple$/i.test(marca||'Apple'),isAcc=['acc','part'].includes(kindOf(tipologia))&&!!tipologia;
+  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, EMC 2554, MacBookPro9,2" autocomplete="off"></div>
   <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
   <button class="res" id="lp" style="margin-top:12px"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non riesce a leggere EveryMac.</small></button>
   <div id="lo" style="margin-top:14px"></div>
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
-    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
+    const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, EMC 2554, MacBookPro9,2':'Marca e modello'};
     hint();$('#lb',el).onchange=hint;
     const out=$('#lo',el);
     const busy=m=>out.innerHTML=spin(m);
@@ -1791,6 +2050,11 @@ function openLookup({prefill='',marca='Apple',onResult,replaceSelf}){
       const q=$('#lq',el).value.trim();if(!q)return;
       out.onclick=null;
       const ap=$('#lb',el).value==='apple';
+      if($('#lb',el).value==='acc'){busy('Cerco nelle fonti per accessori…');try{
+        const {list,notes}=await accSearch(q,/^apple$/i.test(marca||'')||/\bapple\b/i.test(q)?'Apple':(marca||''));
+        out.innerHTML=(list.length?'<b>Scegli il risultato giusto:</b>'+list.map((x,i)=>`<button class="res accr" data-a="${i}">${x.thumb?`<img src="${esc(x.thumb)}" alt="" loading="lazy" onerror="this.remove()">`:''}<span><b>${esc(x.title)}</b><small><i class="src">${esc(x.src)}</i> ${esc((x.snippet||'').slice(0,110))}</small></span></button>`).join(''):'Nessun risultato. Prova con il codice scritto sotto l\'oggetto (es. A1424) o con meno parole.')+(notes.length?`<p class="note">${esc(notes.join(' · '))}</p>`:'');
+        out.onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const x=list[+b.dataset.a];busy('Carico la scheda…');try{preview(await x.load())}catch(err){out.textContent=/429/.test(err.message)?'Il servizio ha ricevuto troppe richieste: riprova tra un minuto.':'Errore: '+err.message}};
+      }catch(e){out.textContent='Errore di rete: '+e.message}return}
       if(!ap){try{await wikiFlow(q,'')}catch(e){out.textContent='Errore di rete: '+e.message}return}
       busy('Cerco su EveryMac…');
       try{
@@ -1825,7 +2089,7 @@ async function mergeFetched(base,r,overwrite){
   if(trOn()&&m.descrizione&&m.descrizione===r.fields.descrizione&&isLongEn(m.descrizione)){
     try{toast('Traduco la descrizione…',8000);const it=await translateText(m.descrizione);m.descrizione_orig=m.descrizione;m.descrizione=it}catch(e){/* riproverà da sola in seguito */}}
   if((r.imageBlob||r.imageUrl)&&!(m.foto&&m.foto.length)){
-    try{const b=r.imageBlob||await fetchBlob(r.imageUrl);m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
+    try{let b=r.imageBlob;if(!b)for(const u of [r.imageUrl,...(r.imageAlt||[])].filter(Boolean)){try{b=await fetchBlob(u);if(b&&/^image\//.test(b.type||'image/'))break;b=null}catch(_){}}if(!b)throw new Error('foto');m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
   }
   return m;
 }

@@ -32,6 +32,16 @@ Il pulsante 🏛️ accanto a «RDDC» apre il **museo virtuale**: una sala per 
 
 Le foto vengono **scontornate in automatico** quando lo sfondo è chiaro e uniforme (come quelle di EveryMac); altrimenti l'oggetto compare come foto incorniciata. Dalla scheda, «🏛️ Scontorno per il museo» permette di regolare la sensibilità o di importare un'immagine già scontornata col telefono (Google Foto: tieni premuto sull'oggetto; Samsung: Galleria → Estrai oggetto).
 
+## Accessori e ricambi: dati online
+**+** → «🔌 Cerca un accessorio o un ricambio» (o «Cerca dati online» → *Accessorio / ricambio*). Scrivi il codice stampato sotto l'oggetto (A1424, M5769), un codice prodotto (MD827ZM/A), un codice a barre o il nome; l'app interroga insieme:
+- **Dizionario RDDC** (offline): alimentatori MagSafe/USB-C/USB, mouse, tastiere, trackpad, EarPods, AirPort, telecomandi… con watt, connettore e compatibilità
+- **The Apple Wiki**: dal numero A (es. A1523) al modello, identificativo e codice d'ordine (AirPods, iPod, Apple Watch…)
+- **Wikipedia**: anche dentro le pagine che raccolgono più modelli (tutti i mouse, tutte le tastiere, MagSafe, AirPort…) l'app trova e usa **solo la sezione del modello giusto** (es. «Apple pointing devices › Magic Mouse – 2nd generation (A1657)»)
+- **iFixit**: descrizione, identificazione e specifiche
+- **Icecat**: catalogo prodotti in italiano per codice prodotto o codice a barre (solo per le marche che aderiscono al catalogo libero, es. Philips e Samsung; Apple e Logitech no)
+
+Ogni risultato mostra da quale fonte arriva; nell'anteprima si vede la fonte prima di usare i dati.
+
 ## Gestione della collezione
 - **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
 - **Confronto affiancato** di 2 o 3 oggetti: dalla selezione «⇆ Confronta», o dalla scheda «⇆ Confronta con…». «Mostra solo le differenze» nasconde le righe uguali.

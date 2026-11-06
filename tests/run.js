@@ -59,7 +59,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
   async function phone(name, opts = {}) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block', ...opts });
     await ctx.route('https://api.github.com/**', ghApi);
-    await ctx.route(/^https:\/\/(api\.mymemory|cdn\.jsdelivr|[^/]*everymac)/, r => r.abort());
+    await ctx.route(/^https:\/\/(api\.mymemory|cdn\.jsdelivr|[^/]*everymac|[^/]*wikipedia\.org|www\.ifixit\.com|theapplewiki\.com|live\.icecat\.biz)/, r => r.abort());
     const p = await ctx.newPage();
     p.on('pageerror', e => errors.push(`${name}: ${e.message}`));
     await p.goto(URL0); await p.waitForFunction(() => typeof devices !== 'undefined' && typeof saveDev === 'function');
@@ -175,6 +175,27 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const ref = gh.ref; await sync(A); await sync(B); await sync(A);
     eq(gh.ref, ref, 'nessun commit inutile');
     await A.context().close(); await B.context().close();
+  });
+
+  await test('accessori: dizionario dei codici e scelta della sezione giusta nelle pagine raggruppate', async () => {
+    const r = await p.evaluate(() => {
+      const l = accLocal('a1424'), m = accLocal('Mouse M5769');
+      const secs = ['Magic Mouse', 'Magic Mouse – 1st generation (A1296)', 'Magic Mouse – 2nd generation (A1657)', 'Apple Pro Mouse (M5769)'];
+      const best = q => secs.slice().sort((a, b) => secScore(q, b) - secScore(q, a))[0];
+      return [l.fields.nome, l.fields.acc_connettore, m.fields.nome, best('Magic Mouse 2'), best('A1296'), best('apple pro mouse'), accTipo('Apple keyboards'), accTipo('MagSafe')];
+    });
+    eq(r, ['Alimentatore MagSafe 2 da 85 W', 'MagSafe 2', 'Apple Pro Mouse', 'Magic Mouse – 2nd generation (A1657)', 'Magic Mouse – 1st generation (A1296)', 'Apple Pro Mouse (M5769)', 'Tastiera', 'Alimentatore / caricabatterie'], 'risultati');
+  });
+
+  await test('accessori: ricerca dal menu «+» compila il modulo (anche senza rete)', async () => {
+    await p.click('#fab'); await p.click('[data-a="lookacc"]');
+    await p.fill('#lq', 'A1424'); await p.click('#lg');
+    await p.waitForSelector('[data-a="0"]', { timeout: 20000 });
+    await p.click('[data-a="0"]'); await p.waitForSelector('[data-use]'); await p.click('[data-use]');
+    await p.waitForSelector('#f', { timeout: 20000 });
+    const v = await p.evaluate(() => ['nome', 'tipologia', 'modello', 'acc_connettore', 'acc_uscita'].map(n => document.querySelector(`#f [name="${n}"]`).value));
+    eq(v, ['Alimentatore MagSafe 2 da 85 W', 'Alimentatore / caricabatterie', 'A1424', 'MagSafe 2', '20 V 4,25 A – 85 W'], 'modulo');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
