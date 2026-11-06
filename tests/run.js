@@ -236,6 +236,17 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.unroute('https://r.jina.ai/**'); await p.evaluate(() => { S.view = 'col'; goBase(); render(); }); await p.waitForTimeout(300);
   });
 
+  await test('annunci da screenshot: dal testo letto a titolo, prezzo, descrizione', async () => {
+    const r = await p.evaluate(() => {
+      const ocr = '12:41 87%\n< Indietro Condividi Salva\nMacintosh Classic Il con tastiera e\nmouse\n180 €\nMilano (MI) - Oggi alle 10:15\nSpedizione disponibile\nDescrizione\nVendo Macintosh Classic Il perfettamente funzionante,\navvia System 7.1.\nCaratteristiche\nCondizione Usato - Buone condizioni\nAnnunci simili\niMac G3 Bondi 90 €\nContatta';
+      const ebay = 'eBay\nApple iMac G3 233 MHz Bondi Blue\nEUR 249,00\nSpedizione gratuita\nDescrizione dell\'oggetto\nFunziona, tastiera inclusa\nInformazioni sul venditore';
+      const a = parseListingText(ocr), b = parseListingText(ebay);
+      return [a.titolo, a.prezzo, a.luogo, a.condizione, a.desc, b.titolo, b.prezzo, b.sito, b.desc, annTitle('Guarda Apple iMac G3 su eBay!')];
+    });
+    eq(r, ['Macintosh Classic II con tastiera e mouse', '180', 'Milano (MI)', 'Usato - Buone condizioni', 'Vendo Macintosh Classic II perfettamente funzionante, avvia System 7.1.',
+      'Apple iMac G3 233 MHz Bondi Blue', '249', 'eBay', 'Funziona, tastiera inclusa', 'Apple iMac G3'], 'lettura');
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();

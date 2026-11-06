@@ -905,7 +905,7 @@ function openDue(){
 const siteName=u=>{const h=((String(u).match(/^https?:\/\/(?:www\.|m\.)?([^/]+)/)||[])[1]||'').toLowerCase();return /vinted/.test(h)?'Vinted':/subito/.test(h)?'Subito':/ebay/.test(h)?'eBay':/facebook/.test(h)?'Facebook Marketplace':/wallapop/.test(h)?'Wallapop':/kijiji/.test(h)?'Kijiji':h};
 const parsePrice=t=>{t=String(t||'').replace(/\s/g,'');if(!t)return '';if(/,\d{1,2}$/.test(t))t=t.replace(/\./g,'').replace(',','.');else t=t.replace(/[.,](?=\d{3}\b)/g,'');const n=parseFloat(t);return isFinite(n)?String(Math.round(n*100)/100):''};
 const findPrice=t=>{const m=String(t||'').match(/(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)\s?€|€\s?(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)|EUR\s?(\d+(?:[.,]\d{1,2})?)/i);return m?parsePrice(m[1]||m[2]||m[3]):''};
-const annTitle=t=>clean(String(t||'').replace(/\s*[|–-]\s*(Vinted|Subito(\.it)?|eBay|Facebook)\b.*$/i,'').replace(/^(Guarda|Dai un'occhiata a)[^:]*:\s*/i,''));
+const annTitle=t=>clean(String(t||'').replace(/\s*[|–-]\s*(Vinted|Subito(\.it)?|eBay|Facebook)\b.*$/i,'').replace(/^(Guarda|Dai un'occhiata a|Ecco)[^:]*:\s*/i,'').replace(/\s+(su|on)\s+(eBay|Vinted|Subito(\.it)?|Facebook( Marketplace)?)[!.]*$/i,'').replace(/^(Guarda|Dai un'occhiata a)\s+/i,''));
 async function linkPreview(url,hint=''){
   const r={id:uid(),url,sito:siteName(url),titolo:'',prezzo:'',img:'',desc:'',data:today()};
   try{const res=await fetch('https://r.jina.ai/'+url,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(25000)});
@@ -926,33 +926,102 @@ function annunciHTML(d){const L=(d.annunci||[]);
 async function refreshListings(d){toast('Aggiorno gli annunci…',8000);let k=0;
   for(const a of d.annunci||[]){const r=await linkPreview(a.url);if(r.prezzo&&r.prezzo!==a.prezzo){a.prezzo_prima=a.prezzo;a.prezzo=r.prezzo;k++}if(r.img&&!a.img)a.img=r.img;a.agg=today()}
   await saveDev(d);render();toast(k?`${k} prezzi cambiati`:'Prezzi invariati');openDetail(d.id,true)}
-function askListing(target){
-  openPage('Link di un annuncio',`<p style="margin-top:0">Incolla l'indirizzo di un annuncio (Vinted, Subito, eBay, Marketplace…).</p><div class="row"><input class="in" id="lu" placeholder="https://…" inputmode="url" autocomplete="off"><button class="btn sm sec" id="lpst">📋</button></div><button class="btn" id="lgo" style="width:100%;margin-top:10px">Continua</button>`,{mount(el){
-    $('#lpst',el).onclick=async()=>{try{$('#lu',el).value=await navigator.clipboard.readText()}catch(e){toast('Tieni premuto nel campo → Incolla')}};
-    $('#lgo',el).onclick=()=>{const m=$('#lu',el).value.match(/https?:\/\/\S+/);if(!m)return toast('Non sembra un link');openListing(m[0],$('#lu',el).value,{replace:true,target})}}});
+/* ---- lettura del testo da screenshot (OCR sul telefono; il programma si scarica la prima volta, ~5 MB, poi resta in memoria) ---- */
+let TESS=null;
+function loadTess(){if(TESS)return TESS;TESS=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';sc.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error('libreria'));sc.onerror=()=>{TESS=null;rej(new Error('rete'))};document.head.append(sc)});return TESS}
+async function ocrImages(files,onProg=()=>{}){
+  const T=await loadTess();onProg(0,'Preparo il lettore…');
+  const w=await T.createWorker('ita',1,{logger:m=>{if(m.status==='recognizing text')onProg(m.progress)}});
+  const parts=[];let n=0,tot=0;const jobs=[];
+  try{
+    for(const f of files){const src=isHeic(f)?await heicToJpeg(f):f;const bmp=await createImageBitmap(src);const W=Math.min(bmp.width,1100),k=W/bmp.width,H=Math.round(bmp.height*k),CH=1600;
+      for(let y=0;y<H;y+=CH-80)jobs.push({bmp,k,W,y,h:Math.min(CH,H-y)});}
+    tot=jobs.length;
+    for(const jb of jobs){const c=document.createElement('canvas');c.width=jb.W;c.height=jb.h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(jb.bmp,0,jb.y/jb.k,jb.bmp.width,jb.h/jb.k,0,0,jb.W,jb.h);
+      onProg(n/tot,`Leggo il testo… ${n+1}/${tot}`);const {data}=await w.recognize(c);parts.push(data.text);n++}
+  }finally{await w.terminate().catch(()=>{})}
+  const out=[];for(const l of parts.join('\n').split('\n').map(x=>x.trim()))if(l&&l!==out[out.length-1])out.push(l);
+  return out.join('\n');
 }
-function openListing(url,hint,{replace=false,target=null}={}){
-  openPage('Annuncio',`<div id="lv">${spin('Leggo l\'annuncio…')}</div>`,{replace,mount(el){
-    const box=$('#lv',el);
-    linkPreview(url,hint).then(a=>{
-      const wl=devices.filter(x=>x.wish).sort((x,y)=>(y.modificato||0)-(x.modificato||0));
-      box.innerHTML=`${annCard(a)}${a.desc?`<p class="note">${esc(a.desc)}</p>`:''}
+const OCR_NOISE=/^(indietro|condividi|salva(to)?|preferiti|contatta|chatta|chat|messaggio|invia messaggio|fai un'?offerta|fai una proposta|acquista|compra( subito)?|aggiungi al carrello|segui|home|cerca|vendi|notifiche|profilo|il mio account|menu|annunci simili|ti potrebbero interessare|mostra (di più|altro)|leggi (di più|tutto)|vedi tutto|segnala( l'annuncio)?|pubblicità|sponsorizzat[oa]|\d{1,2}[:.]\d{2}.*|[\d\s%]+|[<>←→✕x×·•|]+)$/i;
+function parseListingText(t){
+  t=String(t||'').replace(/([A-Za-z0-9])\s+Il\b/g,'$1 II').replace(/([A-Za-z0-9])\s+Ill\b/g,'$1 III');
+  const L=String(t||'').split('\n').map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>1);
+  const low=t.toLowerCase(),r={titolo:'',prezzo:'',desc:'',sito:'',luogo:'',condizione:'',url:''};
+  r.sito=/subito/.test(low)?'Subito':/vinted/.test(low)?'Vinted':/ebay/.test(low)?'eBay':/marketplace|facebook/.test(low)?'Facebook Marketplace':/wallapop/.test(low)?'Wallapop':'';
+  const u=t.match(/https?:\/\/\S+/);if(u)r.url=u[0];
+  const PR=/^(?:prezzo:?\s*)?(?:€|eur)?\s?\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?\s?(?:€|eur)?(?:\s*\(?\s*(?:trattabile|spedizione[^)]*|\+ ?spedizione.*|iva inclusa)\)?)?$/i;
+  let pi=L.findIndex(x=>PR.test(x)&&/€|eur/i.test(x));if(pi<0)pi=L.findIndex(x=>/€/.test(x)&&x.length<30);
+  if(pi>=0)r.prezzo=findPrice(L[pi])||findPrice(L[pi].replace(/eur/i,'€'));
+  const ok=x=>!OCR_NOISE.test(x)&&!/€/.test(x)&&/[a-zà-ú]{2}/i.test(x)&&x.length<=120&&!/^https?:/.test(x);
+  if(pi>0)for(let k=pi-1;k>=Math.max(0,pi-3);k--){if(ok(L[k])&&L[k].length>=4){r.titolo=L[k];if(k>0&&ok(L[k-1])&&L[k-1].length>=12&&L[k].length<25&&!/:/.test(L[k-1]))r.titolo=L[k-1]+' '+L[k];break}}
+  if(!r.titolo)r.titolo=(L.filter(ok).sort((a,b)=>b.split(' ').length-a.split(' ').length)[0])||'';
+  const di=L.findIndex(x=>/^(descrizione( dell'?oggetto)?|description|dettagli( dell'?oggetto)?|informazioni sull'?oggetto)\s*:?$/i.test(x));
+  const stopRe=/^(caratteristiche|dettagli|informazioni|spedizione|consegna|venditore|annunci simili|altri annunci|pubblicato|posizione|luogo|pagamento|protezione|ti potrebbero|segnala|potrebbe interessarti)\b/i;
+  let D=[];if(di>=0){for(let k=di+1;k<L.length&&D.length<30;k++){if(stopRe.test(L[k]))break;if(!OCR_NOISE.test(L[k]))D.push(L[k])}}
+  else if(pi>=0)D=L.slice(pi+1).filter(x=>ok(x)&&!stopRe.test(x)).slice(0,8);
+  r.desc=D.join(' ').slice(0,1500);
+  const cn=L.find(x=>/^(condizion[ei]|stato( dell'?oggetto)?)\s*:?/i.test(x));if(cn)r.condizione=cn.replace(/^(condizion[ei]|stato( dell'?oggetto)?)\s*:?\s*/i,'');
+  const lu=L.find(x=>/\b[A-ZÀ-Ú][a-zà-ú]+(?: [A-ZÀ-Ú]?[a-zà-ú]+)* \([A-Z]{2}\)/.test(x));if(lu)r.luogo=(lu.match(/[A-ZÀ-Ú][a-zà-ú]+(?: [A-ZÀ-Ú]?[a-zà-ú]+)* \([A-Z]{2}\)/)||[''])[0];
+  return r;
+}
+async function shotParts(f){
+  const src=isHeic(f)?await heicToJpeg(f):f,bmp=await createImageBitmap(src),W=bmp.width;
+  const y0=Math.round(Math.min(bmp.height*0.06,W*0.18)),h=Math.min(Math.round(W*0.95),bmp.height-y0);
+  const c=document.createElement('canvas');c.width=W;c.height=h;c.getContext('2d').drawImage(bmp,0,y0,W,h,0,0,W,h);
+  const crop=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));
+  const k=Math.min(1,1080/W),c2=document.createElement('canvas');c2.width=Math.round(W*k);c2.height=Math.round(bmp.height*k);c2.getContext('2d').drawImage(bmp,0,0,c2.width,c2.height);
+  const full=c2.toDataURL('image/jpeg',.72);return {crop,full}}
+function askListing(target){
+  openPage('Annuncio',`<p style="margin-top:0">Incolla l'indirizzo di un annuncio (Vinted, Subito, eBay, Marketplace…)</p><div class="row"><input class="in" id="lu" placeholder="https://…" inputmode="url" autocomplete="off"><button class="btn sm sec" id="lpst">📋</button></div><button class="btn" id="lgo" style="width:100%;margin-top:10px">Continua</button>
+  <div class="sec-t">…oppure da uno screenshot</div><p class="note" style="margin-top:0">Utile quando il sito non mostra l'anteprima (Subito, Facebook, eBay): fai uno <b>screenshot lungo</b> dell'annuncio e sceglilo qui. Il testo si legge sul telefono.</p><button class="btn sec" id="lsh" style="width:100%">📷 Scegli lo screenshot</button><input type="file" id="lshf" accept="image/*" multiple hidden>`,{mount(el){
+    $('#lpst',el).onclick=async()=>{try{$('#lu',el).value=await navigator.clipboard.readText()}catch(e){toast('Tieni premuto nel campo → Incolla')}};
+    $('#lgo',el).onclick=()=>{const m=$('#lu',el).value.match(/https?:\/\/\S+/);if(!m)return toast('Non sembra un link');openListing(m[0],$('#lu',el).value,{replace:true,target})};
+    $('#lsh',el).onclick=()=>$('#lshf',el).click();
+    $('#lshf',el).onchange=e=>{const fs=[...e.target.files];if(fs.length)openListing('',$('#lu',el).value,{replace:true,target,shots:fs})}}});
+}
+function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
+  openPage('Annuncio',`<div id="lv">${spin(url?'Leggo l\'annuncio…':'Preparo…')}</div>`,{replace,mount(el){
+    const box=$('#lv',el);let a={id:uid(),url,sito:url?siteName(url):'',titolo:'',prezzo:'',img:'',desc:'',data:today()},sh=[],crop=null,blocked=false;
+    const wl=devices.filter(x=>x.wish).sort((x,y)=>(y.modificato||0)-(x.modificato||0));
+    const keep=()=>{const g=id=>{const x=$(id,el);return x?x.value:null};const t=g('#at');if(t!=null){a.titolo=t.trim();a.prezzo=parsePrice(g('#ap'));a.sito=g('#as').trim();a.desc=g('#ad').trim()}};
+    const draw=()=>{const cropU=crop?URL.createObjectURL(crop):'';
+      box.innerHTML=`${a.url?annCard(a):''}
+      ${blocked?'<p class="note">Il sito non ha mostrato l\'anteprima. Puoi completare a mano o leggere i dati da uno screenshot.</p>':''}
+      <button class="btn sec" id="ash" style="width:100%;margin:8px 0">📷 ${sh.length?'Rileggi da un altro screenshot':'Leggi i dati da uno screenshot'}</button><input type="file" id="ashf" accept="image/*" multiple hidden><div id="aprog"></div>
       <label class="f">Titolo</label><input class="in" id="at" value="${esc(a.titolo)}" autocomplete="off">
-      <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}"></div></div>
-      ${!a.img&&!a.prezzo?'<p class="note">Non sono riuscito a leggere l\'anteprima (alcuni siti la bloccano): completa titolo e prezzo a mano.</p>':''}
+      <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}" list="dl_siti"><datalist id="dl_siti">${['Subito','Vinted','eBay','Facebook Marketplace','Wallapop','Mercatino'].map(x=>`<option value="${x}">`).join('')}</datalist></div></div>
+      <label class="f">Descrizione e dettagli</label><textarea class="in" id="ad" style="min-height:90px">${esc(a.desc)}</textarea>
+      ${sh.length?`<label class="row" style="gap:10px;margin-top:10px">${cropU?`<img src="${cropU}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px">`:''}<input type="checkbox" id="acr" ${crop&&!a.img?'checked':''} style="width:20px;height:20px"> Usa la parte alta dello screenshot come foto</label>
+      <label class="row" style="gap:10px;margin-top:6px"><input type="checkbox" id="aall" checked style="width:20px;height:20px"> Conserva lo screenshot tra gli allegati</label>`:''}
       ${target?`<button class="btn" data-to="${target.id}" style="width:100%;margin-top:14px">Aggiungi a «${esc(target.nome)}»</button>`:`<button class="btn" data-to="new" style="width:100%;margin-top:14px">💭 Nuovo desiderio nella wishlist</button>
       ${wl.length?`<label class="f" style="margin-top:14px">…oppure aggiungilo a un desiderio esistente</label><input class="in" id="wq" placeholder="Cerca nella wishlist…" autocomplete="off"><div id="wl"></div>`:''}`}`;
       const drawWl=()=>{const l=$('#wl',el);if(!l)return;const q=$('#wq',el).value.trim().toLowerCase();l.innerHTML=wl.filter(x=>!q||x._i.includes(q)).slice(0,20).map(x=>`<button class="res" data-to="${x.id}"><b>${esc(x.nome)}</b><small>${esc([x.w_priorita&&'★ '+x.w_priorita,x.w_budget&&'≤ € '+x.w_budget,(x.annunci||[]).length&&x.annunci.length+' annunci'].filter(Boolean).join(' · '))}</small></button>`).join('')};
       drawWl();const wq=$('#wq',el);if(wq)wq.oninput=drawWl;
-      box.addEventListener('click',async e=>{const b=e.target.closest('[data-to]');if(!b)return;b.disabled=true;
-        Object.assign(a,{titolo:$('#at',el).value.trim(),prezzo:parsePrice($('#ap',el).value),sito:$('#as',el).value.trim()});
-        if(b.dataset.to==='new'){const d={id:uid(),wish:true,w_priorita:'Media',nome:a.titolo||'Annuncio '+a.sito,w_link:a.url,annunci:[a],creato:Date.now()};
-          if(a.img){try{const bl=await fetchBlob(a.img);d.foto=[await shrink(bl,1200)];d.thumb=await shrink(bl,180,.75)}catch(er){}}
-          S.view='wish';openForm(d,{fromLookup:true});toast('Controlla il nome (puoi anche usare «Dati online») e salva',4000);return}
-        const d=devices.find(x=>x.id===b.dataset.to);if(!d)return;(d.annunci=d.annunci||[]).push(a);if(!d.w_link)d.w_link=a.url;
-        if(!(d.foto&&d.foto.length)&&a.img){try{const bl=await fetchBlob(a.img);d.foto=[await shrink(bl,1200)];d.thumb=await shrink(bl,180,.75)}catch(er){}}
-        await saveDev(d);render();toast(`Annuncio aggiunto a «${d.nome}»`);goBase(()=>openDetail(d.id))});
-    });
+      $('#ash',el).onclick=()=>$('#ashf',el).click();$('#ashf',el).onchange=e=>{const fs=[...e.target.files];if(fs.length){keep();readShots(fs)}}};
+    const readShots=async fs=>{sh=fs;const pr=$('#aprog',el);
+      try{if(pr)pr.innerHTML=spin('Scarico il lettore di testo (solo la prima volta)…');
+        const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(x)x.innerHTML=spin((m||'Leggo il testo…')+(v?' '+Math.round(v*100)+'%':''))});
+        const r=parseListingText(txt);a.ocr=txt.slice(0,4000);
+        if(r.titolo)a.titolo=r.titolo;if(r.prezzo)a.prezzo=r.prezzo;if(r.sito&&!a.sito)a.sito=r.sito;if(r.url&&!a.url){a.url=r.url;a.sito=a.sito||siteName(r.url)}
+        a.desc=[r.desc||a.desc,r.condizione&&'Condizione: '+r.condizione,r.luogo&&'Luogo: '+r.luogo].filter(Boolean).join('\n');
+        try{crop=(await shotParts(fs[0])).crop}catch(e){crop=null}
+        blocked=false;draw();toast(r.titolo||r.prezzo?'Dati letti dallo screenshot: controllali':'Testo poco leggibile: completa a mano',3500)}
+      catch(e){if(pr)pr.innerHTML=`<p class="note">Lettura non riuscita (${esc(e.message)}). La prima volta serve internet per scaricare il lettore.</p>`}};
+    box.addEventListener('click',async e=>{const b=e.target.closest('[data-to]');if(!b)return;b.disabled=true;keep();
+      const useCrop=$('#acr',el)&&$('#acr',el).checked&&crop,keepShot=$('#aall',el)&&$('#aall',el).checked&&sh.length;
+      const ann=Object.assign({},a);delete ann.ocr;
+      const addMedia=async d=>{
+        if(!(d.foto&&d.foto.length)){let bl=null;if(useCrop)bl=crop;else if(a.img){try{bl=await fetchBlob(a.img)}catch(er){}}if(bl){try{d.foto=[await shrink(bl,1200)];d.thumb=await shrink(bl,180,.75)}catch(er){}}}
+        if(keepShot)for(const f of sh){try{const {full}=await shotParts(f);d.allegati=[...(d.allegati||[]),{id:uid(),nome:'Screenshot annuncio '+(ann.sito||'')+' '+today()+'.jpg',mime:'image/jpeg',size:Math.round(full.length*.75),data:full,t:today()}]}catch(er){}}};
+      if(b.dataset.to==='new'){const d={id:uid(),wish:true,w_priorita:'Media',nome:ann.titolo||'Annuncio '+(ann.sito||''),annunci:[ann],creato:Date.now()};if(ann.url)d.w_link=ann.url;
+        await addMedia(d);S.view='wish';openForm(d,{fromLookup:true});toast('Controlla il nome (puoi anche usare «Dati online») e salva',4000);return}
+      const d=devices.find(x=>x.id===b.dataset.to);if(!d)return;(d.annunci=d.annunci||[]).push(ann);if(!d.w_link&&ann.url)d.w_link=ann.url;
+      await addMedia(d);await saveDev(d);render();toast(`Annuncio aggiunto a «${d.nome}»`);goBase(()=>openDetail(d.id))});
+    (async()=>{
+      if(url){const r=await linkPreview(url,hint);Object.assign(a,r,{id:a.id});blocked=!r.img&&!r.prezzo}
+      else{const h=clean(String(hint||'').replace(/https?:\/\/\S+/g,''));a.titolo=annTitle(h)}
+      draw();if(shots.length)readShots(shots)})();
   }});
 }
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
@@ -1071,6 +1140,7 @@ async function sharedToData(files){
 }
 function openShared({files,meta}){
   const lk=[meta.url,meta.text,meta.title].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
+  if(files.length&&lk&&files.every(isImgFile))return openListing(lk[0],[meta.title,meta.text].filter(Boolean).join(' '),{shots:files});
   if(!files.length&&lk)return openListing(lk[0],[meta.title,meta.text].filter(Boolean).join(' '));
   const imgs=files.filter(isImgFile),others=files.filter(f=>!isImgFile(f)),urls=[];
   const link=[meta.url,meta.text].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
@@ -1079,13 +1149,16 @@ function openShared({files,meta}){
     ${!files.length&&link?`<p class="note">Ricevuto un link: ${esc(link[0])}</p>`:''}
     ${files.length?`<p style="margin:4px 0 8px">${imgs.length?`${imgs.length} foto`:''}${imgs.length&&others.length?' e ':''}${others.length?`${others.length} ${others.length===1?'file (allegato)':'file (allegati)'}`:''}: dove li metto?</p>
     <button class="btn" data-sh="new" style="width:100%">➕ Nuovo oggetto</button>
+    ${imgs.length&&!others.length?'<button class="btn sec" data-sh="ann" style="width:100%;margin-top:8px">🏷️ È lo screenshot di un annuncio: leggi il testo</button>':''}
     <label class="f" style="margin-top:14px">…oppure aggiungili a un oggetto esistente</label><input class="in" id="shq" placeholder="Cerca per nome, modello…" autocomplete="off"><div id="shl"></div>`:''}`;
   openPage('Ricevuto da un\'altra app',h,{mount(el){
     el._close=()=>urls.forEach(u=>URL.revokeObjectURL(u));
     const list=()=>{const q=($('#shq',el)||{value:''}).value.trim().toLowerCase();const r=devices.filter(d=>!q||q.split(/\s+/).every(w=>d._i.includes(w))).sort((a,b)=>(b.modificato||0)-(a.modificato||0)).slice(0,30);
       const l=$('#shl',el);if(l)l.innerHTML=r.map(d=>`<button class="res" data-sh="${d.id}"><b>${esc(d.nome)}</b><small>${esc([d.marca,d.anno,d.wish?'wishlist':d.luogo].filter(Boolean).join(' · '))}</small></button>`).join('')||'<p class="note">Nessun oggetto trovato</p>'};
     list();const q=$('#shq',el);if(q)q.oninput=list;
-    el.addEventListener('click',async e=>{const b=e.target.closest('[data-sh]');if(!b)return;b.disabled=true;toast('Preparo le foto…');
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-sh]');if(!b)return;
+      if(b.dataset.sh==='ann')return openListing(lk?lk[0]:'',[meta.title,meta.text].filter(Boolean).join(' '),{shots:imgs});
+      b.disabled=true;toast('Preparo le foto…');
       const {foto,thumb,allegati}=await sharedToData(files);
       if(b.dataset.sh==='new'){openForm({foto,thumb,allegati,tipologia:'',marca:''},{fromLookup:true});return}
       const d=devices.find(x=>x.id===b.dataset.sh);if(!d)return;

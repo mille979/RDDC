@@ -54,7 +54,9 @@ In «Cerca dati online» (Apple) si può scrivere il **nome** (iMac G3, PowerBoo
 
 ## Annunci nella wishlist (Vinted, Subito, eBay…)
 Dall'app dell'annuncio: **Condividi → RDDC**, oppure **+** → «🏷️ Da un annuncio» e incolla il link. L'app legge un'anteprima (titolo, prezzo, foto) e permette di creare un **nuovo desiderio** o di aggiungere l'annuncio a uno esistente. Ogni desiderio raccoglie più annunci con foto, prezzo e sito; nella lista compare «🏷️ 2 annunci · da € 90 ✓» (la spunta indica che è nel budget). «↻ Aggiorna prezzi» rilegge gli annunci; con «Preso!» il prezzo dell'annuncio diventa il prezzo pagato.
-Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con riserva microlink.io). Alcuni siti a volte le bloccano: in quel caso titolo (dal testo condiviso) e prezzo si completano a mano.
+Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con riserva microlink.io). Vinted di solito funziona; **Subito, eBay e Facebook Marketplace bloccano le letture automatiche** (o chiedono l'accesso), e l'app non prova ad aggirarle.
+
+**Da screenshot** (per Subito, eBay, Marketplace o qualunque sito): fai uno **screenshot lungo** dell'annuncio e condividilo con RDDC («🏷️ È lo screenshot di un annuncio»), oppure scegli «📷 Leggi i dati da uno screenshot» nella pagina dell'annuncio. Il testo viene letto **sul telefono** (OCR in italiano; la prima volta si scaricano circa 5 MB, poi resta in memoria) e l'app ricava titolo, prezzo, descrizione, condizione e luogo, tutti da controllare prima di salvare. La parte alta dello screenshot può diventare la foto del desiderio e lo screenshot intero resta tra gli allegati (utile quando l'annuncio sparisce). Se condividi link e screenshot insieme, il link resta collegato.
 
 ## Gestione della collezione
 - **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
