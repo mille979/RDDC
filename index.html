@@ -37,7 +37,11 @@ button{cursor:pointer}
 .ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative;text-decoration:none;display:inline-grid;place-items:center}
 .badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:var(--on-acc);border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px}
 #sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.ann{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);margin:6px 0;padding:6px 6px 6px 8px}
+.ann{background:var(--card);border-radius:14px;box-shadow:var(--shadow);margin:6px 0;padding:6px 6px 6px 8px}
+.annr{display:flex;align-items:center;gap:6px}
+.annn{display:flex;flex-wrap:wrap;gap:4px;padding:6px 4px 2px 66px}.annn .tg{flex:none;font-size:11.5px;background:var(--chip);border-radius:10px;padding:2px 8px;color:var(--ink)}.annn p{flex-basis:100%;margin:4px 0 2px;font-size:13.5px;color:var(--ink);white-space:pre-wrap}
+.ann em s{display:block;font-size:11px;font-weight:500;color:var(--mute);text-align:right}
+.chip.on{background:var(--acc);color:var(--on-acc,#2a1a05);border-color:transparent}
 .ann a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
 .ann img,.ann a>i{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none;background:var(--chip);display:grid;place-items:center;font-style:normal;font-size:24px}
 .ann span{flex:1;min-width:0}.ann b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ann small{color:var(--mute);font-size:12px}
@@ -398,6 +402,93 @@ html.vt-pl::view-transition-new(root){animation:vt-fade-in .45s ease both}
 .inv.no [data-iv=no]{background:var(--dng);color:#fff;border-color:transparent}
 .inv.mv{opacity:.55}.inv.mv [data-iv=mv]{background:var(--acc);color:var(--on-acc);border-color:transparent}
 .invbar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden;margin:6px 0 10px}.invbar i{display:block;height:100%;background:var(--acc2)}
+/* ===== transizioni tra le schermate ===== */
+.page{animation:pg-in .34s cubic-bezier(.2,.85,.25,1) both}
+.page.pg-swap{animation:pg-swap .22s ease-out both}
+.page.pg-out{animation:pg-out .26s cubic-bezier(.45,0,.75,.4) both;pointer-events:none}
+.page.pg-swapout{animation:vt-fade-out .2s ease both;pointer-events:none}
+.page.museum,.page.no-anim{animation:none}
+@keyframes pg-in{from{transform:translate3d(32%,0,0);opacity:0;box-shadow:-30px 0 60px rgba(0,0,0,0)}to{transform:none;opacity:1}}
+@keyframes pg-out{to{transform:translate3d(36%,0,0);opacity:0}}
+@keyframes pg-swap{from{opacity:0;transform:scale(.985)}}
+html.vt-det::view-transition-old(root){animation:vt-fade-out .28s ease both}
+html.vt-det::view-transition-new(root){animation:vt-rise .36s cubic-bezier(.2,.85,.25,1) both}
+html.vt-det-back::view-transition-old(root){animation:vt-sink .3s ease both}
+html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
+::view-transition-group(hero-x){animation-duration:.42s;animation-timing-function:cubic-bezier(.3,0,.15,1);z-index:3}
+::view-transition-old(hero-x),::view-transition-new(hero-x){height:100%;object-fit:cover;overflow:hidden}
+@keyframes vt-rise{from{opacity:0;transform:translateY(24px)}}
+@keyframes vt-sink{to{opacity:0;transform:translateY(24px)}}
+/* piccoli tocchi: pulsanti, finestre, avvisi, risultati */
+.btn,.res,.chip,.pill,.ibtn,.card,.gcard{transition:transform .14s ease,box-shadow .2s ease,background-color .2s}
+.btn:active,.res:active,.chip:active,.pill:active,.ibtn:active{transform:scale(.96)}
+.card:active,.gcard:active{transform:scale(.985)}
+.modal{animation:vt-fade-in .18s ease both}
+.modal>div{animation:pop-in .26s cubic-bezier(.2,.9,.3,1.25) both}
+@keyframes pop-in{from{opacity:0;transform:scale(.9) translateY(10px)}}
+#toast{animation:toast-in .32s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes toast-in{from{opacity:0;transform:translate(-50%,16px) scale(.94)}to{transform:translate(-50%,0)}}
+#bulk:not([hidden]){animation:bar-up .3s cubic-bezier(.2,.85,.25,1) both}
+@keyframes bar-up{from{transform:translateY(100%)}}
+.rv>*{animation:mu-rise .38s cubic-bezier(.2,.85,.25,1) both}
+.rv>*:nth-child(2){animation-delay:.04s}.rv>*:nth-child(3){animation-delay:.08s}.rv>*:nth-child(4){animation-delay:.12s}.rv>*:nth-child(5){animation-delay:.16s}.rv>*:nth-child(n+6){animation-delay:.2s}
+.boot #list>*{animation:mu-rise .45s cubic-bezier(.2,.85,.25,1) both}
+.boot #list>*:nth-child(2){animation-delay:.04s}.boot #list>*:nth-child(3){animation-delay:.08s}.boot #list>*:nth-child(4){animation-delay:.12s}.boot #list>*:nth-child(5){animation-delay:.16s}.boot #list>*:nth-child(6){animation-delay:.2s}.boot #list>*:nth-child(n+7){animation-delay:.24s}
+.selc.on{animation:sel-pop .22s ease}@keyframes sel-pop{50%{transform:scale(.98)}}
+/* ===== animazioni di attesa ===== */
+.ld{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;box-sizing:border-box;padding:18px 0 8px;text-align:center;color:var(--mute)}
+.ld svg{width:min(170px,46vw);height:auto;overflow:visible}
+.ldm{font-size:14.5px;font-weight:600;color:var(--ink)}
+.ldm::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:ld-dots 1.2s steps(4) infinite}
+@keyframes ld-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.ld small{font-size:12.5px}
+.ld .bar2{width:min(220px,60vw);height:6px;border-radius:3px;background:var(--chip);overflow:hidden;margin-top:4px}.ld .bar2 i{display:block;height:100%;width:0;background:var(--acc);border-radius:3px;transition:width .3s}
+.ld .st{stroke:var(--mute);stroke-width:1.6;fill:var(--card)}
+.ld .fl{fill:var(--chip)}.ld .ac{fill:var(--acc)}.ld .ink{fill:var(--mute)}
+/* EveryMac: Macintosh che legge la scheda e la passa all'app */
+.ld-mac .scr{fill:#16211a}.ld-mac .ln{fill:#8fe3a1;opacity:.85}
+.ld-mac .scroll{animation:ld-scroll 2.4s linear infinite}
+@keyframes ld-scroll{to{transform:translateY(-24px)}}
+.ld-mac .beam{fill:#b9ffc8;opacity:.28;animation:ld-beam 1.6s ease-in-out infinite alternate}
+@keyframes ld-beam{from{transform:translateY(0)}to{transform:translateY(30px)}}
+.ld-mac .bit{fill:var(--acc);opacity:0;animation:ld-bit 1.8s cubic-bezier(.4,0,.2,1) infinite}
+.ld-mac .bit:nth-of-type(2){animation-delay:.6s}.ld-mac .bit:nth-of-type(3){animation-delay:1.2s}
+@keyframes ld-bit{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}80%{opacity:1;transform:translate(44px,-14px) scale(1)}100%{opacity:0;transform:translate(48px,-12px) scale(.6)}}
+.ld-mac .fill{transform-box:fill-box;transform-origin:left center;animation:ld-fill 5.4s ease-in-out infinite}
+.ld-mac .fill.f2{animation-delay:.6s}.ld-mac .fill.f3{animation-delay:1.2s}
+@keyframes ld-fill{0%,8%{transform:scaleX(0)}40%,85%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+.ld-mac .smile{animation:ld-blink 3s infinite}@keyframes ld-blink{0%,90%,100%{opacity:1}95%{opacity:.2}}
+/* annuncio con lente d'ingrandimento */
+.ld-ann .lens{animation:ld-lens 3.6s cubic-bezier(.45,0,.3,1) infinite}
+@keyframes ld-lens{0%,6%{transform:translate(66px,30px)}24%,30%{transform:translate(50px,58px)}44%,50%{transform:translate(70px,66px)}66%,78%{transform:translate(44px,82px)}100%{transform:translate(66px,30px)}}
+.ld-ann .glass{fill:rgba(255,255,255,.28);stroke:var(--ink);stroke-width:3}
+.ld-ann .hdl{stroke:var(--ink);stroke-width:5.5;stroke-linecap:round}
+.ld-ann .shine{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;opacity:.8}
+.ld-ann .t1{animation:ld-t1 3.6s infinite}.ld-ann .t2{animation:ld-t2 3.6s infinite}
+@keyframes ld-t1{0%,18%,40%,100%{fill:var(--chip)}24%,34%{fill:var(--acc)}}
+@keyframes ld-t2{0%,38%,60%,100%{fill:var(--chip)}44%,54%{fill:var(--acc)}}
+.ld-ann .tag{transform-box:fill-box;transform-origin:center;animation:ld-tag 3.6s infinite}
+@keyframes ld-tag{0%,60%,90%,100%{transform:scale(1)}68%{transform:scale(1.28) rotate(-6deg)}76%{transform:scale(1.12) rotate(3deg)}}
+.ld-ann .spk{transform-box:fill-box;transform-origin:center;opacity:0;animation:ld-spk 3.6s infinite}
+@keyframes ld-spk{0%,64%{opacity:0;transform:scale(.2)}72%{opacity:1;transform:scale(1)}86%,100%{opacity:0;transform:scale(1.4)}}
+.ld-ann .sun{animation:ld-sun 3.6s ease-in-out infinite alternate}@keyframes ld-sun{to{transform:translateY(-3px)}}
+/* screenshot: telefono che scorre e un raggio che legge */
+.ld-scan .page2{animation:ld-scroll2 3.2s linear infinite}
+@keyframes ld-scroll2{to{transform:translateY(-48px)}}
+.ld-scan .laser{fill:var(--acc);filter:drop-shadow(0 0 3px var(--acc));animation:ld-laser 1.4s ease-in-out infinite alternate}
+@keyframes ld-laser{from{opacity:.55}to{opacity:1}}
+.ld-scan .pill{transform-box:fill-box;transform-origin:left center;opacity:0;animation:ld-pill 3.2s infinite}
+.ld-scan .pill.p2{animation-delay:.5s}.ld-scan .pill.p3{animation-delay:1s}
+@keyframes ld-pill{0%,10%{opacity:0;transform:translateX(-8px) scale(.7)}22%,80%{opacity:1;transform:none}100%{opacity:0}}
+/* ricerca online: mappamondo */
+.ld-web .mer{fill:none;stroke:var(--mute);stroke-width:1.4;animation:ld-mer 2.4s linear infinite}
+.ld-web .mer.m2{animation-delay:-.8s}.ld-web .mer.m3{animation-delay:-1.6s}
+@keyframes ld-mer{0%{rx:0;opacity:0}10%{opacity:1}50%{rx:24px}90%{opacity:1}100%{rx:0;opacity:0}}
+.ld-web .orb{animation:ld-orb 2.2s linear infinite;transform-origin:60px 50px}
+@keyframes ld-orb{to{transform:rotate(360deg)}}
+.ld-web .doc{animation:ld-doc 2.2s ease-in-out infinite}
+@keyframes ld-doc{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.page,.page.pg-out,.page.pg-swap,.modal,.modal>div,#toast,#bulk,.rv>*,.boot #list>*,.ld *,.ldm::after{animation:none!important;transition:none!important}}
 #print{display:none}
 @media print{
   @page{size:A4;margin:12mm}
@@ -465,6 +556,32 @@ function vt(cls,fn,done){const h=document.documentElement;
 function originFrom(el){if(!el)return;const r=el.getBoundingClientRect(),s=document.documentElement.style;s.setProperty('--vx',Math.round(r.left+r.width/2)+'px');s.setProperty('--vy',Math.round(r.top+r.height/2)+'px')}
 function setTheme(t,from){originFrom(from);vt('vt-theme',()=>{LS.set('rd_theme',t);applyTheme()})}
 const spin=m=>`<span class="spin"></span>${esc(m)}`;
+/* animazioni di attesa: mac (EveryMac), ann (annuncio), scan (screenshot), web (ricerca online) */
+const LD_SVG={
+ mac:`<svg viewBox="0 0 130 104" aria-hidden="true"><defs><clipPath id="ldcm"><rect x="27" y="14" width="40" height="30" rx="3"/></clipPath></defs>
+  <rect class="st" x="19" y="5" width="56" height="74" rx="7"/><rect class="scr" x="27" y="14" width="40" height="30" rx="3"/>
+  <g clip-path="url(#ldcm)"><g class="scroll">${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<rect class="ln" x="30" y="${18+i*6}" width="${[26,18,30,22,14,28,24,16,30,20,26,12][i]}" height="2.2" rx="1"/>`).join('')}</g><rect class="beam" x="27" y="12" width="40" height="5"/></g>
+  <rect class="ink" x="44" y="58" width="22" height="3" rx="1.5"/><rect class="st" x="24" y="79" width="46" height="9" rx="2.5"/>
+  <rect class="bit" x="64" y="30" width="6" height="5" rx="1.5"/><rect class="bit" x="64" y="34" width="6" height="5" rx="1.5"/><rect class="bit" x="64" y="38" width="6" height="5" rx="1.5"/>
+  <g transform="translate(98 6)"><rect class="st" x="0" y="0" width="28" height="36" rx="5"/><rect class="fl" x="4" y="4" width="20" height="11" rx="2"/>
+   <rect class="ac fill" x="4" y="19" width="20" height="3" rx="1.5"/><rect class="ac fill f2" x="4" y="25" width="15" height="3" rx="1.5"/><rect class="ac fill f3" x="4" y="31" width="18" height="2.5" rx="1.2"/></g></svg>`,
+ ann:`<svg viewBox="0 0 120 104" aria-hidden="true"><rect class="st" x="22" y="6" width="76" height="92" rx="9"/>
+  <rect class="fl" x="30" y="14" width="60" height="36" rx="5"/><circle class="ac sun" cx="78" cy="23" r="4.5"/><path d="M30 46 l15-15 11 10 8-6 26 15 v0 a5 5 0 0 1-5 4 h-50 a5 5 0 0 1-5-5z" class="ink" opacity=".45"/>
+  <rect class="t1" x="30" y="56" width="50" height="6" rx="3"/><rect class="t2" x="30" y="66" width="36" height="5" rx="2.5"/>
+  <g class="tag"><rect class="ac" x="30" y="78" width="30" height="12" rx="6"/><text x="45" y="87.5" text-anchor="middle" font-size="9" font-weight="800" fill="#2a1a05">€</text></g>
+  <path class="ac spk" d="M68 76 l1.6 3.6 3.6 1.6 -3.6 1.6 -1.6 3.6 -1.6-3.6 -3.6-1.6 3.6-1.6z"/>
+  <g class="lens"><line class="hdl" x1="9" y1="9" x2="19" y2="19"/><circle class="glass" r="12"/><path class="shine" d="M-6 -4 a7 7 0 0 1 5-4"/></g></svg>`,
+ scan:`<svg viewBox="0 0 130 104" aria-hidden="true"><defs><clipPath id="ldcs"><rect x="30" y="12" width="34" height="78" rx="3"/></clipPath></defs>
+  <rect class="st" x="25" y="4" width="44" height="94" rx="8"/><g clip-path="url(#ldcs)"><g class="page2">${[0,1,2,3,4,5,6,7,8,9,10,11,12,13].map(i=>i%5===0?`<rect class="fl" x="33" y="${14+i*9}" width="28" height="12" rx="2"/>`:`<rect class="fl" x="33" y="${16+i*9}" width="${[24,18,26,14,22][i%5]}" height="3" rx="1.5"/>`).join('')}</g></g>
+  <rect class="laser" x="27" y="50" width="40" height="2" rx="1"/>
+  <rect class="ac pill" x="78" y="28" width="34" height="9" rx="4.5"/><rect class="ac pill p2" x="78" y="44" width="22" height="9" rx="4.5"/><rect class="ac pill p3" x="78" y="60" width="28" height="9" rx="4.5"/>
+  <text x="89" y="51" font-size="7" font-weight="800" fill="#2a1a05" class="pill p2" text-anchor="middle">€</text></svg>`,
+ web:`<svg viewBox="0 0 120 100" aria-hidden="true"><circle class="st" cx="60" cy="50" r="26"/><ellipse class="mer" cx="60" cy="50" rx="10" ry="26"/><ellipse class="mer m2" cx="60" cy="50" rx="10" ry="26"/><ellipse class="mer m3" cx="60" cy="50" rx="10" ry="26"/>
+  <path d="M35 42 h50 M35 58 h50" stroke="var(--mute)" stroke-width="1.2" fill="none" opacity=".6"/><g class="orb"><g class="doc"><rect class="ac" x="92" y="40" width="14" height="18" rx="3"/><rect x="95" y="45" width="8" height="1.8" fill="#2a1a05" opacity=".6"/><rect x="95" y="49" width="6" height="1.8" fill="#2a1a05" opacity=".6"/></g></g></svg>`
+};
+function loader(kind,msg,sub=''){return `<div class="ld ld-${kind}" role="status">${LD_SVG[kind]||LD_SVG.web}<div class="ldm">${esc(String(msg).replace(/…$/,''))}</div>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
+const ldKind=m=>/everymac|specifiche|scheda everymac/i.test(m)?'mac':/annunc/i.test(m)?'ann':/screenshot|testo/i.test(m)?'scan':'web';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(m,ms=2600,act){const t=$('#toast');t.textContent=m;if(act){const b=document.createElement('button');b.textContent=act.label;b.onclick=()=>{t.style.display='none';act.fn()};t.append(b)}t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',ms)}
 function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m)})}
 
@@ -585,7 +702,7 @@ function val(d,k){
   if(k==='decennio')return d.anno?Math.floor(d.anno/10)*10+'s':'—';
   const v=d[k];return (v===undefined||v===null||v==='')?'—':String(v);
 }
-function idx(d){d._i=[...(d.esemplari||[]).flatMap(u=>[u.etichetta,u.stato,u.seriale,u.condizione,u.note]),...(d.annunci||[]).flatMap(a=>[a.titolo,a.sito]),...(d.interventi||[]).flatMap(i=>[i.tipo,i.desc]),...(d.tags||[]),...(d.allegati||[]).map(a=>a.nome),d.prestito&&d.prestito.a,d.nome,d.marca,d.tipologia,d.linea,d.anno,d.colore,...ALLF.filter(f=>!['descrizione','collegato'].includes(f[0])).map(f=>d[f[0]]),d.descrizione,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
+function idx(d){d._i=[...(d.esemplari||[]).flatMap(u=>[u.etichetta,u.stato,u.seriale,u.condizione,u.note]),...(d.annunci||[]).flatMap(a=>[a.titolo,a.sito,a.config,a.note,...(a.etichette||[])]),...(d.interventi||[]).flatMap(i=>[i.tipo,i.desc]),...(d.tags||[]),...(d.allegati||[]).map(a=>a.nome),d.prestito&&d.prestito.a,d.nome,d.marca,d.tipologia,d.linea,d.anno,d.colore,...ALLF.filter(f=>!['descrizione','collegato'].includes(f[0])).map(f=>d[f[0]]),d.descrizione,...(d.specs||[]).map(p=>p[1])].filter(Boolean).join(' ').toLowerCase()}
 function pass(d,skip){
   const q=S.q.trim().toLowerCase();
   if(q&&!q.split(/\s+/).every(w=>d._i.includes(w)))return false;
@@ -673,7 +790,7 @@ function icon(d){const t=(d.tipologia||'').toLowerCase();return /ricamb/.test(t)
 const stack=[];
 function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}={}){
   if(replace)swapTop();
-  const el=document.createElement('div');el.className='page'+(cls?' '+cls:'');
+  const el=document.createElement('div');el.className='page'+(cls?' '+cls:'')+(replace?' pg-swap':'');
   el.innerHTML=bare?`<div class="body bare">${body}</div>`:`<header><button class="ibtn" data-back aria-label="Indietro">←</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
   document.body.append(el);stack.push(el);
   const st={p:stack.length};
@@ -681,12 +798,12 @@ function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}=
   el.addEventListener('click',e=>{if(e.target.closest('[data-back]'))history.back()});
   mount&&mount(el);return el;
 }
-function swapTop(){const t=stack.pop();if(t){t._close&&t._close();t.remove()}}
+function swapTop(){const t=stack.pop();if(t){t._close&&t._close();if(RM())t.remove();else{t.classList.add('pg-swapout');setTimeout(()=>t.remove(),220)}}}
 addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(stack.length<=p)return;
   const rem=stack.splice(p);rem.forEach(x=>x._close&&x._close());
   const out=(rem.find(x=>x.classList.contains('mu-root'))||rem[rem.length-1])._out;
   const run=()=>{rem.forEach(x=>x.remove());out&&out.after&&out.after()};
-  if(!out)return run();out.before&&out.before();vt(out.cls,run,out.done)});
+  if(!out){if(RM())return run();rem.forEach((x,i)=>{if(i<rem.length-1)return x.remove();x.classList.add('pg-out');setTimeout(()=>x.remove(),270)});return}out.before&&out.before();vt(out.cls,run,out.done)});
 function goBase(cb){const n=(history.state&&history.state.p)||0;if(!n){cb&&cb();return}const once=()=>{removeEventListener('popstate',once);cb&&cb()};addEventListener('popstate',once);history.go(-n)}
 history.replaceState({p:0},'');
 
@@ -758,7 +875,13 @@ function fieldDisplay(d,k){
   if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
 }
-function openDetail(id,replace){
+function openDetailFrom(card,id){
+  const img=card&&card.querySelector('.th img,.gi img');
+  if(!img||!document.startViewTransition||RM())return openDetail(id);
+  img.style.viewTransitionName='hero-x';
+  vt('vt-det',()=>{img.style.viewTransitionName='';openDetail(id,false,true)},()=>{document.querySelectorAll('.himg').forEach(h=>h.style.viewTransitionName='')});
+}
+function openDetail(id,replace,morph){
   const d=devices.find(x=>x.id===id);if(!d)return;
   const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
@@ -809,7 +932,11 @@ function openDetail(id,replace){
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  openPage(d.nome,h,{replace,bare:true,mount(el){
+  openPage(d.nome,h,{replace,bare:true,cls:morph?'no-anim':'',mount(el){
+    if(morph){const hi=$('.himg',el);if(hi){hi.style.viewTransitionName='hero-x';
+      el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40)h.style.viewTransitionName='hero-x'},
+        after(){const c=document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);if(c){const r=c.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)c.style.viewTransitionName='hero-x'}},
+        done(){document.querySelectorAll('[style*="view-transition-name"]').forEach(x=>x.style.viewTransitionName='')}}}}
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
     const hi=$('.himg',el);
@@ -842,7 +969,8 @@ function openDetail(id,replace){
       if(t.closest('[data-unit-add]'))return openUnit(d);
       const un=t.closest('[data-unit]');if(un)return openUnit(d,d.esemplari.find(x=>x.id===un.dataset.unit));
       if(t.closest('[data-annadd]'))return askListing(d);
-      const ar=t.closest('[data-annrm]');if(ar){e.preventDefault();const a=(d.annunci||[]).find(x=>x.id===ar.dataset.annrm);if(a&&await ask(`Togliere l'annuncio «${a.titolo||a.url}»?`,'Togli',true)){d.annunci=d.annunci.filter(x=>x!==a);await saveDev(d);render();return openDetail(d.id,true)}return}
+      const ae=t.closest('[data-annedit]');if(ae){e.preventDefault();const a=(d.annunci||[]).find(x=>x.id===ae.dataset.annedit);if(a)openAnnEdit(d,a);return}
+      if(t.closest('[data-noop]')){e.preventDefault();return}
       if(t.closest('[data-annupd]'))return refreshListings(d);
       if(t.closest('[data-mount]'))return openMount(d);
       if(t.closest('[data-cmp]'))return pickCompare(d);
@@ -852,7 +980,7 @@ function openDetail(id,replace){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
         if(o.annunci&&o.annunci.length===1&&!o.acq_prezzo&&o.annunci[0].prezzo)o.acq_prezzo=o.annunci[0].prezzo;
-        if(o.annunci&&o.annunci.length)o.note=[o.note,'Annunci seguiti: '+o.annunci.map(a=>[a.sito,a.prezzo?'€ '+a.prezzo:'',a.url].filter(Boolean).join(' ')).join('; ')].filter(Boolean).join('\n');
+        if(o.annunci&&o.annunci.length)o.note=[o.note,'Annunci seguiti: '+o.annunci.map(a=>[a.sito,a.config,a.prezzo?'€ '+a.prezzo:'',(a.etichette||[]).join(', '),a.note,a.url].filter(Boolean).join(' · ')).join('; ')].filter(Boolean).join('\n');
         ['w_priorita','w_budget','w_link','w_note','annunci'].forEach(k=>delete o[k]);
         stamp(o);idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
       if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
@@ -920,7 +1048,28 @@ async function linkPreview(url,hint=''){
 function annMeta(d){const a=(d.annunci||[]).filter(x=>x.prezzo);if(!(d.annunci||[]).length)return d.w_link?'<span>🔗 annuncio</span>':'';
   const min=a.length?Math.min(...a.map(x=>+x.prezzo)):null,ok=min!=null&&+d.w_budget&&min<=+d.w_budget;
   return `<span class="${ok?'lk':''}">🏷️ ${d.annunci.length===1?'1 annuncio':d.annunci.length+' annunci'}${min!=null?` · ${a.length>1?'da ':''}€ ${min.toLocaleString('it')}`:''}${ok?' ✓':''}</span>`}
-function annCard(a,rm){return `<div class="ann"><a href="${esc(a.url)}" target="_blank" rel="noopener">${a.img?`<img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('i'),{textContent:'🏷️'}))">`:'<i>🏷️</i>'}<span><b>${esc(a.titolo||a.url)}</b><small>${esc([a.sito,a.data?fmtD(a.data):''].filter(Boolean).join(' · '))}</small></span>${a.prezzo?`<em>€ ${(+a.prezzo).toLocaleString('it')}</em>`:''}</a>${rm?`<button class="ibtn" data-annrm="${a.id}" aria-label="Togli">✕</button>`:''}</div>`}
+const ANN_TAGS=['Caricabatterie incluso','Con scatola','Funzionante','Da testare','Graffi','Ammaccature','Batteria da cambiare','Schermo con difetti','Spedizione','Ritiro a mano','Trattabile'];
+const annTagsHTML=(sel=[])=>`<div class="chips" id="atg">${[...new Set([...ANN_TAGS,...sel])].map(t=>`<button type="button" class="chip ${sel.includes(t)?'on':''}" data-atg="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;
+const annNoteFields=a=>`<label class="f">Modello / configurazione di questo annuncio</label><input class="in" id="acf" value="${esc(a.config||'')}" placeholder='Es. Retina 15" 2014, i7, 16 GB' autocomplete="off">
+  <label class="f">Caratteristiche</label>${annTagsHTML(a.etichette||[])}
+  <label class="f">Le tue note</label><textarea class="in" id="ant" placeholder="Es. graffi sul coperchio, chiedere se la batteria tiene, venditore disponibile a trattare">${esc(a.note||'')}</textarea>`;
+function annNoteBind(el){el.addEventListener('click',e=>{const c=e.target.closest('[data-atg]');if(c)c.classList.toggle('on')})}
+const annNoteRead=el=>({config:($('#acf',el)||{value:''}).value.trim(),etichette:[...el.querySelectorAll('[data-atg].on')].map(x=>x.dataset.atg),note:($('#ant',el)||{value:''}).value.trim()});
+function annCard(a,rm){const ex=rm&&(a.config||(a.etichette||[]).length||a.note);
+  return `<div class="ann ${ex?'annx':''}"><div class="annr"><a href="${esc(a.url||'#')}" ${a.url?'target="_blank" rel="noopener"':'data-noop'}>${a.img?`<img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('i'),{textContent:'🏷️'}))">`:'<i>🏷️</i>'}<span><b>${esc(a.titolo||a.url||'Annuncio')}</b><small>${esc([a.sito,a.config,a.data?fmtD(a.data):''].filter(Boolean).join(' · '))}</small></span>${a.prezzo?`<em>€ ${(+a.prezzo).toLocaleString('it')}${a.prezzo_prima&&a.prezzo_prima!==a.prezzo?`<s>€ ${(+a.prezzo_prima).toLocaleString('it')}</s>`:''}</em>`:''}</a>${rm?`<button class="ibtn" data-annedit="${a.id}" aria-label="Note e modifica">✎</button>`:''}</div>
+  ${ex?`<div class="annn">${(a.etichette||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join('')}${a.note?`<p>📝 ${esc(a.note)}</p>`:''}</div>`:''}</div>`}
+function openAnnEdit(d,a){
+  openPage('Annuncio',`${annCard(a)}
+  <label class="f">Titolo</label><input class="in" id="et" value="${esc(a.titolo)}" autocomplete="off">
+  <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ep" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="es" value="${esc(a.sito)}"></div></div>
+  ${annNoteFields(a)}
+  ${a.desc?`<details class="more"><summary>Descrizione del venditore</summary><p class="note" style="white-space:pre-wrap">${esc(a.desc)}</p></details>`:''}
+  <div class="row" style="margin-top:18px;flex-wrap:wrap"><button class="btn" id="eok" style="flex:1">Salva</button>${a.url?`<a class="btn sec" href="${esc(a.url)}" target="_blank" rel="noopener">Apri ↗</a>`:''}<button class="btn dng" data-annrm2>Togli</button></div>`,{mount(el){
+    annNoteBind(el);
+    $('#eok',el).onclick=async()=>{Object.assign(a,{titolo:$('#et',el).value.trim(),prezzo:parsePrice($('#ep',el).value),sito:$('#es',el).value.trim()},annNoteRead(el));await saveDev(d);render();toast('Annuncio aggiornato');goBase(()=>openDetail(d.id))};
+    el.querySelector('[data-annrm2]').onclick=async()=>{if(!await ask(`Togliere l'annuncio «${a.titolo||a.url}»?`,'Togli',true))return;d.annunci=d.annunci.filter(x=>x!==a);await saveDev(d);render();goBase(()=>openDetail(d.id))};
+  }});
+}
 function annunciHTML(d){const L=(d.annunci||[]);
   return `<div class="sec-t">Annunci${L.length?` (${L.length})`:''}</div>${L.map(a=>annCard(a,true)).join('')}<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px"><button class="btn sm sec" data-annadd>＋ Aggiungi link di un annuncio</button>${L.length?'<button class="btn sm sec" data-annupd>↻ Aggiorna prezzi</button>':''}</div>${L.length?'':'<p class="note">Suggerimento: dall\'app Vinted o Subito usa «Condividi» → RDDC per aggiungere l\'annuncio al volo.</p>'}`}
 async function refreshListings(d){toast('Aggiorno gli annunci…',8000);let k=0;
@@ -981,17 +1130,18 @@ function askListing(target){
     $('#lshf',el).onchange=e=>{const fs=[...e.target.files];if(fs.length)openListing('',$('#lu',el).value,{replace:true,target,shots:fs})}}});
 }
 function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
-  openPage('Annuncio',`<div id="lv">${spin(url?'Leggo l\'annuncio…':'Preparo…')}</div>`,{replace,mount(el){
-    const box=$('#lv',el);let a={id:uid(),url,sito:url?siteName(url):'',titolo:'',prezzo:'',img:'',desc:'',data:today()},sh=[],crop=null,blocked=false;
+  openPage('Annuncio',`<div id="lv" class="rv">${url?loader('ann','Leggo l\'annuncio…',siteName(url)):loader('scan','Preparo lo screenshot…')}</div>`,{replace,mount(el){
+    annNoteBind(el);const box=$('#lv',el);let a={id:uid(),url,sito:url?siteName(url):'',titolo:'',prezzo:'',img:'',desc:'',data:today()},sh=[],crop=null,blocked=false;
     const wl=devices.filter(x=>x.wish).sort((x,y)=>(y.modificato||0)-(x.modificato||0));
-    const keep=()=>{const g=id=>{const x=$(id,el);return x?x.value:null};const t=g('#at');if(t!=null){a.titolo=t.trim();a.prezzo=parsePrice(g('#ap'));a.sito=g('#as').trim();a.desc=g('#ad').trim()}};
+    const keep=()=>{const g=id=>{const x=$(id,el);return x?x.value:null};const t=g('#at');if(t!=null){a.titolo=t.trim();a.prezzo=parsePrice(g('#ap'));a.sito=g('#as').trim();a.desc=g('#ad').trim();Object.assign(a,annNoteRead(el))}};
     const draw=()=>{const cropU=crop?URL.createObjectURL(crop):'';
       box.innerHTML=`${a.url?annCard(a):''}
       ${blocked?'<p class="note">Il sito non ha mostrato l\'anteprima. Puoi completare a mano o leggere i dati da uno screenshot.</p>':''}
       <button class="btn sec" id="ash" style="width:100%;margin:8px 0">📷 ${sh.length?'Rileggi da un altro screenshot':'Leggi i dati da uno screenshot'}</button><input type="file" id="ashf" accept="image/*" multiple hidden><div id="aprog"></div>
       <label class="f">Titolo</label><input class="in" id="at" value="${esc(a.titolo)}" autocomplete="off">
       <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}" list="dl_siti"><datalist id="dl_siti">${['Subito','Vinted','eBay','Facebook Marketplace','Wallapop','Mercatino'].map(x=>`<option value="${x}">`).join('')}</datalist></div></div>
-      <label class="f">Descrizione e dettagli</label><textarea class="in" id="ad" style="min-height:90px">${esc(a.desc)}</textarea>
+      ${annNoteFields(a)}
+      <label class="f">Descrizione del venditore</label><textarea class="in" id="ad" style="min-height:90px">${esc(a.desc)}</textarea>
       ${sh.length?`<label class="row" style="gap:10px;margin-top:10px">${cropU?`<img src="${cropU}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px">`:''}<input type="checkbox" id="acr" ${crop&&!a.img?'checked':''} style="width:20px;height:20px"> Usa la parte alta dello screenshot come foto</label>
       <label class="row" style="gap:10px;margin-top:6px"><input type="checkbox" id="aall" checked style="width:20px;height:20px"> Conserva lo screenshot tra gli allegati</label>`:''}
       ${target?`<button class="btn" data-to="${target.id}" style="width:100%;margin-top:14px">Aggiungi a «${esc(target.nome)}»</button>`:`<button class="btn" data-to="new" style="width:100%;margin-top:14px">💭 Nuovo desiderio nella wishlist</button>
@@ -1000,8 +1150,8 @@ function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
       drawWl();const wq=$('#wq',el);if(wq)wq.oninput=drawWl;
       $('#ash',el).onclick=()=>$('#ashf',el).click();$('#ashf',el).onchange=e=>{const fs=[...e.target.files];if(fs.length){keep();readShots(fs)}}};
     const readShots=async fs=>{sh=fs;const pr=$('#aprog',el);
-      try{if(pr)pr.innerHTML=spin('Scarico il lettore di testo (solo la prima volta)…');
-        const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(x)x.innerHTML=spin((m||'Leggo il testo…')+(v?' '+Math.round(v*100)+'%':''))});
+      try{if(pr){pr.innerHTML=loader('scan','Leggo lo screenshot…','La prima volta scarico il lettore di testo')+'';pr.querySelector('.ld').insertAdjacentHTML('beforeend','<div class="bar2"><i></i></div>');pr.scrollIntoView({behavior:'smooth',block:'center'})}
+        const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(!x||!x.querySelector('.ld'))return;if(m)x.querySelector('.ldm').textContent=m.replace(/…$/,'');const sm=x.querySelector('small');if(sm&&v)sm.textContent=Math.round(v*100)+'%';const b=x.querySelector('.bar2 i');if(b&&v!=null)b.style.width=Math.round(v*100)+'%'});
         const r=parseListingText(txt);a.ocr=txt.slice(0,4000);
         if(r.titolo)a.titolo=r.titolo;if(r.prezzo)a.prezzo=r.prezzo;if(r.sito&&!a.sito)a.sito=r.sito;if(r.url&&!a.url){a.url=r.url;a.sito=a.sito||siteName(r.url)}
         a.desc=[r.desc||a.desc,r.condizione&&'Condizione: '+r.condizione,r.luogo&&'Luogo: '+r.luogo].filter(Boolean).join('\n');
@@ -1861,8 +2011,9 @@ function openImport({onResult,replace=false,code=''}={}){
     const analyze=async()=>{
       const txt=ta.value.trim();
       if(!txt&&!html){out.innerHTML='';return}
+      out.classList.add('rv');out.innerHTML=loader('mac','Leggo la scheda EveryMac…');await sleep(RM()?0:1100);
       if(!html&&/^https?:\/\/(www\.)?everymac\.com\/\S+$/i.test(txt)){
-        out.innerHTML=spin('Scarico la pagina…');
+        out.innerHTML=loader('mac','Scarico la pagina da EveryMac…');
         try{html=await viaProxy(txt);srcUrl=txt}catch(e){out.innerHTML='<div class="note">Non riesco a scaricare la pagina (i proxy sono bloccati). Apri il link, copia il contenuto e incollalo qui.</div>';return}
       }
       let r=null;try{r=importEM({html,text:html?'':txt,url:srcUrl,parts})}catch(e){console.error(e)}
@@ -2278,7 +2429,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
     const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: scrivi il <b>nome</b> (es. iMac G3, PowerBook G4 12) e scegli il modello, oppure cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, MacBookPro9,2 o il nome (es. iMac G3)':'Marca e modello'};
     hint();$('#lb',el).onchange=hint;
     const out=$('#lo',el);
-    const busy=m=>out.innerHTML=spin(m);
+    const busy=m=>out.innerHTML=loader(ldKind(m),m);out.classList.add('rv');
     const preview=r=>showPreview(out,r,onResult);
     const paste=()=>openImport({replace:true,code:$('#lq',el).value.trim(),onResult});
     $('#lp',el).onclick=paste;
@@ -2918,7 +3069,7 @@ function openPeek(id,src){
 }
 $('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;return}
   if(SELM){const c=e.target.closest('[data-id]');if(c){SELM.has(c.dataset.id)?SELM.delete(c.dataset.id):SELM.add(c.dataset.id);render()}return}if(e.target.closest('#dueB'))return openDue();
-  if(e.target.closest('#loanB')){S.sel.fuori=['In prestito','In esposizione'];render();scrollTo(0,0);return}const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id)});
+  if(e.target.closest('#loanB')){S.sel.fuori=['In prestito','In esposizione'];render();scrollTo(0,0);return}const c=e.target.closest('[data-id]');if(c)openDetailFrom(c,c.dataset.id)});
 $('#bMuseo').onclick=openMuseum;
 $('#bTheme').onclick=e=>setTheme(isDark()?'light':'dark',e.currentTarget);
 $('#bView').onclick=()=>{const k=Object.keys(LAYOUTS);S.layout=k[(k.indexOf(S.layout||'list')+1)%k.length];render();toast('Vista: '+LAYOUTS[S.layout][1],1400)};
@@ -2929,6 +3080,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
 (async()=>{
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
+  if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
