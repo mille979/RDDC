@@ -247,6 +247,24 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
       'Apple iMac G3 233 MHz Bondi Blue', '249', 'eBay', 'Funziona, tastiera inclusa', 'Apple iMac G3'], 'lettura');
   });
 
+  await test('annunci: note, caratteristiche e configurazione per ogni annuncio', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'w9', wish: true, nome: 'MacBook 2008 - 2015', annunci: [{ id: 'a9', url: 'https://www.subito.it/x.htm', sito: 'Subito', titolo: 'MacBook Pro 17" 2010', prezzo: '380' }], creato: Date.now() }); openDetail('w9'); });
+    await p.click('[data-annedit="a9"]'); await p.fill('#acf', '17" 2010, i7'); await p.click('[data-atg="Caricabatterie incluso"]'); await p.fill('#ant', 'Graffi sul coperchio'); await p.click('#eok'); await p.waitForTimeout(400);
+    const r = await p.evaluate(() => { const a = devices.find(d => d.id === 'w9').annunci[0]; return [a.config, a.etichette, a.note, devices.find(d => d.id === 'w9')._i.includes('graffi'), !!document.querySelector('.annn')]; });
+    eq(r, ['17" 2010, i7', ['Caricabatterie incluso'], 'Graffi sul coperchio', true, true], 'note annuncio');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('transizioni: la scheda si apre e si chiude senza lasciare pagine o nomi di transizione', async () => {
+    await p.evaluate(() => { S.view = 'col'; S.q = ''; render(); });
+    const id = await p.evaluate(() => document.querySelector('#list [data-id]').dataset.id);
+    await p.click(`#list [data-id="${id}"]`); await p.waitForTimeout(600);
+    eq(await p.evaluate(() => stack.length), 1, 'scheda aperta');
+    await p.evaluate(() => history.back()); await p.waitForTimeout(700);
+    eq(await p.evaluate(() => [stack.length, document.querySelectorAll('.page').length, [...document.querySelectorAll('*')].filter(x => x.style && x.style.viewTransitionName).length]), [0, 0, 0], 'dopo indietro');
+    eq(await p.evaluate(() => /class="ld ld-ann"/.test(loader('ann', 'x')) && /ld-mac/.test(loader(ldKind('Cerco su EveryMac…'), 'x'))), true, 'animazioni di attesa');
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();
