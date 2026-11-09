@@ -352,6 +352,21 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.evaluate(() => goBase()); await p.waitForTimeout(300);
   });
 
+  await test('laboratorio: statistiche ed esportazioni CSV', async () => {
+    await p.evaluate(() => openLab('stat')); await p.waitForTimeout(300);
+    const txt = await p.evaluate(() => stack[stack.length - 1].textContent);
+    ok(/Progetti finiti\s*1 di 2/.test(txt) && /Ore di lavoro per mese/.test(txt) && /Guasti più frequenti nei collaudi/.test(txt) && /Batteria/.test(txt) && /Stato della collezione/.test(txt), 'statistiche');
+    const c = await p.evaluate(() => [LAB_CSV.progetti[1](), LAB_CSV.collaudi[1](), LAB_CSV.pezzi[1](), LAB_CSV.interventi[1](), LAB_CSV.sessioni[1]()]);
+    const rows = c.map(x => x.replace(/^﻿/, '').split('\n'));
+    ok(rows[0][0].startsWith('"Oggetto";"Esemplare";"Progetto"') && rows[0].some(r => /"PowerBook G3 Pismo";"";"Riparazione: batteria";"Riparazione";"Finito"/.test(r) && /"45";"0,75";"45,5"/.test(r)), 'CSV progetti');
+    ok(rows[1].some(r => /"Problemi";"\d+";"Batteria: non tiene la carica"/.test(r)), 'CSV collaudi');
+    ok(rows[2].some(r => /"Batteria Pismo nuova";"1";"45,5";"Montato";"sì";"sì"/.test(r)), 'CSV pezzi');
+    ok(rows[3].some(r => /"Riparazione";".*45 min di lavoro";"45,5"/.test(r)) && rows[4].length === 3, 'CSV registro e sessioni');
+    const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-csv="collaudi"]')]);
+    ok(/^rddc-collaudi-\d{4}-\d{2}-\d{2}\.csv$/.test(dl.suggestedFilename()), 'download');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
   await test('laboratorio: le foto prima/dopo dei progetti vanno su GitHub come file', async () => {
     const A = await phone('A3');
     await A.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }));

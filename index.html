@@ -151,6 +151,7 @@ textarea.in{min-height:70px;resize:vertical}
 .bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px}
 .bar div{height:14px;background:var(--acc);border-radius:7px;min-width:3px}
 .bar span:last-child{white-space:nowrap}
+.bar.b2 div{background:var(--acc2)}.bar.b3 div{background:color-mix(in srgb,var(--acc2) 55%,var(--acc))}.bar.b4 div{background:var(--dng)}
 .bar span:first-child{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .note{background:var(--chip);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mute);margin:10px 0}
 .note b{color:var(--ink)}
@@ -1580,7 +1581,7 @@ function openLab(tab='prog'){
   openPage('Laboratorio','<div class="chips" id="lt"></div><div id="lb"></div>',{mount(el){
     const draw=()=>{const ap=allProjects(),open=ap.filter(x=>x.p.stato!=='Finito'),tt=toTest(),sh=shopList();
       const plans=devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).filter(i=>i.coll&&!i.fatto).map(i=>({d,i}))).sort((a,b)=>a.i.prossimo.localeCompare(b.i.prossimo));
-      $('#lt',el).innerHTML=[['prog',`🛠️ Progetti${open.length?' · '+open.length:''}`],['coll',`🧪 Da collaudare${tt.length+plans.length?' · '+(tt.length+plans.length):''}`],['spesa',`🛒 Lista della spesa${sh.length?' · '+sh.length:''}`]].map(([k,l])=>`<button class="chip ${tab===k?'on':''}" data-lt="${k}">${l}</button>`).join('');
+      $('#lt',el).innerHTML=[['prog',`🛠️ Progetti${open.length?' · '+open.length:''}`],['coll',`🧪 Da collaudare${tt.length+plans.length?' · '+(tt.length+plans.length):''}`],['spesa',`🛒 Lista della spesa${sh.length?' · '+sh.length:''}`],['stat','📊 Statistiche']].map(([k,l])=>`<button class="chip ${tab===k?'on':''}" data-lt="${k}">${l}</button>`).join('');
       let h='';
       if(tab==='prog'){h=`<button class="btn" data-lnew style="width:100%;margin:4px 0 6px">＋ Nuovo progetto</button>`;
         for(const s of PROJ_ST.slice(0,4)){const a=open.filter(x=>x.p.stato===s);if(a.length)h+=`<div class="sec-t">${PROJ_IC[s]} ${s} (${a.length})</div>`+a.map(projRow).join('')}
@@ -1600,10 +1601,13 @@ function openLab(tab='prog'){
         if(tot)h+=`<p class="note" style="text-align:right"><b>Totale stimato: ${eur2(tot)}</b></p>`;
         if(sh.length)h+=`<button class="btn sm sec" data-sshare>📤 Condividi la lista</button>`;
         if(openP.length)h+=`<div class="sec-t">Aggiungi</div><select class="in" id="sap">${openP.map(({d,p})=>`<option value="${d.id}|${p.id}">${esc(p.titolo)} · ${esc(d.nome)}</option>`).join('')}</select><div class="pz" style="background:none;box-shadow:none;padding:6px 0"><input class="in" id="san" placeholder="Pezzo…" style="margin:0;flex:2"><input class="in" id="sav" inputmode="decimal" autocomplete="off" placeholder="€" style="margin:0;flex:1;max-width:84px"><button class="btn sm" data-sadd>＋</button></div>`}
+      if(tab==='stat')h=labStats()+`<div class="sec-t">Esporta (CSV per Excel / Fogli)</div>${Object.entries(LAB_CSV).map(([k,[nm]])=>`<button class="res" data-csv="${k}"><b>📄 ${nm}</b></button>`).join('')}`;
       $('#lb',el).innerHTML=h};
     el._refresh=draw;draw();
     el.addEventListener('click',async e=>{const t=e.target;
       const lt=t.closest('[data-lt]');if(lt){tab=lt.dataset.lt;return draw()}
+      const cv=t.closest('[data-csv]');if(cv)return labCsv(cv.dataset.csv);
+      const go=t.closest('[data-go]');if(go)return openDetail(go.dataset.go);
       if(t.closest('[data-lnew]'))return pickDevice('Per quale oggetto?',devices.filter(x=>!x.wish).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it')),d=>openNewProject(d,true));
       const op=t.closest('[data-op]');if(op){const [di,pi]=op.dataset.op.split('|');return openProject(devices.find(x=>x.id===di),pi)}
       const oc=t.closest('[data-oc]');if(oc){const [di,ui]=oc.dataset.oc.split('|'),d=devices.find(x=>x.id===di);return openCollaudo(d,ui&&hasUnits(d)?d.esemplari.find(u=>u.id===ui):null)}
@@ -1629,6 +1633,52 @@ function labHTML(d){if(d.wish)return '';
     <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-colnew>🧪 Collaudo</button><button class="btn sm sec" data-colplan>📅 ${pl?'Sposta collaudo':'Pianifica collaudo'}</button><button class="btn sm sec" data-projnew>🛠️ Nuovo progetto</button></div>`}
 function labBadge(d){const ps=(d.progetti||[]).filter(p=>p.stato!=='Finito');if(!ps.length)return '';const tm=timerGet(),run=tm&&tm.did===d.id;
   return `<span class="tg">${run?'⏱':'🛠️'} ${ps.length>1?ps.length+' progetti':esc(ps[0].stato.toLowerCase())}</span>`}
+/* ---- statistiche ed esportazioni del laboratorio ---- */
+const MESI_B=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const last12=()=>{const d=new Date(today()+'T12:00'),out=[];for(let i=11;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,15);out.push(x.toISOString().slice(0,7))}return out};
+const monLab=k=>MESI_B[+k.slice(5,7)-1]+' '+k.slice(2,4);
+const dDays=(a,b)=>Math.max(0,Math.round((Date.parse(b)-Date.parse(a))/864e5));
+const trimLead=a=>{const i=a.findIndex(x=>x[1]);return i<0?a:a.slice(i)};
+function barsHTML(a,fmt=v=>v,cls=''){const mx=Math.max(...a.map(x=>x[1]),1);return a.map(([n,v])=>`<div class="bar ${cls}"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${fmt(v)}</span></div>`).join('')}
+function labStats(){
+  const L=devices.filter(d=>!d.wish),ap=L.flatMap(d=>(d.progetti||[]).map(p=>({d,p}))),fin=ap.filter(x=>x.p.stato==='Finito'),cs=L.flatMap(d=>(d.collaudi||[]).map(c=>({d,c}))),ints=L.flatMap(d=>(d.interventi||[]).filter(i=>i.data).map(i=>({d,i})));
+  const mins=ap.reduce((s,x)=>s+(x.p.min||0),0),pz=ap.reduce((s,x)=>s+pzTot(x.p),0),spInt=ints.reduce((s,x)=>s+(parseFloat(x.i.costo)||0),0);
+  const okC=cs.filter(x=>x.c.esito==='ok').length;
+  const M=last12(),mm=new Map(M.map(k=>[k,{min:0,eur:0,coll:0,fin:0}]));
+  ap.forEach(({p})=>(p.sess||[]).forEach(s=>{const r=mm.get(String(s.d).slice(0,7));if(r)r.min+=s.min||0}));
+  ints.forEach(({i})=>{const r=mm.get(String(i.data).slice(0,7));if(r)r.eur+=parseFloat(i.costo)||0});
+  cs.forEach(({c})=>{const r=mm.get(String(c.data).slice(0,7));if(r)r.coll++});
+  fin.forEach(({p})=>{const r=mm.get(String(p.fine).slice(0,7));if(r)r.fin++});
+  const dur=fin.filter(x=>x.p.fine&&x.p.creato).map(x=>dDays(x.p.creato,x.p.fine));
+  const byT=new Map();ap.forEach(({p})=>{const t=p.tipo||'Riparazione',r=byT.get(t)||{n:0,min:0,eur:0};r.n++;r.min+=p.min||0;r.eur+=pzTot(p);byT.set(t,r)});
+  const ko=new Map();cs.forEach(({c})=>(c.r||[]).filter(x=>x.e==='ko').forEach(x=>ko.set(x.t,(ko.get(x.t)||0)+1)));
+  const work=new Map();ap.forEach(({d,p})=>{const r=work.get(d.id)||{d,min:0,eur:0};r.min+=p.min||0;work.set(d.id,r)});ints.forEach(({d,i})=>{const r=work.get(d.id)||{d,min:0,eur:0};r.eur+=parseFloat(i.costo)||0;work.set(d.id,r)});
+  const st=new Map();L.filter(d=>d.ruolo!=='In uso'&&!d.montato_su).forEach(d=>(hasUnits(d)?d.esemplari.map(u=>u.stato):[d.stato]).forEach(s=>st.set(s||'Non indicato',(st.get(s||'Non indicato')||0)+1)));
+  const order=[...STATI,'Non indicato'];
+  const tile=(a,b)=>`<div class="tile"><small>${a}</small><b>${b}</b></div>`;
+  let h=`<div class="tiles">${tile('Progetti finiti',`${fin.length} di ${ap.length}`)}${tile('Tempo di lavoro',hm(mins))}${tile('Spesa in pezzi',eur2(pz))}${tile('Spesa nel registro',eur2(spInt))}${tile('Collaudi',`${cs.length}${cs.length?` · ${Math.round(okC/cs.length*100)}% ok`:''}`)}${tile('Durata media',dur.length?`${Math.round(dur.reduce((s,x)=>s+x,0)/dur.length)} giorni`:'—')}</div>`;
+  if(!ap.length&&!cs.length&&!ints.length)return h+'<p class="note">Le statistiche si riempiono con i progetti, i collaudi e gli interventi.</p>';
+  if(M.some(k=>mm.get(k).min))h+=`<div class="sec-t">Ore di lavoro per mese</div>`+barsHTML(trimLead(M.map(k=>[monLab(k),mm.get(k).min])),v=>v?hm(v):'');
+  if(M.some(k=>mm.get(k).eur))h+=`<div class="sec-t">Spesa per mese (registro interventi)</div>`+barsHTML(trimLead(M.map(k=>[monLab(k),mm.get(k).eur])),v=>v?eur2(Math.round(v)):'','b2');
+  if(M.some(k=>mm.get(k).coll))h+=`<div class="sec-t">Collaudi per mese</div>`+barsHTML(trimLead(M.map(k=>[monLab(k),mm.get(k).coll])),v=>v||'','b3');
+  if(M.some(k=>mm.get(k).fin))h+=`<div class="sec-t">Progetti finiti per mese</div>`+barsHTML(trimLead(M.map(k=>[monLab(k),mm.get(k).fin])),v=>v||'','b3');
+  if(byT.size)h+=`<div class="sec-t">Progetti per tipo</div><div class="kv">${[...byT].sort((a,b)=>b[1].n-a[1].n).map(([t,r])=>`<div>${esc(t)}</div><div>${r.n} · ${hm(r.min)}${r.eur?' · '+eur2(Math.round(r.eur)):''}</div>`).join('')}</div>`;
+  if(ko.size)h+=`<div class="sec-t">Guasti più frequenti nei collaudi</div>`+barsHTML([...ko].sort((a,b)=>b[1]-a[1]).slice(0,8),v=>v+'×','b4');
+  const top=[...work.values()].filter(r=>r.min||r.eur).sort((a,b)=>(b.min+b.eur*2)-(a.min+a.eur*2)).slice(0,6);
+  if(top.length)h+=`<div class="sec-t">Gli oggetti che hanno chiesto più lavoro</div><div class="log">${top.map(r=>`<button class="li" data-go="${r.d.id}"><span class="lb"><b>${esc(r.d.nome)}</b><small>${[r.min?hm(r.min):'',r.eur?eur2(Math.round(r.eur))+' di interventi':''].filter(Boolean).join(' · ')}</small></span></button>`).join('')}</div>`;
+  if(st.size)h+=`<div class="sec-t">Stato della collezione</div>`+barsHTML([...st].sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0])));
+  return h;
+}
+/* CSV (separatore «;» per Excel in italiano) */
+function csvOf(cols,rows){const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';return '﻿'+cols.map(c=>q(c[0])).join(';')+'\n'+rows.map(r=>cols.map(c=>q(c[1](r))).join(';')).join('\n')}
+const numIt=v=>v===''||v==null||!isFinite(+v)?'':String(Math.round(+v*100)/100).replace('.',',');
+const LAB_CSV={
+  progetti:['Progetti di restauro',()=>csvOf([['Oggetto',x=>x.d.nome],['Esemplare',x=>esLab(x.d,x.p.es)],['Progetto',x=>x.p.titolo],['Tipo',x=>x.p.tipo],['Stato',x=>x.p.stato],['Inizio',x=>x.p.creato],['Fine',x=>x.p.fine],['Scadenza',x=>x.p.scad],['Fasi fatte',x=>projProg(x.p).n],['Fasi totali',x=>projProg(x.p).t],['Minuti di lavoro',x=>x.p.min||0],['Ore di lavoro',x=>numIt((x.p.min||0)/60)],['Costo pezzi (€)',x=>numIt(pzTot(x.p))],['Pezzi',x=>(x.p.pezzi||[]).map(z=>z.t+(+z.qta>1?' ×'+z.qta:'')+' ('+z.stato.toLowerCase()+')').join(' | ')],['Fasi',x=>(x.p.fasi||[]).map(f=>(f.ok?'✓ ':'☐ ')+f.t).join(' | ')],['Guide',x=>(x.p.guide||[]).map(g=>g.url).join(' | ')],['Note',x=>x.p.note]],allProjects())],
+  pezzi:['Pezzi e lista della spesa',()=>csvOf([['Oggetto',x=>x.d.nome],['Progetto',x=>x.p.titolo],['Pezzo',x=>x.z.t],['Quantità',x=>+x.z.qta||1],['Prezzo (€)',x=>numIt(x.z.prezzo)],['Stato',x=>x.z.stato],['Dal magazzino',x=>x.z.part?'sì':''],['Progetto finito',x=>x.p.stato==='Finito'?'sì':'']],allProjects().flatMap(({d,p})=>(p.pezzi||[]).map(z=>({d,p,z}))))],
+  collaudi:['Collaudi',()=>csvOf([['Oggetto',x=>x.d.nome],['Esemplare',x=>esLab(x.d,x.c.es)],['Data',x=>x.c.data],['Esito',x=>({ok:'Tutto ok',ko:'Problemi',parz:'Parziale'})[x.c.esito]||''],['Funzionano',x=>(x.c.r||[]).filter(r=>r.e==='ok').length],['Guasti',x=>(x.c.r||[]).filter(r=>r.e==='ko').map(r=>r.t+(r.m?': '+r.m:'')).join(' | ')],['Non applicabili',x=>(x.c.r||[]).filter(r=>r.e==='na').map(r=>r.t).join(' | ')],['Non provati',x=>(x.c.r||[]).filter(r=>!r.e).map(r=>r.t).join(' | ')],['Misure',x=>(x.c.r||[]).filter(r=>r.m&&r.e!=='ko').map(r=>r.t+': '+r.m).join(' | ')],['Note',x=>x.c.note]],devices.filter(d=>!d.wish).flatMap(d=>(d.collaudi||[]).map(c=>({d,c}))).sort((a,b)=>String(a.c.data).localeCompare(b.c.data)))],
+  interventi:['Registro interventi',()=>csvOf([['Oggetto',x=>x.d.nome],['Data',x=>x.i.data],['Tipo',x=>x.i.tipo],['Descrizione',x=>x.i.desc],['Costo (€)',x=>numIt(parseFloat(x.i.costo))],['Prossimo',x=>x.i.prossimo],['Promemoria fatto',x=>x.i.fatto?'sì':''],['Da un progetto',x=>x.i.proj?'sì':'']],devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).map(i=>({d,i}))).sort((a,b)=>String(a.i.data||a.i.prossimo).localeCompare(b.i.data||b.i.prossimo)))],
+  sessioni:['Sessioni di lavoro',()=>csvOf([['Data',x=>x.s.d],['Oggetto',x=>x.d.nome],['Progetto',x=>x.p.titolo],['Minuti',x=>x.s.min]],allProjects().flatMap(({d,p})=>(p.sess||[]).map(s=>({d,p,s}))).sort((a,b)=>String(a.s.d).localeCompare(b.s.d)))]};
+function labCsv(k){const [nm,fn]=LAB_CSV[k];dl(`rddc-${k}-${today()}.csv`,'text/csv',fn());toast(`Scaricato: ${nm.toLowerCase()} (CSV)`)}
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
 const mainDevices=()=>devices.filter(x=>!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
 const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
@@ -2983,10 +3033,10 @@ function statsPage(devices,wl){
   const h3=sb('Spesa per anno di acquisto',d=>d.acq_anno,d=>parseFloat(d.acq_prezzo)||0,eur)+sb('Valore per luogo',d=>d.luogo||'—',d=>parseFloat(d.valore)||0,eur)
     +(owned.length?`<div class="sec-t">Da quanto li possiedi</div><div class="kv"><div>In media</div><div>${avg.toLocaleString('it',{maximumFractionDigits:1})} anni</div>${oldest.map(d=>`<div>${esc(d.nome)}</div><div>dal ${d.acq_anno} (${yNow-+d.acq_anno} anni)</div>`).join('')}</div>`:'')
     +(()=>{const ps=devices.flatMap(d=>d.progetti||[]),cs=devices.flatMap(d=>d.collaudi||[]);if(!ps.length&&!cs.length)return '';const fin=ps.filter(p=>p.stato==='Finito'),mins=ps.reduce((s,p)=>s+(p.min||0),0),eu=ps.reduce((s,p)=>s+pzTot(p),0);
-      return `<div class="sec-t">Laboratorio</div><div class="kv"><div>Progetti finiti</div><div>${fin.length} di ${ps.length}</div><div>Tempo di lavoro</div><div>${hm(mins)}${fin.length&&mins?` (in media ${hm(fin.reduce((s,p)=>s+(p.min||0),0)/fin.length)} a progetto)`:''}</div><div>Spesa in pezzi</div><div>${eur2(eu)}</div><div>Collaudi fatti</div><div>${cs.length}${cs.length?` · ${Math.round(cs.filter(c=>c.esito==='ok').length/cs.length*100)}% tutto ok`:''}</div></div>`})()
+      return `<div class="sec-t">Laboratorio</div><div class="kv"><div>Progetti finiti</div><div>${fin.length} di ${ps.length}</div><div>Tempo di lavoro</div><div>${hm(mins)}${fin.length&&mins?` (in media ${hm(fin.reduce((s,p)=>s+(p.min||0),0)/fin.length)} a progetto)`:''}</div><div>Spesa in pezzi</div><div>${eur2(eu)}</div><div>Collaudi fatti</div><div>${cs.length}${cs.length?` · ${Math.round(cs.filter(c=>c.esito==='ok').length/cs.length*100)}% tutto ok`:''}</div></div><button class="btn sm sec" data-labst style="margin-top:8px">📊 Tutte le statistiche del laboratorio</button>`})()
     +`<div class="sec-t">Inventario</div><div class="kv"><div>Verificati nell'ultimo anno</div><div>${ver}</div><div>Mai verificati</div><div>${never}</div></div>`;
   openPage('Statistiche',h2+h+h3,{mount(el){const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
-    el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
+    el.addEventListener('click',e=>{if(e.target.closest('[data-labst]'))return openLab('stat');const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
 }
 
 /* ============ scontorno ============ */
@@ -3221,6 +3271,7 @@ function openMenu(){
   <div class="note" id="bk"></div>
   <button class="res" data-m="exp"><b>💾 Esporta backup completo (JSON con foto)</b></button>
   <button class="res" data-m="csv"><b>📄 Esporta tabella (CSV per Excel/Fogli)</b></button>
+  <button class="res" data-m="labcsv"><b>🛠️ Esporta il laboratorio (CSV)</b><small>Progetti, pezzi, collaudi, registro interventi, sessioni di lavoro</small></button>
   <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
   <input type="file" id="fi" accept=".json,application/json" hidden>
   <div class="sec-t">Impostazioni</div>
@@ -3262,6 +3313,7 @@ function openMenu(){
       if(a==='inv')openInventory();
       if(a==='man')openMaintenance();
       if(a==='lab')openLab();
+      if(a==='labcsv')openLab('stat');
       if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
       if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
       if(a==='calcp'){try{await navigator.clipboard.writeText(calUrl());toast('Indirizzo copiato')}catch(e){toast(calUrl(),6000)}}

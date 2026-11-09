@@ -81,7 +81,9 @@ Menu → «🛠️ Laboratorio» (o dalla scheda **Oggi**, o dalla sezione «Lab
   - **foto prima/dopo** con confronto a tendina; note.
   - **Concludi il progetto**: scrive l'intervento nel registro (fasi fatte, pezzi, tempo, costo), segna come montati i ricambi del magazzino, può aggiungere le foto «dopo» alla galleria e propone il **collaudo finale**.
 - **Lista della spesa** 🛒: tutti i pezzi da comprare e ordinati dei progetti aperti, con totale stimato, ricerca su eBay, «Ordinato» / «È arrivato» e condivisione della lista.
-- Filtro «Laboratorio» (in restauro, da collaudare, collaudato, mai collaudato), etichetta sulle schede con un progetto aperto, statistiche del laboratorio (progetti finiti, ore di lavoro, spesa in pezzi, collaudi). Le foto prima/dopo si sincronizzano su GitHub come le altre foto.
+- **📊 Statistiche** (quarta scheda del Laboratorio): progetti finiti, tempo di lavoro, spesa in pezzi e nel registro, collaudi e percentuale di esiti ok, durata media dei progetti; ore di lavoro, spesa, collaudi e progetti finiti mese per mese; progetti per tipo; guasti più frequenti nei collaudi; gli oggetti che hanno chiesto più lavoro; stato della collezione.
+- **Esportazioni CSV** (per Excel / Fogli, separatore «;»): progetti di restauro, pezzi e lista della spesa, collaudi, registro interventi, sessioni di lavoro. Anche da Menu → «🛠️ Esporta il laboratorio (CSV)».
+- Filtro «Laboratorio» (in restauro, da collaudare, collaudato, mai collaudato) ed etichetta sulle schede con un progetto aperto. Le foto prima/dopo si sincronizzano su GitHub come le altre foto.
 
 ## Oggi
 In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, progetti aperti (e cronometro acceso), oggetti da collaudare, pezzi da comprare o in arrivo, interventi e collaudi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
