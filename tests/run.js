@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
 // ---------- finta API GitHub (Git Data API) ----------
 const gh = { blobs: new Map(), trees: new Map(), commits: new Map(), ref: 'c0', n: 0 };
 const sha = b => crypto.createHash('sha1').update(b).digest('hex');
-const putBlob = buf => { const s = sha(Buffer.concat([Buffer.from('blob'), buf])); gh.blobs.set(s, buf); return s; };
+const putBlob = buf => { const s = sha(Buffer.concat([Buffer.from(`blob ${buf.length}\0`), buf])); gh.blobs.set(s, buf); return s; }; // impronta come la calcola Git
 const putTree = ents => { const s = sha(JSON.stringify(ents) + Math.random()); gh.trees.set(s, ents); return s; };
 gh.commits.set('c0', { tree: putTree([{ path: 'index.html', sha: putBlob(Buffer.from('x')), type: 'blob', mode: '100644' }]), parents: [] });
 const ghFiles = () => new Map(gh.trees.get(gh.commits.get(gh.ref).tree).map(e => [e.path, gh.blobs.get(e.sha)]));
@@ -263,6 +263,39 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.evaluate(() => history.back()); await p.waitForTimeout(700);
     eq(await p.evaluate(() => [stack.length, document.querySelectorAll('.page').length, [...document.querySelectorAll('*')].filter(x => x.style && x.style.viewTransitionName).length]), [0, 0, 0], 'dopo indietro');
     eq(await p.evaluate(() => /class="ld ld-ann"/.test(loader('ann', 'x')) && /ld-mac/.test(loader(ldKind('Cerco su EveryMac…'), 'x'))), true, 'animazioni di attesa');
+  });
+
+  await test('manutenzione: giro di accensioni e ricariche, stato batteria, Oggi e calendario', async () => {
+    await p.evaluate(async () => {
+      const old = addMonths(today(), -8), rec = addMonths(today(), -1);
+      for (const d of [
+        { id: 'mp', nome: 'PowerBook G4', tipologia: 'Portatile', luogo: 'Alex', man_on: old, man_charge: old, batt_stato: 'Regge' },
+        { id: 'mi', nome: 'iBook G3', tipologia: 'Portatile', luogo: 'Alex', man_on: rec, batt_stato: 'Morta' },
+        { id: 'ms', nome: 'Macintosh SE', tipologia: 'All-in-one', luogo: 'Damiano', man_on: rec },
+        { id: 'mu', nome: 'MacBook Pro 2017', tipologia: 'Portatile', ruolo: 'In uso', garanzia: addDays(today(), 20) }]) { d.creato = Date.now(); await saveDev(d); }
+      S.view = 'col'; S.q = ''; S.sel = {}; render();
+    });
+    const due = await p.evaluate(() => manDue().filter(t => ['mp', 'mi', 'ms', 'mu'].includes(t.d.id)).map(t => t.d.id + (t.st.dueOn ? '+on' : '') + (t.st.dueCh ? '+ch' : '')));
+    eq(due, ['mp+on+ch'], 'da fare (batteria morta, fissi recenti e oggetti in uso esclusi)');
+    eq(await p.evaluate(() => [manTargets(devices.find(d => d.id === 'mu')).length, missing(devices.find(d => d.id === 'mu')).length, !!document.querySelector('.oggi #manB'), !!document.querySelector('.oggi #warB')]), [0, 0, true, true], 'oggetti in uso e scheda Oggi');
+    await p.click('#manB'); await p.click('[data-mid="mp"] [data-mg="on"]'); await p.click('[data-mid="mp"] [data-mg="charge"]'); await p.waitForTimeout(300);
+    eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'mp'); return [d.man_on === today(), d.man_charge === today(), d.manutenzioni.map(m => m.tipo), manState({ d, u: null }).dueOn]; }), [true, true, ['on', 'charge'], false], 'giro');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+    const ics = await p.evaluate(() => buildICS());
+    ok(/BEGIN:VCALENDAR/.test(ics) && /SUMMARY:⚡ Accendere: PowerBook G4/.test(ics) && /SUMMARY:🔋 Ricaricare: PowerBook G4/.test(ics) && /Scade la garanzia: MacBook Pro 2017/.test(ics) && !/Ricaricare: iBook/.test(ics), 'calendario');
+    eq(await p.evaluate(() => buildICS() === buildICS()), true, 'calendario stabile (nessun commit inutile)');
+  });
+
+  await test('raccolte, ruolo e «Va con» per singolo esemplare', async () => {
+    await p.evaluate(async () => { for (const d of [{ id: 'atv', nome: 'Apple TV', tipologia: 'Lettore multimediale', raccolta: 'Apple' }, { id: 'gba', nome: 'GBA SP', tipologia: 'Console', raccolta: 'Console' }, { id: 'rem', nome: 'Apple Remote', tipologia: 'Accessorio', quantita: 2 }]) { d.creato = Date.now(); await saveDev(d); } render(); });
+    eq(await p.evaluate(() => { const r = museumItems().filter(d => ['atv', 'gba'].includes(d.id)).map(roomOf); return [r, val(devices.find(d => d.id === 'mu'), 'ruolo')]; }), [['Apple', 'Console'], 'In uso'], 'sale per raccolta e ruolo');
+    await p.evaluate(() => openDetail('rem')); await p.click('[data-unit-new]'); await p.waitForTimeout(300);
+    const u1 = await p.evaluate(() => devices.find(d => d.id === 'rem').esemplari[0].id);
+    await p.click(`[data-unit="${u1}"]`); await p.selectOption('#u_va', 'atv'); await p.click('#u_ok'); await p.waitForTimeout(400);
+    await p.evaluate(() => openDetail('atv')); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => /Accessori collegati \(1\)/.test(stack[stack.length - 1].textContent) && /esemplare n\. 1/.test(stack[stack.length - 1].textContent)), 'telecomando collegato come esemplare');
+    eq(await p.evaluate(() => missing(devices.find(d => d.id === 'rem')).includes('collegato')), false, 'esemplare sciolto non conta come mancante');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });

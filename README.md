@@ -60,6 +60,22 @@ Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con
 
 **Da screenshot** (per Subito, eBay, Marketplace o qualunque sito): fai uno **screenshot lungo** dell'annuncio e condividilo con RDDC («🏷️ È lo screenshot di un annuncio»), oppure scegli «📷 Leggi i dati da uno screenshot» nella pagina dell'annuncio. Il testo viene letto **sul telefono** (OCR in italiano; la prima volta si scaricano circa 5 MB, poi resta in memoria) e l'app ricava titolo, prezzo, descrizione, condizione e luogo, tutti da controllare prima di salvare. La parte alta dello screenshot può diventare la foto del desiderio e lo screenshot intero resta tra gli allegati (utile quando l'annuncio sparisce). Se condividi link e screenshot insieme, il link resta collegato.
 
+## Manutenzione: giro di accensioni e ricariche
+Menu → «🔌 Manutenzione» (o dalla scheda **Oggi**): luogo per luogo, segni ⚡ acceso, 🔋 caricato o ✗ non si accende (che segna «Da riparare» e scrive nel registro interventi). Ogni oggetto, o ogni singolo esemplare, ricorda **ultima accensione** e **ultima carica**, con lo storico.
+- Promemoria ogni **6 mesi** (modificabili in Impostazioni; per un oggetto anche 3/12 mesi o «Mai»)
+- **Batteria**: ricaricabile, tampone PRAM/BIOS (con l'avviso di controllare che non perda) o nessuna; **stato della batteria**: nuova, buona, regge, tampona ma non regge, morta, assente. La ricarica viene chiesta solo per le batterie ricaricabili non morte né assenti; i fissi fanno solo il giro di accensione
+- Fuori dal giro: oggetti «In uso», «Ricambi», accessori senza batteria e wishlist
+- **Notifiche**: «🔔 Notifiche sul telefono» in Impostazioni, se il telefono permette i controlli in background; il modo più affidabile è **Google Calendar**: a ogni sincronizzazione l'app aggiorna `calendario.ics` (accensioni, ricariche, interventi, rientri dei prestiti, scadenze delle garanzie) da aggiungere una volta sola in Google Calendar → «Da URL»
+
+## Oggi
+In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, interventi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
+
+## Ruolo e raccolte
+- **Ruolo**: Collezione, **In uso** (es. il computer di tutti i giorni: niente inventario, museo e «da completare», con scadenza della garanzia e «Ritira in collezione»), Ricambi, Da vendere
+- **Raccolta** (es. Apple, Console, Server): filtro, raggruppamento, statistiche e **sale del museo**
+- Ogni esemplare ha anche il suo **«Va con»** (es. due telecomandi uguali: uno con l'Apple TV, uno sciolto)
+- «Altra marca» in «Cerca dati online» usa anche le sezioni delle pagine Wikipedia che raccolgono più modelli
+
 ## Gestione della collezione
 - **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
 - **Confronto affiancato** di 2 o 3 oggetti: dalla selezione «⇆ Confronta», o dalla scheda «⇆ Confronta con…». «Mostra solo le differenze» nasconde le righe uguali.

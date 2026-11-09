@@ -37,6 +37,14 @@ button{cursor:pointer}
 .ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;min-width:44px;min-height:44px;position:relative;text-decoration:none;display:inline-grid;place-items:center}
 .badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:var(--on-acc);border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px}
 #sum{font-size:13px;color:var(--mute);padding:6px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.oggi{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:10px 10px 6px;margin:10px 0 14px}
+.ogh{display:flex;align-items:baseline;gap:8px;padding:0 4px 6px}.ogh b{font-size:16px}.ogh small{color:var(--mute);font-size:12.5px}
+.og{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;border:0;background:var(--chip);border-radius:12px;padding:9px 12px;margin:0 0 6px;color:var(--ink);font-size:14.5px}
+.og small{color:var(--mute);font-size:12.5px;margin-top:2px}.og.late{background:color-mix(in srgb,var(--dng) 16%,var(--card))}
+.mb{color:var(--acc-ink,var(--acc));font-weight:650}
+.mrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:8px 8px 8px 12px;margin:6px 0}
+.mrow .mi{flex:1 1 100%;min-width:0}.mrow .mi small{display:block;color:var(--mute);font-size:12.5px}.mrow .late{color:var(--dng)}
+.inv button.on{background:var(--acc2);color:#fff;border-color:transparent}
 .ann{background:var(--card);border-radius:14px;box-shadow:var(--shadow);margin:6px 0;padding:6px 6px 6px 8px}
 .annr{display:flex;align-items:center;gap:6px}
 .annn{display:flex;flex-wrap:wrap;gap:4px;padding:6px 4px 2px 66px}.annn .tg{flex:none;font-size:11.5px;background:var(--chip);border-radius:10px;padding:2px 8px;color:var(--ink)}.annn p{flex-basis:100%;margin:4px 0 2px;font-size:13.5px;color:var(--ink);white-space:pre-wrap}
@@ -597,6 +605,7 @@ const DB={
 };
 
 /* ============ modello dati ============ */
+const BATT_ST=['Nuova','Buona','Regge','Tampona ma non regge','Morta','Assente'];
 const STATI=['Funzionante','Da testare','Da riparare','Non funzionante','Per ricambi'];
 const PART_CAT=['RAM','Disco / SSD','Batteria','Alimentatore','Scheda logica','Schermo / pannello','Tastiera / trackpad','Unità ottica','Ventola / dissipatore','Cavo / flat','Scheda di espansione','Altro'];
 const TIPI=['Ricambio','Computer desktop','All-in-one','Portatile','Server','Televisore CRT','Monitor CRT','Monitor','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Stampante','Periferica','Rete',
@@ -650,12 +659,13 @@ const SECTIONS=[
  ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
- ['Collezione',[['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
+ ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own'],
+ ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['garanzia','Garanzia / AppleCare fino al','date'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
-const FACETS=[['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
+const FACETS=[['manut','Manutenzione'],['raccolta','Raccolta'],['ruolo','Ruolo'],['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
 const SORTS={prio:'Priorità (wishlist)',nome:'Nome',anno_a:'Anno ↑',anno_d:'Anno ↓',recenti:'Aggiunti di recente',marca:'Marca',valore_d:'Valore ↓',riv_d:'Rivalutazione ↓',acq_d:'Acquistati di recente',possesso:'Posseduti da più tempo'};
-const GROUPS={'':'Nessuno',w_priorita:'Priorità',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
+const GROUPS={'':'Nessuno',raccolta:'Raccolta',ruolo:'Ruolo',w_priorita:'Priorità',luogo:'Luogo',anno:'Anno',decennio:'Decennio',marca:'Marca',tipologia:'Tipologia',linea:'Linea',colore:'Colore',stato:'Stato'};
 let devices=[];
 let S=LS.get('rd_state',{q:'',sel:{},group:'decennio',sort:'anno_a'});
 S.sel=S.sel||{};S.view=S.view==='wish'?'wish':'col';
@@ -691,11 +701,14 @@ const ESS={all:['foto','anno','marca','luogo','stato'],part0:['luogo'],pc:['mode
 const ESS_ALL=[...new Set(Object.values(ESS).flat())];
 const ESS_LAB={foto:'Foto',anno:'Anno',marca:'Marca',luogo:'Luogo',stato:'Stato',modello:'Modello',cpu:'Processore',ram:'RAM',tv_pollici:'Pollici',collegato:'Va con',part_cat:'Categoria'};
 const hasVal=(d,k)=>k==='foto'?!!(d.foto&&d.foto.length):!(d[k]===undefined||d[k]===null||d[k]==='');
-function missing(d){if(d.wish)return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[])].filter(k=>!(k==='stato'&&hasUnits(d)?d.esemplari.every(u=>u.stato):hasVal(d,k))&&!ig.includes(k))}
+function missing(d){if(d.wish||d.ruolo==='In uso')return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[])].filter(k=>!(k==='stato'&&hasUnits(d)?d.esemplari.every(u=>u.stato):k==='collegato'&&hasUnits(d)?true:hasVal(d,k))&&!ig.includes(k))}
 const TAGS0=['Preferito','Raro','Da restaurare','Da vendere','Regalo'];
 const loanOverdue=d=>!!(d.prestito&&d.prestito.al&&d.prestito.al<today());
 function vals(d,k){if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];if(hasUnits(d)&&['stato','luogo','scatola'].includes(k))return [...new Set(d.esemplari.map(u=>u[k]||(k==='luogo'?d.luogo:'')||'—'))];return [val(d,k)]}
 function val(d,k){
+  if(k==='ruolo')return d.wish?'—':(d.ruolo||'Collezione');
+  if(k==='raccolta')return d.raccolta||'—';
+  if(k==='manut'){const ts=manTargets(d);if(!ts.length)return '—';const st=ts.map(manState);return st.some(x=>x.dueOn||x.dueCh)?'Da fare':'In regola'}
   if(k==='completezza')return d.wish?'—':missing(d).length?'Da completare':'Completa';
   if(k==='fuori')return d.wish?'—':d.prestito?(d.prestito.tipo==='Esposizione'?'In esposizione':'In prestito'):'In casa';
   if(k==='tags')return (d.tags||[]).join(', ')||'—';
@@ -747,9 +760,8 @@ function render(){
   let html='';
   const lay=LAYOUTS[S.layout]?S.layout:'list';$('#bView').textContent=LAYOUTS[lay][0];
   if(!W){const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;
-    if(out.length)html+=`<button class="due ${late?'late':''}" id="loanB">📤 ${out.length===1?'1 oggetto fuori casa':out.length+' oggetti fuori casa'}<small>${late?`⚠️ ${late} in ritardo sul rientro · `:''}${esc(out.slice(0,3).map(d=>d.nome+' → '+(d.prestito.a||'?')).join(', '))}${out.length>3?'…':''}</small></button>`;
+    html+=oggiHTML();
     const inc=P.filter(d=>missing(d).length).length;if(inc&&!(S.sel.completezza||[]).length)sum+=`<button class="pill" data-inc>✎ ${inc} da completare</button>`}
-  if(!W){const due=dueList();if(due.length){const late=due.some(x=>x.i.prossimo<today());html+=`<button class="due ${late?'late':''}" id="dueB">🔧 ${due.length===1?'1 intervento in programma':due.length+' interventi in programma'}<small>${late?'⚠️ alcuni sono scaduti · ':''}il primo: ${esc(due[0].d.nome)} – ${esc(due[0].i.tipo||'')} (${fmtD(due[0].i.prossimo)})</small></button>`}}
   writeSum();
   const block=a=>lay==='grid'?`<div class="grid">${a.map(gcard).join('')}</div>`:a.map(card).join('');
   const grp=curGroup();
@@ -769,7 +781,7 @@ function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
   const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:kd==='part'?[d.part_cat,d.part_spec].filter(Boolean).join(' · '):d.cpu].filter(Boolean).join(' · ');
-  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',annMeta(d)].join(''):[hasUnits(d)?`<span class="tg">🧩 ${d.esemplari.length} esemplari · ${esc(unitsSummary(d))}</span>`:'',d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
+  const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',annMeta(d)].join(''):[d.ruolo&&d.ruolo!=='Collezione'?`<span class="tg">${{'In uso':'🟢 in uso','Ricambi':'🔩 per ricambi','Da vendere':'💶 da vendere'}[d.ruolo]||esc(d.ruolo)}</span>`:'',manBadge(d),hasUnits(d)?`<span class="tg">🧩 ${d.esemplari.length} esemplari · ${esc(unitsSummary(d))}</span>`:'',d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
   const ai=!d.thumb&&d.wish&&(d.annunci||[]).find(a=>a.img);
   return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:ai?`<img src="${esc(ai.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
@@ -863,6 +875,7 @@ function serialHTML(d){const r=decodeSerial(d.seriale,d.anno);if(!r)return '';
   return `<div class="sn">🏭 ${esc(r.fabbrica)} · 📅 ${esc(r.quando)}${r.modello?` · codice modello ${esc(r.modello)}`:''}${warn}<small> (indicativo)</small></div>`}
 function fieldDisplay(d,k){
   if(k==='seriale')return esc(d.seriale)+serialHTML(d);
+  if(k==='garanzia'||k==='man_on'||k==='man_charge')return esc(fmtD(d[k]))+(k==='garanzia'?(d[k]<today()?' <small style="color:var(--mute)">(scaduta)</small>':` <small style="color:var(--mute)">(${Math.round((Date.parse(d[k])-Date.parse(today()))/864e5)} giorni)</small>`):'');
   if(k==='luogo')return esc(d.luogo)+(d.verificato?`<div class="sn">✓ verificato il ${fmtD(d.verificato)}</div>`:'');
   if(k==='compat')return (d.compat||[]).map(id=>devices.find(x=>x.id===id)).filter(Boolean).map(o=>`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`).join(', ')||'—';
   if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
@@ -903,13 +916,15 @@ function openDetail(id,replace,morph){
     h+=`<div class="sec-t">Descrizione</div><div class="desc"><div class="${long?'cl':''}" id="dsct">${esc(d.descrizione)}</div></div><div class="row" style="flex-wrap:wrap;gap:4px">${long?'<button class="linkb" data-more>Leggi tutto ▾</button>':''}${d.descrizione_orig?'<button class="linkb" data-orig>Mostra originale</button>':''}</div>`}
   const kv=rows=>`<div class="kv">${rows.map(([a,b])=>`<div>${esc(a)}</div><div>${b}</div>`).join('')}</div>`;
   for(const [t,fs] of SECTIONS.slice(1)){
+    if(t==='Manutenzione')continue;
     const ig=d.ignoti||[];
     const rows=fs.filter(([k])=>!(k==='valore'&&!d.wish)&&!(hasUnits(d)&&UNIT_KEYS.includes(k))).filter(([k])=>k==='tags'?(d.tags||[]).length:(d[k]!==undefined&&d[k]!==null&&d[k]!==''&&!(Array.isArray(d[k])&&!d[k].length))||ig.includes(k)).map(([k,l])=>[l.replace(/\s*\(es\..*\)$/,''),hasVal(d,k)?fieldDisplay(d,k):'<i style="color:var(--mute)">sconosciuto</i>']);
     if(t==='Identificazione')['anno','marca'].forEach(k=>{if(ig.includes(k)&&!hasVal(d,k))rows.unshift([ESS_LAB[k],'<i style="color:var(--mute)">sconosciuto</i>'])});
     if(rows.length)h+=`<div class="sec-t">${t}</div>`+kv(rows);
   }
   if(!d.wish){
-    h+=unitsHTML(d)+valoreHTML(d)+loanHTML(d);
+    if(d.ruolo==='In uso')h+=`<div class="note" style="display:flex;gap:10px;align-items:center;margin-top:12px"><span style="flex:1">🟢 <b>In uso</b> tutti i giorni${d.garanzia?` · garanzia ${d.garanzia<today()?'scaduta il':'fino al'} ${fmtD(d.garanzia)}`:''}. Non conta nell'inventario, nel museo e tra i «da completare».</span><button class="btn sm" data-retire>Ritira in collezione</button></div>`;
+    h+=unitsHTML(d)+manHTML(d)+valoreHTML(d)+loanHTML(d);
     const mv=(d.spostamenti||[]).slice().reverse();
     if(mv.length)h+=`<details class="more"><summary>Spostamenti (${mv.length})</summary><div class="log">${mv.map(x=>`<div class="li"><span class="ld">${fmtD(x.data)}</span><span class="lb"><b>${esc(x.da||'—')} → ${esc(x.a||'—')}</b></span></div>`).join('')}</div></details>`;
     const ints=(d.interventi||[]).slice().sort((a,b)=>String(b.data||'').localeCompare(a.data||''));
@@ -920,8 +935,8 @@ function openDetail(id,replace,morph){
   if(['pc','tv'].includes(kindOf(d.tipologia))&&!d.wish){const {sure,maybe}=partsFor(d);
     if(sure.length||maybe.length)h+=`<div class="sec-t">Ricambi in magazzino per questo oggetto (${sure.length+maybe.length})</div>`+sure.map(card).join('')+(maybe.length?`<p class="note" style="margin-bottom:4px">Forse compatibili (per modello o specifiche):</p>`+maybe.map(card).join(''):'');}
   if(kindOf(d.tipologia)==='part'&&d.montato_su){const m=devices.find(x=>x.id===d.montato_su);h+=`<div class="note">🔧 Montato su ${m?`<a href="#" data-go="${m.id}">${esc(m.nome)}</a>`:'un oggetto non più in collezione'}${d.montato_il?' il '+fmtD(d.montato_il):''}.</div>`}
-  const accs=devices.filter(x=>x.collegato===d.id);
-  if(accs.length)h+=`<div class="sec-t">Accessori collegati (${accs.length})</div>`+accs.map(card).join('');
+  const accs=devices.filter(x=>x.collegato===d.id),uacc=devices.filter(x=>hasUnits(x)&&x.esemplari.some(u=>u.collegato===d.id));
+  if(accs.length||uacc.length)h+=`<div class="sec-t">Accessori collegati (${accs.length+uacc.length})</div>`+accs.map(card).join('')+uacc.map(x=>card(x).replace('</b>',`</b><span>esemplare n. ${x.esemplari.findIndex(u=>u.collegato===d.id)+1}${(x.esemplari.find(u=>u.collegato===d.id)||{}).etichetta?' · '+esc(x.esemplari.find(u=>u.collegato===d.id).etichetta):''}</span>`)).join('');
   if(d.specs&&d.specs.length){
     h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary><div id="spk">${kv(d.specs.map(([a,b])=>[trLabel(a),esc(trVal(b,d))]))}</div><div class="row" style="flex-wrap:wrap;gap:4px">${trOn()?'<button class="linkb" data-spo>Mostra originale</button>':''}</div></details>`}
   if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
@@ -966,6 +981,8 @@ function openDetail(id,replace,morph){
       if(t.closest('[data-cut]'))openCutout(d);
       if(t.closest('[data-split]'))return splitItem(d);
       if(t.closest('[data-unit-new]'))return startUnits(d);
+      const mo=t.closest('[data-mon]'),mc=t.closest('[data-mch]');if(mo||mc){const uid_=(mo||mc).dataset[mo?'mon':'mch'],u=uid_?d.esemplari.find(x=>x.id===uid_):null;manLog(d,u,mo?'on':'charge');await saveDev(d);render();toast(mo?'Acceso oggi ⚡':'Caricato oggi 🔋');return openDetail(d.id,true)}
+      if(t.closest('[data-retire]')&&await ask(`Ritirare «${d.nome}» dall'uso quotidiano e metterlo in collezione?`,'Ritira')){(d.ruoli=d.ruoli||[]).push({data:today(),da:'In uso',a:'Collezione'});d.ruolo='Collezione';await saveDev(d);render();toast('Benvenuto in collezione 🏛️');return openDetail(d.id,true)}
       if(t.closest('[data-unit-add]'))return openUnit(d);
       const un=t.closest('[data-unit]');if(un)return openUnit(d,d.esemplari.find(x=>x.id===un.dataset.unit));
       if(t.closest('[data-annadd]'))return askListing(d);
@@ -1174,6 +1191,102 @@ function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
       draw();if(shots.length)readShots(shots)})();
   }});
 }
+/* ===== manutenzione: giro di accensioni e ricariche ===== */
+const manCfg=()=>Object.assign({on:6,charge:6,notif:false,cal:true},LS.get('rd_man',{}));
+const addMonths=(s,n)=>{const d=new Date(s+'T12:00');d.setMonth(d.getMonth()+n);return d.toISOString().slice(0,10)};
+const agoTxt=s=>{if(!s)return 'mai registrata';const days=Math.round((Date.parse(today())-Date.parse(s))/864e5);return days<=0?'oggi':days===1?'ieri':days<60?days+' giorni fa':Math.round(days/30.4)+' mesi fa'};
+const battGuess=d=>/portatil|smartphone|tablet|lettore musicale|palmare/i.test(d.tipologia||'')||/powerbook|ibook|macbook|iphone|ipad|ipod|psp|vita|game ?boy|gba|nintendo ds|3ds|switch|newton/i.test(d.nome||'')?'Ricaricabile (da tenere carica)':'';
+const manBatt=d=>d.man_batt||battGuess(d);
+function manTargets(d){
+  if(d.wish||['In uso','Ricambi'].includes(d.ruolo)||d.man_freq==='Mai (non serve)')return [];
+  const kd=kindOf(d.tipologia),rech=/^Ricaricabile/.test(manBatt(d));
+  if(!(kd==='pc'||kd==='tv'||rech))return [];
+  return hasUnits(d)?d.esemplari.map((u,i)=>({d,u,i})):[{d,u:null,i:-1}];
+}
+/* la ricarica serve solo a una batteria ricaricabile ancora viva: «morta» o «assente» (e i fissi) restano fuori */
+function manState(t){const x=t.u||t.d,c=manCfg(),fr=+t.d.man_freq||c.on,frc=+t.d.man_freq||c.charge,bs=x.batt_stato||t.d.batt_stato||'';
+  const rech=/^Ricaricabile/.test(manBatt(t.d))&&!['Morta','Assente'].includes(bs);
+  const nextOn=x.man_on?addMonths(x.man_on,fr):'',nextCh=rech&&x.man_charge?addMonths(x.man_charge,frc):'';
+  return {rech,bs,never:!x.man_on,nextOn,nextCh,dueOn:!x.man_on||nextOn<=today(),dueCh:rech&&(!x.man_charge||nextCh<=today()),tamp:/^Tampone/.test(manBatt(t.d)),doneOn:x.man_on===today(),doneCh:x.man_charge===today()}}
+const manAll=(list=devices)=>list.flatMap(manTargets).map(t=>Object.assign(t,{st:manState(t)}));
+const manDue=()=>manAll().filter(t=>t.st.dueOn||t.st.dueCh);
+function manLog(d,u,tipo){const x=u||d;if(tipo!=='charge')x.man_on=today();if(tipo==='charge'||tipo==='both')x.man_charge=today();if(tipo==='both')x.man_on=today();
+  (d.manutenzioni=d.manutenzioni||[]).push(Object.assign({data:today(),tipo},u?{es:u.id}:{}))}
+const unitName=t=>t.d.nome+(t.u?` · n. ${t.i+1}${t.u.etichetta?' ('+t.u.etichetta+')':''}`:'');
+function manHTML(d){const ts=manTargets(d);if(!ts.length&&!manBatt(d)&&!d.batt_stato)return '';
+  const rows=ts.map(t=>{const st=manState(t),x=t.u||t.d;return `<div class="mrow" data-mt="${t.u?t.u.id:''}"><div class="mi"><b>${t.u?`Esemplare n. ${t.i+1}${t.u.etichetta?' · '+esc(t.u.etichetta):''}`:'Ultima accensione'}</b>
+    <small>${t.u?'acceso '+agoTxt(x.man_on):agoTxt(x.man_on)}${st.nextOn?` · prossima ${st.dueOn?'<b class="late">da fare</b>':fmtD(st.nextOn)}`:''}</small>
+    ${st.rech?`<small>🔋 carica: ${agoTxt(x.man_charge)}${st.nextCh?` · prossima ${st.dueCh?'<b class="late">da fare</b>':fmtD(st.nextCh)}`:''}</small>`:st.bs?`<small>🔋 batteria ${esc(st.bs.toLowerCase())}: niente ricariche</small>`:''}</div>
+    <button class="btn sm ${st.doneOn?'':'sec'}" data-mon="${t.u?t.u.id:''}">${st.doneOn?'✓ ':''}⚡ Acceso</button>${st.rech?`<button class="btn sm ${st.doneCh?'':'sec'}" data-mch="${t.u?t.u.id:''}">${st.doneCh?'✓ ':''}🔋 Carico</button>`:''}</div>`}).join('');
+  const hist=(d.manutenzioni||[]).slice(-8).reverse();
+  return `<div class="sec-t">Manutenzione</div>${manBatt(d)?`<p class="note" style="margin:0 0 6px">Batteria: ${esc(manBatt(d))}${d.batt_stato?' · stato: '+esc(d.batt_stato):''}${/^Tampone/.test(manBatt(d))?' · ⚠️ le batterie tampone col tempo possono perdere: controllala o rimuovila':''}</p>`:''}
+    ${rows||'<p class="note">Fuori dal giro (ruolo, tipo o impostazione «Mai»).</p>'}
+    ${hist.length?`<details class="more"><summary>Storico (${(d.manutenzioni||[]).length})</summary><div class="log">${hist.map(m=>`<div class="li"><span class="ld">${fmtD(m.data)}</span><span class="lb"><b>${{on:'⚡ Acceso',charge:'🔋 Caricato',both:'⚡🔋 Acceso e caricato',ko:'✗ Non si accende'}[m.tipo]||m.tipo}</b>${m.es&&hasUnits(d)?`<small>esemplare n. ${d.esemplari.findIndex(u=>u.id===m.es)+1}</small>`:''}</span></div>`).join('')}</div></details>`:''}`}
+function manBadge(d){const ts=manTargets(d);if(!ts.length)return '';const st=ts.map(manState),on=st.some(x=>x.dueOn),ch=st.some(x=>x.dueCh);
+  return on||ch?`<span class="mb">${on?'⚡ da accendere':''}${on&&ch?' · ':''}${ch?'🔋 da caricare':''}</span>`:''}
+function openMaintenance(){
+  let luogo=LS.get('rd_man_l','tutti'),only=true;const start=manDue().length;
+  openPage('Manutenzione',`<p class="note" style="margin-top:0">Giro di accensioni e ricariche: segna ogni oggetto quando lo accendi o lo metti in carica. Promemoria ogni ${manCfg().on} mesi per le accensioni e ${manCfg().charge} per le ricariche (Menu → Impostazioni).</p>
+    <div class="chips" id="mlu"></div><label class="row" style="gap:10px;font-size:14px;margin:6px 0 8px"><input type="checkbox" id="mon" checked style="width:20px;height:20px"> Solo quelli da fare</label><div id="mpr"></div><div id="mls"></div>`,{mount(el){
+    const draw=()=>{const all=manAll(),lus=[...new Set(all.map(t=>(t.u&&t.u.luogo)||t.d.luogo||'—'))].sort((a,b)=>(LUOGHI0.indexOf(b)>-1)-(LUOGHI0.indexOf(a)>-1)||a.localeCompare(b,'it'));
+      if(luogo!=='tutti'&&!lus.includes(luogo))luogo='tutti';
+      $('#mlu',el).innerHTML=['tutti',...lus].map(l=>`<button class="chip ${l===luogo?'on':''}" data-ml="${esc(l)}">${l==='tutti'?'Tutti':'📍 '+esc(l)}</button>`).join('');
+      const L=all.filter(t=>luogo==='tutti'||((t.u&&t.u.luogo)||t.d.luogo||'—')===luogo);
+      const todo=L.filter(t=>(t.st.dueOn&&!t.st.doneOn)||(t.st.dueCh&&!t.st.doneCh)),done=L.filter(t=>t.st.doneOn||t.st.doneCh).length;
+      $('#mpr',el).innerHTML=`<b>${todo.length}</b> da fare · ${done} fatti oggi<div class="invbar"><i style="width:${(done+todo.length)?done/(done+todo.length)*100:0}%"></i></div>`;
+      const show=(only?L.filter(t=>t.st.dueOn||t.st.dueCh||t.st.doneOn||t.st.doneCh):L).sort((a,b)=>(a.st.never?'0':a.st.nextOn).localeCompare(b.st.never?'0':b.st.nextOn));
+      $('#mls',el).innerHTML=show.map(t=>{const x=t.u||t.d,st=t.st;return `<div class="inv ${(!st.dueOn||st.doneOn)&&(!st.dueCh||st.doneCh)?'ok':''}" data-mid="${t.d.id}" data-mu="${t.u?t.u.id:''}"><div class="th">${t.d.thumb?`<img src="${t.d.thumb}" alt="">`:icon(t.d)}</div>
+        <div class="ii"><b>${esc(unitName(t))}</b><small>${esc(['acceso '+agoTxt(x.man_on),st.rech?'carica '+agoTxt(x.man_charge):st.bs?'batteria '+st.bs.toLowerCase():''].filter(Boolean).join(' · '))}${st.tamp?' · ⚠️ batteria tampone':''}</small></div>
+        <button data-mg="on" class="${st.doneOn?'on':''}" aria-label="Acceso">⚡</button>${st.rech?`<button data-mg="charge" class="${st.doneCh?'on':''}" aria-label="Caricato">🔋</button>`:''}<button data-mg="ko" aria-label="Non si accende">✗</button></div>`}).join('')||`<p class="note">${start?'Tutto fatto 🎉':'Niente da fare: tutto in regola ✓'}</p>`};
+    draw();
+    $('#mon',el).onchange=e=>{only=e.target.checked;draw()};
+    el.addEventListener('click',async e=>{const l=e.target.closest('[data-ml]');if(l){luogo=l.dataset.ml;LS.set('rd_man_l',luogo);return draw()}
+      const b=e.target.closest('[data-mg]');if(!b)return;const row=b.closest('[data-mid]'),d=devices.find(x=>x.id===row.dataset.mid);if(!d)return;const u=row.dataset.mu?d.esemplari.find(x=>x.id===row.dataset.mu):null,a=b.dataset.mg;
+      if(a==='ko'){if(!await ask(`«${unitName({d,u,i:u?d.esemplari.indexOf(u):-1})}» non si accende? Lo segno «Da riparare» e aggiungo una nota nel registro interventi.`,'Sì, segna'))return;
+        manLog(d,u,'ko');(u||d).stato='Da riparare';(d.interventi=d.interventi||[]).push({id:uid(),data:today(),tipo:'Revisione / test',desc:'Giro di manutenzione: non si accende'+(u?` (esemplare n. ${d.esemplari.indexOf(u)+1})`:'')})}
+      else manLog(d,u,a);
+      await saveDev(d);render();draw();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}});
+  }});
+}
+/* promemoria: elenco delle prossime scadenze per il service worker (notifiche) e calendario .ics per Google Calendar */
+function manItems(){return manAll().flatMap(t=>[{n:unitName(t),due:t.st.never?today():t.st.nextOn,k:'on'},...(t.st.rech?[{n:unitName(t),due:t.u?((t.u.man_charge&&t.st.nextCh)||today()):((t.d.man_charge&&t.st.nextCh)||today()),k:'charge'}]:[])])}
+async function writeManCache(){try{const c=await caches.open('rddc-meta');await c.put('./meta/man',new Response(JSON.stringify({notif:manCfg().notif,items:manItems()}),{headers:{'content-type':'application/json'}}))}catch(e){}}
+async function enableNotif(){
+  if(!('Notification' in window)||!navigator.serviceWorker)return toast('Questo browser non supporta le notifiche');
+  const p=await Notification.requestPermission();if(p!=='granted')return toast('Notifiche non permesse: si possono attivare dalle impostazioni del telefono',4000);
+  const reg=await navigator.serviceWorker.ready;let bg=false;
+  try{if('periodicSync' in reg){const st=await navigator.permissions.query({name:'periodic-background-sync'}).catch(()=>({state:'denied'}));if(st.state==='granted'){await reg.periodicSync.register('rddc-man',{minInterval:12*3600e3});bg=true}}}catch(e){}
+  LS.set('rd_man',Object.assign(manCfg(),{notif:true,bg}));await writeManCache();
+  reg.showNotification('RDDC',{body:bg?'Notifiche attive: ti avviso quando c\'è qualcosa da accendere o ricaricare.':'Notifiche permesse. Questo telefono però non permette i controlli in background: per i promemoria usa il calendario.',icon:'icon-192.png',tag:'rddc-test'});return bg}
+const icsEsc=t=>String(t||'').replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+function buildICS(list=devices){
+  const ev=[],d8=s=>s.replace(/-/g,''),next=s=>addDays(s,1);
+  const add=(uid,date,sum,desc)=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return;ev.push([date,`BEGIN:VEVENT\r\nUID:${uid}@rddc\r\nDTSTAMP:20260101T000000Z\r\nDTSTART;VALUE=DATE:${d8(date)}\r\nDTEND;VALUE=DATE:${d8(next(date))}\r\nSUMMARY:${icsEsc(sum)}\r\n${desc?`DESCRIPTION:${icsEsc(desc)}\r\n`:''}TRANSP:TRANSPARENT\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEsc(sum)}\r\nTRIGGER:PT9H\r\nEND:VALARM\r\nEND:VEVENT\r\n`])};
+  if(manCfg().cal!==false)for(const t of manAll(list)){const id=t.d.id+(t.u?'-'+t.u.id:'');if(!t.st.never)add(id+'-on',t.st.nextOn,'⚡ Accendere: '+unitName(t),'Giro di manutenzione RDDC');if(t.st.nextCh)add(id+'-ch',t.st.nextCh,'🔋 Ricaricare: '+unitName(t),'Giro di manutenzione RDDC')}
+  for(const d of list){if(d.wish)continue;
+    (d.interventi||[]).filter(i=>i.prossimo&&!i.fatto).forEach(i=>add(d.id+'-int-'+i.id,i.prossimo,'🔧 '+(i.tipo||'Intervento')+': '+d.nome,i.desc));
+    if(d.prestito&&d.prestito.al)add(d.id+'-loan',d.prestito.al,'📤 Rientro: '+d.nome,[d.prestito.tipo,d.prestito.a].filter(Boolean).join(' · '));
+    if(d.garanzia)add(d.id+'-gar',d.garanzia,'🛡️ Scade la garanzia: '+d.nome,'')}
+  ev.sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1]));
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//RDDC//Collezione//IT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:RDDC – promemoria\r\nX-WR-TIMEZONE:Europe/Rome\r\n${ev.map(x=>x[1]).join('')}END:VCALENDAR\r\n`;
+}
+async function gitBlobSha(text){const b=new TextEncoder().encode(text),h=new TextEncoder().encode(`blob ${b.length}\0`),all=new Uint8Array(h.length+b.length);all.set(h);all.set(b,h.length);
+  return [...new Uint8Array(await crypto.subtle.digest('SHA-1',all))].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const calUrl=()=>new URL('calendario.ics',location.href).href;
+/* ===== Oggi: cosa c'è da fare ===== */
+function oggiHTML(){
+  const lines=[],md=manDue(),on=md.filter(t=>t.st.dueOn).length,ch=md.filter(t=>t.st.dueCh).length,nev=md.filter(t=>t.st.never).length;
+  if(md.length)lines.push(`<button class="og" id="manB"><span>${on?`⚡ <b>${on}</b> da accendere`:''}${on&&ch?' · ':''}${ch?`🔋 <b>${ch}</b> da ricaricare`:''}</span><small>${nev?`${nev} ${nev===1?'mai registrato':'mai registrati'} · `:''}Inizia il giro →</small></button>`);
+  const due=dueList();if(due.length){const late=due.some(x=>x.i.prossimo<today());lines.push(`<button class="og ${late?'late':''}" id="dueB"><span>🔧 <b>${due.length}</b> ${due.length===1?'intervento in programma':'interventi in programma'}</span><small>${late?'⚠️ alcuni scaduti · ':''}${esc(due[0].d.nome)} – ${esc(due[0].i.tipo||'')} (${fmtD(due[0].i.prossimo)})</small></button>`)}
+  const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;if(out.length)lines.push(`<button class="og ${late?'late':''}" id="loanB"><span>📤 <b>${out.length}</b> ${out.length===1?'oggetto fuori casa':'oggetti fuori casa'}</span><small>${late?`⚠️ ${late} in ritardo sul rientro`:'prestiti ed esposizioni'}</small></button>`);
+  const war=devices.filter(d=>!d.wish&&d.garanzia&&d.garanzia>=addDays(today(),-7)&&d.garanzia<=addDays(today(),60)).sort((a,b)=>a.garanzia.localeCompare(b.garanzia));
+  if(war.length)lines.push(`<button class="og" id="warB" data-go="${war[0].id}"><span>🛡️ Garanzia ${war[0].garanzia<today()?'scaduta':'in scadenza'}: <b>${esc(war[0].nome)}</b></span><small>${fmtD(war[0].garanzia)}${war.length>1?` · e altri ${war.length-1}`:''}</small></button>`);
+  const drop=devices.filter(d=>d.wish&&(d.annunci||[]).some(a=>a.prezzo_prima&&+a.prezzo<+a.prezzo_prima));
+  if(drop.length)lines.push(`<button class="og" id="annB"><span>🏷️ Prezzo sceso in <b>${drop.length}</b> ${drop.length===1?'desiderio':'desideri'}</span><small>${esc(drop[0].nome)} → apri la wishlist</small></button>`);
+  if(!lines.length)return '';
+  const dt=new Date().toLocaleDateString('it',{weekday:'long',day:'numeric',month:'long'});
+  return `<div class="oggi"><div class="ogh"><b>☀︎ Oggi</b><small>${dt}</small></div>${lines.join('')}</div>`;
+}
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
 const mainDevices=()=>devices.filter(x=>!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
 const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
@@ -1182,17 +1295,17 @@ function cloneOne(a,extra){const c=JSON.parse(JSON.stringify(a));Object.keys(c).
 const UNIT_KEYS=['stato','condizione','scatola','seriale','quantita'];
 const hasUnits=d=>Array.isArray(d&&d.esemplari)&&d.esemplari.length>0;
 function unitsSummary(d){const c=new Map();d.esemplari.forEach(u=>{const s=(u.stato||'stato ?').toLowerCase();c.set(s,(c.get(s)||0)+1)});return [...c].map(([s,n])=>n+' '+s).join(', ')}
-function unitFrom(o,keepSerial){return {id:uid(),etichetta:'',stato:o.stato||'',condizione:o.condizione||'',scatola:o.scatola||'',seriale:keepSerial?o.seriale||'':'',luogo:o.luogo||'',acq_prezzo:keepSerial?o.acq_prezzo||'':'',note:''}}
+function unitFrom(o,keepSerial){return {id:uid(),etichetta:'',collegato:keepSerial?o.collegato||'':'',batt_stato:o.batt_stato||'',man_on:o.man_on||'',man_charge:o.man_charge||'',stato:o.stato||'',condizione:o.condizione||'',scatola:o.scatola||'',seriale:keepSerial?o.seriale||'':'',luogo:o.luogo||'',acq_prezzo:keepSerial?o.acq_prezzo||'':'',note:''}}
 function syncUnits(d){if(!hasUnits(d))return;d.quantita=d.esemplari.length;const ls=[...new Set(d.esemplari.map(u=>u.luogo||''))];if(ls.length===1&&ls[0]&&ls[0]!==(d.luogo||''))setLuogo(d,ls[0])}
 function unitsHTML(d){
   if(d.wish)return '';
   if(!hasUnits(d))return `<div class="sec-t">Esemplari</div><p class="note" style="margin-bottom:8px">Hai più pezzi identici ma diversi tra loro (uno funziona, uno no; uno con la scatola…)? Registra i dati di ogni singolo esemplare: i dati del modello restano in comune.</p><button class="btn sm sec" data-unit-new>＋ ${+d.quantita>1?`Dividi in ${+d.quantita} esemplari`:'Aggiungi un secondo esemplare'}</button>`;
   return `<div class="sec-t">Esemplari (${d.esemplari.length}) · ${esc(unitsSummary(d))}</div><div class="log">${d.esemplari.map((u,i)=>{const sn=u.seriale?decodeSerial(u.seriale,d.anno):null;
-    return `<button class="li" data-unit="${u.id}"><span class="ld">#${i+1}</span><span class="lb"><b>${esc(u.etichetta||u.stato||'Esemplare '+(i+1))}</b><span>${esc([u.etichetta?u.stato:'',u.scatola?'scatola: '+u.scatola:'',u.luogo?'📍 '+u.luogo:'',u.acq_prezzo?'€ '+u.acq_prezzo:''].filter(Boolean).join(' · '))}</span>${u.seriale?`<small>SN ${esc(u.seriale)}${sn&&sn.quando?' · '+esc(sn.quando):''}</small>`:''}${u.condizione||u.note?`<small>${esc([u.condizione,u.note].filter(Boolean).join(' — '))}</small>`:''}</span></button>`}).join('')}</div><button class="btn sm sec" data-unit-add style="margin-top:8px">＋ Aggiungi esemplare</button>`;
+    return `<button class="li" data-unit="${u.id}"><span class="ld">#${i+1}</span><span class="lb"><b>${esc(u.etichetta||u.stato||'Esemplare '+(i+1))}</b><span>${esc([u.etichetta?u.stato:'',u.scatola?'scatola: '+u.scatola:'',u.luogo?'📍 '+u.luogo:'',u.collegato?'🔗 '+((devices.find(x=>x.id===u.collegato)||{}).nome||'?'):'',u.batt_stato?'🔋 '+u.batt_stato:'',u.acq_prezzo?'€ '+u.acq_prezzo:''].filter(Boolean).join(' · '))}</span>${u.seriale?`<small>SN ${esc(u.seriale)}${sn&&sn.quando?' · '+esc(sn.quando):''}</small>`:''}${u.condizione||u.note?`<small>${esc([u.condizione,u.note].filter(Boolean).join(' — '))}</small>`:''}</span></button>`}).join('')}</div><button class="btn sm sec" data-unit-add style="margin-top:8px">＋ Aggiungi esemplare</button>`;
 }
 async function startUnits(d){
   const n=Math.max(parseInt(d.quantita,10)||1,1);
-  d.esemplari=Array.from({length:n},(_,i)=>unitFrom(d,i===0));
+  d.esemplari=Array.from({length:n},(_,i)=>unitFrom(d,i===0));delete d.collegato;
   if(n>1){syncUnits(d);await saveDev(d);render();toast(`${n} esemplari creati: ora completa i dati di ognuno`,3500);return openDetail(d.id,true)}
   syncUnits(d);openUnit(d,null,true);
 }
@@ -1203,6 +1316,8 @@ function openUnit(d,u,fresh){
   <label class="f">Etichetta (facoltativa, per riconoscerlo)</label><input class="in" id="u_et" value="${esc(v.etichetta)}" placeholder="Es. quello ingiallito, quello con la scatola" autocomplete="off">
   <div class="grid2"><div><label class="f">Funzionamento</label><select class="in" id="u_st"><option value="">—</option>${STATI.map(x=>`<option ${x===v.stato?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
   <div><label class="f">Scatola / accessori</label><select class="in" id="u_sc"><option value="">—</option>${['Sì','No','Parziale'].map(x=>`<option ${x===v.scatola?'selected':''}>${x}</option>`).join('')}</select></div></div>
+  <label class="f">Va con (dispositivo della collezione)</label><select class="in" id="u_va">${devOpts(v.collegato)}</select>
+  <label class="f">Stato della batteria</label><select class="in" id="u_bs"><option value="">—</option>${BATT_ST.map(x=>`<option ${x===v.batt_stato?'selected':''}>${x}</option>`).join('')}</select>
   <label class="f">Condizione estetica</label><textarea class="in" id="u_co" placeholder="Graffi, ingiallimento, crepe…">${esc(v.condizione)}</textarea>
   <label class="f">Numero di serie</label><input class="in" id="u_sn" value="${esc(v.seriale)}" autocomplete="off"><div class="sn" id="u_snd"></div>
   <div class="grid2"><div><label class="f">Luogo</label><input class="in" id="u_lu" list="dl_ul" value="${esc(v.luogo)}" autocomplete="off"><datalist id="dl_ul">${ls.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
@@ -1214,11 +1329,11 @@ function openUnit(d,u,fresh){
     const sd=()=>{$('#u_snd',el).innerHTML=serialHTML({seriale:$('#u_sn',el).value,anno:d.anno}).replace(/^<div class="sn">|<\/div>$/g,'')};sd();$('#u_sn',el).oninput=sd;
     const done=async msg=>{if(d.esemplari.length===1){const x=d.esemplari[0];['stato','condizione','scatola','seriale'].forEach(k=>{if(x[k])d[k]=x[k];else delete d[k]});if(x.luogo)setLuogo(d,x.luogo);if(x.note)d.note=[d.note,x.note].filter(Boolean).join('\n');delete d.esemplari;d.quantita=1}
       syncUnits(d);await saveDev(d);render();toast(msg);goBase(()=>openDetail(d.id))};
-    $('#u_ok',el).onclick=async()=>{const o={etichetta:$('#u_et',el).value.trim(),stato:$('#u_st',el).value,scatola:$('#u_sc',el).value,condizione:$('#u_co',el).value.trim(),seriale:$('#u_sn',el).value.trim(),luogo:$('#u_lu',el).value.trim(),acq_prezzo:$('#u_pr',el).value.trim(),note:$('#u_no',el).value.trim()};
+    $('#u_ok',el).onclick=async()=>{const o={etichetta:$('#u_et',el).value.trim(),stato:$('#u_st',el).value,scatola:$('#u_sc',el).value,condizione:$('#u_co',el).value.trim(),seriale:$('#u_sn',el).value.trim(),luogo:$('#u_lu',el).value.trim(),acq_prezzo:$('#u_pr',el).value.trim(),note:$('#u_no',el).value.trim(),collegato:$('#u_va',el).value,batt_stato:$('#u_bs',el).value};
       if(isNew)d.esemplari.push(Object.assign(v,o));else Object.assign(u,o);await done(isNew?'Esemplare aggiunto':'Esemplare aggiornato')};
     const del=$('#u_del',el);if(del)del.onclick=async()=>{if(!await ask(`Eliminare l'esemplare n. ${i}?`,'Elimina',true))return;d.esemplari=d.esemplari.filter(x=>x!==u);await done('Esemplare eliminato')};
     const out=$('#u_out',el);if(out)out.onclick=async()=>{if(!await ask(`Separare l'esemplare n. ${i} in un oggetto a sé?`,'Separa'))return;
-      const c=cloneOne(d,{stato:u.stato,condizione:u.condizione,scatola:u.scatola,seriale:u.seriale,luogo:u.luogo,acq_prezzo:u.acq_prezzo||d.acq_prezzo,note:u.note,foto:d.foto,thumb:d.thumb});delete c.esemplari;
+      const c=cloneOne(d,{collegato:u.collegato||'',batt_stato:u.batt_stato||'',man_on:u.man_on||'',man_charge:u.man_charge||'',stato:u.stato,condizione:u.condizione,scatola:u.scatola,seriale:u.seriale,luogo:u.luogo,acq_prezzo:u.acq_prezzo||d.acq_prezzo,note:u.note,foto:d.foto,thumb:d.thumb});delete c.esemplari;
       await saveDev(c);d.esemplari=d.esemplari.filter(x=>x!==u);await done('Separato in un nuovo oggetto')};
   }});
 }
@@ -1227,7 +1342,7 @@ async function mergeAsUnits(L){
   if(!await ask(`Unire ${L.length} oggetti in «${main.nome}» con ${L.length} esemplari? I dati del modello sono quelli di «${main.nome}»; di ogni oggetto restano stato, estetica, scatola, seriale, luogo, prezzo e note. Foto, allegati e interventi vengono riuniti.`,'Unisci'))return false;
   const snap=[...L,...devices.filter(x=>L.slice(1).some(o=>o.id===x.collegato))].map(x=>JSON.parse(JSON.stringify(x)));
   const units=d=>hasUnits(d)?d.esemplari:[Object.assign(unitFrom(d,true),{note:d.note&&d!==main?d.note:''})];
-  main.esemplari=L.flatMap(units);
+  main.esemplari=L.flatMap(units);delete main.collegato;
   for(const o of others){main.foto=[...new Set([...(main.foto||[]),...(o.foto||[])])];if(!main.thumb&&o.thumb)main.thumb=o.thumb;
     if(o.allegati)main.allegati=[...(main.allegati||[]),...o.allegati];if(o.interventi)main.interventi=[...(main.interventi||[]),...o.interventi];
     if(o.tags)main.tags=[...new Set([...(main.tags||[]),...o.tags])];
@@ -1527,6 +1642,7 @@ function listOpts(kind){
   if(kind==='tipi')return u([...TIPI,...devices.map(d=>d.tipologia)]);
   if(kind==='linee')return u(devices.map(d=>d.linea));
   if(kind==='luoghi')return u([...LUOGHI0,...devices.map(d=>d.luogo)]);
+  if(kind==='raccolte')return u(['Apple','Console','Server','Televisori','Altro',...devices.map(d=>d.raccolta)]);
   if(kind==='tubi')return u([...TUBI,...devices.map(d=>d.tv_tubo)]);
   if(kind==='audio')return AUDIO;
   if(kind==='connettori')return u([...CONNETTORI,...devices.map(d=>d.acc_connettore)]);
@@ -1549,13 +1665,13 @@ function fieldHTML(k,l,t,v,d){
   if(t.startsWith('list:')){let x=`<label class="f">${l}</label><input class="in" name="${k}" list="dl_${t.slice(5)}" value="${esc(v)}" autocomplete="off">`;
     if(k==='luogo')x+=`<div class="chips">${LUOGHI0.map(o=>`<button type="button" class="chip ${o===v?'on':''}" data-luogo="${esc(o)}">📍 ${esc(o)}</button>`).join('')}</div>`;
     return x}
-  return `<label class="f">${l}</label><input class="in" name="${k}" ${t==='number'?'type="number" inputmode="decimal" step="any"':''} value="${esc(v)}">`;
+  return `<label class="f">${l}</label><input class="in" name="${k}" ${t==='number'?'type="number" inputmode="decimal" step="any"':t==='date'?'type="date"':''} value="${esc(v)}">`;
 }
 function openForm(src,{fromLookup=false,focus=''}={}){
   const d=JSON.parse(JSON.stringify(src||{}));
   const isNew=!devices.some(x=>x.id===d.id);
   let foto=d.foto||[],thumb=d.thumb||'';
-  let h=['marche','tipi','linee','luoghi','tubi','audio','connettori','colori'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
+  let h=['marche','tipi','linee','luoghi','tubi','audio','connettori','colori','raccolte'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
   h+=`<form id="f" onsubmit="return false">`;
   h+=fieldHTML('nome','Nome *','',d.nome,d);
   h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div>`;
@@ -2450,7 +2566,10 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
         out.innerHTML=(list.length?'<b>Scegli il risultato giusto:</b>'+list.map((x,i)=>`<button class="res accr" data-a="${i}">${x.thumb?`<img src="${esc(x.thumb)}" alt="" loading="lazy" onerror="this.remove()">`:''}<span><b>${esc(x.title)}</b><small><i class="src">${esc(x.src)}</i> ${esc((x.snippet||'').slice(0,110))}</small></span></button>`).join(''):'Nessun risultato. Prova con il codice scritto sotto l\'oggetto (es. A1424) o con meno parole.')+(notes.length?`<p class="note">${esc(notes.join(' · '))}</p>`:'');
         out.onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const x=list[+b.dataset.a];busy('Carico la scheda…');try{preview(await x.load())}catch(err){out.textContent=/429/.test(err.message)?'Il servizio ha ricevuto troppe richieste: riprova tra un minuto.':'Errore: '+err.message}};
       }catch(e){out.textContent='Errore di rete: '+e.message}return}
-      if(!ap){try{await wikiFlow(q,'')}catch(e){out.textContent='Errore di rete: '+e.message}return}
+      if(!ap){try{busy('Cerco su Wikipedia…');const res=await wikiAccSearch(q);if(!res.length)return await wikiFlow(q,'');
+          out.innerHTML='<b>Scegli la pagina giusta:</b>'+res.map((x,i)=>`<button class="res" data-w2="${i}"><b>${esc(x.sec?x.title+' › '+x.sec.line:x.title)}</b><small><i class="src">Wikipedia ${x.lang.toUpperCase()}</i> ${esc((x.snippet||'').slice(0,110))}</small></button>`).join('')+`<button class="res" data-w3><b>🔎 Altre pagine per «${esc(q)}»</b></button>`;
+          out.onclick=async e=>{if(e.target.closest('[data-w3]'))return wikiFlow(q,'').catch(er=>out.textContent='Errore: '+er.message);const b=e.target.closest('[data-w2]');if(!b)return;busy('Carico la scheda…');try{const r=await wikiAccLoad(res[+b.dataset.w2],'');if(r.fields.tipologia&&!['Mouse','Tastiera','Periferica','Accessorio','Rete','Cavo / adattatore','Alimentatore / caricabatterie','Monitor'].includes(r.fields.tipologia))delete r.fields.tipologia;preview(r)}catch(err){out.textContent='Errore: '+err.message}}}
+        catch(e){out.textContent='Errore di rete: '+e.message}return}
       if(!looksLikeCode(q)){busy('Cerco il modello per nome…');
         let m=[];try{m=nameMatches(q,await awIndex(),10)}catch(e){}
         const acc=Object.entries(ACC_DB).filter(([,v])=>nameMatches(q,[[v[0]]]).length).slice(0,4);
@@ -2507,7 +2626,7 @@ function statsPage(devices,wl){
     return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${v}</span></div>`).join('');
   };
   const sum=k=>devices.reduce((s,d)=>s+(parseFloat(d[k])||0),0);
-  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>Spese per interventi</div><div>€ ${devices.reduce((s,d)=>s+(d.interventi||[]).reduce((t,i)=>t+(parseFloat(i.costo)||0),0),0).toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
+  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>Spese per interventi</div><div>€ ${devices.reduce((s,d)=>s+(d.interventi||[]).reduce((t,i)=>t+(parseFloat(i.costo)||0),0),0).toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+(devices.some(d=>d.raccolta)?bars('Per raccolta','raccolta'):'')+(devices.some(d=>d.ruolo&&d.ruolo!=='Collezione')?bars('Per ruolo','ruolo'):'')+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
   const tops=devices.filter(d=>+d.valore&&+d.acq_prezzo).map(d=>({d,g:+d.valore-+d.acq_prezzo})).sort((a,b)=>b.g-a.g).slice(0,5);
   const cs=collSeries();
   const h2=`<div class="sec-t">Valore della collezione nel tempo</div>`+(cs.ok?`<div class="chart" id="cvch"></div><details class="more" style="margin-top:4px"><summary>Tabella</summary><div class="kv">${cs.val.filter(p=>!p.virt).map(p=>`<div>${fmtD(new Date(p.t).toISOString())}</div><div>€ ${p.v.toLocaleString('it')}</div>`).join('')}</div></details>`:`<p class="note">Il grafico appare quando ci sono almeno due valutazioni (o un valore e un prezzo pagato). Aggiungile dalla sezione «Valore» delle schede.</p>`)
@@ -2600,8 +2719,9 @@ function openCutout(d){
 }
 
 /* ============ museo ============ */
-function museumItems(){return devices.filter(d=>!d.wish&&kindOf(d.tipologia)!=='acc').sort((a,b)=>((a.anno||9999)-(b.anno||9999))||String(a.nome).localeCompare(b.nome,'it'))}
-const roomOf=d=>d.anno?Math.floor(d.anno/10)*10+'s':'Senza anno';
+function museumItems(){return devices.filter(d=>!d.wish&&kindOf(d.tipologia)!=='acc'&&kindOf(d.tipologia)!=='part'&&!['In uso','Ricambi'].includes(d.ruolo)).sort((a,b)=>((a.anno||9999)-(b.anno||9999))||String(a.nome).localeCompare(b.nome,'it'))}
+const muByRac=()=>LS.get('rd_mu_by','')==='rac'||(LS.get('rd_mu_by','')===''&&devices.some(d=>d.raccolta));
+const roomOf=d=>muByRac()?(d.raccolta||'Altro'):d.anno?Math.floor(d.anno/10)*10+'s':'Senza anno';
 /* inclinazione del telefono → rotazione 3D degli oggetti */
 const Tilt={n:0,on(){if(this.n++)return;this.h=e=>{if(e.gamma==null)return;const h=document.documentElement;h.classList.add('tilting');
     const ry=Math.max(-14,Math.min(14,e.gamma*.55)),rx=Math.max(-8,Math.min(8,((e.beta||55)-55)*.25));
@@ -2729,6 +2849,7 @@ function openMenu(){
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
+  <button class="res" data-m="man"><b>🔌 Manutenzione</b><small>Giro di accensioni e ricariche${manDue().length?` · ${manDue().length} da fare`:''}</small></button>
   <button class="res" data-m="inv"><b>📋 Inventario</b><small>Controlla luogo per luogo cosa c'è davvero${LS.get('rd_inv',null)?' · inventario in corso':''}</small></button>
 
   <div class="sec-t">Database su GitHub</div>
@@ -2758,6 +2879,12 @@ function openMenu(){
   <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
   <input type="file" id="fi" accept=".json,application/json" hidden>
   <div class="sec-t">Impostazioni</div>
+  <label class="f">Promemoria di manutenzione</label><div class="grid2"><div><small>Accensione ogni</small><select class="in" id="mfo">${[3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().on===n?'selected':''}>${n} mesi</option>`).join('')}</select></div><div><small>Ricarica ogni</small><select class="in" id="mfc">${[2,3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().charge===n?'selected':''}>${n} mesi</option>`).join('')}</select></div></div>
+  <label class="row" style="gap:10px;font-size:14px;margin:8px 0"><input type="checkbox" id="mcal" ${manCfg().cal!==false?'checked':''} style="width:20px;height:20px"> Metti accensioni e ricariche nel calendario (calendario.ics)</label>
+  <div class="row" style="flex-wrap:wrap;gap:6px"><button class="btn sm sec" data-m="mans">Salva</button><button class="btn sm sec" data-m="notif">🔔 Notifiche sul telefono</button></div><p class="note" id="ntst" style="margin:6px 0">${manCfg().notif?(manCfg().bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili: usa il calendario.'):'Le notifiche dipendono dal telefono: il modo più affidabile è il calendario qui sotto.'}</p>
+  <details class="note"><summary><b>📅 Promemoria in Google Calendar (consigliato)</b></summary><p>A ogni sincronizzazione con GitHub l'app aggiorna <b>calendario.ics</b> con le prossime accensioni e ricariche, gli interventi in programma, i rientri dei prestiti e le scadenze delle garanzie.</p>
+  <ol style="padding-left:18px;margin:6px 0"><li>Copia l'indirizzo: <button class="btn sm sec" data-m="calcp">📋 Copia</button><br><small style="word-break:break-all">${esc(calUrl())}</small></li><li>Da un computer (o dal browser del telefono in versione desktop) apri <b>calendar.google.com</b> → ⚙️ Impostazioni → <b>Aggiungi calendario → Da URL</b> → incolla → Aggiungi.</li><li>Nelle impostazioni del nuovo calendario «RDDC – promemoria» imposta la notifica per gli <b>eventi di un giorno intero</b> (es. alle 9:00).</li></ol>
+  <p>Google aggiorna i calendari sottoscritti da solo, di solito entro qualche ora. Il file è pubblico come collezione.json.</p></details>
   <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
   <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
   <label class="f">Proxy personale per la ricerca su EveryMac</label>
@@ -2788,6 +2915,10 @@ function openMenu(){
       if(a==='cat')openCatalog();
       if(a==='due')openDue();
       if(a==='inv')openInventory();
+      if(a==='man')openMaintenance();
+      if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
+      if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
+      if(a==='calcp'){try{await navigator.clipboard.writeText(calUrl());toast('Indirizzo copiato')}catch(e){toast(calUrl(),6000)}}
       if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',exportJSON());toast('Backup scaricato')}
       if(a==='dbexp'){dl('collezione.json','application/json',exportJSON());toast('Scaricato collezione.json: caricalo nel repository GitHub',4000)}
       if(a==='dbs'){LS.set('rd_db_url',$('#dbu',el).value.trim()||'collezione.json');LS.set('rd_db_auto',$('#dba',el).checked);LS.set('rd_db_sig','');toast('Salvato')}
@@ -2822,7 +2953,7 @@ function exportJSON(){return JSON.stringify({app:'rddc',v:3,esportato:Date.now()
 function markDeleted(id){const a=LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id);a.push({id,t:Date.now()});LS.set('rd_deleted',a.slice(-3000))}
 function unmarkDeleted(id){LS.set('rd_deleted',LS.get('rd_deleted',[]).filter(x=>(x.id||x)!==id))}
 const deletedMap=()=>new Map(LS.get('rd_deleted',[]).map(x=>typeof x==='string'?[x,0]:[x.id,x.t]));
-function dirty(){LS.set('rd_dirty',Date.now());clearTimeout(dirty.tr);dirty.tr=setTimeout(autoTranslate,4000);if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
+function dirty(){clearTimeout(dirty.mc);dirty.mc=setTimeout(writeManCache,1500);LS.set('rd_dirty',Date.now());clearTimeout(dirty.tr);dirty.tr=setTimeout(autoTranslate,4000);if(ghOn()){clearTimeout(dirty.t);dirty.t=setTimeout(()=>ghSync(false),15000)}updSync()}
 const SYNC_SVG={
   run:'<g class="sy"><path d="M9.4 14.6a2.7 2.7 0 0 1 4.6-2.5"/><path d="M14.6 14.4a2.7 2.7 0 0 1-4.6 2.3"/><path d="M14.3 10.6v1.6h-1.6"/><path d="M9.7 18.4v-1.6h1.6"/></g>',
   ok:'<path class="sy" d="M9.4 14.6l1.8 1.8 3.4-3.6"/>',dirty:'<path class="sy" d="M12 17v-4.8M9.9 14.2l2.1-2.1 2.1 2.1"/>',err:'<path class="sy" d="M12 11.8v2.9M12 17v.1"/>'};
@@ -2908,12 +3039,14 @@ function ghSync(manual){
         for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);(o.allegati||[]).forEach(a=>ref(a.data))}
         for(const p of files.keys())refs.add(p);
         const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5}$/.test(p)&&!refs.has(p));
-        if(!files.size&&!orphans.length&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
+        const ics=buildICS(out),calNew=tmap.get('calendario.ics')!==await gitBlobSha(ics);
+        if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
         const entries=[];
         for(const [path,b64] of files)entries.push({path,mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha});
         const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
         for(const p of orphans)entries.push({path:p,mode:'100644',type:'blob',sha:null});
+        if(calNew)entries.push({path:'calendario.ics',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:ics,encoding:'utf-8'}})).sha});
         const nt=await gh('git/trees',{method:'POST',body:{base_tree:treeSha,tree:entries}});
         const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''}${orphans.length?`, ${orphans.length} file non usati rimossi`:''})`,tree:nt.sha,parents:[head]}});
         try{await gh(`git/refs/heads/${c.branch}`,{method:'PATCH',body:{sha:nc.sha,force:false}})}
@@ -3009,7 +3142,7 @@ function pickCompare(d){
 }
 /* ===== inventario per luogo ===== */
 function openInventory(){
-  const inv=LS.get('rd_inv',null),own=devices.filter(d=>!d.wish);
+  const inv=LS.get('rd_inv',null),own=devices.filter(d=>!d.wish&&d.ruolo!=='In uso');
   const ls=[...new Set(own.map(d=>d.luogo||''))].sort((a,b)=>(LUOGHI0.indexOf(b)>-1)-(LUOGHI0.indexOf(a)>-1)||a.localeCompare(b,'it'));
   openPage('Inventario',`${inv?`<button class="res" data-ri><b>↻ Riprendi l'inventario di ${esc(inv.luogo||'senza luogo')}</b><small>iniziato il ${fmtD(inv.start)} · ${Object.keys(inv.st).length} controllati</small></button>`:''}
     <p>Scegli il luogo da controllare: per ogni oggetto segni se c'è, se non lo trovi o se in realtà è altrove.</p>${ls.map(l=>`<button class="res" data-il="${esc(l)}"><b>📍 ${esc(l||'Senza luogo')}</b><small>${own.filter(d=>(d.luogo||'')===l).length} oggetti</small></button>`).join('')}`,{mount(el){
@@ -3069,6 +3202,9 @@ function openPeek(id,src){
 }
 $('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;return}
   if(SELM){const c=e.target.closest('[data-id]');if(c){SELM.has(c.dataset.id)?SELM.delete(c.dataset.id):SELM.add(c.dataset.id);render()}return}if(e.target.closest('#dueB'))return openDue();
+  if(e.target.closest('#manB'))return openMaintenance();
+  if(e.target.closest('#warB'))return openDetail(e.target.closest('#warB').dataset.go);
+  if(e.target.closest('#annB')){S.view='wish';save();render();scrollTo(0,0);return}
   if(e.target.closest('#loanB')){S.sel.fuori=['In prestito','In esposizione'];render();scrollTo(0,0);return}const c=e.target.closest('[data-id]');if(c)openDetailFrom(c,c.dataset.id)});
 $('#bMuseo').onclick=openMuseum;
 $('#bTheme').onclick=e=>setTheme(isDark()?'light':'dark',e.currentTarget);
@@ -3080,6 +3216,8 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
 (async()=>{
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
+  writeManCache();
+  if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
