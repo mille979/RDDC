@@ -298,6 +298,73 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.evaluate(() => goBase()); await p.waitForTimeout(300);
   });
 
+  await test('laboratorio: collaudo con guasti → progetto di restauro con fasi', async () => {
+    await p.evaluate(async () => { for (const d of [{ id: 'lt', nome: 'PowerBook G3 Pismo', tipologia: 'Portatile', luogo: 'Alex', stato: 'Da testare', marca: 'Apple' }]) { d.creato = Date.now(); await saveDev(d); } S.view = 'col'; S.q = ''; S.sel = {}; render(); });
+    ok(await p.evaluate(() => !!document.querySelector('.oggi #labC') && toTest().some(x => x.d.id === 'lt')), 'Oggi: da collaudare');
+    eq(await p.evaluate(() => vals(devices.find(d => d.id === 'lt'), 'lab')), ['Da collaudare', 'Mai collaudato'], 'filtro laboratorio');
+    await p.evaluate(() => openDetail('lt')); await p.click('[data-colnew]');
+    eq(await p.evaluate(() => [...document.querySelectorAll('.crow>span')].map(x => x.firstChild.textContent).slice(0, 2)), ['Si accende', 'Avvia il sistema operativo'], 'voci per portatile');
+    const bi = await p.evaluate(() => [...document.querySelectorAll('.crow')].findIndex(x => /^Batteria/.test(x.textContent)));
+    await p.click(`.crow[data-ci="${bi}"] [data-ce="ko"]`); await p.fill(`[data-cm="${bi}"]`, 'non tiene la carica');
+    await p.click('.crow[data-ci="8"] [data-ce="na"]'); await p.click('[data-call]');
+    await p.click('#csv'); await p.click('.modal [data-y]'); await p.waitForTimeout(400);
+    const r = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), c = d.collaudi[0], pr = d.progetti[0]; return [c.esito, c.r.filter(x => x.e === 'ko').map(x => x.t + ':' + x.m), d.stato, d.man_on === today(), pr.fasi.map(f => f.t), !!document.querySelector('#ptt')]; });
+    eq(r, ['ko', ['Batteria:non tiene la carica'], 'Da riparare', true, ['Riparare: Batteria (non tiene la carica)', 'Collaudo finale'], true], 'collaudo, stato e progetto');
+    ok(await p.evaluate(() => /1 ✗ \(Batteria: non tiene la carica\)/.test(collSum(devices.find(x => x.id === 'lt').collaudi[0]))), 'riassunto del collaudo');
+  });
+
+  await test('laboratorio: pezzi, lista della spesa, magazzino, cronometro e chiusura nel registro', async () => {
+    await p.fill('#pzn', 'Batteria Pismo nuova'); await p.fill('#pzp', '45,50'); await p.click('[data-pza]'); await p.waitForTimeout(200);
+    eq(await p.evaluate(() => shopList().map(x => [x.z.t, x.z.prezzo, x.z.stato])), [['Batteria Pismo nuova', '45.5', 'Da comprare']], 'lista della spesa');
+    await p.click('[data-pzs]'); await p.waitForTimeout(150); await p.click('[data-pzs]'); await p.click('.modal [data-y]'); await p.waitForTimeout(300);
+    const part = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), z = d.progetti[0].pezzi[0], pt = devices.find(x => x.id === z.part); return [z.stato, pt && pt.tipologia, pt && pt.part_cat, pt && pt.compat, shopList().length]; });
+    eq(part, ['Arrivato', 'Ricambio', 'Batteria', ['lt'], 0], 'arrivato → magazzino');
+    await p.click('[data-ptim]'); await p.waitForTimeout(100);
+    await p.evaluate(() => { const t = timerGet(); t.t0 -= 30 * 60000; LS.set('rd_timer', t); });
+    ok(await p.evaluate(() => /cronometro acceso/.test(oggiHTML()) && /⏱/.test(labBadge(devices.find(x => x.id === 'lt')))), 'cronometro in Oggi e sulla scheda');
+    await p.click('[data-ptim]'); await p.click('[data-padd="15"]'); await p.waitForTimeout(200);
+    await p.click('.pf input[type=checkbox]'); await p.waitForTimeout(200);
+    eq(await p.evaluate(() => { const pr = devices.find(x => x.id === 'lt').progetti[0]; return [pr.min, pr.sess.length, pr.fasi[0].ok, pr.stato, timerGet()]; }), [45, 2, true, 'In corso', null], 'tempo e fasi');
+    await p.fill('#pno', 'Pismo: batteria sostituita'); await p.dispatchEvent('#pno', 'change'); await p.waitForTimeout(150);
+    await p.evaluate(() => { const i = document.querySelector('#psc'); i.value = addDays(today(), 10); i.dispatchEvent(new Event('change', { bubbles: true })); }); await p.waitForTimeout(150);
+    ok(await p.evaluate(() => /Scadenza progetto: Riparazione: batteria/.test(buildICS())), 'scadenza nel calendario');
+    await p.click('[data-pend]'); await p.click('.modal [data-y]'); await p.waitForTimeout(300); await p.click('.modal [data-n]'); await p.waitForTimeout(300);
+    const fin = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), pr = d.progetti[0], i = d.interventi.find(x => x.proj === pr.id), pt = devices.find(x => x.id === pr.pezzi[0].part); return [pr.stato, pr.fine === today(), i && i.costo, i && /45 min di lavoro/.test(i.desc), pt.montato_su, pr.pezzi[0].stato]; });
+    eq(fin, ['Finito', true, '45.5', true, 'lt', 'Montato'], 'chiusura: registro interventi e ricambio montato');
+    await p.evaluate(() => openLab('prog')); await p.waitForTimeout(200);
+    ok(await p.evaluate(() => /Finiti \(1 · 45 min · € 45,50\)/.test(stack[stack.length - 1].textContent)), 'elenco progetti finiti');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: collaudo pianificato, esito ok → funzionante, guida iFixit nel progetto', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'lc', nome: 'Trinitron KV-21', tipologia: 'Televisore CRT', stato: 'Da riparare', creato: Date.now() }); render(); });
+    await p.evaluate(() => openPlanColl(devices.find(d => d.id === 'lc'), null)); await p.click('[data-pn="1"]'); await p.click('#pcs'); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => dueList().some(x => x.d.id === 'lc' && x.i.coll) && /Collaudo/.test(buildICS())), 'collaudo in programma');
+    await p.evaluate(() => openCollaudo(devices.find(d => d.id === 'lc'), null)); await p.click('[data-call]'); await p.click('#csv'); await p.click('.modal [data-y]'); await p.waitForTimeout(300);
+    eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'lc'); return [d.stato, d.collaudi[0].esito, d.interventi[0].fatto, /^Collaudo: 7 ✓/.test(d.interventi[0].desc), collKind(d)]; }), ['Funzionante', 'ok', true, true, 'tv'], 'collaudo ok');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+    await p.context().route('https://www.ifixit.com/api/2.0/search/**', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ results: [{ guideid: 7, title: 'Trinitron Capacitor Replacement', subject: 'Capacitors', category: 'Sony Trinitron' }] }) }));
+    await p.context().route('https://www.ifixit.com/api/2.0/guides/7', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ title: 'Trinitron Capacitor Replacement', url: 'https://www.ifixit.com/Guide/x/7', difficulty: 'Moderate', time_required: '1 hour', steps: [{}, {}], parts: [{ text: 'Capacitor kit' }], tools: [{ text: 'Soldering Iron' }] }) }));
+    await p.evaluate(() => { const d = devices.find(x => x.id === 'lc'); const pr = newProject(d, { titolo: 'Revisione CRT', fasi: ['Pulizia interna', 'Collaudo finale'] }); return saveDev(d).then(() => openProject(d, pr.id)); });
+    await p.click('[data-pg]'); await p.waitForSelector('[data-gid="7"]'); await p.click('[data-gid="7"]'); await p.waitForSelector('#gadd'); await p.click('#gadd'); await p.waitForTimeout(500);
+    eq(await p.evaluate(() => { const pr = devices.find(x => x.id === 'lc').progetti[0]; return [pr.guide.length, pr.pezzi.map(z => z.t + '/' + z.stato), pr.attrezzi, pr.fasi.map(f => f.t), !!document.querySelector('#ptt'), document.querySelectorAll('[data-pzs]').length]; }),
+      [1, ['Capacitor kit/Da comprare'], ['Soldering Iron'], ['Pulizia interna', 'Seguire la guida: Trinitron Capacitor Replacement', 'Collaudo finale'], true, 1], 'guida aggiunta e pagina aggiornata');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: le foto prima/dopo dei progetti vanno su GitHub come file', async () => {
+    const A = await phone('A3');
+    await A.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }));
+    await A.evaluate(async () => { const v = document.createElement('canvas'); v.width = v.height = 30; const c = v.getContext('2d'); c.fillStyle = '#c33'; c.fillRect(0, 0, 30, 30); const a = v.toDataURL('image/jpeg', .8); c.fillStyle = '#3c3'; c.fillRect(0, 0, 30, 30); const b = v.toDataURL('image/jpeg', .8);
+      const d = { id: 'pp', nome: 'Macintosh Classic', creato: Date.now() }; const pr = newProject(d, { titolo: 'Retrobright' }); pr.prima = [a]; pr.dopo = [b]; await saveDev(d); await ghSync(true); });
+    const j = JSON.parse(ghFiles().get('collezione.json').toString()), pr = j.devices.find(d => d.id === 'pp').progetti[0];
+    ok(/^foto\/[0-9a-f]{40}\.jpg$/.test(pr.prima[0]) && /^foto\/[0-9a-f]{40}\.jpg$/.test(pr.dopo[0]) && ghFiles().has(pr.prima[0]) && ghFiles().has(pr.dopo[0]), 'foto del progetto come file');
+    const ref = gh.ref; await A.evaluate(() => ghSync(true)); eq(gh.ref, ref, 'nessun commit inutile');
+    const B = await phone('B3'); await B.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' })); await B.evaluate(() => ghSync(true));
+    ok(await B.evaluate(() => /^data:image/.test(devices.find(d => d.id === 'pp').progetti[0].dopo[0])), 'sull\'altro telefono le foto tornano immagini');
+    await A.context().close(); await B.context().close();
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();

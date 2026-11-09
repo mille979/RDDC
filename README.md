@@ -67,8 +67,24 @@ Menu → «🔌 Manutenzione» (o dalla scheda **Oggi**): luogo per luogo, segni
 - Fuori dal giro: oggetti «In uso», «Ricambi», accessori senza batteria e wishlist
 - **Notifiche**: «🔔 Notifiche sul telefono» in Impostazioni, se il telefono permette i controlli in background; il modo più affidabile è **Google Calendar**: a ogni sincronizzazione l'app aggiorna `calendario.ics` (accensioni, ricariche, interventi, rientri dei prestiti, scadenze delle garanzie) da aggiungere una volta sola in Google Calendar → «Da URL»
 
+## Laboratorio: collaudi, progetti di restauro, lista della spesa
+Menu → «🛠️ Laboratorio» (o dalla scheda **Oggi**, o dalla sezione «Laboratorio» di ogni scheda).
+- **Collaudo** 🧪: una lista di prove adatta al tipo di oggetto (portatile/fisso, server, CRT, console portatile o da tavolo, telefono, accessorio, ricambio). Per ogni voce ✓ funziona, ✗ non funziona (con «cosa non va») o – non applicabile; alcune voci hanno una misura (cicli e capacità della batteria, ore del disco, temperature…). Le voci aggiunte a mano restano per i collaudi successivi dello stesso tipo.
+  - Tutto ok → propone «Funzionante». Con dei guasti → segna «Da riparare» e apre un **progetto di restauro** con una fase per ogni guasto (o li aggiunge al progetto già aperto).
+  - Se «Si accende» è ok, conta anche come accensione per il giro di manutenzione. Funziona anche per il singolo esemplare.
+  - **📅 Pianifica collaudo**: compare in Oggi, negli interventi in programma e nel calendario; quando lo fai, viene registrato con l'esito.
+- **Progetto di restauro** 🛠️: parte da un modello (revisione completa, batteria e pulizia del portatile, upgrade RAM/SSD, revisione CRT, console portatile, retrobright, riparazione, libero) e ha:
+  - stato (da iniziare, in corso, in attesa pezzi, in pausa, finito), fasi da spuntare e riordinare, scadenza facoltativa (va nel calendario);
+  - **pezzi e materiali** con prezzo e stato (da comprare → ordinato → arrivato → montato); quando un pezzo arriva può entrare nel **magazzino ricambi**; si possono anche usare ricambi già in magazzino (prima i compatibili);
+  - **cronometro** ⏱ (uno alla volta, resta acceso anche chiudendo l'app) e tempo aggiunto a mano;
+  - **guide iFixit**: cerca le guide per l'oggetto (se il nome completo non dà risultati riprova con uno più corto) e le aggiunge al progetto con i pezzi (nella lista della spesa) e gli attrezzi;
+  - **foto prima/dopo** con confronto a tendina; note.
+  - **Concludi il progetto**: scrive l'intervento nel registro (fasi fatte, pezzi, tempo, costo), segna come montati i ricambi del magazzino, può aggiungere le foto «dopo» alla galleria e propone il **collaudo finale**.
+- **Lista della spesa** 🛒: tutti i pezzi da comprare e ordinati dei progetti aperti, con totale stimato, ricerca su eBay, «Ordinato» / «È arrivato» e condivisione della lista.
+- Filtro «Laboratorio» (in restauro, da collaudare, collaudato, mai collaudato), etichetta sulle schede con un progetto aperto, statistiche del laboratorio (progetti finiti, ore di lavoro, spesa in pezzi, collaudi). Le foto prima/dopo si sincronizzano su GitHub come le altre foto.
+
 ## Oggi
-In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, interventi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
+In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, progetti aperti (e cronometro acceso), oggetti da collaudare, pezzi da comprare o in arrivo, interventi e collaudi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
 
 ## Ruolo e raccolte
 - **Ruolo**: Collezione, **In uso** (es. il computer di tutti i giorni: niente inventario, museo e «da completare», con scadenza della garanzia e «Ritira in collezione»), Ricambi, Da vendere
