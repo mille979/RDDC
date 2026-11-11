@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//RDDC//Collezione//IT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:RDDC – promemoria
+X-WR-TIMEZONE:Europe/Rome
+BEGIN:VEVENT
+UID:ff60b85c-c5d5-47d5-ae81-1aa4668afd93-int-9eba0188-2c9a-4e00-a738-dda38cbad648@rddc
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270127
+DTEND;VALUE=DATE:20270128
+SUMMARY:🔧 Riparazione: iPod touch 4th Gen 8 GB
+DESCRIPTION:Accertamento batteria gonfia\, tornata allo stato originale dopo un ciclo di ricarica sotto temperatura controllata.\nControllare eventuali danni o perdite.
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:🔧 Riparazione: iPod touch 4th Gen 8 GB
+TRIGGER:PT9H
+END:VALARM
+END:VEVENT
+END:VCALENDAR
