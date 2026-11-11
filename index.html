@@ -29,7 +29,11 @@ button{cursor:pointer}
 .seg button{border:0;background:none;border-radius:8px;padding:6px 11px;font:650 13px/1 system-ui,sans-serif;color:var(--mute)}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
 .seg i{font-style:normal;font-weight:500;opacity:.7;margin-left:4px}
+@media (max-width:400px){.brand{gap:6px;letter-spacing:.12em}.mubtn{padding:2px 3px;margin-left:0;font-size:19px}.seg button{padding:6px 8px;font-size:12.5px}.seg i{margin-left:3px}}
+@media (max-width:365px){.brand{letter-spacing:.06em}.seg button{padding:6px 7px}.seg i{display:none}}
 .prio{color:var(--acc-ink);font-weight:700}
+.bv{display:flex;align-items:flex-start;gap:3px}.ver{border:0;background:none;padding:0;font:650 10px/1 system-ui,sans-serif;letter-spacing:.02em;color:var(--mute);text-shadow:none;margin-top:-2px}
+.nov li{margin:3px 0}
 .brand small{font:600 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-shadow:none}
 .row{display:flex;gap:8px;align-items:center}
 .search{flex:1;min-width:0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
@@ -551,7 +555,7 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 </head>
 <body>
 <div id="top">
-  <div class="brand">RDDC<button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema">🌙</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
+  <div class="brand"><span class="bv">RDDC<button class="ver" id="bVer" aria-label="Versione e novità"></button></span><button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema">🌙</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
   <div class="row">
     <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
     <button class="ibtn" id="bView" aria-label="Cambia vista">▤</button>
@@ -571,6 +575,10 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 /* ============ util ============ */
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
+const APP_VER='1.0';
+const NOVITA=[
+ ['1.0','2026-11-11',['Numero di versione accanto al logo e nel menu','Laboratorio: collaudi, progetti di restauro, lista della spesa, statistiche ed esportazioni CSV','Manutenzione: giro di accensioni e ricariche con promemoria e calendario','Scheda «Oggi», ruolo, raccolte, «Va con» per esemplare','Animazioni e note per ogni annuncio','Foto orizzontali piene nelle anteprime della griglia']]];
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
 const addDays=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
@@ -3297,7 +3305,8 @@ function openMenu(){
   <pre style="white-space:pre-wrap;font-size:11px;background:var(--card);padding:8px;border-radius:8px;overflow:auto;max-height:180px">${esc(WORKER_CODE)}</pre></details>
   <p class="note">Senza proxy funzionano comunque «Incolla da EveryMac» e «Carica pagina salvata».</p>
   <div class="sec-t">Zona pericolosa</div>
-  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>`;
+  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>
+  <button class="res" data-m="nov" style="margin-top:22px;text-align:center"><b>RDDC · versione ${APP_VER}</b><small>${fmtD(NOVITA[0][1])} · Novità →</small></button>`;
   openPage('Menu',h,{mount(el){
     const dbInfo=()=>{const l=LS.get('rd_db_last',null);
       $('#dbi',el).innerHTML=(ghOn()?`Sincronizzazione automatica con <b>${esc(ghCfg().repo)}</b> attiva.`:`Il file <b>collezione.json</b> nel repository GitHub dell'app viene caricato automaticamente su ogni telefono.`)+(l?`<br>Ultima sincronizzazione: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti${l.nuovi||l.agg||l.canc?` · ricevuti ${l.nuovi} nuovi, ${l.agg} aggiornati${l.canc?', '+l.canc+' eliminati':''}`:''}${l.inviati?` · inviati ${l.inviati} oggetti${l.foto?' e '+l.foto+' foto':''}`:''}`:'');
@@ -3313,6 +3322,7 @@ function openMenu(){
       if(a==='inv')openInventory();
       if(a==='man')openMaintenance();
       if(a==='lab')openLab();
+      if(a==='nov')openNovita();
       if(a==='labcsv')openLab('stat');
       if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
       if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
@@ -3486,6 +3496,8 @@ async function syncDB(manual){
 $('#q').value=S.q||'';
 $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
+function openNovita(){openPage('Novità',`<p class="note" style="margin-top:0">Stai usando <b>RDDC ${APP_VER}</b>. Se dopo un aggiornamento vedi ancora il numero vecchio, chiudi e riapri l'app.</p>`+NOVITA.map(([v,dt,l])=>`<div class="sec-t">Versione ${v} · ${fmtD(dt)}</div><ul class="nov" style="margin:0;padding-left:20px">${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join(''))}
+$('#bVer').textContent=APP_VER;$('#bVer').onclick=openNovita;
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 /* pressione lunga su un elemento della lista → anteprima (stile 3D Touch) */
 let lp=null,lpSwallow=0;
@@ -3619,6 +3631,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   writeManCache();
+  if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
   if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}

@@ -149,6 +149,11 @@ export default {
 ```
 Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
 
+## Versioni
+Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in fondo al menu. Quando arriva un aggiornamento compare l'avviso «RDDC aggiornata alla versione…».
+- Si parte da **1.0** (11 novembre 2026); ogni modifica fa salire il numero (1.1, 1.2…), i cambi grandi passano a 2.0.
+- Per chi modifica il codice: il numero sta in `APP_VER` (con le novità in `NOVITA`) in `index.html` e in `V` in `sw.js`; devono coincidere, lo controlla una prova automatica.
+
 ## Prove automatiche
 `npm test` avvia l'app in Chromium (Playwright) e controlla le funzioni principali, compresa la sincronizzazione con una finta API GitHub. Le prove partono da sole su ogni pull request (GitHub Actions, `.github/workflows/test.yml`).
 
