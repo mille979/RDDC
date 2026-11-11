@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
 // ---------- finta API GitHub (Git Data API) ----------
 const gh = { blobs: new Map(), trees: new Map(), commits: new Map(), ref: 'c0', n: 0 };
 const sha = b => crypto.createHash('sha1').update(b).digest('hex');
-const putBlob = buf => { const s = sha(Buffer.concat([Buffer.from('blob'), buf])); gh.blobs.set(s, buf); return s; };
+const putBlob = buf => { const s = sha(Buffer.concat([Buffer.from(`blob ${buf.length}\0`), buf])); gh.blobs.set(s, buf); return s; }; // impronta come la calcola Git
 const putTree = ents => { const s = sha(JSON.stringify(ents) + Math.random()); gh.trees.set(s, ents); return s; };
 gh.commits.set('c0', { tree: putTree([{ path: 'index.html', sha: putBlob(Buffer.from('x')), type: 'blob', mode: '100644' }]), parents: [] });
 const ghFiles = () => new Map(gh.trees.get(gh.commits.get(gh.ref).tree).map(e => [e.path, gh.blobs.get(e.sha)]));
@@ -245,6 +245,139 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     });
     eq(r, ['Macintosh Classic II con tastiera e mouse', '180', 'Milano (MI)', 'Usato - Buone condizioni', 'Vendo Macintosh Classic II perfettamente funzionante, avvia System 7.1.',
       'Apple iMac G3 233 MHz Bondi Blue', '249', 'eBay', 'Funziona, tastiera inclusa', 'Apple iMac G3'], 'lettura');
+  });
+
+  await test('annunci: note, caratteristiche e configurazione per ogni annuncio', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'w9', wish: true, nome: 'MacBook 2008 - 2015', annunci: [{ id: 'a9', url: 'https://www.subito.it/x.htm', sito: 'Subito', titolo: 'MacBook Pro 17" 2010', prezzo: '380' }], creato: Date.now() }); openDetail('w9'); });
+    await p.click('[data-annedit="a9"]'); await p.fill('#acf', '17" 2010, i7'); await p.click('[data-atg="Caricabatterie incluso"]'); await p.fill('#ant', 'Graffi sul coperchio'); await p.click('#eok'); await p.waitForTimeout(400);
+    const r = await p.evaluate(() => { const a = devices.find(d => d.id === 'w9').annunci[0]; return [a.config, a.etichette, a.note, devices.find(d => d.id === 'w9')._i.includes('graffi'), !!document.querySelector('.annn')]; });
+    eq(r, ['17" 2010, i7', ['Caricabatterie incluso'], 'Graffi sul coperchio', true, true], 'note annuncio');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('transizioni: la scheda si apre e si chiude senza lasciare pagine o nomi di transizione', async () => {
+    await p.evaluate(() => { S.view = 'col'; S.q = ''; render(); });
+    const id = await p.evaluate(() => document.querySelector('#list [data-id]').dataset.id);
+    await p.click(`#list [data-id="${id}"]`); await p.waitForTimeout(600);
+    eq(await p.evaluate(() => stack.length), 1, 'scheda aperta');
+    await p.evaluate(() => history.back()); await p.waitForTimeout(700);
+    eq(await p.evaluate(() => [stack.length, document.querySelectorAll('.page').length, [...document.querySelectorAll('*')].filter(x => x.style && x.style.viewTransitionName).length]), [0, 0, 0], 'dopo indietro');
+    eq(await p.evaluate(() => /class="ld ld-ann"/.test(loader('ann', 'x')) && /ld-mac/.test(loader(ldKind('Cerco su EveryMac…'), 'x'))), true, 'animazioni di attesa');
+  });
+
+  await test('manutenzione: giro di accensioni e ricariche, stato batteria, Oggi e calendario', async () => {
+    await p.evaluate(async () => {
+      const old = addMonths(today(), -8), rec = addMonths(today(), -1);
+      for (const d of [
+        { id: 'mp', nome: 'PowerBook G4', tipologia: 'Portatile', luogo: 'Alex', man_on: old, man_charge: old, batt_stato: 'Regge' },
+        { id: 'mi', nome: 'iBook G3', tipologia: 'Portatile', luogo: 'Alex', man_on: rec, batt_stato: 'Morta' },
+        { id: 'ms', nome: 'Macintosh SE', tipologia: 'All-in-one', luogo: 'Damiano', man_on: rec },
+        { id: 'mu', nome: 'MacBook Pro 2017', tipologia: 'Portatile', ruolo: 'In uso', garanzia: addDays(today(), 20) }]) { d.creato = Date.now(); await saveDev(d); }
+      S.view = 'col'; S.q = ''; S.sel = {}; render();
+    });
+    const due = await p.evaluate(() => manDue().filter(t => ['mp', 'mi', 'ms', 'mu'].includes(t.d.id)).map(t => t.d.id + (t.st.dueOn ? '+on' : '') + (t.st.dueCh ? '+ch' : '')));
+    eq(due, ['mp+on+ch'], 'da fare (batteria morta, fissi recenti e oggetti in uso esclusi)');
+    eq(await p.evaluate(() => [manTargets(devices.find(d => d.id === 'mu')).length, missing(devices.find(d => d.id === 'mu')).length, !!document.querySelector('.oggi #manB'), !!document.querySelector('.oggi #warB')]), [0, 0, true, true], 'oggetti in uso e scheda Oggi');
+    await p.click('#manB'); await p.click('[data-mid="mp"] [data-mg="on"]'); await p.click('[data-mid="mp"] [data-mg="charge"]'); await p.waitForTimeout(300);
+    eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'mp'); return [d.man_on === today(), d.man_charge === today(), d.manutenzioni.map(m => m.tipo), manState({ d, u: null }).dueOn]; }), [true, true, ['on', 'charge'], false], 'giro');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+    const ics = await p.evaluate(() => buildICS());
+    ok(/BEGIN:VCALENDAR/.test(ics) && /SUMMARY:⚡ Accendere: PowerBook G4/.test(ics) && /SUMMARY:🔋 Ricaricare: PowerBook G4/.test(ics) && /Scade la garanzia: MacBook Pro 2017/.test(ics) && !/Ricaricare: iBook/.test(ics), 'calendario');
+    eq(await p.evaluate(() => buildICS() === buildICS()), true, 'calendario stabile (nessun commit inutile)');
+  });
+
+  await test('raccolte, ruolo e «Va con» per singolo esemplare', async () => {
+    await p.evaluate(async () => { for (const d of [{ id: 'atv', nome: 'Apple TV', tipologia: 'Lettore multimediale', raccolta: 'Apple' }, { id: 'gba', nome: 'GBA SP', tipologia: 'Console', raccolta: 'Console' }, { id: 'rem', nome: 'Apple Remote', tipologia: 'Accessorio', quantita: 2 }]) { d.creato = Date.now(); await saveDev(d); } render(); });
+    eq(await p.evaluate(() => { const r = museumItems().filter(d => ['atv', 'gba'].includes(d.id)).map(roomOf); return [r, val(devices.find(d => d.id === 'mu'), 'ruolo')]; }), [['Apple', 'Console'], 'In uso'], 'sale per raccolta e ruolo');
+    await p.evaluate(() => openDetail('rem')); await p.click('[data-unit-new]'); await p.waitForTimeout(300);
+    const u1 = await p.evaluate(() => devices.find(d => d.id === 'rem').esemplari[0].id);
+    await p.click(`[data-unit="${u1}"]`); await p.selectOption('#u_va', 'atv'); await p.click('#u_ok'); await p.waitForTimeout(400);
+    await p.evaluate(() => openDetail('atv')); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => /Accessori collegati \(1\)/.test(stack[stack.length - 1].textContent) && /esemplare n\. 1/.test(stack[stack.length - 1].textContent)), 'telecomando collegato come esemplare');
+    eq(await p.evaluate(() => missing(devices.find(d => d.id === 'rem')).includes('collegato')), false, 'esemplare sciolto non conta come mancante');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: collaudo con guasti → progetto di restauro con fasi', async () => {
+    await p.evaluate(async () => { for (const d of [{ id: 'lt', nome: 'PowerBook G3 Pismo', tipologia: 'Portatile', luogo: 'Alex', stato: 'Da testare', marca: 'Apple' }]) { d.creato = Date.now(); await saveDev(d); } S.view = 'col'; S.q = ''; S.sel = {}; render(); });
+    ok(await p.evaluate(() => !!document.querySelector('.oggi #labC') && toTest().some(x => x.d.id === 'lt')), 'Oggi: da collaudare');
+    eq(await p.evaluate(() => vals(devices.find(d => d.id === 'lt'), 'lab')), ['Da collaudare', 'Mai collaudato'], 'filtro laboratorio');
+    await p.evaluate(() => openDetail('lt')); await p.click('[data-colnew]');
+    eq(await p.evaluate(() => [...document.querySelectorAll('.crow>span')].map(x => x.firstChild.textContent).slice(0, 2)), ['Si accende', 'Avvia il sistema operativo'], 'voci per portatile');
+    const bi = await p.evaluate(() => [...document.querySelectorAll('.crow')].findIndex(x => /^Batteria/.test(x.textContent)));
+    await p.click(`.crow[data-ci="${bi}"] [data-ce="ko"]`); await p.fill(`[data-cm="${bi}"]`, 'non tiene la carica');
+    await p.click('.crow[data-ci="8"] [data-ce="na"]'); await p.click('[data-call]');
+    await p.click('#csv'); await p.click('.modal [data-y]'); await p.waitForTimeout(400);
+    const r = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), c = d.collaudi[0], pr = d.progetti[0]; return [c.esito, c.r.filter(x => x.e === 'ko').map(x => x.t + ':' + x.m), d.stato, d.man_on === today(), pr.fasi.map(f => f.t), !!document.querySelector('#ptt')]; });
+    eq(r, ['ko', ['Batteria:non tiene la carica'], 'Da riparare', true, ['Riparare: Batteria (non tiene la carica)', 'Collaudo finale'], true], 'collaudo, stato e progetto');
+    ok(await p.evaluate(() => /1 ✗ \(Batteria: non tiene la carica\)/.test(collSum(devices.find(x => x.id === 'lt').collaudi[0]))), 'riassunto del collaudo');
+  });
+
+  await test('laboratorio: pezzi, lista della spesa, magazzino, cronometro e chiusura nel registro', async () => {
+    await p.fill('#pzn', 'Batteria Pismo nuova'); await p.fill('#pzp', '45,50'); await p.click('[data-pza]'); await p.waitForTimeout(200);
+    eq(await p.evaluate(() => shopList().map(x => [x.z.t, x.z.prezzo, x.z.stato])), [['Batteria Pismo nuova', '45.5', 'Da comprare']], 'lista della spesa');
+    await p.click('[data-pzs]'); await p.waitForTimeout(150); await p.click('[data-pzs]'); await p.click('.modal [data-y]'); await p.waitForTimeout(300);
+    const part = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), z = d.progetti[0].pezzi[0], pt = devices.find(x => x.id === z.part); return [z.stato, pt && pt.tipologia, pt && pt.part_cat, pt && pt.compat, shopList().length]; });
+    eq(part, ['Arrivato', 'Ricambio', 'Batteria', ['lt'], 0], 'arrivato → magazzino');
+    await p.click('[data-ptim]'); await p.waitForTimeout(100);
+    await p.evaluate(() => { const t = timerGet(); t.t0 -= 30 * 60000; LS.set('rd_timer', t); });
+    ok(await p.evaluate(() => /cronometro acceso/.test(oggiHTML()) && /⏱/.test(labBadge(devices.find(x => x.id === 'lt')))), 'cronometro in Oggi e sulla scheda');
+    await p.click('[data-ptim]'); await p.click('[data-padd="15"]'); await p.waitForTimeout(200);
+    await p.click('.pf input[type=checkbox]'); await p.waitForTimeout(200);
+    eq(await p.evaluate(() => { const pr = devices.find(x => x.id === 'lt').progetti[0]; return [pr.min, pr.sess.length, pr.fasi[0].ok, pr.stato, timerGet()]; }), [45, 2, true, 'In corso', null], 'tempo e fasi');
+    await p.fill('#pno', 'Pismo: batteria sostituita'); await p.dispatchEvent('#pno', 'change'); await p.waitForTimeout(150);
+    await p.evaluate(() => { const i = document.querySelector('#psc'); i.value = addDays(today(), 10); i.dispatchEvent(new Event('change', { bubbles: true })); }); await p.waitForTimeout(150);
+    ok(await p.evaluate(() => /Scadenza progetto: Riparazione: batteria/.test(buildICS())), 'scadenza nel calendario');
+    await p.click('[data-pend]'); await p.click('.modal [data-y]'); await p.waitForTimeout(300); await p.click('.modal [data-n]'); await p.waitForTimeout(300);
+    const fin = await p.evaluate(() => { const d = devices.find(x => x.id === 'lt'), pr = d.progetti[0], i = d.interventi.find(x => x.proj === pr.id), pt = devices.find(x => x.id === pr.pezzi[0].part); return [pr.stato, pr.fine === today(), i && i.costo, i && /45 min di lavoro/.test(i.desc), pt.montato_su, pr.pezzi[0].stato]; });
+    eq(fin, ['Finito', true, '45.5', true, 'lt', 'Montato'], 'chiusura: registro interventi e ricambio montato');
+    await p.evaluate(() => openLab('prog')); await p.waitForTimeout(200);
+    ok(await p.evaluate(() => /Finiti \(1 · 45 min · € 45,50\)/.test(stack[stack.length - 1].textContent)), 'elenco progetti finiti');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: collaudo pianificato, esito ok → funzionante, guida iFixit nel progetto', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'lc', nome: 'Trinitron KV-21', tipologia: 'Televisore CRT', stato: 'Da riparare', creato: Date.now() }); render(); });
+    await p.evaluate(() => openPlanColl(devices.find(d => d.id === 'lc'), null)); await p.click('[data-pn="1"]'); await p.click('#pcs'); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => dueList().some(x => x.d.id === 'lc' && x.i.coll) && /Collaudo/.test(buildICS())), 'collaudo in programma');
+    await p.evaluate(() => openCollaudo(devices.find(d => d.id === 'lc'), null)); await p.click('[data-call]'); await p.click('#csv'); await p.click('.modal [data-y]'); await p.waitForTimeout(300);
+    eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'lc'); return [d.stato, d.collaudi[0].esito, d.interventi[0].fatto, /^Collaudo: 7 ✓/.test(d.interventi[0].desc), collKind(d)]; }), ['Funzionante', 'ok', true, true, 'tv'], 'collaudo ok');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+    await p.context().route('https://www.ifixit.com/api/2.0/search/**', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ results: [{ guideid: 7, title: 'Trinitron Capacitor Replacement', subject: 'Capacitors', category: 'Sony Trinitron' }] }) }));
+    await p.context().route('https://www.ifixit.com/api/2.0/guides/7', r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ title: 'Trinitron Capacitor Replacement', url: 'https://www.ifixit.com/Guide/x/7', difficulty: 'Moderate', time_required: '1 hour', steps: [{}, {}], parts: [{ text: 'Capacitor kit' }], tools: [{ text: 'Soldering Iron' }] }) }));
+    await p.evaluate(() => { const d = devices.find(x => x.id === 'lc'); const pr = newProject(d, { titolo: 'Revisione CRT', fasi: ['Pulizia interna', 'Collaudo finale'] }); return saveDev(d).then(() => openProject(d, pr.id)); });
+    await p.click('[data-pg]'); await p.waitForSelector('[data-gid="7"]'); await p.click('[data-gid="7"]'); await p.waitForSelector('#gadd'); await p.click('#gadd'); await p.waitForTimeout(500);
+    eq(await p.evaluate(() => { const pr = devices.find(x => x.id === 'lc').progetti[0]; return [pr.guide.length, pr.pezzi.map(z => z.t + '/' + z.stato), pr.attrezzi, pr.fasi.map(f => f.t), !!document.querySelector('#ptt'), document.querySelectorAll('[data-pzs]').length]; }),
+      [1, ['Capacitor kit/Da comprare'], ['Soldering Iron'], ['Pulizia interna', 'Seguire la guida: Trinitron Capacitor Replacement', 'Collaudo finale'], true, 1], 'guida aggiunta e pagina aggiornata');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: statistiche ed esportazioni CSV', async () => {
+    await p.evaluate(() => openLab('stat')); await p.waitForTimeout(300);
+    const txt = await p.evaluate(() => stack[stack.length - 1].textContent);
+    ok(/Progetti finiti\s*1 di 2/.test(txt) && /Ore di lavoro per mese/.test(txt) && /Guasti più frequenti nei collaudi/.test(txt) && /Batteria/.test(txt) && /Stato della collezione/.test(txt), 'statistiche');
+    const c = await p.evaluate(() => [LAB_CSV.progetti[1](), LAB_CSV.collaudi[1](), LAB_CSV.pezzi[1](), LAB_CSV.interventi[1](), LAB_CSV.sessioni[1]()]);
+    const rows = c.map(x => x.replace(/^﻿/, '').split('\n'));
+    ok(rows[0][0].startsWith('"Oggetto";"Esemplare";"Progetto"') && rows[0].some(r => /"PowerBook G3 Pismo";"";"Riparazione: batteria";"Riparazione";"Finito"/.test(r) && /"45";"0,75";"45,5"/.test(r)), 'CSV progetti');
+    ok(rows[1].some(r => /"Problemi";"\d+";"Batteria: non tiene la carica"/.test(r)), 'CSV collaudi');
+    ok(rows[2].some(r => /"Batteria Pismo nuova";"1";"45,5";"Montato";"sì";"sì"/.test(r)), 'CSV pezzi');
+    ok(rows[3].some(r => /"Riparazione";".*45 min di lavoro";"45,5"/.test(r)) && rows[4].length === 3, 'CSV registro e sessioni');
+    const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-csv="collaudi"]')]);
+    ok(/^rddc-collaudi-\d{4}-\d{2}-\d{2}\.csv$/.test(dl.suggestedFilename()), 'download');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('laboratorio: le foto prima/dopo dei progetti vanno su GitHub come file', async () => {
+    const A = await phone('A3');
+    await A.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }));
+    await A.evaluate(async () => { const v = document.createElement('canvas'); v.width = v.height = 30; const c = v.getContext('2d'); c.fillStyle = '#c33'; c.fillRect(0, 0, 30, 30); const a = v.toDataURL('image/jpeg', .8); c.fillStyle = '#3c3'; c.fillRect(0, 0, 30, 30); const b = v.toDataURL('image/jpeg', .8);
+      const d = { id: 'pp', nome: 'Macintosh Classic', creato: Date.now() }; const pr = newProject(d, { titolo: 'Retrobright' }); pr.prima = [a]; pr.dopo = [b]; await saveDev(d); await ghSync(true); });
+    const j = JSON.parse(ghFiles().get('collezione.json').toString()), pr = j.devices.find(d => d.id === 'pp').progetti[0];
+    ok(/^foto\/[0-9a-f]{40}\.jpg$/.test(pr.prima[0]) && /^foto\/[0-9a-f]{40}\.jpg$/.test(pr.dopo[0]) && ghFiles().has(pr.prima[0]) && ghFiles().has(pr.dopo[0]), 'foto del progetto come file');
+    const ref = gh.ref; await A.evaluate(() => ghSync(true)); eq(gh.ref, ref, 'nessun commit inutile');
+    const B = await phone('B3'); await B.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' })); await B.evaluate(() => ghSync(true));
+    ok(await B.evaluate(() => /^data:image/.test(devices.find(d => d.id === 'pp').progetti[0].dopo[0])), 'sull\'altro telefono le foto tornano immagini');
+    await A.context().close(); await B.context().close();
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });

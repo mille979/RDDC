@@ -56,7 +56,43 @@ In «Cerca dati online» (Apple) si può scrivere il **nome** (iMac G3, PowerBoo
 Dall'app dell'annuncio: **Condividi → RDDC**, oppure **+** → «🏷️ Da un annuncio» e incolla il link. L'app legge un'anteprima (titolo, prezzo, foto) e permette di creare un **nuovo desiderio** o di aggiungere l'annuncio a uno esistente. Ogni desiderio raccoglie più annunci con foto, prezzo e sito; nella lista compare «🏷️ 2 annunci · da € 90 ✓» (la spunta indica che è nel budget). «↻ Aggiorna prezzi» rilegge gli annunci; con «Preso!» il prezzo dell'annuncio diventa il prezzo pagato.
 Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con riserva microlink.io). Vinted di solito funziona; **Subito, eBay e Facebook Marketplace bloccano le letture automatiche** (o chiedono l'accesso), e l'app non prova ad aggirarle.
 
+**Note per ogni annuncio**: per un desiderio generico (es. «MacBook 2008 - 2015») ogni annuncio ha la sua **configurazione** (es. «Retina 15" 2014, i7, 16 GB»), le **caratteristiche** da toccare (caricabatterie incluso, con scatola, graffi, da testare, trattabile…) e le **tue note** («graffi sul coperchio», «chiedere i cicli della batteria»). Si inseriscono quando aggiungi l'annuncio o con ✎ sulla scheda; compaiono sotto l'annuncio e si trovano con la ricerca.
+
 **Da screenshot** (per Subito, eBay, Marketplace o qualunque sito): fai uno **screenshot lungo** dell'annuncio e condividilo con RDDC («🏷️ È lo screenshot di un annuncio»), oppure scegli «📷 Leggi i dati da uno screenshot» nella pagina dell'annuncio. Il testo viene letto **sul telefono** (OCR in italiano; la prima volta si scaricano circa 5 MB, poi resta in memoria) e l'app ricava titolo, prezzo, descrizione, condizione e luogo, tutti da controllare prima di salvare. La parte alta dello screenshot può diventare la foto del desiderio e lo screenshot intero resta tra gli allegati (utile quando l'annuncio sparisce). Se condividi link e screenshot insieme, il link resta collegato.
+
+## Manutenzione: giro di accensioni e ricariche
+Menu → «🔌 Manutenzione» (o dalla scheda **Oggi**): luogo per luogo, segni ⚡ acceso, 🔋 caricato o ✗ non si accende (che segna «Da riparare» e scrive nel registro interventi). Ogni oggetto, o ogni singolo esemplare, ricorda **ultima accensione** e **ultima carica**, con lo storico.
+- Promemoria ogni **6 mesi** (modificabili in Impostazioni; per un oggetto anche 3/12 mesi o «Mai»)
+- **Batteria**: ricaricabile, tampone PRAM/BIOS (con l'avviso di controllare che non perda) o nessuna; **stato della batteria**: nuova, buona, regge, tampona ma non regge, morta, assente. La ricarica viene chiesta solo per le batterie ricaricabili non morte né assenti; i fissi fanno solo il giro di accensione
+- Fuori dal giro: oggetti «In uso», «Ricambi», accessori senza batteria e wishlist
+- **Notifiche**: «🔔 Notifiche sul telefono» in Impostazioni, se il telefono permette i controlli in background; il modo più affidabile è **Google Calendar**: a ogni sincronizzazione l'app aggiorna `calendario.ics` (accensioni, ricariche, interventi, rientri dei prestiti, scadenze delle garanzie) da aggiungere una volta sola in Google Calendar → «Da URL»
+
+## Laboratorio: collaudi, progetti di restauro, lista della spesa
+Menu → «🛠️ Laboratorio» (o dalla scheda **Oggi**, o dalla sezione «Laboratorio» di ogni scheda).
+- **Collaudo** 🧪: una lista di prove adatta al tipo di oggetto (portatile/fisso, server, CRT, console portatile o da tavolo, telefono, accessorio, ricambio). Per ogni voce ✓ funziona, ✗ non funziona (con «cosa non va») o – non applicabile; alcune voci hanno una misura (cicli e capacità della batteria, ore del disco, temperature…). Le voci aggiunte a mano restano per i collaudi successivi dello stesso tipo.
+  - Tutto ok → propone «Funzionante». Con dei guasti → segna «Da riparare» e apre un **progetto di restauro** con una fase per ogni guasto (o li aggiunge al progetto già aperto).
+  - Se «Si accende» è ok, conta anche come accensione per il giro di manutenzione. Funziona anche per il singolo esemplare.
+  - **📅 Pianifica collaudo**: compare in Oggi, negli interventi in programma e nel calendario; quando lo fai, viene registrato con l'esito.
+- **Progetto di restauro** 🛠️: parte da un modello (revisione completa, batteria e pulizia del portatile, upgrade RAM/SSD, revisione CRT, console portatile, retrobright, riparazione, libero) e ha:
+  - stato (da iniziare, in corso, in attesa pezzi, in pausa, finito), fasi da spuntare e riordinare, scadenza facoltativa (va nel calendario);
+  - **pezzi e materiali** con prezzo e stato (da comprare → ordinato → arrivato → montato); quando un pezzo arriva può entrare nel **magazzino ricambi**; si possono anche usare ricambi già in magazzino (prima i compatibili);
+  - **cronometro** ⏱ (uno alla volta, resta acceso anche chiudendo l'app) e tempo aggiunto a mano;
+  - **guide iFixit**: cerca le guide per l'oggetto (se il nome completo non dà risultati riprova con uno più corto) e le aggiunge al progetto con i pezzi (nella lista della spesa) e gli attrezzi;
+  - **foto prima/dopo** con confronto a tendina; note.
+  - **Concludi il progetto**: scrive l'intervento nel registro (fasi fatte, pezzi, tempo, costo), segna come montati i ricambi del magazzino, può aggiungere le foto «dopo» alla galleria e propone il **collaudo finale**.
+- **Lista della spesa** 🛒: tutti i pezzi da comprare e ordinati dei progetti aperti, con totale stimato, ricerca su eBay, «Ordinato» / «È arrivato» e condivisione della lista.
+- **📊 Statistiche** (quarta scheda del Laboratorio): progetti finiti, tempo di lavoro, spesa in pezzi e nel registro, collaudi e percentuale di esiti ok, durata media dei progetti; ore di lavoro, spesa, collaudi e progetti finiti mese per mese; progetti per tipo; guasti più frequenti nei collaudi; gli oggetti che hanno chiesto più lavoro; stato della collezione.
+- **Esportazioni CSV** (per Excel / Fogli, separatore «;»): progetti di restauro, pezzi e lista della spesa, collaudi, registro interventi, sessioni di lavoro. Anche da Menu → «🛠️ Esporta il laboratorio (CSV)».
+- Filtro «Laboratorio» (in restauro, da collaudare, collaudato, mai collaudato) ed etichetta sulle schede con un progetto aperto. Le foto prima/dopo si sincronizzano su GitHub come le altre foto.
+
+## Oggi
+In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, progetti aperti (e cronometro acceso), oggetti da collaudare, pezzi da comprare o in arrivo, interventi e collaudi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
+
+## Ruolo e raccolte
+- **Ruolo**: Collezione, **In uso** (es. il computer di tutti i giorni: niente inventario, museo e «da completare», con scadenza della garanzia e «Ritira in collezione»), Ricambi, Da vendere
+- **Raccolta** (es. Apple, Console, Server): filtro, raggruppamento, statistiche e **sale del museo**
+- Ogni esemplare ha anche il suo **«Va con»** (es. due telecomandi uguali: uno con l'Apple TV, uno sciolto)
+- «Altra marca» in «Cerca dati online» usa anche le sezioni delle pagine Wikipedia che raccolgono più modelli
 
 ## Gestione della collezione
 - **Selezione multipla**: «☑︎ Seleziona» sopra la lista (o dall'anteprima con pressione lunga), tocca gli oggetti e usa la barra in basso: cambia **luogo**, **stato**, **etichette** (aggiungi/togli), segna come **verificati** o **elimina** (con «Annulla»). «Tutti» seleziona quelli filtrati.
@@ -66,6 +102,9 @@ Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con
 - **Numero di serie Apple**: sotto il seriale la scheda mostra fabbrica e periodo di produzione (formati a 11 e 12 caratteri, fino al 2021; indicativo), con un avviso se non torna con l'anno del modello.
 - **Magazzino ricambi**: tipologia «Ricambio» con categoria (RAM, batteria, alimentatore…), specifica, computer compatibili della collezione e altri modelli compatibili (codici, Model ID). La scheda di ogni computer elenca i ricambi in magazzino che vanno bene (sicuri e probabili); «🔧 Monta su…» registra l'intervento sul computer e scala la quantità.
 - **Statistiche**: spesa per anno di acquisto, valore per luogo, da quanto possiedi gli oggetti, verifiche dell'inventario. Nuovi ordinamenti: valore, rivalutazione, acquistati di recente, posseduti da più tempo.
+
+## Animazioni
+Le schermate entrano scorrendo da destra e escono all'indietro; aprendo un oggetto dalla lista la sua foto «vola» nella scheda (e torna al suo posto chiudendola). Mentre l'app lavora compaiono piccole animazioni: un Macintosh che legge la scheda EveryMac e la passa all'app, una lente d'ingrandimento che scorre un annuncio fino al prezzo, un telefono con un raggio che legge lo screenshot (con avanzamento) e un mappamondo per le ricerche online. Se nel telefono è attiva «Riduci animazioni», l'app le disattiva.
 
 ## Altro
 - **In italiano**: etichette, valori e date importati da EveryMac e Wikipedia sono mostrati in italiano (dizionario integrato, offline). Le descrizioni e le frasi lunghe vengono tradotte **una volta sola**, in automatico, e la traduzione resta salvata e sincronizzata; l'originale si vede con «Mostra originale». Le traduzioni dell'arretrato sono già pronte in `traduzioni.json`; per i testi nuovi l'app usa il traduttore del telefono, se disponibile, o il servizio gratuito MyMemory (circa 5.000 caratteri al giorno: se il limite è raggiunto riprova da sola più tardi). Si può disattivare in Menu → Impostazioni.
