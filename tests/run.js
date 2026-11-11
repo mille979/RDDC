@@ -380,6 +380,14 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await A.context().close(); await B.context().close();
   });
 
+  await test('versione: visibile accanto al logo e uguale a quella del service worker', async () => {
+    const v = await p.evaluate(() => [APP_VER, document.querySelector('#bVer').textContent, NOVITA[0][0]]);
+    const sw = (fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8').match(/const V='rddc-([^']+)'/) || [])[1];
+    eq(v, [sw, sw, sw], 'versione in app, logo, novità e sw.js');
+    await p.click('#bVer'); ok(await p.evaluate(() => /Versione \d/.test(stack[stack.length - 1].textContent)), 'pagina novità');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();
