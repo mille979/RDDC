@@ -405,9 +405,9 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     });
     eq(await G.evaluate(() => gemPick(['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-pro', 'gemini-3.6-flash-preview', 'gemini-flash-latest'])), 'gemini-3.5-flash', 'Flash stabile più recente');
     await G.evaluate(() => openAdd()); await G.click('[data-a="gem"]'); await G.waitForSelector('#gk');
-    await G.fill('#gk', 'sbagliata'); await G.click('#gks'); await G.waitForFunction(() => /non riuscito: chiave API non valida/.test(document.querySelector('#gkm').textContent));
+    await G.fill('#gk', 'sbagliata'); await G.click('#gks'); await G.waitForFunction(() => /Chiave API non valida/.test(document.querySelector('#gkm').textContent));
     await G.fill('#gk', 'AIzaTEST'); await G.click('#gks'); await G.waitForSelector('#gmq', { timeout: 5000 });
-    eq(await G.evaluate(() => [gemCfg().model, [...document.querySelectorAll('.page')].length]), ['gemini-3.5-flash', 2], 'chiave salvata, modello Flash stabile più recente, pagina Gemini al posto delle impostazioni');
+    eq(await G.evaluate(() => [gemCfg().ok, gemCfg().model, [...document.querySelectorAll('.page')].length]), ['gemini-3.5-flash', '', 2], 'chiave provata con una richiesta vera, modello Flash stabile più recente, pagina Gemini al posto delle impostazioni');
     await G.fill('#gmq', 'Olivetti M24'); await G.fill('#gmm', 'Olivetti'); await G.click('#gmb'); await G.waitForSelector('[data-use]');
     const req = calls.filter(c => c[0] === 'POST').pop();
     ok(/models\/gemini-3\.5-flash:generateContent$/.test(req[1]) && req[3].tools[0].google_search && /Olivetti M24/.test(req[3].contents[0].parts[0].text) && /marca: Olivetti/.test(req[3].contents[0].parts[0].text) && !/"luogo"|"acq_prezzo"|"stato"/.test(req[3].contents[0].parts[0].text), 'richiesta con ricerca Google, senza dati personali');
@@ -421,16 +421,73 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await G.context().close();
   });
 
+  await test('Gemini: errori di Google spiegati, cambio di modello sul 429 e ricerca senza web come ultima risorsa', async () => {
+    const G = await phone('G2');
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'content-type': 'application/json' };
+    let plan = {}; const posts = [];
+    const q429 = (msg, quotaId, val, retry) => ({ error: { code: 429, status: 'RESOURCE_EXHAUSTED', message: msg, details: [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaMetric: 'generativelanguage.googleapis.com/generate_content_free_tier_requests', quotaId, quotaValue: val }] }, ...(retry ? [{ '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: retry }] : [])] } });
+    await G.context().route('https://generativelanguage.googleapis.com/**', r => {
+      const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(q.url());
+      if (u.pathname.endsWith('/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ models: ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(n => ({ name: 'models/' + n, supportedGenerationMethods: ['generateContent'] })) }) });
+      const model = u.pathname.match(/models\/([^:]+):/)[1], body = JSON.parse(q.postData()), search = !!body.tools; posts.push(model + (search ? '+web' : ''));
+      const f = plan[model + (search ? '+web' : '')] || plan[model];
+      if (f) return r.fulfill({ status: f.status || 429, headers: H, body: JSON.stringify(f.body) });
+      return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ nome: 'Psion Series 5mx', marca: 'Psion', anno: 1999 }) }] } }] }) });
+    });
+    await G.evaluate(() => LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }));
+    // 1) il modello più nuovo non ha richieste gratuite (limite 0): si passa da soli al successivo e lo si ricorda
+    plan = { 'gemini-3.5-flash': { body: q429('Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.5-flash', 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '0') } };
+    const r1 = await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.fields.nome, r.tried.map(t => t.join(':')), gemCfg().ok, gemCooling('gemini-3.5-flash').kind]));
+    eq(r1, ['Psion Series 5mx', ['gemini-3.5-flash:gratis0'], 'gemini-2.5-flash', 'gratis0'], 'Piano B dopo il limite 0');
+    posts.length = 0; await G.evaluate(() => gemAsk('Psion Series 5mx', ''));
+    eq(posts, ['gemini-2.5-flash+web'], 'la volta dopo parte subito dal modello che funziona e salta quello esaurito');
+    // 2) nessun modello con quota gratuita → spiegazione chiara con i modelli provati
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); });
+    plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m, { body: q429(`Quota exceeded ... limit: 0, model: ${m}`, 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '0') }]));
+    await G.evaluate(() => openGemini({ q: 'Psion Series 5mx', onResult() {} })); await G.waitForSelector('.errc');
+    ok(await G.evaluate(() => { const t = document.querySelector('.errc').textContent; return /Nessun modello gratuito per questa chiave/.test(t) && /modelli provati: gemini-3\.5-flash → gratis0, gemini-2\.5-flash → gratis0, gemini-2\.5-flash-lite → gratis0/.test(t) && /limit: 0/.test(t) && !!document.querySelector('.errc [data-eretry]') && !!document.querySelector('.errc [data-eset="gem"]'); }), 'scheda d\'errore con rimedio, dettagli, Riprova e Impostazioni');
+    await G.evaluate(() => goBase()); await G.waitForTimeout(300);
+    // 3) limite giornaliero su tutti: si dice a che ora torna disponibile
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); });
+    plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m, { body: q429('Quota exceeded for metric: generate_content_free_tier_requests, limit: 20', 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '20') }]));
+    eq(await G.evaluate(() => gemAsk('x', '').catch(e => { const i = errInfo(e); return [e.kind, /Richieste gratuite di oggi finite/.test(i.title), /si azzera alle \d{2}:\d{2}/.test(i.remedy)]; })), ['giorno', true, true], 'limite giornaliero con orario');
+    // 4) limite al minuto con retryDelay di Google
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); });
+    plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m, { body: q429('Resource has been exhausted (e.g. check quota).', 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', '10', '34s') }]));
+    eq(await G.evaluate(() => gemAsk('x', '').catch(e => [e.kind, Math.round(gemCooling('gemini-2.5-flash').until - Date.now()) > 30000 && Math.round(gemCooling('gemini-2.5-flash').until - Date.now()) <= 34000, /riprova tra \d+ secondi/.test(errInfo(e).remedy)])), ['minuto', true, true], 'limite al minuto con attesa di Google');
+    // 5) solo la ricerca Google è esaurita: si riprova senza ricerca web e lo si dice
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); });
+    plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m + '+web', { body: q429('Quota exceeded for Google Search grounding requests per day', 'SearchGroundingRequestsPerDay-FreeTier', '500') }]));
+    posts.length = 0;
+    eq(await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.noSearch, r.fields.nome]).catch(e => e.kind + ' ' + e.message)), [true, 'Psion Series 5mx'], 'risultato senza ricerca web');
+    eq(posts.slice(-1), ['gemini-3.5-flash'], 'ultimo tentativo senza strumenti di ricerca');
+    // 6) chiave sbagliata: si ferma subito, senza provare altri modelli
+    plan = { 'gemini-3.5-flash+web': { status: 400, body: { error: { code: 400, status: 'INVALID_ARGUMENT', message: 'API key not valid. Please pass a valid API key.', details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }] } } } };
+    await G.evaluate(() => LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' })); posts.length = 0;
+    eq(await G.evaluate(() => gemAsk('x', '').catch(e => e.kind)), 'chiave', 'chiave non valida'); eq(posts, ['gemini-3.5-flash+web'], 'nessun altro modello provato');
+    // 7) registro degli errori
+    ok(await G.evaluate(() => { const a = LS.get('rd_errlog', []); return a.length >= 1 && a.some(x => x.kind === 'gratis0tutti' && /limit: 0/.test(x.d)); }), 'errori nel registro');
+    await G.evaluate(() => openErrLog()); ok(await G.evaluate(() => /Nessun modello gratuito/.test(stack[stack.length - 1].textContent)), 'pagina del registro');
+    await G.context().close();
+  });
+
+  await test('errori di rete nelle ricerche: scheda con spiegazione e Riprova', async () => {
+    await p.evaluate(() => openLookup({ prefill: 'Psion', marca: 'Psion', onResult() {} })); await p.click('#lg'); await p.waitForSelector('.errc', { timeout: 8000 });
+    ok(await p.evaluate(() => { const c = document.querySelector('.errc'); return /Nessuna connessione|Qualcosa non ha funzionato/.test(c.textContent) && !!c.querySelector('[data-eretry]') && !!c.querySelector('pre'); }), 'scheda d\'errore nella ricerca');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
   await test('vetro liquido: mappe calcolate dal modello WebGL e applicate come filtro', async () => {
     const r = await p.evaluate(async () => { lgSet('full'); await new Promise(r => setTimeout(r, 300));
-      const f = document.querySelector('#' + ($('#top').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
+      const f = document.querySelector('#' + ($('#top .search').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
       const fab = document.querySelector('#' + ($('#fab').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
       const m = [...LG.maps.values()][0];
       const out = [document.documentElement.classList.contains('lg'), !!f, !!fab, f && f.querySelectorAll('feDisplacementMap').length, /^data:image\/png/.test(m.disp) && /^data:image\/png/.test(m.spec)];
       lgSet('lite'); await new Promise(r => setTimeout(r, 300));
-      const f2 = document.querySelector('#' + ($('#top').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
+      const f2 = document.querySelector('#' + ($('#top .search').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
       out.push(f2 && f2.querySelectorAll('feDisplacementMap').length);
-      lgSet('off'); out.push(document.documentElement.classList.contains('lg'), $('#top').style.backdropFilter);
+      lgSet('off'); out.push(document.documentElement.classList.contains('lg'), $('#top .search').style.backdropFilter);
       lgSet('full'); return out; });
     eq(r, [true, true, true, 3, true, 1, false, ''], 'completo (dispersione RGB), leggero, spento');
     eq(await p.evaluate(() => { const c = document.createElement('canvas'), g = lgGL(), im = new Image(); return new Promise(res => { im.onload = () => { c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const mid = x.getImageData(im.width >> 1, im.height >> 1, 1, 1).data, edge = x.getImageData(2, im.height >> 1, 1, 1).data; res([Math.abs(mid[0] - 128) < 3, Math.abs(edge[0] - 128) > 8]); }; im.src = lgMaps(120, 60, 30, { ext: [0, 0, 0, 0] }).disp; }); }), [true, true], 'nessuno spostamento al centro, rifrazione sul bordo');
