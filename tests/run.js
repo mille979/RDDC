@@ -388,6 +388,54 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.evaluate(() => goBase()); await p.waitForTimeout(300);
   });
 
+  await test('Gemini: chiave, scelta del modello, ricerca sul web e modulo compilato', async () => {
+    const G = await phone('G');
+    const calls = [];
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'content-type': 'application/json' };
+    let mode = 'ok';
+    await G.context().route('https://generativelanguage.googleapis.com/**', r => {
+      const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(q.url()); calls.push([q.method(), u.pathname, q.headers()['x-goog-api-key'], q.postData() ? JSON.parse(q.postData()) : null]);
+      if (q.headers()['x-goog-api-key'] !== 'AIzaTEST') return r.fulfill({ status: 400, headers: H, body: JSON.stringify({ error: { message: 'API key not valid. Please pass a valid API key.' } }) });
+      if (u.pathname.endsWith('/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ models: ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-pro', 'gemini-3.6-flash-preview', 'gemini-3.5-flash-image', 'text-embedding-004'].map(n => ({ name: 'models/' + n, supportedGenerationMethods: n.includes('embedding') ? ['embedContent'] : ['generateContent'] })) }) });
+      const body = JSON.parse(q.postData()), conv = !body.tools;
+      const obj = { nome: 'Olivetti M24', marca: 'Olivetti', tipologia: 'computer desktop', anno: 'introdotto nel 1984', cpu: 'Intel 8086 a 8 MHz', ram: '128 KB (espandibile a 640 KB)', os_orig: 'MS-DOS 2.11', tv_formato: '5:4', descrizione: 'Personal computer IBM compatibile prodotto da Olivetti.', specs: [['Tastiera', '102 tasti'], { etichetta: 'Video', valore: 'CGA 640×400' }], incerti: ['ram'], immagine: 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Olivetti_M24.jpg' };
+      const text = mode === 'prosa' && !conv ? 'L\'Olivetti M24 è un personal computer del 1984 con processore 8086.' : '```json\n' + JSON.stringify(obj) + '\n```';
+      return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'ragionamento', thought: true }, { text }] }, groundingMetadata: conv ? undefined : { groundingChunks: [{ web: { uri: 'https://vertexaisearch.cloud.google.com/grounding-api-redirect/abc', title: 'wikipedia.org' } }, { web: { uri: 'https://vertexaisearch.cloud.google.com/grounding-api-redirect/def', title: 'oldcomputers.net' } }] } }] }) });
+    });
+    eq(await G.evaluate(() => gemPick(['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-pro', 'gemini-3.6-flash-preview', 'gemini-flash-latest'])), 'gemini-3.5-flash', 'Flash stabile più recente');
+    await G.evaluate(() => openAdd()); await G.click('[data-a="gem"]'); await G.waitForSelector('#gk');
+    await G.fill('#gk', 'sbagliata'); await G.click('#gks'); await G.waitForFunction(() => /non riuscito: chiave API non valida/.test(document.querySelector('#gkm').textContent));
+    await G.fill('#gk', 'AIzaTEST'); await G.click('#gks'); await G.waitForSelector('#gmq', { timeout: 5000 });
+    eq(await G.evaluate(() => [gemCfg().model, [...document.querySelectorAll('.page')].length]), ['gemini-3.5-flash', 2], 'chiave salvata, modello Flash stabile più recente, pagina Gemini al posto delle impostazioni');
+    await G.fill('#gmq', 'Olivetti M24'); await G.fill('#gmm', 'Olivetti'); await G.click('#gmb'); await G.waitForSelector('[data-use]');
+    const req = calls.filter(c => c[0] === 'POST').pop();
+    ok(/models\/gemini-3\.5-flash:generateContent$/.test(req[1]) && req[3].tools[0].google_search && /Olivetti M24/.test(req[3].contents[0].parts[0].text) && /marca: Olivetti/.test(req[3].contents[0].parts[0].text) && !/"luogo"|"acq_prezzo"|"stato"/.test(req[3].contents[0].parts[0].text), 'richiesta con ricerca Google, senza dati personali');
+    ok(await G.evaluate(() => { const t = stack[stack.length - 1].textContent; return /Fonti consultate \(2\)/.test(t) && /Dati incerti secondo Gemini: RAM/.test(t) && /campi compilati/.test(t); }), 'anteprima con fonti e dati incerti');
+    await G.evaluate(() => { window.fetchBlob = async () => { throw new Error('offline'); }; });
+    await G.click('[data-use]'); await G.waitForSelector('[name="cpu"]');
+    eq(await G.evaluate(() => ['nome', 'marca', 'tipologia', 'anno', 'cpu', 'ram', 'os_orig', 'tv_formato'].map(k => (document.querySelector(`[name="${k}"]`) || {}).value)), ['Olivetti M24', 'Olivetti', 'Computer desktop', '1984', 'Intel 8086 a 8 MHz', '128 KB (espandibile a 640 KB)', 'MS-DOS 2.11', ''], 'modulo compilato (tipologia e anno normalizzati, valore non ammesso scartato)');
+    mode = 'prosa'; const n0 = calls.length;
+    const r2 = await G.evaluate(() => gemAsk('Olivetti M24', '').then(r => [r.fields.nome, r.sources.length, r.specs.length]));
+    eq([r2, calls.slice(n0).filter(c => c[0] === 'POST').map(c => !!c[3].tools)], [['Olivetti M24', 2, 2], [true, false]], 'risposta in prosa → seconda chiamata che la trasforma in JSON');
+    await G.context().close();
+  });
+
+  await test('vetro liquido: mappe calcolate dal modello WebGL e applicate come filtro', async () => {
+    const r = await p.evaluate(async () => { lgSet('full'); await new Promise(r => setTimeout(r, 300));
+      const f = document.querySelector('#' + ($('#top').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
+      const fab = document.querySelector('#' + ($('#fab').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
+      const m = [...LG.maps.values()][0];
+      const out = [document.documentElement.classList.contains('lg'), !!f, !!fab, f && f.querySelectorAll('feDisplacementMap').length, /^data:image\/png/.test(m.disp) && /^data:image\/png/.test(m.spec)];
+      lgSet('lite'); await new Promise(r => setTimeout(r, 300));
+      const f2 = document.querySelector('#' + ($('#top').style.backdropFilter.match(/#(lgf\d+)/) || [])[1]);
+      out.push(f2 && f2.querySelectorAll('feDisplacementMap').length);
+      lgSet('off'); out.push(document.documentElement.classList.contains('lg'), $('#top').style.backdropFilter);
+      lgSet('full'); return out; });
+    eq(r, [true, true, true, 3, true, 1, false, ''], 'completo (dispersione RGB), leggero, spento');
+    eq(await p.evaluate(() => { const c = document.createElement('canvas'), g = lgGL(), im = new Image(); return new Promise(res => { im.onload = () => { c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const mid = x.getImageData(im.width >> 1, im.height >> 1, 1, 1).data, edge = x.getImageData(2, im.height >> 1, 1, 1).data; res([Math.abs(mid[0] - 128) < 3, Math.abs(edge[0] - 128) > 8]); }; im.src = lgMaps(120, 60, 30, { ext: [0, 0, 0, 0] }).disp; }); }), [true, true], 'nessuno spostamento al centro, rifrazione sul bordo');
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();
