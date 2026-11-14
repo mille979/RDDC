@@ -3,16 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f8f2e7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#110d07" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f8f1e6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15100a" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>RDDC – Collezione vintage</title>
 <style>
-:root{--bg:#f8f2e7;--card:#fffaf1;--ink:#24190b;--mute:#76674f;--line:#eadcc4;--acc:#f2a531;--acc-ink:#9c5a00;--on-acc:#2b1a02;--acc2:#3d7a66;--chip:#f4e6cc;--dng:#b3261e;--shadow:0 1px 2px rgba(80,50,0,.10),0 4px 14px rgba(80,50,0,.06);--glow:rgba(242,165,49,.45)}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#110d07;--card:#1c160e;--ink:#f7ecd9;--mute:#a99679;--line:#33281a;--acc:#ffb547;--acc-ink:#ffbd5c;--on-acc:#2b1a02;--acc2:#7cc4ad;--chip:#2a2015;--dng:#d2463b;--shadow:0 1px 3px rgba(0,0,0,.5);--glow:rgba(255,181,71,.35)}}
-:root[data-theme=dark]{color-scheme:dark;--bg:#110d07;--card:#1c160e;--ink:#f7ecd9;--mute:#a99679;--line:#33281a;--acc:#ffb547;--acc-ink:#ffbd5c;--on-acc:#2b1a02;--acc2:#7cc4ad;--chip:#2a2015;--dng:#d2463b;--shadow:0 1px 3px rgba(0,0,0,.5);--glow:rgba(255,181,71,.35)}
+:root{color-scheme:light;--bg:#f5ede0;--ink:#22180a;--mute:#76674f;--acc:#f2a531;--acc-ink:#9a5800;--on-acc:#2b1a02;--acc2:#3d7a66;--dng:#c0352b;--glow:rgba(242,165,49,.45);
+  --card:rgba(255,251,245,.64);--chip:rgba(255,244,226,.6);--line:rgba(120,85,30,.13);--field:rgba(255,252,248,.84);
+  --glass:rgba(255,251,245,.62);--glass-hi:rgba(255,252,248,.80);--lens:rgba(255,255,255,.72);
+  --rim:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(255,255,255,.5);--drop:0 1px 2px rgba(90,55,10,.07),0 8px 26px rgba(90,55,10,.10);--shadow:var(--rim),var(--drop);
+  --wall:radial-gradient(60% 45% at 12% 8%,rgba(242,165,49,.36),transparent 70%),radial-gradient(55% 40% at 94% 22%,rgba(222,120,80,.22),transparent 70%),radial-gradient(60% 45% at 80% 90%,rgba(61,122,102,.20),transparent 70%),radial-gradient(55% 45% at 4% 78%,rgba(255,206,130,.32),transparent 70%),linear-gradient(180deg,#f8f1e6,#f0e4d1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#100c07;--ink:#f7ecd9;--mute:#ab9a7e;--acc:#ffb547;--acc-ink:#ffc266;--on-acc:#2b1a02;--acc2:#7cc4ad;--dng:#e0574b;--glow:rgba(255,181,71,.35);
+  --card:rgba(54,41,26,.52);--chip:rgba(74,57,36,.46);--line:rgba(255,235,200,.09);--field:rgba(36,27,16,.78);
+  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--lens:rgba(255,240,215,.15);
+  --rim:inset 0 1px 0 rgba(255,240,215,.17),inset 0 0 0 1px rgba(255,240,215,.07);--drop:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.42);
+  --wall:radial-gradient(60% 45% at 12% 6%,rgba(255,165,50,.20),transparent 70%),radial-gradient(55% 40% at 96% 26%,rgba(200,85,45,.16),transparent 70%),radial-gradient(60% 45% at 78% 92%,rgba(80,170,145,.13),transparent 70%),radial-gradient(50% 40% at 4% 75%,rgba(255,190,100,.10),transparent 70%),linear-gradient(180deg,#15100a,#0b0805)}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#100c07;--ink:#f7ecd9;--mute:#ab9a7e;--acc:#ffb547;--acc-ink:#ffc266;--on-acc:#2b1a02;--acc2:#7cc4ad;--dng:#e0574b;--glow:rgba(255,181,71,.35);
+  --card:rgba(54,41,26,.52);--chip:rgba(74,57,36,.46);--line:rgba(255,235,200,.09);--field:rgba(36,27,16,.78);
+  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--lens:rgba(255,240,215,.15);
+  --rim:inset 0 1px 0 rgba(255,240,215,.17),inset 0 0 0 1px rgba(255,240,215,.07);--drop:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.42);
+  --wall:radial-gradient(60% 45% at 12% 6%,rgba(255,165,50,.20),transparent 70%),radial-gradient(55% 40% at 96% 26%,rgba(200,85,45,.16),transparent 70%),radial-gradient(60% 45% at 78% 92%,rgba(80,170,145,.13),transparent 70%),radial-gradient(50% 40% at 4% 75%,rgba(255,190,100,.10),transparent 70%),linear-gradient(180deg,#15100a,#0b0805)}
 :root{color-scheme:light;--c1:#c27a0e;--c2:#2f6fb0}
 :root[data-theme=dark]{--c1:#c98420;--c2:#4f8bd0}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--c1:#c98420;--c2:#4f8bd0}}
@@ -23,27 +36,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line)}
-.brand{font:700 15px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.2em;color:var(--acc-ink);text-shadow:0 0 12px var(--glow);padding:2px 2px 9px;display:flex;align-items:baseline;gap:10px}
-.brand{align-items:center}
-.seg{margin-left:auto;display:flex;background:var(--chip);border-radius:11px;padding:3px;gap:2px;text-shadow:none;letter-spacing:0}
-.seg button{border:0;background:none;border-radius:8px;padding:6px 11px;font:650 13px/1 system-ui,sans-serif;color:var(--mute)}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
-.seg{position:relative}.seg button{position:relative;z-index:1}.segi{position:absolute;top:3px;bottom:3px;left:0;border-radius:8px;background:var(--card);box-shadow:var(--shadow);transform-origin:50% 50%;pointer-events:none}
-.seg:has(.segi) button.on{background:none;box-shadow:none}
-/* vetro liquido (html.lg): fondi traslucidi; la rifrazione arriva dal filtro calcolato dal modello WebGL */
-html.lg #top{background:color-mix(in srgb,var(--bg) 62%,transparent);border-bottom-color:transparent;-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
-html.lg .page>header{position:absolute;top:0;left:0;right:0;z-index:4;background:color-mix(in srgb,var(--bg) 62%,transparent);border-bottom-color:transparent;-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
-html.lg .page>header+.body{padding-top:calc(var(--phh,64px) + 12px)}
-html.lg .fab{background:color-mix(in srgb,var(--acc) 74%,transparent);box-shadow:0 6px 22px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-html.lg #bulk{background:color-mix(in srgb,var(--card) 58%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html.lg #toast{background:rgba(30,20,8,.52);box-shadow:0 6px 22px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-html.lg .hb{background:rgba(20,12,2,.18);border-color:rgba(255,255,255,.3)}
-html.lg .modal>div{background:color-mix(in srgb,var(--card) 64%,transparent);box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.22);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.seg i{font-style:normal;font-weight:500;opacity:.7;margin-left:4px}
-@media (max-width:400px){.brand{gap:6px;letter-spacing:.12em}.mubtn{padding:2px 3px;margin-left:0;font-size:19px}.seg button{padding:6px 8px;font-size:12.5px}.seg i{margin-left:3px}}
-@media (max-width:365px){.brand{letter-spacing:.06em}.seg button{padding:6px 7px}.seg i{display:none}}
 .prio{color:var(--acc-ink);font-weight:700}
-.bv{display:flex;align-items:flex-start;gap:3px}.ver{border:0;background:none;padding:0;font:650 10px/1 system-ui,sans-serif;letter-spacing:.02em;color:var(--mute);text-shadow:none;margin-top:-2px}
 .nov li{margin:3px 0}
 .brand small{font:600 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-shadow:none}
 .row{display:flex;gap:8px;align-items:center}
@@ -538,6 +531,134 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 .ld-web .doc{animation:ld-doc 2.2s ease-in-out infinite}
 @keyframes ld-doc{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.page,.page.pg-out,.page.pg-swap,.modal,.modal>div,#toast,#bulk,.rv>*,.boot #list>*,.ld *,.ldm::after{animation:none!important;transition:none!important}}
+/* ===================== RDDC 2.0 · Liquid Glass =====================
+   Sfondo con macchie di colore morbide, superfici di vetro (traslucide con bordo luminoso),
+   comandi fluttuanti: titolo grande, ricerca a capsula, barra in basso, intestazioni con sfumatura. */
+html{background:var(--bg)}
+body{background:transparent;min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--wall);pointer-events:none}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.glass{background:var(--glass);box-shadow:var(--shadow)}
+/* testata: marchio, titolo grande */
+#hdr{padding:calc(12px + env(safe-area-inset-top)) 16px 0}
+.brand{display:flex;align-items:center;gap:8px;padding:0;font:700 13px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.24em;color:var(--acc-ink);text-shadow:0 0 14px var(--glow)}
+.brand .hsp{flex:1}
+.bv{display:flex;align-items:flex-start;gap:4px}.ver{border:0;background:none;padding:0;font:650 10px/1 system-ui,sans-serif;letter-spacing:.02em;color:var(--mute);text-shadow:none;margin-top:-3px}
+.mubtn{width:40px;height:40px;border:0;border-radius:50%;padding:0;margin:0;display:grid;place-items:center;color:var(--ink);background:var(--glass-hi);box-shadow:var(--shadow);filter:none;-webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5)}
+.mubtn .ic{width:20px;height:20px}
+#ttl{margin:12px 2px 0;font:800 34px/1.05 system-ui,-apple-system,"SF Pro Display",Roboto,sans-serif;letter-spacing:-.025em}
+/* barra di ricerca fluttuante: capsula e pulsanti tondi su una sfumatura progressiva */
+#top{position:sticky;top:0;z-index:5;padding:10px 12px 10px;background:none;border:0}
+#top::before{opacity:0;transition:opacity .25s}body.scrolled #top::before{opacity:1}
+#top::before,.page>header::before{content:"";position:absolute;inset:0 0 -24px;z-index:-1;pointer-events:none;background:linear-gradient(color-mix(in srgb,var(--bg) 80%,transparent),color-mix(in srgb,var(--bg) 55%,transparent) 62%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
+#top .row{gap:8px}
+.search{border:0;border-radius:999px;padding:12px 18px;min-height:46px;background:var(--glass-hi);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5)}
+.search::placeholder,.in::placeholder{color:var(--mute);opacity:.85}
+.search:focus,.in:focus{outline:none;box-shadow:var(--rim),0 0 0 3px color-mix(in srgb,var(--acc) 45%,transparent)}
+.ibtn{border:0;border-radius:50%;width:46px;height:46px;min-width:46px;min-height:46px;padding:0;color:var(--ink);background:var(--glass-hi);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5)}
+.badge{top:-3px;right:-3px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+#sum{padding:9px 4px 0;gap:6px}
+.pill{border:0;border-radius:999px;padding:6px 12px;background:var(--glass);box-shadow:var(--shadow);color:var(--ink);font-size:13px}
+.sync{margin-left:auto}
+/* barra in basso: Collezione / Wishlist con la goccia, e il + a parte */
+#dock{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:6;padding:5px;border-radius:999px;background:var(--glass-hi);box-shadow:var(--shadow),0 14px 36px rgba(40,20,0,.18);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
+#dock .seg{display:flex;margin:0;padding:0;background:none;border-radius:999px;gap:0;position:relative;letter-spacing:0;text-shadow:none}
+#dock .seg button{position:relative;z-index:1;border:0;background:none;box-shadow:none;border-radius:999px;padding:12px 17px;font:650 14.5px/1 system-ui,sans-serif;color:var(--mute);transition:color .25s}
+#dock .seg button.on{color:var(--ink);background:none;box-shadow:none}
+#dock .seg i{font-style:normal;font-weight:500;opacity:.6;margin-left:5px}
+#dock .segi{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--lens);box-shadow:var(--rim),0 3px 10px rgba(0,0,0,.08);pointer-events:none;transform-origin:50% 50%}
+body:has(#bulk:not([hidden])) #dock{display:none}
+.fab{right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:var(--on-acc);background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 82%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 0 0 1px rgba(255,255,255,.28),0 10px 28px color-mix(in srgb,var(--acc) 42%,transparent),0 2px 6px rgba(0,0,0,.14)}
+.fab .ic{width:26px;height:26px;stroke-width:2.4}
+@media (max-width:380px){#dock{left:10px}.fab{right:10px}#dock .seg button{padding:12px 13px;font-size:14px}}
+@media (max-width:345px){#dock .seg i{display:none}}
+#list{padding:2px 12px 120px}
+/* pagine: sfondo, intestazione fluttuante con pulsante tondo */
+.page{background:var(--wall)}
+.page.viewer{background:#000}.page.museum{background:#140c06}
+.page>header{position:absolute;top:0;left:0;right:0;z-index:4;border:0;background:none;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;gap:10px}
+.page>header h2{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.page>header .btn{white-space:nowrap}
+.page>header+.body{padding-top:calc(76px + env(safe-area-inset-top))}
+.page .body{padding-left:14px;padding-right:14px}
+/* superfici di vetro */
+.card{border-radius:24px;padding:10px 12px 10px 10px;gap:14px;margin:10px 0}
+.th{border-radius:17px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--line)}
+.ct b{font-size:16.5px;letter-spacing:-.01em}
+.yr{background:var(--glass-hi);box-shadow:var(--rim);border-radius:999px;padding:4px 10px}
+.grid{gap:12px}
+.gcard{border-radius:26px}
+.gcard .gi{background:var(--chip)}
+.gcard .gt{padding:10px 13px 13px}
+.gcard .gy{border-radius:999px;background:rgba(20,12,2,.36);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.16)}
+.gh{display:block;width:fit-content;margin:16px 0 4px;padding:7px 14px;border-radius:999px;background:var(--glass-hi);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);top:calc(var(--hh,120px) + 2px);font-size:13px}
+.tl{border-left-color:var(--line)}.ty::before{box-shadow:0 0 0 4px color-mix(in srgb,var(--bg) 70%,transparent),0 0 14px var(--glow)}
+.oggi{border-radius:28px;padding:12px 12px 6px;margin:6px 0 14px}
+.og{border-radius:18px;background:var(--chip);box-shadow:var(--rim);padding:11px 14px}
+.res{border:0;border-radius:20px;padding:12px 15px;background:var(--glass);box-shadow:var(--shadow);color:var(--ink);margin:8px 0}
+.note{border-radius:20px;background:var(--chip);box-shadow:var(--rim);padding:12px 14px}
+.kv{gap:0;background:var(--glass);border-radius:22px}
+.kv>div{background:none;border-top:1px solid var(--line);padding:11px 14px}
+.kv>div:nth-child(-n+2){border-top:0}
+.log{border-radius:22px}.li{padding:12px 14px}
+.tile{border-radius:20px;padding:11px 14px}
+.desc{border-radius:22px;padding:14px 16px}
+.loan,.valc,.labc,.inv,.crow,.mrow,.pj,.ann,.tim,.pz.shp{border-radius:22px}
+.cmp{gap:0;background:var(--glass);border-radius:22px}.cmp>div{background:none;box-shadow:inset 0 -1px 0 var(--line)}.cmp>.df{background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.chip{border:0;border-radius:999px;padding:7px 14px;background:var(--glass);box-shadow:var(--shadow);color:var(--ink)}
+.chip.on{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 85%,#fff),var(--acc));color:var(--on-acc);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 4px 12px color-mix(in srgb,var(--acc) 30%,transparent)}
+.mchip{border:0;border-radius:999px;background:var(--glass);box-shadow:var(--shadow)}
+.btn{border-radius:999px;padding:12px 20px;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 82%,#fff),var(--acc));color:var(--on-acc);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(255,255,255,.2),0 6px 18px color-mix(in srgb,var(--acc) 32%,transparent)}
+.btn.sec{background:var(--glass);color:var(--ink);box-shadow:var(--shadow)}
+.btn.dng{background:linear-gradient(180deg,color-mix(in srgb,var(--dng) 82%,#fff),var(--dng));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px color-mix(in srgb,var(--dng) 30%,transparent)}
+.btn.sm{padding:8px 15px}
+.btn:disabled{opacity:.5}
+.linkb{color:var(--acc-ink)}
+.in{border:0;border-radius:15px;padding:12px 14px;background:var(--field);box-shadow:var(--rim),0 0 0 1px var(--line)}
+label.f{margin:12px 4px 4px;font-size:13px}
+.sec-t{color:var(--mute);font-size:12.5px;letter-spacing:.07em;margin:28px 4px 9px}
+details.more>summary{color:var(--mute);padding:10px 4px}
+.tri button,.inv button{border:0;border-radius:14px;background:var(--glass-hi);box-shadow:var(--shadow)}
+.phadd,.lnkbox{border-color:var(--line)}
+.lnkbox{border:0;border-radius:18px;background:var(--glass);box-shadow:var(--shadow)}
+.selc::before{background:var(--glass-hi);border-color:var(--mute)}
+.unk{border:0;background:var(--glass);box-shadow:var(--rim)}
+.src{background:var(--chip);border-radius:999px;padding:1px 7px}
+.ctip{border:0;background:var(--glass-hi);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.bar div{border-radius:999px}
+.empty{padding:70px 20px}
+/* errori */
+.errc{border-radius:24px;padding:14px;margin:6px 0;background:color-mix(in srgb,var(--dng) 9%,var(--glass));box-shadow:var(--rim),0 0 0 1px color-mix(in srgb,var(--dng) 22%,transparent),var(--drop)}
+.errc .eh{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}.errc .ei{font-size:24px;line-height:1.1;flex:none}.errc b{display:block;font-size:16px}.errc small{display:block;color:var(--mute);font-size:14px;margin-top:3px;line-height:1.4}
+.errc details,.errl{margin:4px 0 10px}.errc summary,.errl summary{cursor:pointer;color:var(--mute);font-size:13px;padding:4px 0}
+.errc pre,.errl pre{white-space:pre-wrap;word-break:break-word;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;background:var(--chip);border-radius:14px;padding:10px 12px;margin:6px 0 0;color:var(--ink)}
+.errl{border-radius:20px;padding:10px 14px;background:var(--glass);box-shadow:var(--shadow)}.errl summary b{display:block;color:var(--ink);font-size:15px}.errl summary small{display:block}
+/* finestre, avvisi, barra della selezione */
+.modal{background:rgba(25,15,5,.24);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.modal>div{border-radius:30px;padding:22px;background:var(--glass-hi);box-shadow:var(--shadow),0 24px 60px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7)}
+.modal>div p{margin:2px 2px 16px;font-size:16px}
+#toast{border-radius:999px;padding:11px 18px;background:rgba(30,20,8,.74);color:#fff3df;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(255,255,255,.1),0 10px 28px rgba(0,0,0,.25);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);bottom:calc(90px + env(safe-area-inset-bottom))}
+#bulk{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));border-radius:999px;padding:6px;gap:6px;background:var(--glass-hi);box-shadow:var(--shadow),0 14px 36px rgba(40,20,0,.2);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
+#bulk button{border-radius:999px;background:var(--glass);box-shadow:var(--rim);padding:10px 14px}
+#bulk .dng{background:var(--dng);color:#fff}
+/* scheda: foto in alto, pulsanti e etichette di vetro */
+.hb{width:44px;height:44px;border:0;color:#fff;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.22),0 6px 18px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(12px) saturate(1.5);backdrop-filter:blur(12px) saturate(1.5)}
+.hb .ic{width:21px;height:21px}
+.hchip{border:0;border-radius:999px;padding:5px 11px;background:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hero{border-radius:0 0 30px 30px}
+.thumbs{padding:14px 14px 0}.thumbs img{border-radius:15px;box-shadow:var(--drop)}
+.dbody{padding:4px 14px calc(34px + env(safe-area-inset-bottom))}
+.acts{gap:8px;margin-top:26px}
+/* anteprima con pressione lunga */
+.pk-card{border-radius:30px;background:var(--glass-hi);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
+.pk-acts{border-radius:24px;background:var(--glass-hi);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
+.pk-hero{background:var(--chip)}
+/* vetro liquido attivo: i fondi dei comandi fluttuanti si alleggeriscono e la rifrazione fa il resto */
+html.lg .ibtn,html.lg .search,html.lg .mubtn,html.lg #dock,html.lg #bulk{background:color-mix(in srgb,var(--glass-hi) 52%,transparent)}
+html.lg .fab{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 66%,transparent),color-mix(in srgb,var(--acc) 84%,transparent))}
+html.lg .modal>div{background:color-mix(in srgb,var(--glass-hi) 72%,transparent)}
+html.lg #toast{background:rgba(30,20,8,.52)}
+html.lg .hb{background:rgba(255,255,255,.07)}
 #print{display:none}
 @media print{
   @page{size:A4;margin:12mm}
@@ -565,18 +686,22 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 </style>
 </head>
 <body>
+<header id="hdr">
+  <div class="brand"><span class="bv">RDDC<button class="ver" id="bVer" aria-label="Versione e novità"></button></span><span class="hsp"></span><button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo"><svg class="ic" viewBox="0 0 24 24"><path d="M3 9.5 12 4l9 5.5M4.5 10v8M9.5 10v8M14.5 10v8M19.5 10v8M3 20h18"/></svg></button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema"></button></div>
+  <h1 id="ttl">Collezione</h1>
+</header>
 <div id="top">
-  <div class="brand"><span class="bv">RDDC<button class="ver" id="bVer" aria-label="Versione e novità"></button></span><button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema">🌙</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
   <div class="row">
     <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
-    <button class="ibtn" id="bView" aria-label="Cambia vista">▤</button>
-    <button class="ibtn" id="bFil" aria-label="Filtri">⚙︎ <span class="badge" id="nF" hidden></span></button>
-    <button class="ibtn" id="bMenu" aria-label="Menu">☰</button>
+    <button class="ibtn" id="bView" aria-label="Cambia vista"></button>
+    <button class="ibtn" id="bFil" aria-label="Filtri"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span class="badge" id="nF" hidden></span></button>
+    <button class="ibtn" id="bMenu" aria-label="Menu"><svg class="ic" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
   </div>
   <div id="sum"></div>
 </div>
 <div id="list"></div>
-<button class="fab" id="fab" aria-label="Aggiungi">+</button>
+<nav id="dock" aria-label="Sezioni"><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></nav>
+<button class="fab" id="fab" aria-label="Aggiungi"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 <div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="merge">⧉ Unisci come esemplari</button><button data-b="del" class="dng">🗑</button></div>
 <div id="toast"></div>
 <div id="print"></div>
@@ -587,8 +712,9 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='1.1';
+const APP_VER='2.0';
 const NOVITA=[
+ ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
  ['1.1','2026-11-14',['Vetro liquido: barra in alto, pulsante +, avvisi, dialoghi, intestazioni e pulsanti sulle foto deformano e illuminano quello che passa sotto (Menu → Aspetto)','La goccia del selettore Collezione/Wishlist scorre e si allunga; i pulsanti rimbalzano quando li premi','✨ Chiedi a Gemini: cerca sul web e compila la scheda degli oggetti rari (serve una chiave API, Menu → Gemini)']],
  ['1.0','2026-11-11',['Numero di versione accanto al logo e nel menu','Laboratorio: collaudi, progetti di restauro, lista della spesa, statistiche ed esportazioni CSV','Manutenzione: giro di accensioni e ricariche con promemoria e calendario','Scheda «Oggi», ruolo, raccolte, «Va con» per esemplare','Animazioni e note per ogni annuncio','Foto orizzontali piene nelle anteprime della griglia']]];
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
@@ -598,8 +724,15 @@ const fmtD=s=>{if(!s)return '';const d=new Date(String(s).slice(0,10)+'T12:00');
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 /* tema: automatico (segue il telefono), chiaro, scuro */
 const isDark=()=>{const t=LS.get('rd_theme','auto');return t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches)};
+const IC=(()=>{const s=d=>`<svg class="ic" viewBox="0 0 24 24">${d}</svg>`;return {
+  list:s('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>'),
+  grid:s('<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>'),
+  time:s('<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>'),
+  moon:s('<path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/>'),
+  sun:s('<circle cx="12" cy="12" r="3.8"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/>'),
+  back:s('<path d="M14.5 5.5 8 12l6.5 6.5"/>')}})();
 function applyTheme(){const t=LS.get('rd_theme','auto'),r=document.documentElement;if(t==='auto')delete r.dataset.theme;else r.dataset.theme=t;
-  const dk=isDark();document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=dk?'#110d07':'#f8f2e7'});const b=$('#bTheme');if(b)b.textContent=dk?'☀️':'🌙'}
+  const dk=isDark();document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=dk?'#15100a':'#f8f1e6'});const b=$('#bTheme');if(b)b.innerHTML=dk?IC.sun:IC.moon}
 applyTheme();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme)}catch(e){}
 /* transizioni (View Transitions API, con ripiego senza animazione) */
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -783,9 +916,9 @@ function save(){LS.set('rd_state',S)}
 
 /* ============ lista principale ============ */
 function render(){
-  save();
+  save();$('#bView').innerHTML=IC[LAYOUTS[S.layout]?S.layout:'list'];
   const P=pool(),W=isWishView();
-  document.querySelectorAll('#seg [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));segDrop();
+  document.querySelectorAll('#seg [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));segDrop();$('#ttl').textContent=isWishView()?'Wishlist':'Collezione';
   $('#nC').textContent=devices.filter(d=>!d.wish).length;$('#nW').textContent=devices.filter(d=>d.wish).length;
   const items=P.filter(d=>pass(d)).sort(sorter());
   const nF=Object.values(S.sel).reduce((n,a)=>n+(a?a.length:0),0);
@@ -805,7 +938,7 @@ function render(){
   if(!P.length){L.innerHTML=`<div class="empty"><div style="font-size:56px">📺</div><p><b>La tua collezione è vuota</b></p><p>Tocca <b>+</b> per aggiungere il primo oggetto:<br>computer, TV CRT, caricabatterie, cavi…</p></div>`;return}
   if(!items.length){L.innerHTML=`<div class="empty">Nessun risultato.</div>`;return}
   let html='';
-  const lay=LAYOUTS[S.layout]?S.layout:'list';$('#bView').textContent=LAYOUTS[lay][0];
+  const lay=LAYOUTS[S.layout]?S.layout:'list';$('#bView').innerHTML=IC[lay]||IC.list;
   if(!W){const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;
     html+=oggiHTML();
     const inc=P.filter(d=>missing(d).length).length;if(inc&&!(S.sel.completezza||[]).length)sum+=`<button class="pill" data-inc>✎ ${inc} da completare</button>`}
@@ -850,7 +983,7 @@ const stack=[];
 function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}={}){
   if(replace)swapTop();
   const el=document.createElement('div');el.className='page'+(cls?' '+cls:'')+(replace?' pg-swap':'');
-  el.innerHTML=bare?`<div class="body bare">${body}</div>`:`<header><button class="ibtn" data-back aria-label="Indietro">←</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
+  el.innerHTML=bare?`<div class="body bare">${body}</div>`:`<header><button class="ibtn" data-back aria-label="Indietro">${IC.back}</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
   document.body.append(el);stack.push(el);
   const st={p:stack.length};
   replace?history.replaceState(st,''):history.pushState(st,'');
@@ -950,7 +1083,7 @@ function openDetail(id,replace,morph,quiet){
   const hchips=[d.prestito&&`<span class="hchip">${d.prestito.tipo==='Esposizione'?'🖼️ In esposizione':'📤 In prestito'}${loanOverdue(d)?' ⚠️':''}</span>`,...(d.tags||[]).map(t=>`<span class="hchip">#${esc(t)}</span>`),d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,linkedTo(d)&&`<span class="hchip">↳ ${esc(linkedTo(d).nome)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
-    <button class="hb l" data-back aria-label="Indietro">←</button>
+    <button class="hb l" data-back aria-label="Indietro">${IC.back}</button>
     <div class="hbr">${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
     <div class="cap">${sub?`<small>${esc(sub)}</small>`:''}<h1>${esc(d.nome)}</h1>${hchips?`<div class="hchips">${hchips}</div>`:''}</div>
   </div>`;
@@ -1559,7 +1692,7 @@ function openGuides(d,p){
       try{const w=q.split(/\s+/),tries=[q,...w.map((_,i)=>w.slice(0,w.length-1-i).join(' ')).filter(x=>x.length>=3)];let r=[],used=q;
         for(const t of [...new Set(tries)]){const j=await wjson(`${IFX}/search/${encodeURIComponent(t)}?filter=guide&limit=15`);r=(j.results||[]).filter(x=>x.guideid);used=t;if(r.length)break}
         $('#gl',el).innerHTML=(r.length&&used!==q?`<p class="note" style="margin:8px 0">Nessuna guida per «${esc(q)}»: ecco quelle per «${esc(used)}».</p>`:'')+r.map(x=>`<button class="pj" data-gid="${x.guideid}"><div class="th">${x.image&&x.image.thumbnail?`<img src="${esc(x.image.thumbnail)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith('📖')">`:'📖'}</div><div class="pi"><b>${esc(x.title)}</b><small>${esc([x.subject,x.category].filter(Boolean).join(' · '))}</small></div></button>`).join('')||'<p class="note">Nessuna guida: prova con un nome più corto (es. «PowerBook G4»).</p>'}
-      catch(er){$('#gl',el).innerHTML=`<p class="note">iFixit non raggiungibile (${esc(er.message)}).</p>`}};
+      catch(er){errBox($('#gl',el),er,'Guide iFixit',run)}};
     run();$('#gb',el).onclick=run;$('#gq',el).onkeydown=e=>{if(e.key==='Enter')run()};
     el.addEventListener('click',async e=>{const b=e.target.closest('[data-gid]');if(!b)return;b.disabled=true;
       let g;try{g=await wjson(`${IFX}/guides/${b.dataset.gid}`)}catch(er){b.disabled=false;return toast('Guida non raggiungibile')}
@@ -1731,7 +1864,7 @@ void main(){
   o=vec4(a,a,a,a);
 }`;
 const LG={maps:new Map(),filters:new Map(),els:new Set(),n:0,gl:null,prog:null,U:{},svg:null,ro:null,
-  mode:()=>LS.get('rd_glass','full'),
+  mode:()=>LS.get('rd_glass','lite'),
   supported(){try{const ua=navigator.userAgentData;const chromium=ua?ua.brands.some(b=>/Chromium|Chrome/.test(b.brand)):/Chrome\//.test(navigator.userAgent)&&!/Edg\/|OPR\//.test(navigator.userAgent);
     return chromium&&!/iPhone|iPad/.test(navigator.userAgent)&&CSS.supports('backdrop-filter','url(#x)')&&!!document.createElement('canvas').getContext('webgl2')}catch(e){return false}},
   get on(){return document.documentElement.classList.contains('lg')}};
@@ -1769,10 +1902,10 @@ function lgApply(el){if(!LG.on||!el.isConnected)return;const w=el.offsetWidth,h=
   const id=lgFilter(w,h,rad,o);if(!id)return;el._lgk=[w,h,rad,o.ext,LG.mode()].join('|');el.style.backdropFilter=el.style.webkitBackdropFilter=`url(#${id})`;
   if(el.matches('.page>header'))el.parentElement.style.setProperty('--phh',h+'px')}
 /* aggancia gli elementi di vetro dentro root (alla creazione delle pagine, dei dialoghi…) */
-const LG_SEL='#top,#fab,#bulk,#toast,.hb,.modal>div,.page>header';
+const LG_SEL='#top .ibtn,#top .search,#hdr .mubtn,#dock,#fab,#bulk,#toast,.hb,.modal>div,.page>header>.ibtn';
 function lgScan(root=document){if(!LG.on)return;const els=[...(root.matches&&root.matches(LG_SEL)?[root]:[]),...root.querySelectorAll(LG_SEL)];
   if(!LG.ro)LG.ro=new ResizeObserver(es=>es.forEach(x=>lgApply(x.target)));
-  for(const el of els){if(el.matches('#top,.page>header')){el.dataset.lgExt='80,80,0,80';el.dataset.lgBlur='1'}else if(el.matches('#bulk')){el.dataset.lgExt='0,80,80,80';el.dataset.lgBlur='1'}
+  for(const el of els){if(el.matches('#dock,#bulk,.search'))el.dataset.lgBlur='1';
     if(!LG.els.has(el)){LG.els.add(el);LG.ro.observe(el)}requestAnimationFrame(()=>lgApply(el))}
   for(const el of LG.els)if(!el.isConnected){LG.ro.unobserve(el);LG.els.delete(el)}}
 function lgSet(m){LS.set('rd_glass',m);const on=m!=='off'&&LG.supported();document.documentElement.classList.toggle('lg',on);
@@ -1792,21 +1925,100 @@ function segDrop(){const seg=$('#seg');if(!seg)return;let i=$('.segi',seg);if(!i
   const f=now=>{const dt=Math.min((now-last)/1000,1/30);last=now;for(let k=0;k<2;k++){s.v+=(260*(s.tx-s.x)-22*s.v)*dt/2;s.x+=s.v*dt/2;s.vw+=(260*(s.tw-s.w)-22*s.vw)*dt/2;s.w+=s.vw*dt/2}
     const st=Math.min(Math.abs(s.v)/2600,.22);i.style.cssText=`transform:translateX(${s.x}px) scale(${1+st},${1-st*.8});width:${s.w}px`;
     if(Math.abs(s.tx-s.x)<.3&&Math.abs(s.v)<2){s.x=s.tx;s.w=s.tw;i.style.cssText=`transform:translateX(${s.tx}px);width:${s.tw}px`;s.run=false;return}requestAnimationFrame(f)};requestAnimationFrame(f)}
+/* ===== errori: classificati, spiegati, con rimedio, dettagli tecnici e registro (come in ARGOS) ===== */
+class AppErr extends Error{constructor(kind,msg,x){super(msg);this.kind=kind;Object.assign(this,x||{})}}
+const ERR_INFO={
+  rete:['📡','Nessuna connessione','Il telefono non raggiunge il servizio. Controlla Wi-Fi o dati e riprova.'],
+  timeout:['⏱️','Il servizio non ha risposto in tempo','Succede con le ricerche lunghe o con una rete lenta: riprova tra poco.'],
+  manca:['🔑','Manca la chiave API','Collega Gemini da Menu → Gemini: serve una chiave gratuita.'],
+  chiave:['🔑','Chiave API non valida','Controlla di averla copiata per intero (di solito inizia con «AIza»), oppure creane una nuova su aistudio.google.com/apikey.'],
+  permesso:['🔒','La chiave non può usare Gemini','La chiave esiste ma non ha accesso all\'API di Gemini. Il modo più semplice: creane una nuova da aistudio.google.com/apikey.'],
+  paese:['🌍','Gemini non disponibile da qui','Google non offre l\'API da questa posizione o rete (VPN?).'],
+  credito:['💳','Fatturazione o credito','Il progetto Google della chiave ha la fatturazione sospesa o il credito finito: controlla su aistudio.google.com.'],
+  minuto:['⏳','Troppe richieste in poco tempo','Il limite gratuito al minuto si azzera presto: riprova {wait}.'],
+  giorno:['📅','Richieste gratuite di oggi finite','Il limite giornaliero di Google si azzera alle {time} (mezzanotte in California).'],
+  gratis0:['💳','Modello senza richieste gratuite','Per questa chiave Google concede 0 richieste gratuite con questo modello: l\'app prova da sola gli altri.'],
+  gratis0tutti:['💳','Nessun modello gratuito per questa chiave','Tutti i modelli rispondono «limite: 0». Di solito il progetto della chiave non ha il livello gratuito: crea una chiave in un progetto nuovo su aistudio.google.com/apikey, oppure attiva la fatturazione.'],
+  modello:['🧩','Modello non disponibile','Il modello non esiste più o non è abilitato per la chiave: l\'app ne sceglie un altro.'],
+  server:['🛠️','Errore temporaneo di Google','Il servizio è sovraccarico o in manutenzione: riprova tra qualche minuto.'],
+  bloccata:['🛡️','Risposta bloccata dai filtri','Gemini ha interrotto la risposta per i suoi filtri: prova a scrivere il nome in un altro modo.'],
+  risposta:['🧾','Risposta non leggibile','Gemini ha risposto in un formato inatteso. Riprova: di solito al secondo tentativo va.'],
+  vuoto:['🔍','Nessuna informazione trovata','Prova con il nome completo, il codice del modello o aggiungi la marca.'],
+  altro:['⚠️','Qualcosa non ha funzionato','Riprova; se si ripete, copia i dettagli e mandameli.']};
+/* errori qualsiasi (fetch, HTTP…) → AppErr con un tipo */
+function toAppErr(e){if(e instanceof AppErr)return e;const m=String((e&&e.message)||e||'');
+  if(e&&(e.name==='TimeoutError'||e.name==='AbortError'))return new AppErr('timeout',m);
+  if(e instanceof TypeError&&/fetch|network|load failed/i.test(m)||(typeof navigator!=='undefined'&&navigator.onLine===false))return new AppErr('rete',m);
+  const st=+((m.match(/\b(?:HTTP|GitHub)\s?(\d{3})\b/)||[])[1]||e&&e.status||0);
+  return new AppErr(st===429?'minuto':st>=500?'server':st===401||st===403?'permesso':'altro',m,{status:st||undefined})}
+const fmtWait=ms=>ms<90000?`tra ${Math.max(5,Math.round(ms/1000))} secondi`:`tra ${Math.round(ms/60000)} minuti`;
+function errInfo(e){e=toAppErr(e);const [ic,t,r]=ERR_INFO[e.kind]||ERR_INFO.altro;
+  return {ic,title:t,remedy:r.replace('{wait}',fmtWait(e.waitMs||60000)).replace('{time}',e.until?new Date(e.until).toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}):'—'),e}}
+function errDetail(e,where){e=toAppErr(e);return [`${where||'RDDC'} · ${new Date().toLocaleString('it')} · versione ${APP_VER}`,`tipo: ${e.kind}${e.status?' · HTTP '+e.status:''}${e.model?' · modello '+e.model:''}`,e.tried&&e.tried.length?'modelli provati: '+e.tried.map(t=>t[0]+' → '+t[1]).join(', '):'',e.raw||e.message].filter(Boolean).join('\n')}
+/* registro degli ultimi errori, solo su questo telefono (Menu → Registro errori) */
+function logErr(where,e){try{const a=LS.get('rd_errlog',[]);const i=errInfo(e);a.unshift({t:Date.now(),where,kind:i.e.kind,title:i.title,d:errDetail(e,where).slice(0,1500)});LS.set('rd_errlog',a.slice(0,40))}catch(_){}}
+/* scheda d'errore: cosa è successo, cosa fare, dettagli, pulsanti */
+function errCard(e,{where='',retry=false,settings=''}={}){const i=errInfo(e);
+  return `<div class="errc" role="alert"><div class="eh"><span class="ei">${i.ic}</span><span><b>${esc(i.title)}</b><small>${esc(i.remedy)}</small></span></div>
+    <details><summary>Dettagli tecnici</summary><pre>${esc(errDetail(e,where))}</pre></details>
+    <div class="row" style="flex-wrap:wrap;gap:6px">${retry?'<button class="btn sm" data-eretry>↻ Riprova</button>':''}${settings?`<button class="btn sm sec" data-eset="${settings}">Impostazioni</button>`:''}<button class="btn sm sec" data-ecopy>Copia dettagli</button></div></div>`}
+function errBox(out,e,where,retry,settings){logErr(where,e);out.innerHTML=errCard(e,{where,retry:!!retry,settings});out.onclick=null;const b=$('[data-eretry]',out);if(b&&retry)b.onclick=retry}
+document.addEventListener('click',async ev=>{const c=ev.target.closest('[data-ecopy]');if(c){const pre=c.closest('.errc').querySelector('pre');try{await navigator.clipboard.writeText(pre.textContent);toast('Dettagli copiati')}catch(_){pre.closest('details').open=true;toast('Seleziona il testo e copialo')}return}
+  const s=ev.target.closest('[data-eset]');if(s&&s.dataset.eset==='gem')openGemSettings({})});
+addEventListener('error',ev=>{if(ev.message)logErr('app',new AppErr('altro',ev.message+(ev.filename?` (${String(ev.filename).split('/').pop()}:${ev.lineno})`:'')))});
+addEventListener('unhandledrejection',ev=>logErr('app',ev.reason||'promessa rifiutata'));
+function openErrLog(){const a=LS.get('rd_errlog',[]);
+  openPage('Registro errori',`<p class="note" style="margin-top:0">Gli ultimi errori di questo telefono, con i dettagli tecnici. Se qualcosa non va, copia il registro e mandamelo.</p>
+    ${a.length?a.map(x=>`<details class="errl"><summary><b>${esc((ERR_INFO[x.kind]||ERR_INFO.altro)[0])} ${esc(x.title)}</b><small>${new Date(x.t).toLocaleString('it')} · ${esc(x.where)}</small></summary><pre>${esc(x.d)}</pre></details>`).join(''):'<p class="note">Nessun errore registrato ✓</p>'}
+    ${a.length?'<div class="row" style="margin-top:14px;flex-wrap:wrap"><button class="btn" id="elc">Copia tutto</button><button class="btn sec" id="elx">Svuota</button></div>':''}`,{mount(el){
+    const c=$('#elc',el);if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(a.map(x=>x.d).join('\n\n---\n\n'));toast('Registro copiato')}catch(_){toast('Copia non riuscita')}};
+    const x=$('#elx',el);if(x)x.onclick=()=>{LS.set('rd_errlog',[]);toast('Registro svuotato');history.back()}}})}
+
 /* ===== Gemini: ricerca sul web (Google Search) e compilazione dei campi, con la chiave API dell'utente ===== */
 const GEM='https://generativelanguage.googleapis.com/v1beta';
-const gemCfg=()=>Object.assign({key:'',model:''},LS.get('rd_gem',{}));
+const gemCfg=()=>Object.assign({key:'',model:'',ok:''},LS.get('rd_gem',{}));
 const gemOn=()=>!!gemCfg().key;
-async function gemFetch(path,body){const c=gemCfg();if(!c.key)throw new Error('manca la chiave API (Menu → Gemini)');
+const gemSet=x=>LS.set('rd_gem',Object.assign(gemCfg(),x));
+/* errore di Google → tipo preciso: limite al minuto o al giorno, modello senza quota gratuita (limite 0), chiave… */
+async function gemErr(r,model){let txt='',j=null;try{txt=await r.text();j=JSON.parse(txt);if(Array.isArray(j))j=j[0]}catch(_){}
+  const er=(j&&j.error)||{},st=r.status,msg=String(er.message||txt.slice(0,300)||`HTTP ${st}`),det=Array.isArray(er.details)?er.details:[];
+  const viol=det.flatMap(d=>d.violations||[]),qtxt=viol.map(v=>[v.quotaMetric,v.quotaId,v.quotaValue].join(' ')).join(' ')+' '+msg;
+  const ri=det.find(d=>/RetryInfo/.test(d['@type']||'')),rm=(ri&&String(ri.retryDelay).match(/([\d.]+)s/))||msg.match(/retry in ([\d.]+)\s*s/i);
+  const x={status:st,model,raw:`HTTP ${st}${er.status?' '+er.status:''}: ${msg}${viol.length?'\n'+viol.map(v=>`· ${v.quotaId||v.quotaMetric}${v.quotaValue!=null?' = '+v.quotaValue:''}`).join('\n'):''}`};
+  let kind='altro';
+  if(st===429||er.status==='RESOURCE_EXHAUSTED'){
+    if(/insufficient_quota|billing/i.test(qtxt))kind='credito';
+    else if(/limit:\s*0\b/i.test(msg)||viol.some(v=>String(v.quotaValue)==='0'))kind='gratis0';
+    else if(/PerDay|per day|daily/i.test(qtxt))kind='giorno';
+    else kind='minuto';
+    x.search=/search|grounding/i.test(qtxt);x.waitMs=rm?Math.min(600000,Math.max(5000,Math.ceil(parseFloat(rm[1])*1000))):60000}
+  else if(/api[ _]key|API_KEY_INVALID/i.test(msg+JSON.stringify(det))&&st<500)kind='chiave';
+  else if(st===401)kind='chiave';
+  else if(st===403)kind=/billing|suspend/i.test(msg)?'credito':'permesso';
+  else if(st===404)kind='modello';
+  else if(/location is not supported|User location/i.test(msg))kind='paese';
+  else if(st===400&&/billing|FAILED_PRECONDITION/i.test(msg+(er.status||'')))kind='credito';
+  else if(st>=500)kind='server';
+  return new AppErr(kind,msg,x)}
+async function gemFetch(path,body,model){const c=gemCfg();if(!c.key)throw new AppErr('manca','manca la chiave API');
   let r;try{r=await fetch(`${GEM}/${path}`,{method:body?'POST':'GET',headers:Object.assign({'x-goog-api-key':c.key},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(120000)})}
-  catch(e){throw new Error(e.name==='TimeoutError'?'Gemini non ha risposto in tempo':'Gemini non raggiungibile (rete assente?)')}
-  if(!r.ok){let m='';try{m=(await r.json()).error.message||''}catch(e){}
-    const er=new Error(r.status===400&&/api key/i.test(m)?'chiave API non valida':r.status===403?'la chiave non ha accesso all\'API Gemini':r.status===429?'troppe richieste o limite gratuito raggiunto: riprova più tardi':r.status===404?'modello non disponibile':`Gemini ${r.status}${m?': '+m.slice(0,160):''}`);er.status=r.status;throw er}
+  catch(e){throw new AppErr(e.name==='TimeoutError'?'timeout':'rete',e.message||String(e),{model})}
+  if(!r.ok)throw await gemErr(r,model);
   return r.json()}
-/* modelli disponibili per la chiave: si sceglie il «flash» più recente e stabile (veloce, nel livello gratuito) */
-async function gemModels(){const j=await gemFetch('models?pageSize=200');
-  return (j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(n=>/^gemini-/.test(n)&&!/image|tts|audio|live|embed|vision|robotics|computer-use|nano|learnlm|exp-/.test(n))}
-function gemPick(list){const sc=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};return list.slice().sort((a,b)=>sc(b)-sc(a)||a.length-b.length)[0]||''}
-async function gemModel(force){const c=gemCfg();if(c.model&&!force)return c.model;const m=gemPick(await gemModels());if(!m)throw new Error('nessun modello Gemini disponibile per questa chiave');LS.set('rd_gem',Object.assign(c,{model:m}));return m}
+/* modelli che hanno appena risposto 429: saltati finché il loro limite non si azzera (ricordato anche chiudendo l'app) */
+const msToPacificMidnight=()=>{try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date()),h=+p.find(x=>x.type==='hour').value%24,m=+p.find(x=>x.type==='minute').value;return Math.max(10,1440-(h*60+m))*60000}catch(_){return 6*3600e3}};
+const gemCds=()=>{const c=LS.get('rd_gem_cd',{}),now=Date.now(),k=gemCfg().key.slice(-6);for(const m of Object.keys(c))if(c[m].until<=now||c[m].key!==k)delete c[m];return c};
+function gemCool(model,e){const c=gemCds(),ms=e.kind==='gratis0'?7*864e5:e.kind==='giorno'?msToPacificMidnight():e.waitMs||60000;c[model]={until:Date.now()+ms,kind:e.kind,key:gemCfg().key.slice(-6)};LS.set('rd_gem_cd',c);e.until=c[model].until}
+const gemCooling=m=>gemCds()[m];
+async function gemModels(force){const k=gemCfg().key.slice(-6),c=LS.get('rd_gem_models',null);if(!force&&c&&c.key===k&&Date.now()-c.t<864e5&&c.list.length)return c.list;
+  const j=await gemFetch('models?pageSize=200');
+  const list=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(n=>/^gemini-/.test(n)&&!/image|tts|audio|live|embed|vision|robotics|computer-use|nano|learnlm|exp-/.test(n));
+  LS.set('rd_gem_models',{t:Date.now(),key:k,list});return list}
+const gemScore=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};
+function gemPick(list){return list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length)[0]||''}
+/* ordine dei tentativi: modello scelto a mano, ultimo che ha funzionato, poi i flash (stabili prima), i lite, i pro */
+function gemOrder(list){const c=gemCfg(),o=list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length);return [...new Set([c.model,c.ok,...o].filter(m=>m&&list.includes(m)))]}
+async function gemModel(force){const c=gemCfg();if(c.model&&!force)return c.model;const m=gemPick(await gemModels(force));if(!m)throw new AppErr('modello','nessun modello Gemini disponibile per questa chiave');return m}
 /* campi che Gemini può compilare: tutti quelli tecnici e descrittivi; niente dati personali (luogo, stato, prezzo pagato…) */
 const GEM_SKIP=new Set(['seriale','compat','collegato','tv_telecomando','batt_stato','man_freq','man_on','man_charge','raccolta','ruolo','garanzia','tags','luogo','quantita','stato','scatola','condizione','acq_anno','acq_prezzo','valore','note','w_priorita','w_budget','w_link','w_note']);
 function gemFields(){const out=[];
@@ -1836,56 +2048,90 @@ function gemResult(o,meta){const F=gemFields(),fields={},str=v=>typeof v==='stri
   const img=typeof o.immagine==='string'&&/^https:\/\/upload\.wikimedia\.org\/\S+\.(jpe?g|png|webp)$/i.test(o.immagine)?o.immagine:'';
   const src=meta.sources||[];
   return {fields,specs,imageUrl:img,fonte:(src[0]||{}).uri||'',fonteNome:`Gemini (${meta.model}) con Google Search${src.length?' · '+src.slice(0,4).map(s=>s.title).join(', '):''}`,sources:src,incerti:Array.isArray(o.incerti)?o.incerti.filter(k=>typeof k==='string'):[],gemini:true}}
-async function gemAsk(q,ctx){let model=await gemModel(),j;
-  const body={contents:[{role:'user',parts:[{text:gemPrompt(q,ctx)}]}],tools:[{google_search:{}}]};
-  try{j=await gemFetch(`models/${model}:generateContent`,body)}catch(e){if(e.status!==404)throw e;model=await gemModel(true);j=await gemFetch(`models/${model}:generateContent`,body)}
+async function gemTry(model,q,ctx,search){
+  const body={contents:[{role:'user',parts:[{text:gemPrompt(q,ctx)}]}]};if(search)body.tools=[{google_search:{}}];
+  const j=await gemFetch(`models/${model}:generateContent`,body,model);
   const cand=(j.candidates||[])[0]||{},gm=cand.groundingMetadata||{};
+  if(!cand.content&&(cand.finishReason==='SAFETY'||(j.promptFeedback||{}).blockReason))throw new AppErr('bloccata',`risposta bloccata (${cand.finishReason||j.promptFeedback.blockReason})`,{model});
   const sources=(gm.groundingChunks||[]).map(c=>c.web).filter(w=>w&&w.uri).map(w=>({uri:w.uri,title:w.title||w.domain||'web'})).filter((s,i,a)=>a.findIndex(x=>x.title===s.title)===i);
   let txt=gemText(j),o=gemJSON(txt);
   if(!o&&txt){/* risposta non in JSON: una seconda chiamata, senza ricerca, la trasforma nel formato giusto */
-    const j2=await gemFetch(`models/${model}:generateContent`,{contents:[{role:'user',parts:[{text:gemPrompt(q,ctx).replace(/^[\s\S]*?Rispondi SOLO/,'Trasforma il testo qui sotto in JSON. Rispondi SOLO')+'\n\nTesto:\n'+txt}]}],generationConfig:{responseMimeType:'application/json'}});o=gemJSON(gemText(j2))}
-  if(!o)throw new Error(cand.finishReason&&cand.finishReason!=='STOP'?`risposta interrotta (${cand.finishReason})`:'Gemini non ha restituito dati leggibili');
-  const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new Error('Gemini non ha trovato informazioni su questo oggetto');return r}
+    const j2=await gemFetch(`models/${model}:generateContent`,{contents:[{role:'user',parts:[{text:gemPrompt(q,ctx).replace(/^[\s\S]*?Rispondi SOLO/,'Trasforma il testo qui sotto in JSON. Rispondi SOLO')+'\n\nTesto:\n'+txt}]}],generationConfig:{responseMimeType:'application/json'}},model);o=gemJSON(gemText(j2))}
+  if(!o)throw new AppErr('risposta',cand.finishReason&&cand.finishReason!=='STOP'?`risposta interrotta (${cand.finishReason})`:'nessun JSON nella risposta',{model,raw:String(txt).slice(0,600)});
+  const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model});return r}
+/* «Piano B»: se un modello è al limite o non ha richieste gratuite si passa al successivo; errori di chiave/rete fermano tutto */
+const GEM_STOP=['manca','chiave','permesso','paese','credito','rete','bloccata'];
+async function gemAsk(q,ctx,onStep){const list=await gemModels(),order=gemOrder(list),tried=[];let last=null,searchHit=false;
+  const run=async search=>{for(const m of order){const cd=gemCooling(m);if(cd){tried.push([m,cd.kind]);continue}
+      onStep&&onStep(m,tried.slice(),search);
+      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m});r.tried=tried.slice();r.noSearch=!search;return r}
+      catch(e){if(GEM_STOP.includes(e.kind)){e.tried=tried;throw e}
+        if(['minuto','giorno','gratis0'].includes(e.kind)){if(e.search&&search){searchHit=true;tried.push([m,'ricerca '+e.kind]);last=e;continue}gemCool(m,e)}
+        if(e.kind==='modello')LS.set('rd_gem_models',null);
+        tried.push([m,e.kind]);last=e;if(['timeout','vuoto'].includes(e.kind)){e.tried=tried;throw e}}}
+    return null};
+  let r=await run(true);if(r)return r;
+  /* la ricerca web ha esaurito la sua quota: ultimo tentativo senza ricerca (dati dalla memoria di Gemini) */
+  if(searchHit){r=await run(false);if(r)return r}
+  const cds=gemCds(),ks=tried.map(t=>t[1]);
+  if(ks.length&&ks.every(k=>k==='gratis0'))throw new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried,raw:last&&last.raw});
+  if(ks.some(k=>k==='giorno'||k==='minuto')){const lim=Object.values(cds).filter(c=>c.kind!=='gratis0'),soon=lim.length?Math.min(...lim.map(c=>c.until)):Date.now()+60000,daily=lim.length&&lim.every(c=>c.kind==='giorno');
+    throw new AppErr(daily?'giorno':'minuto','tutti i modelli hanno raggiunto il limite',{tried,until:soon,waitMs:soon-Date.now(),raw:last&&last.raw})}
+  const e=last||new AppErr('modello','nessun modello disponibile');e.tried=tried;throw e}
+const GEM_WHY={minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'senza richieste gratuite',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
 function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={}){
   if(!gemOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
   openPage('Chiedi a Gemini',`<p style="margin-top:0">Gemini cerca sul web e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.</p>
     <label class="f">Oggetto (nome, modello o codice)</label><input class="in" id="gmq" value="${esc(q)}" placeholder="Es. Olivetti M24, Sony KV-1400, Psion Series 5mx" autocomplete="off">
     <div class="grid2"><div><label class="f">Marca (facoltativa)</label><input class="in" id="gmm" value="${esc(marca)}" list="dl_gm_m" autocomplete="off"></div><div><label class="f">Tipo (facoltativo)</label><input class="in" id="gmt" value="${esc(tipologia)}" list="dl_gm_t" autocomplete="off"></div></div>
     <datalist id="dl_gm_m">${MARCHE0.map(m=>`<option value="${esc(m)}">`).join('')}</datalist><datalist id="dl_gm_t">${TIPI.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
-    <button class="btn" id="gmb" style="width:100%;margin-top:12px">✨ Cerca e compila</button><div id="gmo" style="margin-top:14px"></div>
-    <p class="note">Modello: ${esc(gemCfg().model||'scelto in automatico')} · <a href="#" data-gms>impostazioni</a>. Gemini può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
+    <button class="btn" id="gmb" style="width:100%;margin-top:14px">✨ Cerca e compila</button><div id="gmo" style="margin-top:14px"></div>
+    <p class="note">Modello: ${esc(gemCfg().model||(gemCfg().ok?gemCfg().ok+' (automatico)':'scelto in automatico'))} · <a href="#" data-gms>impostazioni</a>. Gemini può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
     const out=$('#gmo',el);
     const run=async()=>{const qq=$('#gmq',el).value.trim();if(!qq)return $('#gmq',el).focus();
       const c2=[ctx,$('#gmm',el).value.trim()&&'marca: '+$('#gmm',el).value.trim(),$('#gmt',el).value.trim()&&'tipo: '+$('#gmt',el).value.trim()].filter(Boolean).join('; ');
-      $('#gmb',el).disabled=true;out.innerHTML=loader('web','Gemini cerca sul web…','di solito 10–30 secondi');
-      try{const r=await gemAsk(qq,c2);out.innerHTML=previewHTML(r)+(r.incerti.length?`<p class="note" style="margin-top:6px">⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}</p>`:'')
+      $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web','Gemini cerca sul web…','di solito 10–30 secondi');
+      const step=(m,tried,search)=>{const s=$('.ld small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
+      try{const r=await gemAsk(qq,c2,step);
+        const notes=[r.tried.length?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch?'⚠️ <b>Senza ricerca web</b>: la quota della ricerca Google è finita, quindi i dati vengono dalla memoria di Gemini e sono più facili da sbagliare.':'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
+        out.innerHTML=previewHTML(r)+notes.map(n=>`<p class="note" style="margin-top:6px">${n}</p>`).join('')
           +(r.sources.length?`<details class="more" style="margin-top:8px"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(s=>`<a class="res" href="${esc(s.uri)}" target="_blank" rel="noopener"><b>${esc(s.title)}</b></a>`).join('')}</details>`:'');
         const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r)}
-      catch(e){out.innerHTML=`<p class="note"><b>Non riuscito:</b> ${esc(e.message)}</p>`}
+      catch(e){errBox(out,e,'Gemini',run,GEM_STOP.includes(toAppErr(e).kind)||/gratis0/.test(toAppErr(e).kind)?'gem':'')}
       $('#gmb',el).disabled=false};
     $('#gmb',el).onclick=run;$('#gmq',el).onkeydown=e=>{if(e.key==='Enter')run()};
     el.addEventListener('click',e=>{if(e.target.closest('[data-gms]')){e.preventDefault();openGemSettings({})}});
     if(q)setTimeout(run,60);else setTimeout(()=>$('#gmq',el).focus(),250);
   }});
 }
+/* prova della chiave: elenco dei modelli e una richiesta vera, modello per modello, finché uno risponde */
+async function gemProbe(onLine){const list=await gemModels(true),order=gemOrder(list).slice(0,6),res=[];
+  for(const m of order){const cd=gemCooling(m);if(cd){res.push([m,cd.kind]);onLine(res);continue}
+    try{await gemFetch(`models/${m}:generateContent`,{contents:[{role:'user',parts:[{text:'Rispondi solo: OK'}]}],generationConfig:{maxOutputTokens:5}},m);res.push([m,'ok']);onLine(res);gemSet({ok:m});return {list,res,ok:m}}
+    catch(e){if(GEM_STOP.includes(e.kind))throw e;if(['minuto','giorno','gratis0'].includes(e.kind))gemCool(m,e);res.push([m,e.kind,e]);onLine(res)}}
+  return {list,res,ok:''}}
 function openGemSettings({replace=false,then}={}){const c=gemCfg();
   openPage('Gemini',`<p style="margin-top:0">Con una <b>chiave API di Gemini</b> l'app può chiedere a Gemini di cercare sul web i dati di un oggetto e compilare la scheda.</p>
     <label class="f">Chiave API</label><input class="in" id="gk" type="password" value="${esc(c.key)}" placeholder="AIza…" autocomplete="off">
-    <label class="f">Modello</label><select class="in" id="gmd"><option value="">Automatico (il Flash più recente)</option>${c.model?`<option value="${esc(c.model)}" selected>${esc(c.model)}</option>`:''}</select>
-    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn" id="gks">Salva e prova</button>${c.key?'<button class="btn sec" id="gkx">Scollega</button>':''}</div><p class="note" id="gkm" style="display:none"></p>
+    <label class="f">Modello</label><select class="in" id="gmd"><option value="">Automatico (sceglie e cambia da solo)</option>${c.model?`<option value="${esc(c.model)}" selected>${esc(c.model)}</option>`:''}</select>
+    <div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn" id="gks">Salva e prova</button>${c.key?'<button class="btn sec" id="gkx">Scollega</button>':''}</div><div id="gkm" style="margin-top:10px"></div>
     <p style="margin-bottom:2px"><b>Come ottenere la chiave</b> (gratis, una volta sola):</p>
     <ol style="padding-left:18px;margin:4px 0"><li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> con il tuo account Google</li><li><b>Create API key</b> (o «Crea chiave API»), copiala e incollala qui.</li></ol>
-    <p class="note">🔒 La chiave resta solo su questo telefono: non va su GitHub né negli altri telefoni. Il livello gratuito ha limiti giornalieri; con il livello gratuito Google può usare le richieste per migliorare i suoi prodotti (qui si inviano solo nomi e dati dei dispositivi).</p>`,{replace,mount(el){
-    const msg=t=>{const m=$('#gkm',el);m.style.display='';m.textContent=t};
-    $('#gks',el).onclick=async()=>{const key=$('#gk',el).value.trim();if(!key)return msg('Incolla la chiave');const b=$('#gks',el);b.disabled=true;msg('Controllo la chiave…');
-      LS.set('rd_gem',{key,model:$('#gmd',el).value});
-      try{const list=await gemModels(),best=gemPick(list),cur=$('#gmd',el).value;
-        $('#gmd',el).innerHTML=`<option value="">Automatico (${esc(best)})</option>`+list.sort().map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}</option>`).join('');
-        LS.set('rd_gem',{key,model:cur&&list.includes(cur)?cur:best});msg(`Chiave valida ✔︎ · userò ${gemCfg().model}`);toast('Gemini collegato ✨');
-        if(then){setTimeout(then,600)}}
-      catch(e){msg('Controllo non riuscito: '+e.message)}b.disabled=false};
-    $('#gmd',el).onchange=async()=>{const v=$('#gmd',el).value;LS.set('rd_gem',Object.assign(gemCfg(),{model:v}));if(!v)try{await gemModel(true)}catch(e){};msg('Modello: '+(gemCfg().model||'automatico'))};
-    const x=$('#gkx',el);if(x)x.onclick=()=>{LS.set('rd_gem',{});toast('Gemini scollegato');history.back()};
+    <p class="note">🔒 La chiave resta solo su questo telefono: non va su GitHub né negli altri telefoni. Google conta i limiti gratuiti modello per modello: quando uno è esaurito l'app passa da sola a un altro. Con il livello gratuito Google può usare le richieste per migliorare i suoi prodotti (qui si inviano solo nomi e dati dei dispositivi).</p>`,{replace,mount(el){
+    const box=$('#gkm',el);
+    const lines=res=>box.innerHTML=`<div class="log">${res.map(([m,k])=>`<div class="li"><span class="lb"><b>${k==='ok'?'✓':'✗'} ${esc(m)}</b><small>${k==='ok'?'risponde':esc(GEM_WHY[k]||(ERR_INFO[k]||ERR_INFO.altro)[1])}</small></span></div>`).join('')}</div>`;
+    $('#gks',el).onclick=async()=>{const key=$('#gk',el).value.trim();if(!key){box.innerHTML='<p class="note">Incolla la chiave</p>';return}const b=$('#gks',el);b.disabled=true;
+      if(key!==c.key){LS.set('rd_gem_models',null);LS.set('rd_gem_cd',{})}
+      LS.set('rd_gem',{key,model:$('#gmd',el).value,ok:key===c.key?c.ok:''});box.innerHTML=loader('web','Provo la chiave…','una richiesta di prova per ogni modello, finché uno risponde');
+      try{const {list,res,ok}=await gemProbe(lines),cur=$('#gmd',el).value;
+        $('#gmd',el).innerHTML=`<option value="">Automatico (sceglie e cambia da solo)</option>`+list.slice().sort().map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}${gemCooling(m)?' · '+(GEM_WHY[gemCooling(m).kind]||''):''}</option>`).join('');
+        lines(res);
+        if(ok){box.insertAdjacentHTML('afterbegin',`<p class="note" style="margin-top:0">✅ Chiave valida: userò <b>${esc(cur||ok)}</b>.</p>`);toast('Gemini collegato ✨');if(then)setTimeout(then,700)}
+        else{const last=(res.find(r=>r[2])||[])[2];const all0=res.length&&res.every(r=>r[1]==='gratis0');box.insertAdjacentHTML('afterbegin',errCard(all0?new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried:res.map(r=>[r[0],r[1]]),raw:last&&last.raw}):(last||new AppErr('modello','nessun modello ha risposto')),{where:'Prova della chiave'}));logErr('Prova della chiave',last||'nessun modello')}}
+      catch(e){errBox(box,e,'Prova della chiave',()=>$('#gks',el).click())}
+      b.disabled=false};
+    $('#gmd',el).onchange=()=>{gemSet({model:$('#gmd',el).value});toast('Modello: '+($('#gmd',el).value||'automatico'))};
+    const x=$('#gkx',el);if(x)x.onclick=()=>{LS.set('rd_gem',{});LS.set('rd_gem_models',null);LS.set('rd_gem_cd',{});toast('Gemini scollegato');history.back()};
   }});
 }
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
@@ -2845,13 +3091,13 @@ async function openDescPicker(q,cb){
     const go=async()=>{const v=$('#dq',el).value.trim();if(!v)return;out.innerHTML=spin('Cerco…');
       try{res=await wikiSearch(v,'it');res=res.concat(await wikiSearch(v,'en'));
         out.innerHTML=res.length?res.map((x,i)=>`<button class="res" data-i="${i}"><b>${esc(x.title)}</b> <small>${x.lang.toUpperCase()} · ${esc(x.snippet.slice(0,100))}</small></button>`).join(''):'Nessun risultato.'}
-      catch(e){out.textContent='Errore di rete: '+e.message}};
+      catch(e){errBox(out,e,'Descrizione da Wikipedia',go)}};
     $('#dg',el).onclick=go;$('#dq',el).onkeydown=e=>{if(e.key==='Enter')go()};go();
     el.addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;const x=res[+b.dataset.i];out.innerHTML=spin('Carico…');
       try{const j=await wjson(`https://${x.lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(x.title)}&format=json&origin=*`);
         const p=Object.values(j.query.pages)[0];const t=(p.extract||'').split('\n').filter(Boolean).slice(0,2).join('\n\n').slice(0,1200);
         history.back();cb(t+(t?`\n\n(Fonte: Wikipedia ${x.lang.toUpperCase()}, «${x.title}»)`:''))}
-      catch(err){out.textContent='Errore: '+err.message}});
+      catch(err){errBox(out,err,'Descrizione da Wikipedia')}});
   }});
 }
 
@@ -3160,7 +3406,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
       if(!res.length)res=await wikiSearch(q,'it');
       if(!res.length){out.innerHTML='Nessun risultato.';return}
       out.innerHTML='<b>Scegli la pagina giusta:</b>'+res.map((x,i)=>`<button class="res" data-w="${i}"><b>${esc(x.title)}</b><small>${esc(x.snippet.slice(0,110))}</small></button>`).join('');
-      out.onclick=async e=>{const b=e.target.closest('[data-w]');if(!b)return;const x=res[+b.dataset.w];busy('Carico la scheda…');try{preview(await wikiLoad(x.title,x.lang,mc))}catch(err){out.textContent='Errore: '+err.message}};
+      out.onclick=async e=>{const b=e.target.closest('[data-w]');if(!b)return;const x=res[+b.dataset.w];busy('Carico la scheda…');try{preview(await wikiLoad(x.title,x.lang,mc))}catch(err){errBox(out,err,'Cerca dati online',go)}};
     };
     const go=async()=>{
       const q=$('#lq',el).value.trim();if(!q)return;
@@ -3169,12 +3415,12 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
       if($('#lb',el).value==='acc'){busy('Cerco nelle fonti per accessori…');try{
         const {list,notes}=await accSearch(q,/^apple$/i.test(marca||'')||/\bapple\b/i.test(q)?'Apple':(marca||''));
         out.innerHTML=(list.length?'<b>Scegli il risultato giusto:</b>'+list.map((x,i)=>`<button class="res accr" data-a="${i}">${x.thumb?`<img src="${esc(x.thumb)}" alt="" loading="lazy" onerror="this.remove()">`:''}<span><b>${esc(x.title)}</b><small><i class="src">${esc(x.src)}</i> ${esc((x.snippet||'').slice(0,110))}</small></span></button>`).join(''):'Nessun risultato. Prova con il codice scritto sotto l\'oggetto (es. A1424) o con meno parole.')+(notes.length?`<p class="note">${esc(notes.join(' · '))}</p>`:'');
-        out.onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const x=list[+b.dataset.a];busy('Carico la scheda…');try{preview(await x.load())}catch(err){out.textContent=/429/.test(err.message)?'Il servizio ha ricevuto troppe richieste: riprova tra un minuto.':'Errore: '+err.message}};
-      }catch(e){out.textContent='Errore di rete: '+e.message}return}
+        out.onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const x=list[+b.dataset.a];busy('Carico la scheda…');try{preview(await x.load())}catch(err){errBox(out,err,'Cerca dati online',go)}};
+      }catch(e){errBox(out,e,'Cerca dati online',go)}return}
       if(!ap){try{busy('Cerco su Wikipedia…');const res=await wikiAccSearch(q);if(!res.length)return await wikiFlow(q,'');
           out.innerHTML='<b>Scegli la pagina giusta:</b>'+res.map((x,i)=>`<button class="res" data-w2="${i}"><b>${esc(x.sec?x.title+' › '+x.sec.line:x.title)}</b><small><i class="src">Wikipedia ${x.lang.toUpperCase()}</i> ${esc((x.snippet||'').slice(0,110))}</small></button>`).join('')+`<button class="res" data-w3><b>🔎 Altre pagine per «${esc(q)}»</b></button>`;
-          out.onclick=async e=>{if(e.target.closest('[data-w3]'))return wikiFlow(q,'').catch(er=>out.textContent='Errore: '+er.message);const b=e.target.closest('[data-w2]');if(!b)return;busy('Carico la scheda…');try{const r=await wikiAccLoad(res[+b.dataset.w2],'');if(r.fields.tipologia&&!['Mouse','Tastiera','Periferica','Accessorio','Rete','Cavo / adattatore','Alimentatore / caricabatterie','Monitor'].includes(r.fields.tipologia))delete r.fields.tipologia;preview(r)}catch(err){out.textContent='Errore: '+err.message}}}
-        catch(e){out.textContent='Errore di rete: '+e.message}return}
+          out.onclick=async e=>{if(e.target.closest('[data-w3]'))return wikiFlow(q,'').catch(er=>errBox(out,er,'Cerca dati online',go));const b=e.target.closest('[data-w2]');if(!b)return;busy('Carico la scheda…');try{const r=await wikiAccLoad(res[+b.dataset.w2],'');if(r.fields.tipologia&&!['Mouse','Tastiera','Periferica','Accessorio','Rete','Cavo / adattatore','Alimentatore / caricabatterie','Monitor'].includes(r.fields.tipologia))delete r.fields.tipologia;preview(r)}catch(err){errBox(out,err,'Cerca dati online',go)}}}
+        catch(e){errBox(out,e,'Cerca dati online',go)}return}
       if(!looksLikeCode(q)){busy('Cerco il modello per nome…');
         let m=[];try{m=nameMatches(q,await awIndex(),10)}catch(e){}
         const acc=Object.entries(ACC_DB).filter(([,v])=>nameMatches(q,[[v[0]]]).length).slice(0,4);
@@ -3182,8 +3428,8 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
           out.onclick=e=>{const a=e.target.closest('[data-nm]'),b=e.target.closest('[data-na]');
             if(a){const x=m[+a.dataset.nm];$('#lq',el).value=x[2]||x[1];go();return}
             if(b){$('#lb',el).value='acc';hint();$('#lq',el).value=b.dataset.na;go();return}
-            if(e.target.closest('[data-nw]'))wikiFlow('Apple '+q,'Apple').catch(er=>out.textContent='Errore: '+er.message)};return}
-        try{await wikiFlow('Apple '+q,'Apple')}catch(e){out.textContent='Errore di rete: '+e.message}return}
+            if(e.target.closest('[data-nw]'))wikiFlow('Apple '+q,'Apple').catch(er=>errBox(out,er,'Cerca dati online',go))};return}
+        try{await wikiFlow('Apple '+q,'Apple')}catch(e){errBox(out,e,'Cerca dati online',go)}return}
       busy('Cerco su EveryMac…');
       try{
         const r=await emLookup(q);
@@ -3197,7 +3443,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
       }catch(e){
         out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Nessun problema: apri la pagina, copiala e incollala.</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}">Apri su EveryMac ↗</a><button class="btn sm" id="lpp">📋 Incolla la scheda</button><button class="btn sec sm" id="lw">Prova Wikipedia</button></div>`;
         $('#lpp',el).onclick=paste;
-        $('#lw',el).onclick=()=>wikiFlow('Apple '+q,'Apple').catch(er=>out.textContent='Errore: '+er.message);
+        $('#lw',el).onclick=()=>wikiFlow('Apple '+q,'Apple').catch(er=>errBox(out,er,'Cerca dati online',go));
       }
     };
     $('#lg',el).onclick=go;$('#lq',el).onkeydown=e=>{if(e.key==='Enter')go()};
@@ -3461,6 +3707,7 @@ function openMenu(){
   <button class="res" data-m="inv"><b>📋 Inventario</b><small>Controlla luogo per luogo cosa c'è davvero${LS.get('rd_inv',null)?' · inventario in corso':''}</small></button>
 
   <div class="sec-t">Ricerche con l'intelligenza artificiale</div>
+  <button class="res" data-m="errlog"><b>🩺 Registro errori</b><small>${(()=>{const n=LS.get('rd_errlog',[]).length;return n?`${n} ${n===1?'errore registrato':'errori registrati'}: dettagli da copiare e mandare`:'Nessun errore registrato'})()}</small></button>
   <button class="res" data-m="gem"><b>✨ Gemini</b><small>${gemOn()?`Collegato · modello ${esc(gemCfg().model||'automatico')}`:'Collega una chiave API per far cercare e compilare le schede degli oggetti rari'}</small></button>
 
   <div class="sec-t">Database su GitHub</div>
@@ -3526,6 +3773,7 @@ function openMenu(){
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
       if(a==='gem')openGemSettings();
+      if(a==='errlog')openErrLog();
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
       if(a==='stats')openStats();
       if(a==='cat')openCatalog();
@@ -3678,7 +3926,7 @@ function ghSync(manual){
       updSync();
       if(res.nuovi||res.agg||res.canc)toast(`GitHub: ricevuti ${res.nuovi} nuovi, ${res.agg} aggiornati${res.canc?', '+res.canc+' eliminati':''}`,3500);
       else if(manual)toast(inviati?`Inviato a GitHub ✔︎${nfoto?' ('+nfoto+(nfoto===1?' file':' file')+')':''}`:'Già tutto sincronizzato ✔︎');
-    }catch(e){updSync('err');if(manual)toast('Sincronizzazione non riuscita: '+e.message,5000);else console.warn('sync',e)}
+    }catch(e){updSync('err');logErr('Sincronizzazione GitHub',e);if(manual){const i=errInfo(e);toast(`${i.ic} Sincronizzazione non riuscita: ${e.message}`,6000,{label:'DETTAGLI',fn:openErrLog})}else console.warn('sync',e)}
     finally{syncing=null}
   })();
   return syncing;
@@ -3842,7 +4090,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   writeManCache();
-  lgSet(LS.get('rd_glass','full'));addEventListener('resize',()=>{clearTimeout(segDrop.t);segDrop.t=setTimeout(()=>{const i=$('.segi');if(i&&i._s)i._s.init=false;segDrop()},120)});
+  lgSet(LS.get('rd_glass','lite'));{const sc=()=>document.body.classList.toggle('scrolled',scrollY>($('#hdr').offsetHeight||90)-6);addEventListener('scroll',sc,{passive:true});sc()}addEventListener('resize',()=>{clearTimeout(segDrop.t);segDrop.t=setTimeout(()=>{const i=$('.segi');if(i&&i._s)i._s.init=false;segDrop()},120)});
   if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
   if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
