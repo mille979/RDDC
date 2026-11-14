@@ -150,6 +150,7 @@ export default {
 Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
 
 ## Grafica (2.0): Liquid Glass
+- **Icona**: schermo, palmare e ghiera come tre lastre di vetro sovrapposte su fondo nero-grigio (`icon.svg`, PNG da 192 e 512). C'è la versione «maskable», ritagliabile tonda da Android senza perdere niente, e quella monocromatica per le icone a tema (Android le colora con i colori dello sfondo).
 Dalla versione 2.0 l'interfaccia è ridisegnata da capo attorno al vetro liquido, con le stesse funzioni di prima:
 - sfondo con macchie di colore morbide (ambra, terracotta, verde), diverse in chiaro e in scuro;
 - tutte le superfici (schede della lista, griglia, tabelle, liste, note, campi, pulsanti, finestre) sono di vetro: traslucide, con il bordo luminoso e angoli più tondi;

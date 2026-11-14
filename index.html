@@ -7,7 +7,8 @@
 <meta name="theme-color" content="#15100a" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>RDDC – Collezione vintage</title>
 <style>
 :root{color-scheme:light;--bg:#f5ede0;--ink:#22180a;--mute:#76674f;--acc:#f2a531;--acc-ink:#9a5800;--on-acc:#2b1a02;--acc2:#3d7a66;--dng:#c0352b;--glow:rgba(242,165,49,.45);
@@ -713,7 +714,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
 const APP_VER='2.0';
 const NOVITA=[
- ['2.0','2026-11-14',['Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
+ ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
  ['1.1','2026-11-14',['Vetro liquido: barra in alto, pulsante +, avvisi, dialoghi, intestazioni e pulsanti sulle foto deformano e illuminano quello che passa sotto (Menu → Aspetto)','La goccia del selettore Collezione/Wishlist scorre e si allunga; i pulsanti rimbalzano quando li premi','✨ Chiedi a Gemini: cerca sul web e compila la scheda degli oggetti rari (serve una chiave API, Menu → Gemini)']],
  ['1.0','2026-11-11',['Numero di versione accanto al logo e nel menu','Laboratorio: collaudi, progetti di restauro, lista della spesa, statistiche ed esportazioni CSV','Manutenzione: giro di accensioni e ricariche con promemoria e calendario','Scheda «Oggi», ruolo, raccolte, «Va con» per esemplare','Animazioni e note per ogni annuncio','Foto orizzontali piene nelle anteprime della griglia']]];
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
