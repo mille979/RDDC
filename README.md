@@ -149,16 +149,28 @@ export default {
 ```
 Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
 
+## Grafica (2.0): Liquid Glass
+Dalla versione 2.0 l'interfaccia è ridisegnata da capo attorno al vetro liquido, con le stesse funzioni di prima:
+- sfondo con macchie di colore morbide (ambra, terracotta, verde), diverse in chiaro e in scuro;
+- tutte le superfici (schede della lista, griglia, tabelle, liste, note, campi, pulsanti, finestre) sono di vetro: traslucide, con il bordo luminoso e angoli più tondi;
+- titolo grande «Collezione» / «Wishlist», ricerca a capsula e pulsanti tondi con icone disegnate; la sfumatura dietro la ricerca compare solo quando la lista ci scorre sotto;
+- barra in basso fluttuante con Collezione/Wishlist (la goccia che scorre) e il pulsante + a parte;
+- pagine con intestazione che sfuma e pulsante indietro tondo; intestazioni dei gruppi a capsula.
+
 ## Vetro liquido
 Barra in alto, pulsante **+**, barra della selezione, avvisi, finestre di conferma, intestazioni delle pagine e pulsanti tondi sopra le foto sono di **vetro liquido**: deformano, sfocano leggermente e illuminano sul bordo quello che ci passa sotto (la lista che scorre, la foto della scheda).
 - Il modello WebGL «Liquid Glass» (profilo del bordo a squircle convesso, rifrazione con indice 1,38, dispersione dei colori, riflessi solo sul bordo) calcola per ogni elemento la mappa di rifrazione e quella della luce; il browser le applica all'interfaccia vera con un filtro SVG (`backdrop-filter`). WebGL da solo non può leggere i pixel della pagina, per questo serve il filtro.
 - La goccia del selettore Collezione/Wishlist scorre con una molla e si allunga nel verso del moto; il pulsante + e i pulsanti sulle foto si ingrandiscono e rimbalzano quando li premi (la «pressione» del modello).
-- Menu → Aspetto → **Vetro liquido**: Completo (con dispersione dei colori), Leggero (più veloce), Spento. Funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet); altrove resta l'aspetto normale.
+- Menu → Aspetto → **Vetro liquido**: Leggero (predefinito, il più fluido), Completo (aggiunge la dispersione dei colori sui bordi, più pesante da calcolare), Spento. Funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet); altrove resta l'aspetto normale.
+
+## Errori spiegati
+Quando qualcosa non va (Gemini, ricerche online, guide iFixit, sincronizzazione) l'app mostra una scheda con **cosa è successo**, **cosa fare**, i **dettagli tecnici** (il messaggio vero del servizio) e i pulsanti **Riprova**, **Impostazioni** e **Copia dettagli**. Gli ultimi 40 errori restano in Menu → **🩺 Registro errori**, da copiare e mandare.
 
 ## Chiedi a Gemini (oggetti rari)
 Per i dispositivi poco comuni che EveryMac e Wikipedia non conoscono: **✨ Chiedi a Gemini** (dal menu **+** o da «Cerca dati online») fa cercare a Gemini sul web, con Google Search, e compila la scheda: nome, marca, tipologia, anno, hardware, schermo, porte, dati del televisore o dell'accessorio, misure, prezzo di lancio, descrizione in italiano e altre specifiche.
 - Prima dei dati mostra l'anteprima con le **fonti consultate** e i dati che Gemini ritiene **incerti**; poi tutto passa nel modulo, da controllare prima di salvare.
 - Non tocca i dati personali (luogo, stato, prezzo pagato, note…) e non inventa i valori delle liste (tipologia, formato…): se non corrispondono vengono scartati.
+- **Limiti di Google**: Google conta le richieste gratuite modello per modello (al minuto e al giorno) e alcuni modelli, spesso i più nuovi, per certe chiavi ne hanno **zero**. Quando un modello risponde «troppe richieste» o «limite: 0», l'app passa da sola al successivo e se lo ricorda finché il limite si azzera: i secondi indicati da Google, oppure la mezzanotte in California per il limite giornaliero. Se è esaurita solo la quota della ricerca Google, riprova senza ricerca web e lo dice. **Salva e prova** fa una richiesta di prova vera e mostra quali modelli rispondono.
 - Serve una **chiave API** gratuita: Menu → **✨ Gemini** → incollala (si crea su aistudio.google.com/apikey). La chiave resta solo su quel telefono. L'app sceglie da sola il modello Flash stabile più recente disponibile per la chiave; si può cambiare dallo stesso menu.
 
 ## Versioni
