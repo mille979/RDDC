@@ -149,6 +149,23 @@ export default {
 ```
 Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
 
+## Vetro liquido
+Barra in alto, pulsante **+**, barra della selezione, avvisi, finestre di conferma, intestazioni delle pagine e pulsanti tondi sopra le foto sono di **vetro liquido**: deformano, sfocano leggermente e illuminano sul bordo quello che ci passa sotto (la lista che scorre, la foto della scheda).
+- Il modello WebGL «Liquid Glass» (profilo del bordo a squircle convesso, rifrazione con indice 1,38, dispersione dei colori, riflessi solo sul bordo) calcola per ogni elemento la mappa di rifrazione e quella della luce; il browser le applica all'interfaccia vera con un filtro SVG (`backdrop-filter`). WebGL da solo non può leggere i pixel della pagina, per questo serve il filtro.
+- La goccia del selettore Collezione/Wishlist scorre con una molla e si allunga nel verso del moto; il pulsante + e i pulsanti sulle foto si ingrandiscono e rimbalzano quando li premi (la «pressione» del modello).
+- Menu → Aspetto → **Vetro liquido**: Completo (con dispersione dei colori), Leggero (più veloce), Spento. Funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet); altrove resta l'aspetto normale.
+
+## Chiedi a Gemini (oggetti rari)
+Per i dispositivi poco comuni che EveryMac e Wikipedia non conoscono: **✨ Chiedi a Gemini** (dal menu **+** o da «Cerca dati online») fa cercare a Gemini sul web, con Google Search, e compila la scheda: nome, marca, tipologia, anno, hardware, schermo, porte, dati del televisore o dell'accessorio, misure, prezzo di lancio, descrizione in italiano e altre specifiche.
+- Prima dei dati mostra l'anteprima con le **fonti consultate** e i dati che Gemini ritiene **incerti**; poi tutto passa nel modulo, da controllare prima di salvare.
+- Non tocca i dati personali (luogo, stato, prezzo pagato, note…) e non inventa i valori delle liste (tipologia, formato…): se non corrispondono vengono scartati.
+- Serve una **chiave API** gratuita: Menu → **✨ Gemini** → incollala (si crea su aistudio.google.com/apikey). La chiave resta solo su quel telefono. L'app sceglie da sola il modello Flash stabile più recente disponibile per la chiave; si può cambiare dallo stesso menu.
+
+## Versioni
+Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in fondo al menu. Quando arriva un aggiornamento compare l'avviso «RDDC aggiornata alla versione…».
+- Si parte da **1.0** (11 novembre 2026); ogni modifica fa salire il numero (1.1, 1.2…), i cambi grandi passano a 2.0.
+- Per chi modifica il codice: il numero sta in `APP_VER` (con le novità in `NOVITA`) in `index.html` e in `V` in `sw.js`; devono coincidere, lo controlla una prova automatica.
+
 ## Prove automatiche
 `npm test` avvia l'app in Chromium (Playwright) e controlla le funzioni principali, compresa la sincronizzazione con una finta API GitHub. Le prove partono da sole su ogni pull request (GitHub Actions, `.github/workflows/test.yml`).
 

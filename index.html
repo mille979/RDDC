@@ -28,8 +28,23 @@ button{cursor:pointer}
 .seg{margin-left:auto;display:flex;background:var(--chip);border-radius:11px;padding:3px;gap:2px;text-shadow:none;letter-spacing:0}
 .seg button{border:0;background:none;border-radius:8px;padding:6px 11px;font:650 13px/1 system-ui,sans-serif;color:var(--mute)}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.seg{position:relative}.seg button{position:relative;z-index:1}.segi{position:absolute;top:3px;bottom:3px;left:0;border-radius:8px;background:var(--card);box-shadow:var(--shadow);transform-origin:50% 50%;pointer-events:none}
+.seg:has(.segi) button.on{background:none;box-shadow:none}
+/* vetro liquido (html.lg): fondi traslucidi; la rifrazione arriva dal filtro calcolato dal modello WebGL */
+html.lg #top{background:color-mix(in srgb,var(--bg) 62%,transparent);border-bottom-color:transparent;-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
+html.lg .page>header{position:absolute;top:0;left:0;right:0;z-index:4;background:color-mix(in srgb,var(--bg) 62%,transparent);border-bottom-color:transparent;-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
+html.lg .page>header+.body{padding-top:calc(var(--phh,64px) + 12px)}
+html.lg .fab{background:color-mix(in srgb,var(--acc) 74%,transparent);box-shadow:0 6px 22px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html.lg #bulk{background:color-mix(in srgb,var(--card) 58%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.lg #toast{background:rgba(30,20,8,.52);box-shadow:0 6px 22px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html.lg .hb{background:rgba(20,12,2,.18);border-color:rgba(255,255,255,.3)}
+html.lg .modal>div{background:color-mix(in srgb,var(--card) 64%,transparent);box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.22);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .seg i{font-style:normal;font-weight:500;opacity:.7;margin-left:4px}
+@media (max-width:400px){.brand{gap:6px;letter-spacing:.12em}.mubtn{padding:2px 3px;margin-left:0;font-size:19px}.seg button{padding:6px 8px;font-size:12.5px}.seg i{margin-left:3px}}
+@media (max-width:365px){.brand{letter-spacing:.06em}.seg button{padding:6px 7px}.seg i{display:none}}
 .prio{color:var(--acc-ink);font-weight:700}
+.bv{display:flex;align-items:flex-start;gap:3px}.ver{border:0;background:none;padding:0;font:650 10px/1 system-ui,sans-serif;letter-spacing:.02em;color:var(--mute);text-shadow:none;margin-top:-2px}
+.nov li{margin:3px 0}
 .brand small{font:600 11px/1 system-ui,sans-serif;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-shadow:none}
 .row{display:flex;gap:8px;align-items:center}
 .search{flex:1;min-width:0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
@@ -551,7 +566,7 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 </head>
 <body>
 <div id="top">
-  <div class="brand">RDDC<button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema">🌙</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
+  <div class="brand"><span class="bv">RDDC<button class="ver" id="bVer" aria-label="Versione e novità"></button></span><button class="mubtn" id="bMuseo" aria-label="Museo" title="Museo">🏛️</button><button class="mubtn" id="bTheme" aria-label="Tema chiaro o scuro" title="Tema">🌙</button><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></div>
   <div class="row">
     <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
     <button class="ibtn" id="bView" aria-label="Cambia vista">▤</button>
@@ -571,6 +586,11 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 /* ============ util ============ */
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
+const APP_VER='1.1';
+const NOVITA=[
+ ['1.1','2026-11-14',['Vetro liquido: barra in alto, pulsante +, avvisi, dialoghi, intestazioni e pulsanti sulle foto deformano e illuminano quello che passa sotto (Menu → Aspetto)','La goccia del selettore Collezione/Wishlist scorre e si allunga; i pulsanti rimbalzano quando li premi','✨ Chiedi a Gemini: cerca sul web e compila la scheda degli oggetti rari (serve una chiave API, Menu → Gemini)']],
+ ['1.0','2026-11-11',['Numero di versione accanto al logo e nel menu','Laboratorio: collaudi, progetti di restauro, lista della spesa, statistiche ed esportazioni CSV','Manutenzione: giro di accensioni e ricariche con promemoria e calendario','Scheda «Oggi», ruolo, raccolte, «Va con» per esemplare','Animazioni e note per ogni annuncio','Foto orizzontali piene nelle anteprime della griglia']]];
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
 const addDays=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
@@ -617,7 +637,7 @@ function loader(kind,msg,sub=''){return `<div class="ld ld-${kind}" role="status
 const ldKind=m=>/everymac|specifiche|scheda everymac/i.test(m)?'mac':/annunc/i.test(m)?'ann':/screenshot|testo/i.test(m)?'scan':'web';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(m,ms=2600,act){const t=$('#toast');t.textContent=m;if(act){const b=document.createElement('button');b.textContent=act.label;b.onclick=()=>{t.style.display='none';act.fn()};t.append(b)}t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',ms)}
-function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m)})}
+function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m);lgScan(m)})}
 
 /* ============ database (IndexedDB) ============ */
 const DB={
@@ -765,7 +785,7 @@ function save(){LS.set('rd_state',S)}
 function render(){
   save();
   const P=pool(),W=isWishView();
-  document.querySelectorAll('#seg [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));
+  document.querySelectorAll('#seg [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));segDrop();
   $('#nC').textContent=devices.filter(d=>!d.wish).length;$('#nW').textContent=devices.filter(d=>d.wish).length;
   const items=P.filter(d=>pass(d)).sort(sorter());
   const nF=Object.values(S.sel).reduce((n,a)=>n+(a?a.length:0),0);
@@ -835,7 +855,7 @@ function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}=
   const st={p:stack.length};
   replace?history.replaceState(st,''):history.pushState(st,'');
   el.addEventListener('click',e=>{if(e.target.closest('[data-back]'))history.back()});
-  mount&&mount(el);return el;
+  mount&&mount(el);lgScan(el);return el;
 }
 function swapTop(){const t=stack.pop();if(t){t._close&&t._close();if(RM())t.remove();else{t.classList.add('pg-swapout');setTimeout(()=>t.remove(),220)}}}
 addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(stack.length<=p)return;
@@ -1679,6 +1699,195 @@ const LAB_CSV={
   interventi:['Registro interventi',()=>csvOf([['Oggetto',x=>x.d.nome],['Data',x=>x.i.data],['Tipo',x=>x.i.tipo],['Descrizione',x=>x.i.desc],['Costo (€)',x=>numIt(parseFloat(x.i.costo))],['Prossimo',x=>x.i.prossimo],['Promemoria fatto',x=>x.i.fatto?'sì':''],['Da un progetto',x=>x.i.proj?'sì':'']],devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).map(i=>({d,i}))).sort((a,b)=>String(a.i.data||a.i.prossimo).localeCompare(b.i.data||b.i.prossimo)))],
   sessioni:['Sessioni di lavoro',()=>csvOf([['Data',x=>x.s.d],['Oggetto',x=>x.d.nome],['Progetto',x=>x.p.titolo],['Minuti',x=>x.s.min]],allProjects().flatMap(({d,p})=>(p.sess||[]).map(s=>({d,p,s}))).sort((a,b)=>String(a.s.d).localeCompare(b.s.d)))]};
 function labCsv(k){const [nm,fn]=LAB_CSV[k];dl(`rddc-${k}-${today()}.csv`,'text/csv',fn());toast(`Scaricato: ${nm.toLowerCase()} (CSV)`)}
+/* ===== vetro liquido =====
+   Il modello WebGL «Liquid Glass» (profilo del bordo a squircle convesso, rifrazione di Snell, riflessi
+   confinati al bordo) calcola per ogni elemento due mappe: lo spostamento dei pixel e la luce sul bordo.
+   Il browser le applica con un filtro SVG come backdrop-filter, così si deforma l'interfaccia vera che
+   scorre sotto (lista, foto…). WebGL da solo non può leggere i pixel della pagina. Solo Chromium. */
+const LG_FS=`#version 300 es
+precision highp float;out vec4 o;
+uniform vec2 uSize;uniform vec4 uExt;uniform float uR,uDpr,uBezel,uThick,uIor,uMax,uRefl,uMode;uniform vec2 uLight;
+float sdBox(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}
+float map(vec2 p){vec2 c=vec2((uSize.x+uExt.y-uExt.w)*.5,(uSize.y+uExt.z-uExt.x)*.5),b=vec2((uSize.x+uExt.y+uExt.w)*.5,(uSize.y+uExt.x+uExt.z)*.5);return sdBox(p-c,b,min(uR,min(b.x,b.y)));}
+void main(){
+  vec2 p=vec2(gl_FragCoord.x,uSize.y*uDpr-gl_FragCoord.y)/uDpr;
+  float sd=map(p),d=max(-sd,0.);
+  float w=max(uBezel,2.),H=uThick;
+  float t=clamp(d/w,0.,1.),tc=max(t,.004),u1=1.-tc,u4=pow(u1,4.);
+  float h=pow(1.-pow(1.-t,4.),.25);
+  float dh=pow(max(1.-u4,1e-4),-.75)*pow(u1,3.);
+  float slope=min(H*dh/w,5.);
+  vec2 e=vec2(.5,0.);
+  vec2 g=vec2(map(p+e.xy)-map(p-e.xy),map(p+e.yx)-map(p-e.yx));g/=max(length(g),1e-4);
+  vec3 N=normalize(vec3(g*slope,1.)),I=vec3(0.,0.,-1.);
+  if(uMode<.5){vec3 r=refract(I,N,1./uIor);vec2 off=r.xy/max(-r.z,.05)*H*h;o=vec4(.5+clamp(off/(2.*uMax),-.5,.5),.5,1.);return;}
+  vec3 R=reflect(I,N);float cosT=clamp(N.z,0.,1.);
+  float F=clamp((.05+.95*pow(1.-cosT,3.))*uRefl*exp(-d/4.),0.,.92);
+  vec2 lxy=normalize(uLight);vec3 L1=normalize(vec3(lxy,.9)),L2=normalize(vec3(-lxy,.9));
+  float spec=(smoothstep(.74,.985,dot(R,L1))+.6*smoothstep(.74,.985,dot(R,L2)))*uRefl*exp(-d/3.);
+  float ld=dot(g,lxy),line=exp(-d/.9),glow=exp(-d/3.5);
+  float rim=(line*(.3+.7*pow(abs(ld),1.5))*.95+glow*.22*pow(abs(ld),2.))*min(uRefl,1.5);
+  float a=clamp(F*.3+spec*.5+rim*.85,0.,1.)*clamp(.5-sd,0.,1.);
+  o=vec4(a,a,a,a);
+}`;
+const LG={maps:new Map(),filters:new Map(),els:new Set(),n:0,gl:null,prog:null,U:{},svg:null,ro:null,
+  mode:()=>LS.get('rd_glass','full'),
+  supported(){try{const ua=navigator.userAgentData;const chromium=ua?ua.brands.some(b=>/Chromium|Chrome/.test(b.brand)):/Chrome\//.test(navigator.userAgent)&&!/Edg\/|OPR\//.test(navigator.userAgent);
+    return chromium&&!/iPhone|iPad/.test(navigator.userAgent)&&CSS.supports('backdrop-filter','url(#x)')&&!!document.createElement('canvas').getContext('webgl2')}catch(e){return false}},
+  get on(){return document.documentElement.classList.contains('lg')}};
+function lgGL(){if(LG.gl)return LG.gl;const c=document.createElement('canvas'),gl=c.getContext('webgl2',{premultipliedAlpha:true,preserveDrawingBuffer:true,antialias:false});if(!gl)return null;
+  const sh=(t,s)=>{const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x};
+  const p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,'#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,LG_FS));gl.linkProgram(p);gl.useProgram(p);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);const l=gl.getAttribLocation(p,'a');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+  ['uSize','uExt','uR','uDpr','uBezel','uThick','uIor','uMax','uRefl','uMode','uLight'].forEach(n=>LG.U[n]=gl.getUniformLocation(p,n));LG.gl=gl;return gl}
+/* parametri ottici: quelli del modello (IOR 1,38, spessore 57, bordo 25, riflessi 1,1), ridotti sugli elementi piccoli */
+function lgParams(w,h,o){const m=Math.min(w,h)+Math.min(o.ext[0],60)+Math.min(o.ext[2],60);const k=o.k||1;
+  const bezel=Math.min(25,Math.max(6,m*.3)),thick=Math.min(57,Math.max(10,m*.6))*k;return {bezel,thick,ior:1.38,refl:1.1,max:thick*1.6}}
+function lgMaps(w,h,r,o){const key=[w,h,r,o.ext.join(','),o.k||1].join('|');if(LG.maps.has(key))return LG.maps.get(key);
+  const gl=lgGL();if(!gl)return null;const dpr=Math.min(devicePixelRatio||1,2),P=lgParams(w,h,o),U=LG.U,c=gl.canvas;
+  c.width=Math.max(1,Math.round(w*dpr));c.height=Math.max(1,Math.round(h*dpr));gl.viewport(0,0,c.width,c.height);
+  gl.uniform2f(U.uSize,w,h);gl.uniform4f(U.uExt,...o.ext);gl.uniform1f(U.uR,r);gl.uniform1f(U.uDpr,dpr);gl.uniform1f(U.uBezel,P.bezel);gl.uniform1f(U.uThick,P.thick);gl.uniform1f(U.uIor,P.ior);gl.uniform1f(U.uMax,P.max);gl.uniform1f(U.uRefl,P.refl);gl.uniform2f(U.uLight,-.55,-.65);
+  const out={scale:2*P.max};
+  for(const [m,k] of [[0,'disp'],[1,'spec']]){gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.uniform1f(U.uMode,m);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);out[k]=c.toDataURL('image/png')}
+  if(LG.maps.size>60)LG.maps.delete(LG.maps.keys().next().value);LG.maps.set(key,out);return out}
+function lgFilter(w,h,r,o){const full=LG.mode()==='full',key=[w,h,r,o.ext.join(','),o.k||1,o.blur,full].join('|');if(LG.filters.has(key))return LG.filters.get(key);
+  const M=lgMaps(w,h,r,o);if(!M)return null;
+  if(!LG.svg){LG.svg=document.createElementNS('http://www.w3.org/2000/svg','svg');LG.svg.setAttribute('aria-hidden','true');LG.svg.style.cssText='position:absolute;width:0;height:0;overflow:hidden';document.body.append(LG.svg)}
+  const id='lgf'+(++LG.n),S=M.scale,img=(k,res)=>`<feImage href="${M[k]}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="${res}"/>`;
+  const CM=['1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0','0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0','0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0'];
+  const ch=(i,res,sc)=>`<feDisplacementMap in="b" in2="d" scale="${sc}" xChannelSelector="R" yChannelSelector="G" result="x${res}"/><feColorMatrix in="x${res}" type="matrix" values="${CM[i]}" result="${res}"/>`;
+  const refr=full?ch(0,'cr',S*.92)+ch(1,'cg',S)+ch(2,'cb',S*1.08)+`<feComposite in="cr" in2="cg" operator="arithmetic" k2="1" k3="1" result="rg"/><feComposite in="rg" in2="cb" operator="arithmetic" k2="1" k3="1" result="rf"/>`
+    :`<feDisplacementMap in="b" in2="d" scale="${S}" xChannelSelector="R" yChannelSelector="G" result="rf"/>`;
+  const f=document.createElementNS('http://www.w3.org/2000/svg','filter');f.id=id;
+  for(const [a,v] of [['x',0],['y',0],['width',w],['height',h],['filterUnits','userSpaceOnUse'],['color-interpolation-filters','sRGB']])f.setAttribute(a,v);
+  f.innerHTML=`<feGaussianBlur in="SourceGraphic" stdDeviation="${full?(o.blur??2):(o.blur??2)*.6}" result="b"/>${img('disp','d')}${refr}<feColorMatrix in="rf" type="saturate" values="${o.sat||1.25}" result="rs"/>${img('spec','s')}<feComposite in="s" in2="rs" operator="over"/>`;
+  LG.svg.append(f);LG.filters.set(key,id);return id}
+function lgApply(el){if(!LG.on||!el.isConnected)return;const w=el.offsetWidth,h=el.offsetHeight;if(w<8||h<8)return;/* misure senza trasformazioni (animazioni, molla) */
+  const cs=getComputedStyle(el),rad=Math.min(parseFloat(cs.borderTopLeftRadius)||0,w/2,h/2);
+  const o={ext:(el.dataset.lgExt||'0,0,0,0').split(',').map(Number),k:+(el.dataset.lgK||1),blur:el.dataset.lgBlur?+el.dataset.lgBlur:undefined};
+  if(el._lgk===[w,h,rad,o.ext,LG.mode()].join('|'))return;
+  const id=lgFilter(w,h,rad,o);if(!id)return;el._lgk=[w,h,rad,o.ext,LG.mode()].join('|');el.style.backdropFilter=el.style.webkitBackdropFilter=`url(#${id})`;
+  if(el.matches('.page>header'))el.parentElement.style.setProperty('--phh',h+'px')}
+/* aggancia gli elementi di vetro dentro root (alla creazione delle pagine, dei dialoghi…) */
+const LG_SEL='#top,#fab,#bulk,#toast,.hb,.modal>div,.page>header';
+function lgScan(root=document){if(!LG.on)return;const els=[...(root.matches&&root.matches(LG_SEL)?[root]:[]),...root.querySelectorAll(LG_SEL)];
+  if(!LG.ro)LG.ro=new ResizeObserver(es=>es.forEach(x=>lgApply(x.target)));
+  for(const el of els){if(el.matches('#top,.page>header')){el.dataset.lgExt='80,80,0,80';el.dataset.lgBlur='1'}else if(el.matches('#bulk')){el.dataset.lgExt='0,80,80,80';el.dataset.lgBlur='1'}
+    if(!LG.els.has(el)){LG.els.add(el);LG.ro.observe(el)}requestAnimationFrame(()=>lgApply(el))}
+  for(const el of LG.els)if(!el.isConnected){LG.ro.unobserve(el);LG.els.delete(el)}}
+function lgSet(m){LS.set('rd_glass',m);const on=m!=='off'&&LG.supported();document.documentElement.classList.toggle('lg',on);
+  LG.filters.clear();if(LG.svg)LG.svg.innerHTML='';for(const el of LG.els){el._lgk='';el.style.backdropFilter=el.style.webkitBackdropFilter=''}
+  if(on){try{lgGL()}catch(e){console.warn('vetro liquido',e);document.documentElement.classList.remove('lg');return}lgScan()}}
+/* «pressione» del modello: la lente si ingrandisce e si solleva con una molla sottosmorzata */
+function lgSpring(el,to){const s=el._sp||(el._sp={x:1,v:0,to:1,run:false});s.to=to;if(s.run||RM())return RM()&&(el.style.scale='');s.run=true;let last=performance.now();
+  const f=now=>{const dt=Math.min((now-last)/1000,1/30);last=now;for(let i=0;i<2;i++){s.v+=(300*(s.to-s.x)-15.5*s.v)*dt/2;s.x+=s.v*dt/2}
+    el.style.scale=s.x.toFixed(4);if(Math.abs(s.to-s.x)<1e-3&&Math.abs(s.v)<1e-3){s.x=s.to;el.style.scale=s.to===1?'':s.to;s.run=false;return}requestAnimationFrame(f)};requestAnimationFrame(f)}
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.fab,.hb,#seg button,.og,.btn');if(!b)return;lgSpring(b,b.matches('.fab,.hb')?1.14:1.05);
+  const up=()=>{lgSpring(b,1);removeEventListener('pointerup',up);removeEventListener('pointercancel',up)};addEventListener('pointerup',up);addEventListener('pointercancel',up)},{passive:true});
+/* selettore Collezione/Wishlist: una goccia che scorre con la molla e si allunga nel verso del moto */
+function segDrop(){const seg=$('#seg');if(!seg)return;let i=$('.segi',seg);if(!i){i=document.createElement('i');i.className='segi';seg.prepend(i)}
+  const on=$('button.on',seg);if(!on)return;const tx=on.offsetLeft,tw=on.offsetWidth,s=i._s||(i._s={x:tx,w:tw,v:0,vw:0,run:false});s.tx=tx;s.tw=tw;
+  if(RM()||!i._s.init){s.x=tx;s.w=tw;s.init=true;i.style.cssText=`transform:translateX(${tx}px);width:${tw}px`;return}
+  if(s.run)return;s.run=true;let last=performance.now();
+  const f=now=>{const dt=Math.min((now-last)/1000,1/30);last=now;for(let k=0;k<2;k++){s.v+=(260*(s.tx-s.x)-22*s.v)*dt/2;s.x+=s.v*dt/2;s.vw+=(260*(s.tw-s.w)-22*s.vw)*dt/2;s.w+=s.vw*dt/2}
+    const st=Math.min(Math.abs(s.v)/2600,.22);i.style.cssText=`transform:translateX(${s.x}px) scale(${1+st},${1-st*.8});width:${s.w}px`;
+    if(Math.abs(s.tx-s.x)<.3&&Math.abs(s.v)<2){s.x=s.tx;s.w=s.tw;i.style.cssText=`transform:translateX(${s.tx}px);width:${s.tw}px`;s.run=false;return}requestAnimationFrame(f)};requestAnimationFrame(f)}
+/* ===== Gemini: ricerca sul web (Google Search) e compilazione dei campi, con la chiave API dell'utente ===== */
+const GEM='https://generativelanguage.googleapis.com/v1beta';
+const gemCfg=()=>Object.assign({key:'',model:''},LS.get('rd_gem',{}));
+const gemOn=()=>!!gemCfg().key;
+async function gemFetch(path,body){const c=gemCfg();if(!c.key)throw new Error('manca la chiave API (Menu → Gemini)');
+  let r;try{r=await fetch(`${GEM}/${path}`,{method:body?'POST':'GET',headers:Object.assign({'x-goog-api-key':c.key},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(120000)})}
+  catch(e){throw new Error(e.name==='TimeoutError'?'Gemini non ha risposto in tempo':'Gemini non raggiungibile (rete assente?)')}
+  if(!r.ok){let m='';try{m=(await r.json()).error.message||''}catch(e){}
+    const er=new Error(r.status===400&&/api key/i.test(m)?'chiave API non valida':r.status===403?'la chiave non ha accesso all\'API Gemini':r.status===429?'troppe richieste o limite gratuito raggiunto: riprova più tardi':r.status===404?'modello non disponibile':`Gemini ${r.status}${m?': '+m.slice(0,160):''}`);er.status=r.status;throw er}
+  return r.json()}
+/* modelli disponibili per la chiave: si sceglie il «flash» più recente e stabile (veloce, nel livello gratuito) */
+async function gemModels(){const j=await gemFetch('models?pageSize=200');
+  return (j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(n=>/^gemini-/.test(n)&&!/image|tts|audio|live|embed|vision|robotics|computer-use|nano|learnlm|exp-/.test(n))}
+function gemPick(list){const sc=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};return list.slice().sort((a,b)=>sc(b)-sc(a)||a.length-b.length)[0]||''}
+async function gemModel(force){const c=gemCfg();if(c.model&&!force)return c.model;const m=gemPick(await gemModels());if(!m)throw new Error('nessun modello Gemini disponibile per questa chiave');LS.set('rd_gem',Object.assign(c,{model:m}));return m}
+/* campi che Gemini può compilare: tutti quelli tecnici e descrittivi; niente dati personali (luogo, stato, prezzo pagato…) */
+const GEM_SKIP=new Set(['seriale','compat','collegato','tv_telecomando','batt_stato','man_freq','man_on','man_charge','raccolta','ruolo','garanzia','tags','luogo','quantita','stato','scatola','condizione','acq_anno','acq_prezzo','valore','note','w_priorita','w_budget','w_link','w_note']);
+function gemFields(){const out=[];
+  for(const [k,l,t] of [...TOP,...SECTIONS.flatMap(s=>s[1])]){if(GEM_SKIP.has(k)||out.some(x=>x.k===k))continue;
+    const opts=/^select:/.test(t||'')?t.slice(7).split('|'):k==='tipologia'?TIPI:null;out.push({k,l:l.replace(/\s*\*$/,''),opts,num:t==='number'})}
+  return out}
+function gemPrompt(q,ctx){const F=gemFields();
+  return `Sei un esperto di elettronica vintage e da collezione (computer, console, telefoni, televisori, accessori). Cerca sul web con Google Search informazioni affidabili su questo oggetto:
+«${q}»${ctx?`\nAltri dati già noti (possono essere imprecisi): ${ctx}`:''}
+
+Rispondi SOLO con un oggetto JSON valido, senza testo prima o dopo e senza blocchi di codice. Usa solo le chiavi qui sotto; ometti quelle che non trovi o che non si applicano a questo tipo di oggetto. Non inventare: meglio omettere che indovinare.
+Scrivi i valori in italiano, con le unità di misura; date come «mese anno» o solo anno; il prezzo di lancio con la valuta.
+${F.map(f=>`- "${f.k}": ${f.l}${f.num?' (numero)':''}${f.opts?` — uno tra: ${f.opts.map(o=>`"${o}"`).join(', ')}`:''}${f.k==='descrizione'?' — 3-5 frasi: cos\'è, quando è uscito, cosa lo rende interessante per un collezionista':''}${f.k==='nome'?' — nome commerciale completo e preciso del modello':''}`).join('\n')}
+- "specs": array di coppie ["Etichetta", "valore"] con altre specifiche utili non coperte sopra (al massimo 25)
+- "immagine": URL diretto di una foto del prodotto su upload.wikimedia.org, solo se lo trovi davvero
+- "incerti": array con le chiavi di cui non sei sicuro`}
+const gemText=j=>((((j.candidates||[])[0]||{}).content||{}).parts||[]).filter(p=>p.text&&!p.thought).map(p=>p.text).join('').trim();
+function gemJSON(t){t=String(t||'').replace(/^\s*```(?:json)?/i,'').replace(/```\s*$/,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;try{return JSON.parse(t.slice(a,b+1))}catch(e){return null}}
+/* dal JSON di Gemini al risultato usato da anteprima e modulo (come EveryMac/Wikipedia) */
+function gemResult(o,meta){const F=gemFields(),fields={},str=v=>typeof v==='string'?clean(v):typeof v==='number'?String(v):Array.isArray(v)?v.filter(x=>typeof x==='string'||typeof x==='number').join(', '):'';
+  for(const f of F){let v=str(o[f.k]);if(!v||/^(n\/?d|null|sconosciut|non (disponibile|noto|trovat))/i.test(v))continue;
+    if(f.opts){const m=f.opts.find(x=>x.toLowerCase()===v.toLowerCase());if(!m)continue;v=m}
+    if(f.k==='anno'){const y=(v.match(/\b(19[4-9]\d|20[0-4]\d)\b/)||[])[1];if(!y)continue;v=+y}
+    else if(f.num){const n=parseFloat(v.replace(',','.'));if(!isFinite(n))continue;v=n}
+    fields[f.k]=v}
+  const specs=(Array.isArray(o.specs)?o.specs:[]).map(p=>Array.isArray(p)?[str(p[0]),str(p[1])]:p&&typeof p==='object'?[str(p.etichetta||p.label||p.nome||Object.keys(p)[0]),str(p.valore||p.value||Object.values(p)[0])]:null).filter(p=>p&&p[0]&&p[1]).slice(0,30);
+  const img=typeof o.immagine==='string'&&/^https:\/\/upload\.wikimedia\.org\/\S+\.(jpe?g|png|webp)$/i.test(o.immagine)?o.immagine:'';
+  const src=meta.sources||[];
+  return {fields,specs,imageUrl:img,fonte:(src[0]||{}).uri||'',fonteNome:`Gemini (${meta.model}) con Google Search${src.length?' · '+src.slice(0,4).map(s=>s.title).join(', '):''}`,sources:src,incerti:Array.isArray(o.incerti)?o.incerti.filter(k=>typeof k==='string'):[],gemini:true}}
+async function gemAsk(q,ctx){let model=await gemModel(),j;
+  const body={contents:[{role:'user',parts:[{text:gemPrompt(q,ctx)}]}],tools:[{google_search:{}}]};
+  try{j=await gemFetch(`models/${model}:generateContent`,body)}catch(e){if(e.status!==404)throw e;model=await gemModel(true);j=await gemFetch(`models/${model}:generateContent`,body)}
+  const cand=(j.candidates||[])[0]||{},gm=cand.groundingMetadata||{};
+  const sources=(gm.groundingChunks||[]).map(c=>c.web).filter(w=>w&&w.uri).map(w=>({uri:w.uri,title:w.title||w.domain||'web'})).filter((s,i,a)=>a.findIndex(x=>x.title===s.title)===i);
+  let txt=gemText(j),o=gemJSON(txt);
+  if(!o&&txt){/* risposta non in JSON: una seconda chiamata, senza ricerca, la trasforma nel formato giusto */
+    const j2=await gemFetch(`models/${model}:generateContent`,{contents:[{role:'user',parts:[{text:gemPrompt(q,ctx).replace(/^[\s\S]*?Rispondi SOLO/,'Trasforma il testo qui sotto in JSON. Rispondi SOLO')+'\n\nTesto:\n'+txt}]}],generationConfig:{responseMimeType:'application/json'}});o=gemJSON(gemText(j2))}
+  if(!o)throw new Error(cand.finishReason&&cand.finishReason!=='STOP'?`risposta interrotta (${cand.finishReason})`:'Gemini non ha restituito dati leggibili');
+  const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new Error('Gemini non ha trovato informazioni su questo oggetto');return r}
+function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={}){
+  if(!gemOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
+  openPage('Chiedi a Gemini',`<p style="margin-top:0">Gemini cerca sul web e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.</p>
+    <label class="f">Oggetto (nome, modello o codice)</label><input class="in" id="gmq" value="${esc(q)}" placeholder="Es. Olivetti M24, Sony KV-1400, Psion Series 5mx" autocomplete="off">
+    <div class="grid2"><div><label class="f">Marca (facoltativa)</label><input class="in" id="gmm" value="${esc(marca)}" list="dl_gm_m" autocomplete="off"></div><div><label class="f">Tipo (facoltativo)</label><input class="in" id="gmt" value="${esc(tipologia)}" list="dl_gm_t" autocomplete="off"></div></div>
+    <datalist id="dl_gm_m">${MARCHE0.map(m=>`<option value="${esc(m)}">`).join('')}</datalist><datalist id="dl_gm_t">${TIPI.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
+    <button class="btn" id="gmb" style="width:100%;margin-top:12px">✨ Cerca e compila</button><div id="gmo" style="margin-top:14px"></div>
+    <p class="note">Modello: ${esc(gemCfg().model||'scelto in automatico')} · <a href="#" data-gms>impostazioni</a>. Gemini può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
+    const out=$('#gmo',el);
+    const run=async()=>{const qq=$('#gmq',el).value.trim();if(!qq)return $('#gmq',el).focus();
+      const c2=[ctx,$('#gmm',el).value.trim()&&'marca: '+$('#gmm',el).value.trim(),$('#gmt',el).value.trim()&&'tipo: '+$('#gmt',el).value.trim()].filter(Boolean).join('; ');
+      $('#gmb',el).disabled=true;out.innerHTML=loader('web','Gemini cerca sul web…','di solito 10–30 secondi');
+      try{const r=await gemAsk(qq,c2);out.innerHTML=previewHTML(r)+(r.incerti.length?`<p class="note" style="margin-top:6px">⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}</p>`:'')
+          +(r.sources.length?`<details class="more" style="margin-top:8px"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(s=>`<a class="res" href="${esc(s.uri)}" target="_blank" rel="noopener"><b>${esc(s.title)}</b></a>`).join('')}</details>`:'');
+        const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r)}
+      catch(e){out.innerHTML=`<p class="note"><b>Non riuscito:</b> ${esc(e.message)}</p>`}
+      $('#gmb',el).disabled=false};
+    $('#gmb',el).onclick=run;$('#gmq',el).onkeydown=e=>{if(e.key==='Enter')run()};
+    el.addEventListener('click',e=>{if(e.target.closest('[data-gms]')){e.preventDefault();openGemSettings({})}});
+    if(q)setTimeout(run,60);else setTimeout(()=>$('#gmq',el).focus(),250);
+  }});
+}
+function openGemSettings({replace=false,then}={}){const c=gemCfg();
+  openPage('Gemini',`<p style="margin-top:0">Con una <b>chiave API di Gemini</b> l'app può chiedere a Gemini di cercare sul web i dati di un oggetto e compilare la scheda.</p>
+    <label class="f">Chiave API</label><input class="in" id="gk" type="password" value="${esc(c.key)}" placeholder="AIza…" autocomplete="off">
+    <label class="f">Modello</label><select class="in" id="gmd"><option value="">Automatico (il Flash più recente)</option>${c.model?`<option value="${esc(c.model)}" selected>${esc(c.model)}</option>`:''}</select>
+    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn" id="gks">Salva e prova</button>${c.key?'<button class="btn sec" id="gkx">Scollega</button>':''}</div><p class="note" id="gkm" style="display:none"></p>
+    <p style="margin-bottom:2px"><b>Come ottenere la chiave</b> (gratis, una volta sola):</p>
+    <ol style="padding-left:18px;margin:4px 0"><li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> con il tuo account Google</li><li><b>Create API key</b> (o «Crea chiave API»), copiala e incollala qui.</li></ol>
+    <p class="note">🔒 La chiave resta solo su questo telefono: non va su GitHub né negli altri telefoni. Il livello gratuito ha limiti giornalieri; con il livello gratuito Google può usare le richieste per migliorare i suoi prodotti (qui si inviano solo nomi e dati dei dispositivi).</p>`,{replace,mount(el){
+    const msg=t=>{const m=$('#gkm',el);m.style.display='';m.textContent=t};
+    $('#gks',el).onclick=async()=>{const key=$('#gk',el).value.trim();if(!key)return msg('Incolla la chiave');const b=$('#gks',el);b.disabled=true;msg('Controllo la chiave…');
+      LS.set('rd_gem',{key,model:$('#gmd',el).value});
+      try{const list=await gemModels(),best=gemPick(list),cur=$('#gmd',el).value;
+        $('#gmd',el).innerHTML=`<option value="">Automatico (${esc(best)})</option>`+list.sort().map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}</option>`).join('');
+        LS.set('rd_gem',{key,model:cur&&list.includes(cur)?cur:best});msg(`Chiave valida ✔︎ · userò ${gemCfg().model}`);toast('Gemini collegato ✨');
+        if(then){setTimeout(then,600)}}
+      catch(e){msg('Controllo non riuscito: '+e.message)}b.disabled=false};
+    $('#gmd',el).onchange=async()=>{const v=$('#gmd',el).value;LS.set('rd_gem',Object.assign(gemCfg(),{model:v}));if(!v)try{await gemModel(true)}catch(e){};msg('Modello: '+(gemCfg().model||'automatico'))};
+    const x=$('#gkx',el);if(x)x.onclick=()=>{LS.set('rd_gem',{});toast('Gemini scollegato');history.back()};
+  }});
+}
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
 const mainDevices=()=>devices.filter(x=>!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
 const devOpts=sel=>`<option value="">— nessuno —</option>`+mainDevices().map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('');
@@ -2214,6 +2423,7 @@ function openAdd(){
   <p>${W.wish?'Cosa stai cercando? Puoi già prendere i dati da EveryMac o Wikipedia.':'Come vuoi aggiungerlo?'}</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
   <button class="res" data-a="lookacc"><b>🔌 Cerca un accessorio o un ricambio</b><small>Codice (A1424, M5769), codice prodotto, codice a barre o nome: dizionario interno, The Apple Wiki, Wikipedia, iFixit, Icecat.</small></button>
+  <button class="res" data-a="gem"><b>✨ Chiedi a Gemini</b><small>Per gli oggetti rari: Gemini cerca sul web e compila la scheda${gemOn()?'':' (serve una chiave API gratuita)'}.</small></button>
   <button class="res" data-a="link"><b>🏷️ Da un annuncio (Vinted, Subito, eBay…)</b><small>Incolla il link: titolo, prezzo e foto finiscono nella wishlist. Dalle app: Condividi → RDDC.</small></button>
   <button class="res" data-a="paste"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non funziona: copia la pagina del modello da EveryMac e incollala qui.</small></button>
   <button class="res" data-a="man"><b>✍️ Computer o dispositivo a mano</b><small>Per oggetti senza scheda online.</small></button>
@@ -2225,6 +2435,7 @@ function openAdd(){
       if(a==='acc')openForm({...W,tipologia:'Alimentatore / caricabatterie',quantita:1},{fromLookup:true});
       if(a==='paste')openImport({replace:true,onResult:toForm});
       if(a==='link')askListing();
+      if(a==='gem')openGemini({replace:true,onResult:toForm});
       if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
       if(a==='lookacc')openLookup({prefill:'',marca:'',tipologia:'Accessorio',replaceSelf:true,onResult:toForm});
     });
@@ -2497,7 +2708,7 @@ function previewHTML(r){
   const f=r.fields;
   const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo],['Tipologia',f.tipologia],['Connettore',f.acc_connettore],['Uscita',f.acc_uscita],['Compatibile con',f.acc_compat],['Codice prodotto',f.ordine]].filter(x=>x[1]);
   const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
-  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.specs.length} specifiche trovate${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
+  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.gemini?Object.keys(f).length+' campi compilati, ':''}${r.specs.length} ${r.specs.length===1?'specifica':'specifiche'} ${r.gemini?'in più':(r.specs.length===1?'trovata':'trovate')}${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
 }
 function showPreview(out,r,onResult){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r)}
 
@@ -2931,6 +3142,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
   const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, MacBookPro9,2 o il nome" autocomplete="off"></div>
   <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
   <button class="res" id="lp" style="margin-top:12px"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non riesce a leggere EveryMac.</small></button>
+  <button class="res" id="lgem"><b>✨ Chiedi a Gemini</b><small>${gemOn()?'Cerca sul web e compila tutti i campi: per gli oggetti rari.':'Cerca sul web e compila tutti i campi (serve una chiave API gratuita).'}</small></button>
   <div id="lo" style="margin-top:14px"></div>
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
@@ -2941,6 +3153,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
     const preview=r=>showPreview(out,r,onResult);
     const paste=()=>openImport({replace:true,code:$('#lq',el).value.trim(),onResult});
     $('#lp',el).onclick=paste;
+    $('#lgem',el).onclick=()=>{const v=$('#lb',el).value;openGemini({q:$('#lq',el).value.trim(),marca:v==='apple'?'Apple':(marca&&!/^apple$/i.test(marca)?marca:''),tipologia:tipologia||'',onResult})};
     const wikiFlow=async(q,mc)=>{
       busy('Cerco su Wikipedia…');
       let res=await wikiSearch(q);
@@ -3247,6 +3460,9 @@ function openMenu(){
   <button class="res" data-m="man"><b>🔌 Manutenzione</b><small>Giro di accensioni e ricariche${manDue().length?` · ${manDue().length} da fare`:''}</small></button>
   <button class="res" data-m="inv"><b>📋 Inventario</b><small>Controlla luogo per luogo cosa c'è davvero${LS.get('rd_inv',null)?' · inventario in corso':''}</small></button>
 
+  <div class="sec-t">Ricerche con l'intelligenza artificiale</div>
+  <button class="res" data-m="gem"><b>✨ Gemini</b><small>${gemOn()?`Collegato · modello ${esc(gemCfg().model||'automatico')}`:'Collega una chiave API per far cercare e compilare le schede degli oggetti rari'}</small></button>
+
   <div class="sec-t">Database su GitHub</div>
   <div class="note" id="dbi"></div>
   <button class="res" data-m="dbsync"><b>🔄 Sincronizza ora</b><small id="dbsm"></small></button>
@@ -3282,6 +3498,7 @@ function openMenu(){
   <ol style="padding-left:18px;margin:6px 0"><li>Copia l'indirizzo: <button class="btn sm sec" data-m="calcp">📋 Copia</button><br><small style="word-break:break-all">${esc(calUrl())}</small></li><li>Da un computer (o dal browser del telefono in versione desktop) apri <b>calendar.google.com</b> → ⚙️ Impostazioni → <b>Aggiungi calendario → Da URL</b> → incolla → Aggiungi.</li><li>Nelle impostazioni del nuovo calendario «RDDC – promemoria» imposta la notifica per gli <b>eventi di un giorno intero</b> (es. alle 9:00).</li></ol>
   <p>Google aggiorna i calendari sottoscritti da solo, di solito entro qualche ora. Il file è pubblico come collezione.json.</p></details>
   <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
+  <label class="f">Vetro liquido</label><div class="chips">${LG.supported()?[['full','💧 Completo'],['lite','Leggero'],['off','Spento']].map(([v,l])=>`<button class="chip ${LG.mode()===v?'on':''}" data-m="glass" data-v="${v}">${l}</button>`).join(''):'<small style="color:var(--mute)">Non disponibile in questo browser (serve Chrome o un browser basato su Chromium).</small>'}</div>
   <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
   <label class="f">Proxy personale per la ricerca su EveryMac</label>
   <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
@@ -3297,7 +3514,8 @@ function openMenu(){
   <pre style="white-space:pre-wrap;font-size:11px;background:var(--card);padding:8px;border-radius:8px;overflow:auto;max-height:180px">${esc(WORKER_CODE)}</pre></details>
   <p class="note">Senza proxy funzionano comunque «Incolla da EveryMac» e «Carica pagina salvata».</p>
   <div class="sec-t">Zona pericolosa</div>
-  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>`;
+  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>
+  <button class="res" data-m="nov" style="margin-top:22px;text-align:center"><b>RDDC · versione ${APP_VER}</b><small>${fmtD(NOVITA[0][1])} · Novità →</small></button>`;
   openPage('Menu',h,{mount(el){
     const dbInfo=()=>{const l=LS.get('rd_db_last',null);
       $('#dbi',el).innerHTML=(ghOn()?`Sincronizzazione automatica con <b>${esc(ghCfg().repo)}</b> attiva.`:`Il file <b>collezione.json</b> nel repository GitHub dell'app viene caricato automaticamente su ogni telefono.`)+(l?`<br>Ultima sincronizzazione: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti${l.nuovi||l.agg||l.canc?` · ricevuti ${l.nuovi} nuovi, ${l.agg} aggiornati${l.canc?', '+l.canc+' eliminati':''}`:''}${l.inviati?` · inviati ${l.inviati} oggetti${l.foto?' e '+l.foto+' foto':''}`:''}`:'');
@@ -3306,6 +3524,8 @@ function openMenu(){
     const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
+      if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
+      if(a==='gem')openGemSettings();
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
       if(a==='stats')openStats();
       if(a==='cat')openCatalog();
@@ -3313,6 +3533,7 @@ function openMenu(){
       if(a==='inv')openInventory();
       if(a==='man')openMaintenance();
       if(a==='lab')openLab();
+      if(a==='nov')openNovita();
       if(a==='labcsv')openLab('stat');
       if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
       if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
@@ -3486,6 +3707,8 @@ async function syncDB(manual){
 $('#q').value=S.q||'';
 $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
+function openNovita(){openPage('Novità',`<p class="note" style="margin-top:0">Stai usando <b>RDDC ${APP_VER}</b>. Se dopo un aggiornamento vedi ancora il numero vecchio, chiudi e riapri l'app.</p>`+NOVITA.map(([v,dt,l])=>`<div class="sec-t">Versione ${v} · ${fmtD(dt)}</div><ul class="nov" style="margin:0;padding-left:20px">${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join(''))}
+$('#bVer').textContent=APP_VER;$('#bVer').onclick=openNovita;
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 /* pressione lunga su un elemento della lista → anteprima (stile 3D Touch) */
 let lp=null,lpSwallow=0;
@@ -3569,7 +3792,7 @@ function runInventory(inv){
 }
 function chooseLuogo(ls){return new Promise(res=>{const m=document.createElement('div');m.className='modal';
   m.innerHTML=`<div><p><b>Dove si trova?</b></p><div class="chips">${ls.map(l=>`<button class="chip" data-cl="${esc(l)}">📍 ${esc(l)}</button>`).join('')}</div><div class="row"><input class="in" id="cln" placeholder="Altro luogo"><button class="btn sm" id="clo">OK</button></div><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn sec" data-n>Annulla</button></div></div>`;
-  m.onclick=e=>{const c=e.target.closest('[data-cl]');if(c){m.remove();res(c.dataset.cl)}else if(e.target.closest('#clo')){const v=$('#cln',m).value.trim();if(v){m.remove();res(v)}}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m)})}
+  m.onclick=e=>{const c=e.target.closest('[data-cl]');if(c){m.remove();res(c.dataset.cl)}else if(e.target.closest('#clo')){const v=$('#cln',m).value.trim();if(v){m.remove();res(v)}}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
 async function delWithUndo(d){await DB.del(d.id);markDeleted(d.id);devices=devices.filter(x=>x.id!==d.id);render();dirty();
   toast(`Eliminato «${d.nome}»`,7000,{label:'ANNULLA',fn:async()=>{unmarkDeleted(d.id);d.modificato=Date.now();stamp(d);idx(d);await DB.put(d);devices.push(d);render();dirty();toast('Ripristinato')}})}
 function openPeek(id,src){
@@ -3619,6 +3842,8 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   writeManCache();
+  lgSet(LS.get('rd_glass','full'));addEventListener('resize',()=>{clearTimeout(segDrop.t);segDrop.t=setTimeout(()=>{const i=$('.segi');if(i&&i._s)i._s.init=false;segDrop()},120)});
+  if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
   if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
