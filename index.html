@@ -762,8 +762,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.5';
+const APP_VER='2.6';
 const NOVITA=[
+ ['2.6','2026-11-15',['Dati da EveryMac, Gemini e dalle altre fonti molto più veloci: il modulo si apre subito, senza aspettare lo scaricamento della foto (le foto le aggiungi tu) né la traduzione, che ora avviene in sottofondo dopo il salvataggio']],
  ['2.5','2026-11-15',['Tolta la voce «Garanzia» (modulo, scheda, Oggi e calendario)','Ruolo: ogni oggetto è «Collezione» di partenza, senza voce vuota nel modulo']],
  ['2.4','2026-11-15',['OpenRouter come servizio di riserva (Menu → OpenRouter): quando Gemini non risponde la ricerca passa a un modello gratuito; funziona anche da solo','Gemini prova davvero tutti i modelli: il messaggio «hai superato la quota… billing» non blocca più tutto al primo modello']],
  ['2.3','2026-11-15',['Gemini: corretto un errore per cui il messaggio «hai superato la quota» veniva preso per un problema di fatturazione e l\'app si fermava al primo modello: ora prova tutti i modelli uno dopo l\'altro, come ARGOS, finché uno risponde','Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
@@ -2121,7 +2122,6 @@ Rispondi SOLO con un oggetto JSON valido, senza testo prima o dopo e senza blocc
 Scrivi i valori in italiano, con le unità di misura; date come «mese anno» o solo anno; il prezzo di lancio con la valuta.
 ${F.map(f=>`- "${f.k}": ${f.l}${f.num?' (numero)':''}${f.opts?` — uno tra: ${f.opts.map(o=>`"${o}"`).join(', ')}`:''}${f.k==='descrizione'?' — 3-5 frasi: cos\'è, quando è uscito, cosa lo rende interessante per un collezionista':''}${f.k==='nome'?' — nome commerciale completo e preciso del modello':''}`).join('\n')}
 - "specs": array di coppie ["Etichetta", "valore"] con altre specifiche utili non coperte sopra (al massimo 25)
-- "immagine": URL diretto di una foto del prodotto su upload.wikimedia.org, solo se lo trovi davvero
 - "incerti": array con le chiavi di cui non sei sicuro`}
 const gemText=j=>((((j.candidates||[])[0]||{}).content||{}).parts||[]).filter(p=>p.text&&!p.thought).map(p=>p.text).join('').trim();
 function gemJSON(t){t=String(t||'').replace(/^\s*```(?:json)?/i,'').replace(/```\s*$/,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;try{return JSON.parse(t.slice(a,b+1))}catch(e){return null}}
@@ -2885,7 +2885,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         else if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
         stamp(o);idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
-        dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');
+        dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');setTimeout(autoTranslate,1200);
       }
     });
   }});
@@ -3209,7 +3209,7 @@ function previewHTML(r){
   const f=r.fields;
   const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo],['Tipologia',f.tipologia],['Connettore',f.acc_connettore],['Uscita',f.acc_uscita],['Compatibile con',f.acc_compat],['Codice prodotto',f.ordine]].filter(x=>x[1]);
   const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
-  return `${img?`<img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block;margin-bottom:10px" onerror="this.remove()">`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.gemini?Object.keys(f).length+' campi compilati, ':''}${r.specs.length} ${r.specs.length===1?'specifica':'specifiche'} ${r.gemini?'in più':(r.specs.length===1?'trovata':'trovate')}${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
+  return `${img?`<figure style="margin:0 0 10px"><img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block" onerror="this.parentNode.remove()"><figcaption style="font-size:12px;color:var(--mute);margin-top:4px">Solo anteprima: la foto non viene salvata, la aggiungi tu.</figcaption></figure>`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.gemini?Object.keys(f).length+' campi compilati, ':''}${r.specs.length} ${r.specs.length===1?'specifica':'specifiche'} ${r.gemini?'in più':(r.specs.length===1?'trovata':'trovate')}${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
 }
 function showPreview(out,r,onResult){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r)}
 
@@ -3715,11 +3715,7 @@ async function mergeFetched(base,r,overwrite){
     m.specs=[...have];
   }
   if(r.fonte)m.fonte=r.fonte;
-  if(trOn()&&m.descrizione&&m.descrizione===r.fields.descrizione&&isLongEn(m.descrizione)){
-    try{toast('Traduco la descrizione…',8000);const it=await translateText(m.descrizione);m.descrizione_orig=m.descrizione;m.descrizione=it}catch(e){/* riproverà da sola in seguito */}}
-  if((r.imageBlob||r.imageUrl)&&!(m.foto&&m.foto.length)){
-    try{let b=r.imageBlob;if(!b)for(const u of [r.imageUrl,...(r.imageAlt||[])].filter(Boolean)){try{b=await fetchBlob(u);if(b&&/^image\//.test(b.type||'image/'))break;b=null}catch(_){}}if(!b)throw new Error('foto');m.foto=[await shrink(b,1200)];m.thumb=await shrink(b,180,.75)}catch(e){toast('Dati caricati, ma la foto non è stata scaricata: aggiungila a mano',3600)}
-  }
+  /* la traduzione avviene in sottofondo dopo il salvataggio (autoTranslate); le foto le aggiunge l'utente: niente download dalle fonti */
   return m;
 }
 

@@ -663,6 +663,15 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await W.context().close();
   });
 
+  await test('dati dalle fonti online: il modulo è pronto subito, senza scaricare foto né aspettare la traduzione', async () => {
+    const hits = []; await p.context().route('https://img.esempio.test/**', r => { hits.push(r.request().url()); return new Promise(() => {}); });
+    const r = await p.evaluate(async () => { LS.set('rd_tr', true); const t0 = performance.now();
+      const m = await mergeFetched({ wish: false }, { fields: { nome: 'PowerBook G4 400', descrizione: 'The PowerBook G4 400 is a laptop computer that was introduced by Apple in January 2001 as part of the titanium line. It features a PowerPC G4 processor running at 400 MHz.' }, specs: [['RAM', '128 MB']], imageUrl: 'https://img.esempio.test/foto.jpg', imageAlt: ['https://img.esempio.test/altra.jpg'] }, true);
+      return [Math.round(performance.now() - t0) < 300, m.nome, !!(m.foto && m.foto.length), /^The PowerBook/.test(m.descrizione)]; });
+    eq(r, [true, 'PowerBook G4 400', false, true], 'pronto in meno di 0,3 s, senza foto, descrizione da tradurre dopo');
+    eq(hits.length, 0, 'nessun tentativo di scaricare la foto');
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();
