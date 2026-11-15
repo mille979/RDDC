@@ -762,8 +762,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.2';
+const APP_VER='2.3';
 const NOVITA=[
+ ['2.3','2026-11-15',['Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
  ['2.2','2026-11-15',['Fold aperto e tablet: elenco a sinistra e scheda a destra','Nella scheda: scorri a sinistra o a destra per passare all\'oggetto vicino (con la posizione nell\'elenco)','Filtri salvati: capsule sotto la ricerca, si creano dalla pagina Filtri','Avviso di doppione: «Hai già questo oggetto: aggiungerlo come esemplare?»','Menu → Versioni precedenti: recupera oggetti eliminati o modificati dalla cronologia su GitHub','Gemini: modelli trovati con la tua chiave più quelli da provare a mano (3.6 Flash, Flash Lite…), scansione appena incolli la chiave e all\'avvio, e ingresso compatibile come ARGOS se quello normale non risponde']],
  ['2.1','2026-11-15',['Ricambi: niente più sezione «Manutenzione» né anno (e non finiscono nel giro di ricarica)','Barra delle notifiche: su iPhone l\'app ci passa sotto, su Android prende il colore dello sfondo (e della foto, nella scheda)','Le pagine non scorrono più di lato: i link lunghi vanno a capo e la fonte mostra solo il nome del sito','Aprendo una scheda, titolo, etichette e sezioni entrano in sequenza dopo l\'ingrandimento della foto']],
  ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
@@ -2005,8 +2006,8 @@ const ERR_INFO={
   credito:['💳','Fatturazione o credito','Il progetto Google della chiave ha la fatturazione sospesa o il credito finito: controlla su aistudio.google.com.'],
   minuto:['⏳','Troppe richieste in poco tempo','Il limite gratuito al minuto si azzera presto: riprova {wait}.'],
   giorno:['📅','Richieste gratuite di oggi finite','Il limite giornaliero di Google si azzera alle {time} (mezzanotte in California).'],
-  gratis0:['💳','Modello senza richieste gratuite','Per questa chiave Google concede 0 richieste gratuite con questo modello: l\'app prova da sola gli altri.'],
-  gratis0tutti:['💳','Nessun modello gratuito per questa chiave','Tutti i modelli rispondono «limite: 0». Di solito il progetto della chiave non ha il livello gratuito: crea una chiave in un progetto nuovo su aistudio.google.com/apikey, oppure attiva la fatturazione.'],
+  gratis0:['💳','Modello senza richieste gratuite','Non hai superato nessun limite: Google risponde «troppe richieste» (429) anche quando il tuo livello gratuito prevede 0 richieste per questo modello. Per questo la console di Google resta vuota. L\'app prova da sola gli altri.'],
+  gratis0tutti:['💳','Nessun modello gratuito per questa chiave','Non hai superato nessun limite: tutti i modelli provati rispondono «limite: 0», cioè il livello gratuito di questo progetto non li include (le richieste vengono rifiutate prima di essere contate, per questo la console è vuota). Prova a scegliere a mano un modello Flash o Flash Lite più vecchio, crea una chiave in un progetto nuovo su aistudio.google.com/apikey, oppure attiva la fatturazione.'],
   modello:['🧩','Modello non disponibile','Il modello non esiste più o non è abilitato per la chiave: l\'app ne sceglie un altro.'],
   server:['🛠️','Errore temporaneo di Google','Il servizio è sovraccarico o in manutenzione: riprova tra qualche minuto.'],
   bloccata:['🛡️','Risposta bloccata dai filtri','Gemini ha interrotto la risposta per i suoi filtri: prova a scrivere il nome in un altro modo.'],
@@ -2148,24 +2149,30 @@ async function gemTryNative(model,q,ctx,search){
   const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model});return r}
 /* «Piano B»: se un modello è al limite o non ha richieste gratuite si passa al successivo; errori di chiave/rete fermano tutto */
 const GEM_STOP=['manca','chiave','permesso','paese','credito','rete','bloccata'];
-async function gemAsk(q,ctx,onStep){const list=await gemModels(),order=gemOrder(list),tried=[];let last=null,searchHit=false;
-  const run=async search=>{for(const m of order){const cd=gemCooling(m);if(cd){tried.push([m,cd.kind]);continue}
-      onStep&&onStep(m,tried.slice(),search);
-      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m,via:r.via||'nativo'});r.tried=tried.slice();r.noSearch=r.noSearch||!search;return r}
+/* la ricerca web può avere 0 richieste gratuite anche quando il modello ne ha: lo si ricorda fino all'azzeramento delle quote */
+const gemNoSearch=()=>{const x=LS.get('rd_gem_ns',null);return !!(x&&x.key===gemCfg().key.slice(-6)&&x.until>Date.now())};
+async function gemAsk(q,ctx,onStep){let list=[];try{list=await gemModels()}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;logErr('Gemini · elenco modelli',e)}
+  const order=gemOrder(list),tried=[],useSearch=!gemNoSearch();let last=null;
+  for(const m of order){const cd=gemCooling(m);if(cd){tried.push([m,cd.kind]);continue}
+    let search=useSearch;
+    for(;;){onStep&&onStep(m,tried.slice(),search);
+      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m,via:r.via||'nativo'});r.tried=tried.slice();r.noSearch=r.noSearch||!search;
+        if(useSearch&&!search){r.searchBlocked=true;LS.set('rd_gem_ns',{until:Date.now()+msToPacificMidnight(),key:gemCfg().key.slice(-6)})}
+        return r}
       catch(e){if(GEM_STOP.includes(e.kind)){e.tried=tried;throw e}
-        if(['minuto','giorno','gratis0'].includes(e.kind)){if(e.search&&search){searchHit=true;tried.push([m,'ricerca '+e.kind]);last=e;continue}gemCool(m,e)}
+        const lim=['minuto','giorno','gratis0'].includes(e.kind);
+        /* 429 con la ricerca web attiva: prima di dare il modello per esaurito si riprova subito senza ricerca */
+        if(lim&&search){tried.push([m,'ricerca '+e.kind]);last=e;search=false;continue}
+        if(lim)gemCool(m,e);
         if(e.kind==='modello')LS.set('rd_gem_models',null);
-        tried.push([m,e.kind]);last=e;if(['timeout','vuoto'].includes(e.kind)){e.tried=tried;throw e}}}
-    return null};
-  let r=await run(true);if(r)return r;
-  /* la ricerca web ha esaurito la sua quota: ultimo tentativo senza ricerca (dati dalla memoria di Gemini) */
-  if(searchHit){r=await run(false);if(r)return r}
-  const cds=gemCds(),ks=tried.map(t=>t[1]);
+        tried.push([m,e.kind]);last=e;if(['timeout','vuoto'].includes(e.kind)){e.tried=tried;throw e}
+        break}}}
+  const cds=gemCds(),ks=tried.map(t=>t[1]).filter(k=>!/^ricerca /.test(k));
   if(ks.length&&ks.every(k=>k==='gratis0'))throw new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried,raw:last&&last.raw});
   if(ks.some(k=>k==='giorno'||k==='minuto')){const lim=Object.values(cds).filter(c=>c.kind!=='gratis0'),soon=lim.length?Math.min(...lim.map(c=>c.until)):Date.now()+60000,daily=lim.length&&lim.every(c=>c.kind==='giorno');
     throw new AppErr(daily?'giorno':'minuto','tutti i modelli hanno raggiunto il limite',{tried,until:soon,waitMs:soon-Date.now(),raw:last&&last.raw})}
   const e=last||new AppErr('modello','nessun modello disponibile');e.tried=tried;throw e}
-const GEM_WHY={minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'senza richieste gratuite',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
+const GEM_WHY={minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'0 richieste gratuite (limite 0)',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
 function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={}){
   if(!gemOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
   openPage('Chiedi a Gemini',`<p style="margin-top:0">Gemini cerca sul web e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.</p>
@@ -2180,7 +2187,7 @@ function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={
       $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web','Gemini cerca sul web…','di solito 10–30 secondi');
       const step=(m,tried,search)=>{const s=$('.ld small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
       try{const r=await gemAsk(qq,c2,step);
-        const notes=[r.tried.length?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch?'⚠️ <b>Senza ricerca web</b>: la quota della ricerca Google è finita, quindi i dati vengono dalla memoria di Gemini e sono più facili da sbagliare.':'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
+        const notes=[r.tried.length?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch?(r.searchBlocked||gemNoSearch()?'⚠️ <b>Senza ricerca web</b>: con la ricerca Google il tuo livello gratuito risponde «limite 0», quindi ho chiesto a Gemini senza ricerca. I dati vengono dalla sua memoria e sono più facili da sbagliare: controllali. Riproverò con la ricerca dopo l\'azzeramento delle quote (le 9 del mattino da noi).':r.via==='compatibile'?'⚠️ <b>Senza ricerca web</b>: ha risposto solo l\'ingresso compatibile (come ARGOS), che non fa ricerche sul web. Controlla i dati.':'⚠️ <b>Senza ricerca web</b>: dati dalla memoria di Gemini, controllali.'):'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
         out.innerHTML=previewHTML(r)+notes.map(n=>`<p class="note" style="margin-top:6px">${n}</p>`).join('')
           +(r.sources.length?`<details class="more" style="margin-top:8px"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(s=>`<a class="res" href="${esc(s.uri)}" target="_blank" rel="noopener"><b>${esc(s.title)}</b></a>`).join('')}</details>`:'');
         const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r)}
