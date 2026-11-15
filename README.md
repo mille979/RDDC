@@ -172,6 +172,11 @@ Barra in alto, pulsante **+**, barra della selezione, avvisi, finestre di confer
 - **Versioni precedenti** (Menu, serve il token GitHub): ogni sincronizzazione è una versione; scegli una data, vedi cosa è stato eliminato o modificato da allora e ripristina un oggetto (foto comprese) o tutti insieme.
 - **Barra delle notifiche**: su iPhone l'app installata ci passa sotto; su Android prende il colore dello sfondo, della foto della scheda, del museo.
 
+## OpenRouter, servizio di riserva
+Menu → **🛟 OpenRouter (riserva)**: con una chiave gratuita di openrouter.ai, quando Gemini non risponde (limiti, quota a zero, errori di Google) la ricerca passa da sola a un modello gratuito di OpenRouter («:free»), e la pagina lo dice. Funziona anche senza Gemini.
+- L'elenco dei modelli gratuiti si aggiorna da solo (i migliori per primi); si può sceglierne uno o scriverne il nome. Se un modello ha finito le richieste, l'app passa al successivo.
+- Limiti dei modelli gratuiti: 20 richieste al minuto e 50 al giorno (1000 con almeno 10 $ di credito). Senza ricerca web rispondono dalla loro memoria: la ricerca web di OpenRouter si può attivare, ma è a pagamento.
+
 ## Errori spiegati
 Quando qualcosa non va (Gemini, ricerche online, guide iFixit, sincronizzazione) l'app mostra una scheda con **cosa è successo**, **cosa fare**, i **dettagli tecnici** (il messaggio vero del servizio) e i pulsanti **Riprova**, **Impostazioni** e **Copia dettagli**. Gli ultimi 40 errori restano in Menu → **🩺 Registro errori**, da copiare e mandare.
 

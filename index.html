@@ -762,8 +762,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.3';
+const APP_VER='2.4';
 const NOVITA=[
+ ['2.4','2026-11-15',['OpenRouter come servizio di riserva (Menu → OpenRouter): quando Gemini non risponde la ricerca passa a un modello gratuito; funziona anche da solo','Gemini prova davvero tutti i modelli: il messaggio «hai superato la quota… billing» non blocca più tutto al primo modello']],
  ['2.3','2026-11-15',['Gemini: corretto un errore per cui il messaggio «hai superato la quota» veniva preso per un problema di fatturazione e l\'app si fermava al primo modello: ora prova tutti i modelli uno dopo l\'altro, come ARGOS, finché uno risponde','Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
  ['2.2','2026-11-15',['Fold aperto e tablet: elenco a sinistra e scheda a destra','Nella scheda: scorri a sinistra o a destra per passare all\'oggetto vicino (con la posizione nell\'elenco)','Filtri salvati: capsule sotto la ricerca, si creano dalla pagina Filtri','Avviso di doppione: «Hai già questo oggetto: aggiungerlo come esemplare?»','Menu → Versioni precedenti: recupera oggetti eliminati o modificati dalla cronologia su GitHub','Gemini: modelli trovati con la tua chiave più quelli da provare a mano (3.6 Flash, Flash Lite…), scansione appena incolli la chiave e all\'avvio, e ingresso compatibile come ARGOS se quello normale non risponde']],
  ['2.1','2026-11-15',['Ricambi: niente più sezione «Manutenzione» né anno (e non finiscono nel giro di ricarica)','Barra delle notifiche: su iPhone l\'app ci passa sotto, su Android prende il colore dello sfondo (e della foto, nella scheda)','Le pagine non scorrono più di lato: i link lunghi vanno a capo e la fonte mostra solo il nome del sito','Aprendo una scheda, titolo, etichette e sezioni entrano in sequenza dopo l\'ingrandimento della foto']],
@@ -2015,6 +2016,13 @@ const ERR_INFO={
   risposta:['🧾','Risposta non leggibile','Gemini ha risposto in un formato inatteso. Riprova: di solito al secondo tentativo va.'],
   vuoto:['🔍','Nessuna informazione trovata','Prova con il nome completo, il codice del modello o aggiungi la marca.'],
   altro:['⚠️','Qualcosa non ha funzionato','Riprova; se si ripete, copia i dettagli e mandameli.']};
+const ERR_OR={
+  chiave:['🔑','Chiave OpenRouter non valida','Controlla di averla copiata per intero (inizia con «sk-or-»), oppure creane una nuova su openrouter.ai/keys.'],
+  credito:['💳','Credito OpenRouter insufficiente','Il saldo dell\'account OpenRouter è negativo o finito: anche i modelli gratuiti si bloccano finché non lo ricarichi (o spegni la ricerca web, che è a pagamento).'],
+  giorno:['📅','Richieste gratuite di oggi finite su OpenRouter','I modelli gratuiti hanno 50 richieste al giorno (1000 con almeno 10 $ di credito): si azzerano alle {time}.'],
+  minuto:['⏳','Troppe richieste a OpenRouter','Il limite è di 20 richieste al minuto, oppure il fornitore del modello gratuito è sovraccarico: riprova {wait}.'],
+  modello:['🧩','Modello OpenRouter non disponibile','Il modello gratuito è stato ritirato o rinominato: l\'app aggiorna l\'elenco e ne prova un altro.'],
+  server:['🛠️','Errore del fornitore su OpenRouter','Il fornitore del modello gratuito ha un problema momentaneo: riprova tra qualche minuto o scegli un altro modello.']};
 /* errori qualsiasi (fetch, HTTP…) → AppErr con un tipo */
 function toAppErr(e){if(e instanceof AppErr)return e;const m=String((e&&e.message)||e||'');
   if(e&&(e.name==='TimeoutError'||e.name==='AbortError'))return new AppErr('timeout',m);
@@ -2022,7 +2030,7 @@ function toAppErr(e){if(e instanceof AppErr)return e;const m=String((e&&e.messag
   const st=+((m.match(/\b(?:HTTP|GitHub)\s?(\d{3})\b/)||[])[1]||e&&e.status||0);
   return new AppErr(st===429?'minuto':st>=500?'server':st===401||st===403?'permesso':'altro',m,{status:st||undefined})}
 const fmtWait=ms=>ms<90000?`tra ${Math.max(5,Math.round(ms/1000))} secondi`:`tra ${Math.round(ms/60000)} minuti`;
-function errInfo(e){e=toAppErr(e);const [ic,t,r]=ERR_INFO[e.kind]||ERR_INFO.altro;
+function errInfo(e){e=toAppErr(e);const [ic,t,r]=(e.via==='openrouter'&&ERR_OR[e.kind])||ERR_INFO[e.kind]||ERR_INFO.altro;
   return {ic,title:t,remedy:r.replace('{wait}',fmtWait(e.waitMs||60000)).replace('{time}',e.until?new Date(e.until).toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}):'—'),e}}
 function errDetail(e,where){e=toAppErr(e);return [`${where||'RDDC'} · ${new Date().toLocaleString('it')} · versione ${APP_VER}`,`tipo: ${e.kind}${e.status?' · HTTP '+e.status:''}${e.model?' · modello '+e.model:''}`,e.tried&&e.tried.length?'modelli provati: '+e.tried.map(t=>t[0]+' → '+t[1]).join(', '):'',e.raw||e.message].filter(Boolean).join('\n')}
 /* registro degli ultimi errori, solo su questo telefono (Menu → Registro errori) */
@@ -2034,7 +2042,7 @@ function errCard(e,{where='',retry=false,settings=''}={}){const i=errInfo(e);
     <div class="row" style="flex-wrap:wrap;gap:6px">${retry?'<button class="btn sm" data-eretry>↻ Riprova</button>':''}${settings?`<button class="btn sm sec" data-eset="${settings}">Impostazioni</button>`:''}<button class="btn sm sec" data-ecopy>Copia dettagli</button></div></div>`}
 function errBox(out,e,where,retry,settings){logErr(where,e);out.innerHTML=errCard(e,{where,retry:!!retry,settings});out.onclick=null;const b=$('[data-eretry]',out);if(b&&retry)b.onclick=retry}
 document.addEventListener('click',async ev=>{const c=ev.target.closest('[data-ecopy]');if(c){const pre=c.closest('.errc').querySelector('pre');try{await navigator.clipboard.writeText(pre.textContent);toast('Dettagli copiati')}catch(_){pre.closest('details').open=true;toast('Seleziona il testo e copialo')}return}
-  const s=ev.target.closest('[data-eset]');if(s&&s.dataset.eset==='gem')openGemSettings({})});
+  const s=ev.target.closest('[data-eset]');if(s&&s.dataset.eset==='gem')openGemSettings({});if(s&&s.dataset.eset==='or')openORSettings({})});
 addEventListener('error',ev=>{if(ev.message)logErr('app',new AppErr('altro',ev.message+(ev.filename?` (${String(ev.filename).split('/').pop()}:${ev.lineno})`:'')))});
 addEventListener('unhandledrejection',ev=>logErr('app',ev.reason||'promessa rifiutata'));
 function openErrLog(){const a=LS.get('rd_errlog',[]);
@@ -2175,28 +2183,112 @@ async function gemAsk(q,ctx,onStep){let list=[];try{list=await gemModels()}catch
     throw new AppErr(daily?'giorno':'minuto','tutti i modelli hanno raggiunto il limite',{tried,until:soon,waitMs:soon-Date.now(),raw:last&&last.raw})}
   const e=last||new AppErr('modello','nessun modello disponibile');e.tried=tried;throw e}
 const GEM_WHY={quota:'quota esaurita o non gratuita','ricerca quota':'ricerca web senza quota',minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'0 richieste gratuite (limite 0)',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
+/* ===== OpenRouter: servizio di riserva quando Gemini non risponde (modelli gratuiti «:free») ===== */
+const OR='https://openrouter.ai/api/v1';
+const orCfg=()=>Object.assign({key:'',model:'',ok:'',web:false},LS.get('rd_or',{}));
+const orOn=()=>!!orCfg().key;
+const orSet=x=>LS.set('rd_or',Object.assign(orCfg(),x));
+const aiOn=()=>gemOn()||orOn();
+async function orErr(r,model){let j=null,txt='';try{txt=await r.text();j=JSON.parse(txt)}catch(_){}
+  const er=(j&&j.error)||{},st=r.status,msg=String(er.message||txt.slice(0,300)||`HTTP ${st}`),meta=er.metadata||{},all=msg+' '+(meta.raw||'');
+  let kind='altro';
+  if(st===401)kind='chiave';else if(st===402)kind='credito';else if(st===429)kind=/per[- ]?day|daily|free-models-per-day/i.test(all)?'giorno':'minuto';
+  else if(st===404)kind='modello';else if(st===403)kind=/moderation|flagged/i.test(all)?'bloccata':'permesso';else if(st>=500)kind='server';
+  else if(st===400&&/model/i.test(msg)&&/valid|exist|not found|unavailable/i.test(msg))kind='modello';
+  return new AppErr(kind,msg,{status:st,model,via:'openrouter',waitMs:60000,raw:`OpenRouter HTTP ${st}: ${msg}${meta.provider_name?` (${meta.provider_name})`:''}${meta.raw?'\n'+String(meta.raw).slice(0,400):''}`})}
+async function orFetch(path,body,model){const c=orCfg();let r;
+  try{r=await fetch(`${OR}/${path}`,{method:body?'POST':'GET',headers:Object.assign({},body?{Authorization:'Bearer '+c.key,'Content-Type':'application/json','X-Title':'RDDC'}:{}),body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(120000)})}
+  catch(e){throw new AppErr(e.name==='TimeoutError'?'timeout':'rete',e.message||String(e),{model,via:'openrouter'})}
+  if(!r.ok)throw await orErr(r,model);return r.json()}
+/* modelli gratuiti: elenco pubblico di OpenRouter, filtrato su quelli a costo zero che rispondono in testo */
+const orScore=m=>{const id=m.id||m;return (/gemini/.test(id)?40:/deepseek/.test(id)?36:/llama-3\.3|llama-4/.test(id)?34:/qwen/.test(id)?32:/gpt-oss/.test(id)?31:/mistral|mixtral/.test(id)?28:/llama/.test(id)?24:10)+Math.min(8,((m.context_length||0)/32000))-(/vision|-vl|coder|math|guard|embed/.test(id)?12:0)};
+async function orModels(force){const c=LS.get('rd_or_models',null);if(!force&&c&&Date.now()-c.t<6*3600e3&&c.list.length)return c.list;
+  const j=await orFetch('models');
+  const free=(j.data||[]).filter(m=>m&&m.id&&(/:free$/.test(m.id)||(m.pricing&&+m.pricing.prompt===0&&+m.pricing.completion===0))&&!/^openrouter\//.test(m.id)&&(!m.architecture||!m.architecture.output_modalities||m.architecture.output_modalities.includes('text')));
+  const list=free.sort((a,b)=>orScore(b)-orScore(a)||a.id.localeCompare(b.id)).map(m=>m.id);LS.set('rd_or_models',{t:Date.now(),list});return list}
+function orOrder(list){const c=orCfg();return [...new Set([c.model,list.includes(c.ok)?c.ok:'',...list].filter(Boolean))]}
+const orCds=()=>{const c=LS.get('rd_or_cd',{}),now=Date.now();for(const m of Object.keys(c))if(c[m].until<=now)delete c[m];return c};
+function orCool(model,e){const c=orCds(),d=new Date(),mid=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1);c[model]={until:e.kind==='giorno'?mid:Date.now()+(e.waitMs||60000),kind:e.kind};LS.set('rd_or_cd',c);e.until=c[model].until}
+const orCooling=m=>orCds()[m];
+const OR_STOP=['manca','chiave','credito','rete','bloccata','permesso'];
+async function orAsk(q,ctx,onStep){if(!orOn())throw new AppErr('manca','manca la chiave OpenRouter',{via:'openrouter'});
+  let list=[];try{list=await orModels()}catch(e){logErr('OpenRouter · elenco modelli',e)}
+  const order=orOrder(list).slice(0,6),tried=[],web=orCfg().web;let last=null;
+  for(const m of order){const cd=orCooling(m);if(cd){tried.push([m,cd.kind]);continue}
+    onStep&&onStep('OpenRouter · '+m,tried.slice(),web);
+    try{const body={model:m,messages:[{role:'user',content:gemPrompt(q,ctx)}]};if(web)body.plugins=[{id:'web',max_results:4}];
+      const j=await orFetch('chat/completions',body,m),msg=((j.choices||[])[0]||{}).message||{},txt=String(msg.content||''),o=gemJSON(txt);
+      if(!o)throw new AppErr('risposta','nessun JSON nella risposta',{model:m,via:'openrouter',raw:txt.slice(0,600)});
+      const sources=(msg.annotations||[]).filter(a=>a&&a.type==='url_citation'&&a.url_citation&&a.url_citation.url).map(a=>({uri:a.url_citation.url,title:a.url_citation.title||a.url_citation.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0]}));
+      const r=gemResult(o,{model:m,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model:m,via:'openrouter'});
+      Object.assign(r,{via:'openrouter',noSearch:!web,tried:tried.slice(),fonteNome:`OpenRouter (${m})${web?' con ricerca web':' senza ricerca web'}${sources.length?' · '+sources.slice(0,3).map(s=>s.title).join(', '):''}`});orSet({ok:m});return r}
+    catch(e){if(OR_STOP.includes(e.kind)){e.tried=tried;throw e}
+      if(['minuto','giorno'].includes(e.kind))orCool(m,e);if(e.kind==='modello')LS.set('rd_or_models',null);
+      tried.push([m,e.kind]);last=e;if(['timeout','vuoto'].includes(e.kind)){e.tried=tried;throw e}}}
+  const e=last||new AppErr('modello','nessun modello gratuito disponibile su OpenRouter',{via:'openrouter'});e.tried=tried;e.via='openrouter';throw e}
+/* ricerca con l'IA: prima Gemini, se non risponde OpenRouter */
+async function aiAsk(q,ctx,onStep){
+  if(!gemOn())return orAsk(q,ctx,onStep);
+  try{return await gemAsk(q,ctx,onStep)}
+  catch(e){if(!orOn()||['vuoto','bloccata'].includes(e.kind))throw e;logErr('Gemini',e);
+    try{const r=await orAsk(q,ctx,onStep);r.gemErr=e;return r}
+    catch(e2){e2.raw=`${e2.raw||e2.message}\n— prima Gemini: ${errInfo(e).title}. ${e.raw||e.message}`;throw e2}}}
+async function orProbe(onLine){const list=await orModels(true),order=orOrder(list).slice(0,6),res=[];
+  for(const m of order){try{await orFetch('chat/completions',{model:m,messages:[{role:'user',content:'Rispondi solo: OK'}],max_tokens:5},m);res.push([m,'ok']);onLine(res);orSet({ok:m});return {list,res,ok:m}}
+    catch(e){if(OR_STOP.includes(e.kind))throw e;if(['minuto','giorno'].includes(e.kind))orCool(m,e);res.push([m,e.kind,e]);onLine(res)}}
+  return {list,res,ok:''}}
+function openORSettings({replace=false,then}={}){const c=orCfg();
+  openPage('OpenRouter',`<p style="margin-top:0"><b>Servizio di riserva</b>: quando Gemini non risponde (limiti, quota a zero, errori di Google) la ricerca passa a OpenRouter, che offre modelli gratuiti di vari produttori. Funziona anche da solo, senza Gemini.</p>
+    <label class="f">Chiave API</label><input class="in" id="ork" type="password" value="${esc(c.key)}" placeholder="sk-or-v1-…" autocomplete="off">
+    <label class="f">Modello</label><select class="in" id="orm"></select><small id="ori" style="display:block;color:var(--mute);margin:6px 4px 0"></small>
+    <input class="in" id="orn" placeholder="…oppure scrivi il nome di un modello (es. deepseek/deepseek-chat-v3.1:free)" autocomplete="off" style="margin-top:8px">
+    <label class="row" style="gap:10px;font-size:14px;margin:12px 4px 0"><input type="checkbox" id="orw" ${c.web?'checked':''} style="width:20px;height:20px;flex:none"><span>Ricerca web di OpenRouter<small style="display:block;color:var(--mute)">a pagamento: consuma credito</small></span></label>
+    <div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn" id="ors">Salva e prova</button>${c.key?'<button class="btn sec" id="orx">Scollega</button>':''}</div><div id="orb" style="margin-top:10px"></div>
+    <p style="margin-bottom:2px"><b>Come ottenere la chiave</b> (gratis):</p>
+    <ol style="padding-left:18px;margin:4px 0"><li>Crea un account su <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a></li><li>Apri <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> → <b>Create Key</b>, copiala e incollala qui.</li></ol>
+    <p class="note">🔒 La chiave resta solo su questo telefono. I modelli gratuiti hanno 20 richieste al minuto e 50 al giorno (1000 al giorno con almeno 10 $ di credito); senza ricerca web rispondono dalla loro memoria, quindi i dati vanno controllati. Alcuni fornitori gratuiti possono usare le richieste per addestrare i modelli: qui si inviano solo nomi e dati dei dispositivi.</p>`,{replace,mount(el){
+    const box=$('#orb',el);
+    const fill=()=>{const cur=orCfg().model,cc=LS.get('rd_or_models',null),L=cc?cc.list:[],tag=m=>{const cd=orCooling(m);return cd?' · '+(GEM_WHY[cd.kind]||cd.kind):m===orCfg().ok?' · ✓ funziona':''};
+      $('#orm',el).innerHTML=`<option value="">Automatico (prova i gratuiti uno dopo l'altro)</option>`+(L.length?`<optgroup label="Gratuiti (${L.length})">${L.map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}${tag(m)}</option>`).join('')}</optgroup>`:'')+(cur&&!L.includes(cur)?`<option value="${esc(cur)}" selected>${esc(cur)}</option>`:'');
+      $('#ori',el).textContent=L.length?`${L.length} modelli gratuiti · aggiornato ${new Date(cc.t).toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'})}`:'Elenco dei modelli gratuiti non ancora caricato'};
+    const scan=async q=>{$('#ori',el).textContent='Cerco i modelli gratuiti…';try{await orModels(true)}catch(e){logErr('OpenRouter · elenco modelli',e);if(!q)errBox(box,e,'OpenRouter · elenco modelli',()=>scan())}fill()};
+    fill();{const cc=LS.get('rd_or_models',null);if(!cc||Date.now()-cc.t>3600e3)scan(true)}
+    const lines=res=>box.innerHTML=`<div class="log">${res.map(([m,k,e])=>`<div class="li"><span class="lb"><b>${k==='ok'?'✓':'✗'} ${esc(m)}</b><small>${k==='ok'?'risponde':esc(GEM_WHY[k]||(ERR_INFO[k]||ERR_INFO.altro)[1])}${e&&e.raw?' — '+esc(String(e.raw).split('\n')[0].slice(0,140)):''}</small></span></div>`).join('')}</div>`;
+    $('#ors',el).onclick=async()=>{const key=$('#ork',el).value.trim();if(!key){box.innerHTML='<p class="note">Incolla la chiave</p>';return}const b=$('#ors',el);b.disabled=true;
+      orSet({key,web:$('#orw',el).checked});box.innerHTML=loader('web','Provo la chiave…','una richiesta di prova per modello, finché uno risponde');
+      try{const {res,ok}=await orProbe(lines);fill();lines(res);
+        if(ok){box.insertAdjacentHTML('afterbegin',`<p class="note" style="margin-top:0">✅ OpenRouter collegato: userò <b>${esc(orCfg().model||ok)}</b>${gemOn()?' quando Gemini non risponde':''}.</p>`);toast('OpenRouter collegato 🛟');if(then)setTimeout(then,700)}
+        else{const last=(res.find(r=>r[2])||[])[2];box.insertAdjacentHTML('afterbegin',errCard(last||new AppErr('modello','nessun modello gratuito ha risposto',{via:'openrouter'}),{where:'Prova OpenRouter'}));logErr('Prova OpenRouter',last||'nessun modello')}}
+      catch(e){errBox(box,e,'Prova OpenRouter',()=>$('#ors',el).click(),'or')}
+      b.disabled=false};
+    $('#orm',el).onchange=()=>{orSet({model:$('#orm',el).value});toast('Modello: '+($('#orm',el).value||'automatico'));fill()};
+    $('#orn',el).onchange=()=>{const v=$('#orn',el).value.trim();if(!v)return;orSet({model:v});$('#orn',el).value='';fill();toast('Modello: '+v)};
+    $('#orw',el).onchange=()=>{orSet({web:$('#orw',el).checked});toast($('#orw',el).checked?'Ricerca web attiva (a pagamento)':'Ricerca web spenta')};
+    const x=$('#orx',el);if(x)x.onclick=()=>{LS.set('rd_or',{});LS.set('rd_or_cd',{});toast('OpenRouter scollegato');history.back()};
+  }});
+}
 function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={}){
-  if(!gemOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
-  openPage('Chiedi a Gemini',`<p style="margin-top:0">Gemini cerca sul web e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.</p>
+  if(!aiOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
+  openPage(gemOn()?'Chiedi a Gemini':'Chiedi all\'IA',`<p style="margin-top:0">${gemOn()?'Gemini cerca sul web':'L\'intelligenza artificiale (OpenRouter) cerca'} e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.${gemOn()&&orOn()?' Se Gemini non risponde, passa a OpenRouter.':''}</p>
     <label class="f">Oggetto (nome, modello o codice)</label><input class="in" id="gmq" value="${esc(q)}" placeholder="Es. Olivetti M24, Sony KV-1400, Psion Series 5mx" autocomplete="off">
     <div class="grid2"><div><label class="f">Marca (facoltativa)</label><input class="in" id="gmm" value="${esc(marca)}" list="dl_gm_m" autocomplete="off"></div><div><label class="f">Tipo (facoltativo)</label><input class="in" id="gmt" value="${esc(tipologia)}" list="dl_gm_t" autocomplete="off"></div></div>
     <datalist id="dl_gm_m">${MARCHE0.map(m=>`<option value="${esc(m)}">`).join('')}</datalist><datalist id="dl_gm_t">${TIPI.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
     <button class="btn" id="gmb" style="width:100%;margin-top:14px">✨ Cerca e compila</button><div id="gmo" style="margin-top:14px"></div>
-    <p class="note">Modello: ${esc(gemCfg().model||(gemCfg().ok?gemCfg().ok+' (automatico)':'scelto in automatico'))} · <a href="#" data-gms>impostazioni</a>. Gemini può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
+    <p class="note">${gemOn()?`Gemini: ${esc(gemCfg().model||(gemCfg().ok?gemCfg().ok+' (automatico)':'automatico'))} · <a href="#" data-gms>impostazioni</a>`:''}${gemOn()&&orOn()?'<br>':''}${orOn()?`Riserva OpenRouter: ${esc(orCfg().model||(orCfg().ok?orCfg().ok+' (automatico)':'automatico'))} · <a href="#" data-ors>impostazioni</a>`:gemOn()?' · <a href="#" data-ors>aggiungi OpenRouter come riserva</a>':''}. L'IA può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
     const out=$('#gmo',el);
     const run=async()=>{const qq=$('#gmq',el).value.trim();if(!qq)return $('#gmq',el).focus();
       const c2=[ctx,$('#gmm',el).value.trim()&&'marca: '+$('#gmm',el).value.trim(),$('#gmt',el).value.trim()&&'tipo: '+$('#gmt',el).value.trim()].filter(Boolean).join('; ');
-      $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web','Gemini cerca sul web…','di solito 10–30 secondi');
+      $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web',gemOn()?'Gemini cerca sul web…':'Cerco con OpenRouter…','di solito 10–30 secondi');
       const step=(m,tried,search)=>{const s=$('.ld small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
-      try{const r=await gemAsk(qq,c2,step);
-        const notes=[r.tried.length?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch?(r.searchBlocked||gemNoSearch()?'⚠️ <b>Senza ricerca web</b>: con la ricerca Google il tuo livello gratuito risponde «limite 0», quindi ho chiesto a Gemini senza ricerca. I dati vengono dalla sua memoria e sono più facili da sbagliare: controllali. Riproverò con la ricerca dopo l\'azzeramento delle quote (le 9 del mattino da noi).':r.via==='compatibile'?'⚠️ <b>Senza ricerca web</b>: ha risposto solo l\'ingresso compatibile (come ARGOS), che non fa ricerche sul web. Controlla i dati.':'⚠️ <b>Senza ricerca web</b>: dati dalla memoria di Gemini, controllali.'):'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
+      try{const r=await aiAsk(qq,c2,step);
+        const notes=[r.via==='openrouter'&&r.gemErr?`🛟 Gemini non ha risposto (${esc(errInfo(r.gemErr).title.toLowerCase())}): ho usato la riserva <b>OpenRouter</b> con ${esc(orCfg().ok)}.`:'',r.tried.length&&r.via!=='openrouter'?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch&&r.via==='openrouter'?'⚠️ <b>Senza ricerca web</b>: i modelli gratuiti di OpenRouter rispondono dalla loro memoria, quindi i dati sono più facili da sbagliare. Controllali prima di salvare.':r.noSearch?(r.searchBlocked||gemNoSearch()?'⚠️ <b>Senza ricerca web</b>: con la ricerca Google il tuo livello gratuito risponde «limite 0», quindi ho chiesto a Gemini senza ricerca. I dati vengono dalla sua memoria e sono più facili da sbagliare: controllali. Riproverò con la ricerca dopo l\'azzeramento delle quote (le 9 del mattino da noi).':r.via==='compatibile'?'⚠️ <b>Senza ricerca web</b>: ha risposto solo l\'ingresso compatibile (come ARGOS), che non fa ricerche sul web. Controlla i dati.':'⚠️ <b>Senza ricerca web</b>: dati dalla memoria di Gemini, controllali.'):'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
         out.innerHTML=previewHTML(r)+notes.map(n=>`<p class="note" style="margin-top:6px">${n}</p>`).join('')
           +(r.sources.length?`<details class="more" style="margin-top:8px"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(s=>`<a class="res" href="${esc(s.uri)}" target="_blank" rel="noopener"><b>${esc(s.title)}</b></a>`).join('')}</details>`:'');
         const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r)}
-      catch(e){errBox(out,e,'Gemini',run,GEM_STOP.includes(toAppErr(e).kind)||/gratis0/.test(toAppErr(e).kind)?'gem':'')}
+      catch(e){const k=toAppErr(e).kind,orE=toAppErr(e).via==='openrouter';errBox(out,e,orE?'OpenRouter':'Gemini',run,GEM_STOP.includes(k)||/gratis0|quota/.test(k)||orE?(orE?'or':'gem'):'');if(!orOn()&&gemOn()&&/gratis0|quota|minuto|giorno/.test(k))out.insertAdjacentHTML('beforeend','<p class="note">💡 Con OpenRouter come riserva, quando Gemini non risponde la ricerca passa a un modello gratuito di OpenRouter. <a href="#" data-ors>Collegalo</a>.</p>')}
       $('#gmb',el).disabled=false};
     $('#gmb',el).onclick=run;$('#gmq',el).onkeydown=e=>{if(e.key==='Enter')run()};
-    el.addEventListener('click',e=>{if(e.target.closest('[data-gms]')){e.preventDefault();openGemSettings({})}});
+    el.addEventListener('click',e=>{if(e.target.closest('[data-gms]')){e.preventDefault();openGemSettings({})}if(e.target.closest('[data-ors]')){e.preventDefault();openORSettings({})}});
     if(q)setTimeout(run,60);else setTimeout(()=>$('#gmq',el).focus(),250);
   }});
 }
@@ -3872,6 +3964,7 @@ function openMenu(){
 
   <div class="sec-t">Ricerche con l'intelligenza artificiale</div>
   <button class="res" data-m="errlog"><b>🩺 Registro errori</b><small>${(()=>{const n=LS.get('rd_errlog',[]).length;return n?`${n} ${n===1?'errore registrato':'errori registrati'}: dettagli da copiare e mandare`:'Nessun errore registrato'})()}</small></button>
+  <button class="res" data-m="orset"><b>🛟 OpenRouter (riserva)</b><small>${orOn()?`Collegato · ${esc(orCfg().model||'modelli gratuiti automatici')}`:'Modelli gratuiti da usare quando Gemini non risponde'}</small></button>
   <button class="res" data-m="gem"><b>✨ Gemini</b><small>${gemOn()?`Collegato · modello ${esc(gemCfg().model||'automatico')}`:'Collega una chiave API per far cercare e compilare le schede degli oggetti rari'}</small></button>
 
   <div class="sec-t">Database su GitHub</div>
@@ -3938,6 +4031,7 @@ function openMenu(){
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
       if(a==='gem')openGemSettings();
+      if(a==='orset')openORSettings();
       if(a==='errlog')openErrLog();
       if(a==='vers')openVersions();
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
