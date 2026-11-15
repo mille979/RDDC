@@ -493,6 +493,25 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await p.evaluate(() => { const c = document.createElement('canvas'), g = lgGL(), im = new Image(); return new Promise(res => { im.onload = () => { c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const mid = x.getImageData(im.width >> 1, im.height >> 1, 1, 1).data, edge = x.getImageData(2, im.height >> 1, 1, 1).data; res([Math.abs(mid[0] - 128) < 3, Math.abs(edge[0] - 128) > 8]); }; im.src = lgMaps(120, 60, 30, { ext: [0, 0, 0, 0] }).disp; }); }), [true, true], 'nessuno spostamento al centro, rifrazione sul bordo');
   });
 
+  await test('niente scorrimento laterale: link lunghi a capo, fonte abbreviata, testo della scheda animato', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'lng', nome: 'PowerBook G4 400 (Original - Titanium) con un nome lunghissimo', tipologia: 'Portatile', fonte: 'https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_400_original_titanium_specifications_very_long_url.html', note: 'https://example.com/' + 'x'.repeat(160), creato: Date.now() }); render(); openDetail('lng'); });
+    await p.waitForTimeout(900);
+    const r = await p.evaluate(() => { const b = stack[stack.length - 1].querySelector('.body'); return [b.scrollWidth <= b.clientWidth + 1, document.documentElement.scrollWidth <= innerWidth + 1, /^everymac\.com · powerbook g4 400 original titanium .*…$/.test([...b.querySelectorAll('a')].find(a => /everymac/.test(a.href)).textContent), stack[stack.length - 1].classList.contains('det'), getComputedStyle(stack[stack.length - 1].querySelector('.cap h1')).animationName]; });
+    eq(r, [true, true, true, true, 'tx-in'], 'pagina larga quanto lo schermo, fonte abbreviata, titolo animato');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('ricambi: niente sezione Manutenzione né anno, fuori dal giro di ricarica', async () => {
+    await p.evaluate(async () => { await saveDev({ id: 'bip', nome: 'Batteria iPod Nano', tipologia: 'Ricambio', part_cat: 'Batteria', anno: 2006, creato: Date.now() }); render(); });
+    eq(await p.evaluate(() => [manTargets(devices.find(d => d.id === 'bip')).length, manHTML(devices.find(d => d.id === 'bip')), /class="yr"/.test(card(devices.find(d => d.id === 'bip')))]), [0, '', false], 'giro, scheda ed elenco');
+    await p.evaluate(() => openForm(devices.find(d => d.id === 'bip'))); await p.waitForTimeout(300);
+    const vis = () => p.evaluate(() => { const pg = stack[stack.length - 1], sec = [...pg.querySelectorAll('.sec-t')].find(x => x.textContent === 'Manutenzione').parentElement, an = pg.querySelector('[name="anno"]').closest('[data-when]'); return [sec.hidden, an.hidden]; });
+    eq(await vis(), [true, true], 'nascosti per un ricambio');
+    await p.evaluate(() => { const f = stack[stack.length - 1].querySelector('[name="tipologia"]'); f.value = 'Portatile'; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); }); await p.waitForTimeout(100);
+    eq(await vis(), [false, false], 'ricompaiono cambiando tipologia');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
 
   await browser.close(); server.close();

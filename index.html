@@ -3,8 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f8f1e6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15100a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RDDC">
+<meta name="theme-color" content="#f6e6cc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#22180c" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -32,7 +36,9 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Roboto,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Roboto,sans-serif;overflow-x:clip}
+a,.note,.kv>div,.desc,.lb,.res,.res small,.errc small,p,li,.tile b,.annn p{overflow-wrap:anywhere}
+.page .body{overflow-x:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line)}
@@ -627,6 +633,8 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .ctip{border:0;background:var(--glass-hi);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .bar div{border-radius:999px}
 .empty{padding:70px 20px}
+/* iOS installata: la pagina passa sotto la barra di stato; un velo scuro tiene leggibili ora e batteria (testo bianco) */
+@media (display-mode:standalone){@supports (-webkit-touch-callout:none){body::after{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 10px);z-index:200;pointer-events:none;background:linear-gradient(rgba(20,12,4,.34),rgba(20,12,4,0))}}}
 /* errori */
 .errc{border-radius:24px;padding:14px;margin:6px 0;background:color-mix(in srgb,var(--dng) 9%,var(--glass));box-shadow:var(--rim),0 0 0 1px color-mix(in srgb,var(--dng) 22%,transparent),var(--drop)}
 .errc .eh{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}.errc .ei{font-size:24px;line-height:1.1;flex:none}.errc b{display:block;font-size:16px}.errc small{display:block;color:var(--mute);font-size:14px;margin-top:3px;line-height:1.4}
@@ -649,6 +657,22 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .thumbs{padding:14px 14px 0}.thumbs img{border-radius:15px;box-shadow:var(--drop)}
 .dbody{padding:4px 14px calc(34px + env(safe-area-inset-bottom))}
 .acts{gap:8px;margin-top:26px}
+/* scheda: testo, etichette e sezioni entrano in sequenza mentre la foto si ingrandisce */
+@keyframes tx-in{from{opacity:0;transform:translateY(16px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes chip-in{from{opacity:0;transform:translateY(10px) scale(.82)}to{opacity:1;transform:none}}
+@keyframes hb-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes cap-in{from{opacity:0}to{opacity:1}}
+.page.det:not(.quiet) .cap::before{animation:cap-in .55s ease .2s both}
+.page.det:not(.quiet) .cap>small{animation:tx-in .5s cubic-bezier(.2,.85,.25,1) 0.34s both}
+.page.det:not(.quiet) .cap h1{animation:tx-in .6s cubic-bezier(.2,.85,.25,1) 0.40s both}
+.page.det:not(.quiet) .hchip{animation:chip-in .45s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:0.52s}
+.page.det:not(.quiet) .hchip:nth-child(2){animation-delay:0.56s}.page.det:not(.quiet) .hchip:nth-child(3){animation-delay:0.60s}.page.det:not(.quiet) .hchip:nth-child(4){animation-delay:0.64s}.page.det:not(.quiet) .hchip:nth-child(5){animation-delay:0.68s}.page.det:not(.quiet) .hchip:nth-child(n+6){animation-delay:0.72s}
+.page.det:not(.quiet) .hb{animation:hb-in .42s cubic-bezier(.2,.9,.3,1.3) 0.30s both}
+.page.det:not(.quiet) .thumbs img{animation:chip-in .45s cubic-bezier(.2,.85,.25,1) 0.58s both}
+.page.det:not(.quiet) .dbody>*{animation:tx-in .5s cubic-bezier(.2,.85,.25,1) both;animation-delay:0.62s}
+.page.det:not(.quiet) .dbody>*:nth-child(2){animation-delay:0.66s}.page.det:not(.quiet) .dbody>*:nth-child(3){animation-delay:0.70s}.page.det:not(.quiet) .dbody>*:nth-child(4){animation-delay:0.74s}.page.det:not(.quiet) .dbody>*:nth-child(5){animation-delay:0.78s}.page.det:not(.quiet) .dbody>*:nth-child(6){animation-delay:0.82s}.page.det:not(.quiet) .dbody>*:nth-child(n+7){animation-delay:0.86s}
+.page.det:not(.quiet) .tiles>.tile{animation:chip-in .45s cubic-bezier(.2,.85,.25,1) both;animation-delay:0.68s}.page.det:not(.quiet) .tiles>.tile:nth-child(2){animation-delay:0.72s}.page.det:not(.quiet) .tiles>.tile:nth-child(3){animation-delay:0.76s}.page.det:not(.quiet) .tiles>.tile:nth-child(n+4){animation-delay:0.80s}
+@media (prefers-reduced-motion:reduce){.page.det .cap::before,.page.det .cap>*,.page.det .hchip,.page.det .hb,.page.det .thumbs img,.page.det .dbody>*,.page.det .tile{animation:none!important}}
 /* anteprima con pressione lunga */
 .pk-card{border-radius:30px;background:var(--glass-hi);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
 .pk-acts{border-radius:24px;background:var(--glass-hi);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
@@ -712,14 +736,16 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.0';
+const APP_VER='2.1';
 const NOVITA=[
+ ['2.1','2026-11-15',['Ricambi: niente più sezione «Manutenzione» né anno (e non finiscono nel giro di ricarica)','Barra delle notifiche: su iPhone l\'app ci passa sotto, su Android prende il colore dello sfondo (e della foto, nella scheda)','Le pagine non scorrono più di lato: i link lunghi vanno a capo e la fonte mostra solo il nome del sito','Aprendo una scheda, titolo, etichette e sezioni entrano in sequenza dopo l\'ingrandimento della foto']],
  ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
  ['1.1','2026-11-14',['Vetro liquido: barra in alto, pulsante +, avvisi, dialoghi, intestazioni e pulsanti sulle foto deformano e illuminano quello che passa sotto (Menu → Aspetto)','La goccia del selettore Collezione/Wishlist scorre e si allunga; i pulsanti rimbalzano quando li premi','✨ Chiedi a Gemini: cerca sul web e compila la scheda degli oggetti rari (serve una chiave API, Menu → Gemini)']],
  ['1.0','2026-11-11',['Numero di versione accanto al logo e nel menu','Laboratorio: collaudi, progetti di restauro, lista della spesa, statistiche ed esportazioni CSV','Manutenzione: giro di accensioni e ricariche con promemoria e calendario','Scheda «Oggi», ruolo, raccolte, «Va con» per esemplare','Animazioni e note per ogni annuncio','Foto orizzontali piene nelle anteprime della griglia']]];
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
 const addDays=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const shortUrl=u=>{try{const x=new URL(u),seg=x.pathname.split('/').filter(Boolean).pop()||'';return x.hostname.replace(/^www\./,'')+(seg?' · '+decodeURIComponent(seg).replace(/\.(html?|php|aspx?)$/,'').replace(/[-_]+/g,' ').replace(/^(.{38}).{3,}$/,'$1…'):'')}catch(e){return String(u).slice(0,60)}};
 const fmtD=s=>{if(!s)return '';const d=new Date(String(s).slice(0,10)+'T12:00');return isNaN(d)?String(s):d.toLocaleDateString('it',{day:'numeric',month:'short',year:'numeric'})};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 /* tema: automatico (segue il telefono), chiaro, scuro */
@@ -731,8 +757,12 @@ const IC=(()=>{const s=d=>`<svg class="ic" viewBox="0 0 24 24">${d}</svg>`;retur
   moon:s('<path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/>'),
   sun:s('<circle cx="12" cy="12" r="3.8"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/>'),
   back:s('<path d="M14.5 5.5 8 12l6.5 6.5"/>')}})();
+/* colore della barra di stato (Android) uguale a ciò che c'è in cima allo schermo */
+function setBar(){try{const top=typeof stack!=='undefined'&&stack[stack.length-1],dk=isDark();
+  const c=!top?(dk?'#22180c':'#f6e6cc'):top.classList.contains('viewer')?'#000000':top.classList.contains('museum')?'#3a2716':top.querySelector('.hero.noph')?'#c97a12':top.querySelector('.hero')?'#1a1208':(dk?'#22180c':'#f6e6cc');
+  document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');if(m.content!==c)m.content=c})}catch(e){}}
 function applyTheme(){const t=LS.get('rd_theme','auto'),r=document.documentElement;if(t==='auto')delete r.dataset.theme;else r.dataset.theme=t;
-  const dk=isDark();document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=dk?'#15100a':'#f8f1e6'});const b=$('#bTheme');if(b)b.innerHTML=dk?IC.sun:IC.moon}
+  setBar();const b=$('#bTheme');if(b)b.innerHTML=isDark()?IC.sun:IC.moon}
 applyTheme();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme)}catch(e){}
 /* transizioni (View Transitions API, con ripiego senza animazione) */
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -838,7 +868,7 @@ const SECTIONS=[
  ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
- ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own'],
+ ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart'],
  ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['garanzia','Garanzia / AppleCare fino al','date'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
@@ -963,12 +993,12 @@ function card(d){
   const sub2=[d.tipologia,kd==='tv'?inch(d.tv_pollici):kd==='acc'?d.acc_uscita||d.acc_connettore:kd==='part'?[d.part_cat,d.part_spec].filter(Boolean).join(' · '):d.cpu].filter(Boolean).join(' · ');
   const meta=d.wish?[d.w_priorita?`<span class="prio">★ ${esc(d.w_priorita)}</span>`:'',d.w_budget?`<span>≤ € ${esc(d.w_budget)}</span>`:'',d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',annMeta(d)].join(''):[d.ruolo&&d.ruolo!=='Collezione'?`<span class="tg">${{'In uso':'🟢 in uso','Ricambi':'🔩 per ricambi','Da vendere':'💶 da vendere'}[d.ruolo]||esc(d.ruolo)}</span>`:'',manBadge(d),labBadge(d),hasUnits(d)?`<span class="tg">🧩 ${d.esemplari.length} esemplari · ${esc(unitsSummary(d))}</span>`:'',d.montato_su?`<span class="lk">🔧 montato su ${esc((devices.find(x=>x.id===d.montato_su)||{nome:'?'}).nome)}</span>`:'',d.seriale&&devices.some(x=>x!==d&&x.nome===d.nome)?`<span class="tg">SN …${esc(String(d.seriale).slice(-4))}</span>`:'',d.prestito?`<span class="lk" style="flex:none">${d.prestito.tipo==='Esposizione'?'🖼️ in mostra':'📤 '+esc((d.prestito.a||'in prestito').slice(0,14))}${loanOverdue(d)?' ⚠️':''}</span>`:'',linkedTo(d)?`<span class="lk">↳ ${esc(linkedTo(d).nome)}</span>`:'',missing(d).length?`<span class="inc">✎ ${missing(d).length} da completare</span>`:'',...(d.tags||[]).slice(0,2).map(t=>`<span class="tg">#${esc(t)}</span>`),d.colore?`<span><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`:'',d.luogo?`<span>📍 ${esc(d.luogo)}</span>`:'',+d.quantita>1?`<span class="qty">×${+d.quantita}</span>`:''].join('');
   const ai=!d.thumb&&d.wish&&(d.annunci||[]).find(a=>a.img);
-  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:ai?`<img src="${esc(ai.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno?`<div class="yr">${d.anno}</div>`:''}</div>`;
+  return `<div class="card" data-id="${d.id}"><div class="th">${d.thumb?`<img src="${d.thumb}" alt="">`:ai?`<img src="${esc(ai.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:icon(d)}</div><div class="ct"><b>${esc(d.nome)}</b>${sub?`<span>${esc(sub)}</span>`:''}${sub2?`<span>${esc(sub2)}</span>`:''}${meta?`<div class="meta">${meta}</div>`:''}</div>${d.anno&&kindOf(d.tipologia)!=='part'?`<div class="yr">${d.anno}</div>`:''}</div>`;
 }
 function gcard(d){
   const ph=(d.foto&&d.foto[0])||d.thumb;
   const sub=[d.marca,d.wish?(d.w_priorita?'★ '+d.w_priorita:''):(d.luogo?'📍 '+d.luogo:'')].filter(Boolean).join(' · ');
-  return `<div class="gcard" data-id="${d.id}"><div class="gi ${ph?'':'ni'}">${ph?`<img src="${ph}" loading="lazy" alt="">`:icon(d)}</div>${d.anno?`<span class="gy">${d.anno}</span>`:''}<div class="gt"><b>${esc(d.nome)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div></div>`;
+  return `<div class="gcard" data-id="${d.id}"><div class="gi ${ph?'':'ni'}">${ph?`<img src="${ph}" loading="lazy" alt="">`:icon(d)}</div>${d.anno&&kindOf(d.tipologia)!=='part'?`<span class="gy">${d.anno}</span>`:''}<div class="gt"><b>${esc(d.nome)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div></div>`;
 }
 function timeline(items){
   const desc=curSort()==='anno_d',m=new Map();
@@ -988,11 +1018,11 @@ function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}=
   const st={p:stack.length};
   replace?history.replaceState(st,''):history.pushState(st,'');
   el.addEventListener('click',e=>{if(e.target.closest('[data-back]'))history.back()});
-  mount&&mount(el);lgScan(el);return el;
+  mount&&mount(el);lgScan(el);setBar();return el;
 }
 function swapTop(){const t=stack.pop();if(t){t._close&&t._close();if(RM())t.remove();else{t.classList.add('pg-swapout');setTimeout(()=>t.remove(),220)}}}
 addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(stack.length<=p)return;
-  const rem=stack.splice(p);rem.forEach(x=>x._close&&x._close());
+  const rem=stack.splice(p);rem.forEach(x=>x._close&&x._close());setTimeout(setBar,0);
   const top=stack[stack.length-1];if(top&&top._refresh)setTimeout(()=>{if(stack[stack.length-1]===top)top._refresh()},0);
   const out=(rem.find(x=>x.classList.contains('mu-root'))||rem[rem.length-1])._out;
   const run=()=>{rem.forEach(x=>x.remove());out&&out.after&&out.after()};
@@ -1079,7 +1109,7 @@ function openDetail(id,replace,morph,quiet){
   const d=devices.find(x=>x.id===id);if(!d)return;
   const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
-  const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · ');
+  const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',kindOf(d.tipologia)==='part'?'':d.anno].filter(Boolean).join(' · ');
   const hchips=[d.prestito&&`<span class="hchip">${d.prestito.tipo==='Esposizione'?'🖼️ In esposizione':'📤 In prestito'}${loanOverdue(d)?' ⚠️':''}</span>`,...(d.tags||[]).map(t=>`<span class="hchip">#${esc(t)}</span>`),d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,linkedTo(d)&&`<span class="hchip">↳ ${esc(linkedTo(d).nome)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
@@ -1120,7 +1150,7 @@ function openDetail(id,replace,morph,quiet){
   if(accs.length||uacc.length)h+=`<div class="sec-t">Accessori collegati (${accs.length+uacc.length})</div>`+accs.map(card).join('')+uacc.map(x=>card(x).replace('</b>',`</b><span>esemplare n. ${x.esemplari.findIndex(u=>u.collegato===d.id)+1}${(x.esemplari.find(u=>u.collegato===d.id)||{}).etichetta?' · '+esc(x.esemplari.find(u=>u.collegato===d.id).etichetta):''}</span>`)).join('');
   if(d.specs&&d.specs.length){
     h+=`<details class="more"><summary>Tutte le specifiche (${d.specs.length})</summary><div id="spk">${kv(d.specs.map(([a,b])=>[trLabel(a),esc(trVal(b,d))]))}</div><div class="row" style="flex-wrap:wrap;gap:4px">${trOn()?'<button class="linkb" data-spo>Mostra originale</button>':''}</div></details>`}
-  if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(d.fonte)}</a></p>`;
+  if(d.fonte)h+=`<p class="note">Fonte: <a href="${esc(d.fonte)}" target="_blank" rel="noopener">${esc(shortUrl(d.fonte))}</a></p>`;
   if(d.wish){
     h+=annunciHTML(d);
     const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
@@ -1128,7 +1158,7 @@ function openDetail(id,replace,morph,quiet){
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  openPage(d.nome,h,{replace,bare:true,cls:morph||quiet?'no-anim':'',mount(el){
+  openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet?' no-anim':'')+(quiet?' quiet':''),mount(el){
     const v0=DV;el._refresh=()=>{if(DV!==v0&&devices.some(x=>x.id===d.id))openDetail(d.id,true,false,true)};
     if(morph){const hi=$('.himg',el);if(hi){hi.style.viewTransitionName='hero-x';
       el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40)h.style.viewTransitionName='hero-x'},
@@ -1386,7 +1416,7 @@ const agoTxt=s=>{if(!s)return 'mai registrata';const days=Math.round((Date.parse
 const battGuess=d=>/portatil|smartphone|tablet|lettore musicale|palmare/i.test(d.tipologia||'')||/powerbook|ibook|macbook|iphone|ipad|ipod|psp|vita|game ?boy|gba|nintendo ds|3ds|switch|newton/i.test(d.nome||'')?'Ricaricabile (da tenere carica)':'';
 const manBatt=d=>d.man_batt||battGuess(d);
 function manTargets(d){
-  if(d.wish||['In uso','Ricambi'].includes(d.ruolo)||d.man_freq==='Mai (non serve)')return [];
+  if(d.wish||['In uso','Ricambi'].includes(d.ruolo)||d.man_freq==='Mai (non serve)'||kindOf(d.tipologia)==='part')return [];
   const kd=kindOf(d.tipologia),rech=/^Ricaricabile/.test(manBatt(d));
   if(!(kd==='pc'||kd==='tv'||rech))return [];
   return hasUnits(d)?d.esemplari.map((u,i)=>({d,u,i})):[{d,u:null,i:-1}];
@@ -1401,7 +1431,7 @@ const manDue=()=>manAll().filter(t=>t.st.dueOn||t.st.dueCh);
 function manLog(d,u,tipo){const x=u||d;if(tipo!=='charge')x.man_on=today();if(tipo==='charge'||tipo==='both')x.man_charge=today();if(tipo==='both')x.man_on=today();
   (d.manutenzioni=d.manutenzioni||[]).push(Object.assign({data:today(),tipo},u?{es:u.id}:{}))}
 const unitName=t=>t.d.nome+(t.u?` · n. ${t.i+1}${t.u.etichetta?' ('+t.u.etichetta+')':''}`:'');
-function manHTML(d){const ts=manTargets(d);if(!ts.length&&!manBatt(d)&&!d.batt_stato)return '';
+function manHTML(d){if(kindOf(d.tipologia)==='part')return '';const ts=manTargets(d);if(!ts.length&&!manBatt(d)&&!d.batt_stato)return '';
   const rows=ts.map(t=>{const st=manState(t),x=t.u||t.d;return `<div class="mrow" data-mt="${t.u?t.u.id:''}"><div class="mi"><b>${t.u?`Esemplare n. ${t.i+1}${t.u.etichetta?' · '+esc(t.u.etichetta):''}`:'Ultima accensione'}</b>
     <small>${t.u?'acceso '+agoTxt(x.man_on):agoTxt(x.man_on)}${st.nextOn?` · prossima ${st.dueOn?'<b class="late">da fare</b>':fmtD(st.nextOn)}`:''}</small>
     ${st.rech?`<small>🔋 carica: ${agoTxt(x.man_charge)}${st.nextCh?` · prossima ${st.dueCh?'<b class="late">da fare</b>':fmtD(st.nextCh)}`:''}</small>`:st.bs?`<small>🔋 batteria ${esc(st.bs.toLowerCase())}: niente ricariche</small>`:''}</div>
@@ -2521,7 +2551,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
   let h=['marche','tipi','linee','luoghi','tubi','audio','connettori','colori','raccolte'].map(k=>`<datalist id="dl_${k}">${listOpts(k).map(o=>`<option value="${esc(o)}">`).join('')}</datalist>`).join('');
   h+=`<form id="f" onsubmit="return false">`;
   h+=fieldHTML('nome','Nome *','',d.nome,d);
-  h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div>`;
+  h+=`<div class="grid2">`+TOP.slice(1,3).map(([k,l,t])=>`<div>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div><div class="grid2">`+TOP.slice(3).map(([k,l,t])=>`<div ${k==='anno'?'data-when="nopart"':''}>${fieldHTML(k,l,t,d[k],d)}</div>`).join('')+`</div>`;
   h+=`<div class="sec-t">Foto</div><div id="ph"></div><div class="row" style="flex-wrap:wrap;margin:8px 0"><button type="button" class="btn sm sec" data-cam>📷 Scatta</button><button type="button" class="btn sm sec" data-gal>🖼️ Galleria</button><button type="button" class="btn sm sec" data-web>🔎 Cerca sul web</button></div><input type="file" id="fCam" accept="image/*" capture="environment" hidden><input type="file" id="fGal" accept="image/*" multiple hidden>`;
   for(const [t,fs,w] of SECTIONS){h+=`<div ${w?`data-when="${w}"`:''}><div class="sec-t">${t}</div>`+fs.map(([k,l,ty,fw])=>`<div ${fw?`data-when="${fw}"`:''}>${fieldHTML(k,l,ty,d[k],d)}</div>`).join('')+`</div>`}
   h+=`<div class="sec-t">Altre specifiche</div><label class="f">Una per riga, formato «Etichetta: valore»</label><textarea class="in" name="_specs" style="min-height:140px">${esc((d.specs||[]).map(p=>p[0]+': '+p[1]).join('\n'))}</textarea>`;
@@ -2570,7 +2600,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       drawPh()});
     el.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>/^image\//.test(f.type));if(fs.length){e.preventDefault();addFiles(fs)}});
     drawPh();
-    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' ');x.hidden=w.includes('wish')?!d.wish:w.includes('own')?!!d.wish:!w.includes(k)})};
+    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' '),kinds=w.filter(v=>['pc','tv','part','acc'].includes(v));x.hidden=(w.includes('wish')&&!d.wish)||(w.includes('own')&&!!d.wish)||(w.includes('nopart')&&k==='part')||(kinds.length>0&&!kinds.includes(k))})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);
     /* compatibilità multipla dei ricambi */
     const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
