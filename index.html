@@ -764,7 +764,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
 const APP_VER='2.3';
 const NOVITA=[
- ['2.3','2026-11-15',['Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
+ ['2.3','2026-11-15',['Gemini: corretto un errore per cui il messaggio «hai superato la quota» veniva preso per un problema di fatturazione e l\'app si fermava al primo modello: ora prova tutti i modelli uno dopo l\'altro, come ARGOS, finché uno risponde','Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
  ['2.2','2026-11-15',['Fold aperto e tablet: elenco a sinistra e scheda a destra','Nella scheda: scorri a sinistra o a destra per passare all\'oggetto vicino (con la posizione nell\'elenco)','Filtri salvati: capsule sotto la ricerca, si creano dalla pagina Filtri','Avviso di doppione: «Hai già questo oggetto: aggiungerlo come esemplare?»','Menu → Versioni precedenti: recupera oggetti eliminati o modificati dalla cronologia su GitHub','Gemini: modelli trovati con la tua chiave più quelli da provare a mano (3.6 Flash, Flash Lite…), scansione appena incolli la chiave e all\'avvio, e ingresso compatibile come ARGOS se quello normale non risponde']],
  ['2.1','2026-11-15',['Ricambi: niente più sezione «Manutenzione» né anno (e non finiscono nel giro di ricarica)','Barra delle notifiche: su iPhone l\'app ci passa sotto, su Android prende il colore dello sfondo (e della foto, nella scheda)','Le pagine non scorrono più di lato: i link lunghi vanno a capo e la fonte mostra solo il nome del sito','Aprendo una scheda, titolo, etichette e sezioni entrano in sequenza dopo l\'ingrandimento della foto']],
  ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
@@ -2008,6 +2008,7 @@ const ERR_INFO={
   giorno:['📅','Richieste gratuite di oggi finite','Il limite giornaliero di Google si azzera alle {time} (mezzanotte in California).'],
   gratis0:['💳','Modello senza richieste gratuite','Non hai superato nessun limite: Google risponde «troppe richieste» (429) anche quando il tuo livello gratuito prevede 0 richieste per questo modello. Per questo la console di Google resta vuota. L\'app prova da sola gli altri.'],
   gratis0tutti:['💳','Nessun modello gratuito per questa chiave','Non hai superato nessun limite: tutti i modelli provati rispondono «limite: 0», cioè il livello gratuito di questo progetto non li include (le richieste vengono rifiutate prima di essere contate, per questo la console è vuota). Prova a scegliere a mano un modello Flash o Flash Lite più vecchio, crea una chiave in un progetto nuovo su aistudio.google.com/apikey, oppure attiva la fatturazione.'],
+  quota:['📭','Quota del modello esaurita o non disponibile','Google risponde «hai superato la quota» senza dire quale: di solito questo modello non ha richieste gratuite per la tua chiave. L\'app lo salta per un\'ora e prova gli altri.'],
   modello:['🧩','Modello non disponibile','Il modello non esiste più o non è abilitato per la chiave: l\'app ne sceglie un altro.'],
   server:['🛠️','Errore temporaneo di Google','Il servizio è sovraccarico o in manutenzione: riprova tra qualche minuto.'],
   bloccata:['🛡️','Risposta bloccata dai filtri','Gemini ha interrotto la risposta per i suoi filtri: prova a scrivere il nome in un altro modo.'],
@@ -2052,15 +2053,16 @@ const gemSet=x=>LS.set('rd_gem',Object.assign(gemCfg(),x));
 async function gemErr(r,model){let txt='',j=null;try{txt=await r.text();j=JSON.parse(txt);if(Array.isArray(j))j=j[0]}catch(_){}
   const er=(j&&j.error)||{},st=r.status,msg=String(er.message||txt.slice(0,300)||`HTTP ${st}`),det=Array.isArray(er.details)?er.details:[];
   const viol=det.flatMap(d=>d.violations||[]),qtxt=viol.map(v=>[v.quotaMetric,v.quotaId,v.quotaValue].join(' ')).join(' ')+' '+msg;
-  const ri=det.find(d=>/RetryInfo/.test(d['@type']||'')),rm=(ri&&String(ri.retryDelay).match(/([\d.]+)s/))||msg.match(/retry in ([\d.]+)\s*s/i);
+  const ri=det.find(d=>/RetryInfo/.test(d['@type']||'')),dur=t=>{const m=String(t||'').match(/(?:(\d+)h)?(?:(\d+)m(?!s))?(?:([\d.]+)s)?/);return m&&(m[1]||m[2]||m[3])?Math.ceil(((+m[1]||0)*3600+(+m[2]||0)*60+(parseFloat(m[3])||0))*1000):0},rm=(ri&&dur(ri.retryDelay))||dur((msg.match(/retry in ([\dhms.]+)/i)||[])[1]);
   const x={status:st,model,raw:`HTTP ${st}${er.status?' '+er.status:''}: ${msg}${viol.length?'\n'+viol.map(v=>`· ${v.quotaId||v.quotaMetric}${v.quotaValue!=null?' = '+v.quotaValue:''}`).join('\n'):''}`};
   let kind='altro';
   if(st===429||er.status==='RESOURCE_EXHAUSTED'){
-    if(/insufficient_quota|billing/i.test(qtxt))kind='credito';
+    if(/insufficient_quota/i.test(qtxt))kind='credito';
     else if(/limit:\s*0\b/i.test(msg)||viol.some(v=>String(v.quotaValue)==='0'))kind='gratis0';
     else if(/PerDay|per day|daily/i.test(qtxt))kind='giorno';
+    else if(/exceeded your current quota/i.test(msg)&&!viol.length&&!rm)kind='quota';
     else kind='minuto';
-    x.search=/search|grounding/i.test(qtxt);x.waitMs=rm?Math.min(600000,Math.max(5000,Math.ceil(parseFloat(rm[1])*1000))):60000}
+    x.search=/search|grounding/i.test(qtxt);x.waitMs=rm?Math.min(600000,Math.max(5000,rm)):60000}
   else if(/api[ _]key|API_KEY_INVALID/i.test(msg+JSON.stringify(det))&&st<500)kind='chiave';
   else if(st===401)kind='chiave';
   else if(st===403)kind=/billing|suspend/i.test(msg)?'credito':'permesso';
@@ -2077,7 +2079,7 @@ async function gemFetch(path,body,model){const c=gemCfg();if(!c.key)throw new Ap
 /* modelli che hanno appena risposto 429: saltati finché il loro limite non si azzera (ricordato anche chiudendo l'app) */
 const msToPacificMidnight=()=>{try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date()),h=+p.find(x=>x.type==='hour').value%24,m=+p.find(x=>x.type==='minute').value;return Math.max(10,1440-(h*60+m))*60000}catch(_){return 6*3600e3}};
 const gemCds=()=>{const c=LS.get('rd_gem_cd',{}),now=Date.now(),k=gemCfg().key.slice(-6);for(const m of Object.keys(c))if(c[m].until<=now||c[m].key!==k)delete c[m];return c};
-function gemCool(model,e){const c=gemCds(),ms=e.kind==='gratis0'?7*864e5:e.kind==='giorno'?msToPacificMidnight():e.waitMs||60000;c[model]={until:Date.now()+ms,kind:e.kind,key:gemCfg().key.slice(-6)};LS.set('rd_gem_cd',c);e.until=c[model].until}
+function gemCool(model,e){const c=gemCds(),ms=e.kind==='gratis0'?7*864e5:e.kind==='giorno'?msToPacificMidnight():e.kind==='quota'?3600e3:e.waitMs||60000;c[model]={until:Date.now()+ms,kind:e.kind,key:gemCfg().key.slice(-6)};LS.set('rd_gem_cd',c);e.until=c[model].until}
 const gemCooling=m=>gemCds()[m];
 /* nomi da provare a mano anche se la scansione non li elenca */
 const GEM_PRESET=['gemini-3.6-flash','gemini-3.6-flash-lite','gemini-3.5-flash','gemini-3.5-flash-lite','gemini-2.5-flash','gemini-2.5-flash-lite','gemini-flash-latest','gemini-flash-lite-latest','gemini-2.0-flash'];
@@ -2094,7 +2096,7 @@ async function gemModels(force){const k=gemCfg().key.slice(-6),c=LS.get('rd_gem_
   try{const j=await gemCompatFetch('models');list=(j.data||[]).map(m=>String(m.id||'').replace(/^models\//,'')).filter(gemChat);via='compatibile'}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;err=e}
   if(!list.length){try{const j=await gemFetch('models?pageSize=200');list=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(gemChat);via='nativo'}catch(e){if(GEM_KEYERR.includes(e.kind)||!err)throw e;throw err}}
   list=[...new Set(list)];LS.set('rd_gem_models',{t:Date.now(),key:k,list,via});return list}
-const gemScore=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};
+const gemScore=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return (/flash|pro/.test(n)?0:-1000)+v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};
 function gemPick(list){return list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length)[0]||''}
 /* ordine dei tentativi: modello scelto a mano, ultimo che ha funzionato, poi i flash (stabili prima), i lite, i pro */
 function gemOrder(list){const c=gemCfg(),L=list&&list.length?list:GEM_PRESET,o=L.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length);return [...new Set([c.model,L.includes(c.ok)?c.ok:'',...o].filter(Boolean))]}
@@ -2160,7 +2162,7 @@ async function gemAsk(q,ctx,onStep){let list=[];try{list=await gemModels()}catch
         if(useSearch&&!search){r.searchBlocked=true;LS.set('rd_gem_ns',{until:Date.now()+msToPacificMidnight(),key:gemCfg().key.slice(-6)})}
         return r}
       catch(e){if(GEM_STOP.includes(e.kind)){e.tried=tried;throw e}
-        const lim=['minuto','giorno','gratis0'].includes(e.kind);
+        const lim=['minuto','giorno','gratis0','quota'].includes(e.kind);
         /* 429 con la ricerca web attiva: prima di dare il modello per esaurito si riprova subito senza ricerca */
         if(lim&&search){tried.push([m,'ricerca '+e.kind]);last=e;search=false;continue}
         if(lim)gemCool(m,e);
@@ -2168,11 +2170,11 @@ async function gemAsk(q,ctx,onStep){let list=[];try{list=await gemModels()}catch
         tried.push([m,e.kind]);last=e;if(['timeout','vuoto'].includes(e.kind)){e.tried=tried;throw e}
         break}}}
   const cds=gemCds(),ks=tried.map(t=>t[1]).filter(k=>!/^ricerca /.test(k));
-  if(ks.length&&ks.every(k=>k==='gratis0'))throw new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried,raw:last&&last.raw});
+  if(ks.length&&ks.every(k=>k==='gratis0'||k==='quota'))throw new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried,raw:last&&last.raw});
   if(ks.some(k=>k==='giorno'||k==='minuto')){const lim=Object.values(cds).filter(c=>c.kind!=='gratis0'),soon=lim.length?Math.min(...lim.map(c=>c.until)):Date.now()+60000,daily=lim.length&&lim.every(c=>c.kind==='giorno');
     throw new AppErr(daily?'giorno':'minuto','tutti i modelli hanno raggiunto il limite',{tried,until:soon,waitMs:soon-Date.now(),raw:last&&last.raw})}
   const e=last||new AppErr('modello','nessun modello disponibile');e.tried=tried;throw e}
-const GEM_WHY={minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'0 richieste gratuite (limite 0)',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
+const GEM_WHY={quota:'quota esaurita o non gratuita','ricerca quota':'ricerca web senza quota',minuto:'troppe richieste',giorno:'richieste di oggi finite',gratis0:'0 richieste gratuite (limite 0)',modello:'non disponibile',server:'errore di Google',risposta:'risposta illeggibile','ricerca minuto':'ricerca web al limite','ricerca giorno':'ricerca web finita per oggi','ricerca gratis0':'ricerca web non gratuita'};
 function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={}){
   if(!gemOn())return openGemSettings({replace,then:()=>openGemini({q,ctx,marca,tipologia,onResult,replace:true})});
   openPage('Chiedi a Gemini',`<p style="margin-top:0">Gemini cerca sul web e compila i campi della scheda. Utile per gli oggetti rari che EveryMac e Wikipedia non conoscono.</p>
@@ -2200,11 +2202,11 @@ function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={
 }
 /* prova della chiave: elenco dei modelli e una richiesta vera, modello per modello, finché uno risponde */
 async function gemProbe(onLine){let list=[];try{list=await gemModels(true)}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;logErr('Gemini · elenco modelli',e)}
-  const order=gemOrder(list).slice(0,6),res=[];
+  const order=gemOrder(list).slice(0,14),res=[];
   for(const m of order){const cd=gemCooling(m);if(cd){res.push([m,cd.kind]);onLine(res);continue}
     try{let via='nativo';try{await gemFetch(`models/${m}:generateContent`,{contents:[{role:'user',parts:[{text:'Rispondi solo: OK'}]}],generationConfig:{maxOutputTokens:5}},m)}catch(e){if(!['rete','altro'].includes(e.kind))throw e;await gemCompatFetch('chat/completions',{model:m,messages:[{role:'user',content:'Rispondi solo: OK'}],max_tokens:5},m);via='compatibile'}
       res.push([m,'ok',null,via]);onLine(res);gemSet({ok:m,via});return {list,res,ok:m,via}}
-    catch(e){if(GEM_STOP.includes(e.kind))throw e;if(['minuto','giorno','gratis0'].includes(e.kind))gemCool(m,e);res.push([m,e.kind,e]);onLine(res)}}
+    catch(e){if(GEM_STOP.includes(e.kind))throw e;if(['minuto','giorno','gratis0','quota'].includes(e.kind))gemCool(m,e);res.push([m,e.kind,e]);onLine(res)}}
   return {list,res,ok:''}}
 function openGemSettings({replace=false,then}={}){const c=gemCfg();
   openPage('Gemini',`<p style="margin-top:0">Con una <b>chiave API di Gemini</b> l'app può chiedere a Gemini di cercare sul web i dati di un oggetto e compilare la scheda.</p>
