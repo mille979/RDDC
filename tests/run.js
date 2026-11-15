@@ -519,6 +519,51 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await G.context().close();
   });
 
+  await test('OpenRouter: riserva quando Gemini non risponde, e da solo senza Gemini', async () => {
+    const O = await phone('O');
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'content-type': 'application/json' };
+    const orCalls = []; let orPlan = {};
+    await O.context().route('https://generativelanguage.googleapis.com/**', r => {
+      if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(r.request().url());
+      if (/\/models$/.test(u.pathname)) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ data: [{ id: 'models/gemini-2.5-flash' }] }) });
+      return r.fulfill({ status: 429, headers: H, body: JSON.stringify({ error: { code: 429, status: 'RESOURCE_EXHAUSTED', message: 'You exceeded your current quota, please check your plan and billing details.' } }) });
+    });
+    await O.context().route('https://openrouter.ai/api/v1/**', r => {
+      const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(q.url());
+      if (u.pathname.endsWith('/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ data: [
+        { id: 'openai/gpt-5', pricing: { prompt: '0.00001', completion: '0.00003' }, context_length: 400000 },
+        { id: 'meta-llama/llama-3.3-70b-instruct:free', pricing: { prompt: '0', completion: '0' }, context_length: 131072 },
+        { id: 'deepseek/deepseek-chat-v3.1:free', pricing: { prompt: '0', completion: '0' }, context_length: 163840 },
+        { id: 'qwen/qwen2.5-vl-32b-instruct:free', pricing: { prompt: '0', completion: '0' }, context_length: 32000 }] }) });
+      const b = JSON.parse(q.postData()); orCalls.push([b.model, q.headers()['authorization']]);
+      const f = orPlan[b.model]; if (f) return r.fulfill({ status: f.status, headers: H, body: JSON.stringify(f.body) });
+      return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ choices: [{ message: { role: 'assistant', content: '```json\n' + JSON.stringify({ nome: 'Sony KV-1400', marca: 'Sony', tipologia: 'Televisore CRT', anno: 1968 }) + '\n```' } }] }) });
+    });
+    // impostazioni: solo modelli gratuiti, ordinati
+    await O.evaluate(() => openORSettings()); await O.waitForFunction(() => /3 modelli gratuiti/.test(document.querySelector('#ori').textContent), null, { timeout: 5000 });
+    eq(await O.evaluate(() => [...document.querySelectorAll('#orm optgroup option')].map(o => o.value)), ['deepseek/deepseek-chat-v3.1:free', 'meta-llama/llama-3.3-70b-instruct:free', 'qwen/qwen2.5-vl-32b-instruct:free'], 'gratuiti, i migliori prima');
+    await O.fill('#ork', 'sk-or-v1-test'); await O.click('#ors'); await O.waitForFunction(() => /OpenRouter collegato/.test(document.querySelector('#orb').textContent), null, { timeout: 5000 });
+    eq(orCalls[0], ['deepseek/deepseek-chat-v3.1:free', 'Bearer sk-or-v1-test'], 'prova della chiave');
+    await O.evaluate(() => goBase()); await O.waitForTimeout(300);
+    // da solo (senza Gemini)
+    eq(await O.evaluate(() => aiAsk('Sony KV-1400', '').then(r => [r.via, r.fields.nome, r.fields.tipologia, r.noSearch, /OpenRouter \(deepseek/.test(r.fonteNome)])), ['openrouter', 'Sony KV-1400', 'Televisore CRT', true, true], 'OpenRouter da solo');
+    // riserva: Gemini 429 su tutto → OpenRouter, con il primo modello al limite giornaliero
+    await O.evaluate(() => LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }));
+    orPlan = { 'deepseek/deepseek-chat-v3.1:free': { status: 429, body: { error: { code: 429, message: 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day' } } } };
+    const r = await O.evaluate(() => aiAsk('Sony KV-1400', '').then(r => [r.via, r.gemErr && r.gemErr.kind, orCfg().ok, r.tried.map(t => t.join(':')), orCooling('deepseek/deepseek-chat-v3.1:free').kind]));
+    eq(r, ['openrouter', 'gratis0tutti', 'meta-llama/llama-3.3-70b-instruct:free', ['deepseek/deepseek-chat-v3.1:free:giorno'], 'giorno'], 'Gemini esaurito → OpenRouter, modello al limite saltato');
+    // nella pagina: nota della riserva
+    await O.evaluate(() => openGemini({ q: 'Sony KV-1400', onResult() {} })); await O.waitForSelector('[data-use]');
+    ok(await O.evaluate(() => /Gemini non ha risposto .*riserva OpenRouter/.test(stack[stack.length - 1].textContent) && /Senza ricerca web/.test(stack[stack.length - 1].textContent)), 'nota della riserva nella pagina');
+    await O.evaluate(() => goBase()); await O.waitForTimeout(300);
+    // chiave OpenRouter sbagliata: messaggio specifico
+    orPlan = { 'meta-llama/llama-3.3-70b-instruct:free': { status: 401, body: { error: { code: 401, message: 'No auth credentials found' } } } };
+    eq(await O.evaluate(() => aiAsk('x', '').catch(e => [e.kind, e.via, errInfo(e).title, /prima Gemini/.test(e.raw)])), ['chiave', 'openrouter', 'Chiave OpenRouter non valida', true], 'errore OpenRouter con la storia di Gemini');
+    await O.context().close();
+  });
+
   await test('errori di rete nelle ricerche: scheda con spiegazione e Riprova', async () => {
     await p.evaluate(() => openLookup({ prefill: 'Psion', marca: 'Psion', onResult() {} })); await p.click('#lg'); await p.waitForSelector('.errc', { timeout: 8000 });
     ok(await p.evaluate(() => { const c = document.querySelector('.errc'); return /Nessuna connessione|Qualcosa non ha funzionato/.test(c.textContent) && !!c.querySelector('[data-eretry]') && !!c.querySelector('pre'); }), 'scheda d\'errore nella ricerca');
