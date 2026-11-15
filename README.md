@@ -164,6 +164,14 @@ Barra in alto, pulsante **+**, barra della selezione, avvisi, finestre di confer
 - La goccia del selettore Collezione/Wishlist scorre con una molla e si allunga nel verso del moto; il pulsante + e i pulsanti sulle foto si ingrandiscono e rimbalzano quando li premi (la «pressione» del modello).
 - Menu → Aspetto → **Vetro liquido**: Leggero (predefinito, il più fluido), Completo (aggiunge la dispersione dei colori sui bordi, più pesante da calcolare), Spento. Funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet); altrove resta l'aspetto normale.
 
+## Comodità (2.2)
+- **Fold aperto e tablet**: elenco a sinistra e scheda (o qualsiasi pagina) nel pannello a destra; toccando un altro oggetto la scheda si sostituisce. Museo e visore delle foto restano a schermo intero.
+- **Scorrere tra le schede**: nella scheda, un gesto a sinistra o a destra passa all'oggetto vicino nell'ordine dell'elenco (con ricerca e filtri attivi); sulla foto compare la posizione, es. «5 / 47». Da tastiera: frecce ← →.
+- **Filtri salvati**: nella pagina Filtri scegli ricerca e filtri e salvali con un nome; compaiono come capsule sotto la barra di ricerca (un tocco applica, un secondo tocco toglie).
+- **Avviso di doppione**: aggiungendo un oggetto con lo stesso nome o modello di uno che hai già, l'app chiede se aggiungerlo come esemplare, salvarlo a parte o annullare.
+- **Versioni precedenti** (Menu, serve il token GitHub): ogni sincronizzazione è una versione; scegli una data, vedi cosa è stato eliminato o modificato da allora e ripristina un oggetto (foto comprese) o tutti insieme.
+- **Barra delle notifiche**: su iPhone l'app installata ci passa sotto; su Android prende il colore dello sfondo, della foto della scheda, del museo.
+
 ## Errori spiegati
 Quando qualcosa non va (Gemini, ricerche online, guide iFixit, sincronizzazione) l'app mostra una scheda con **cosa è successo**, **cosa fare**, i **dettagli tecnici** (il messaggio vero del servizio) e i pulsanti **Riprova**, **Impostazioni** e **Copia dettagli**. Gli ultimi 40 errori restano in Menu → **🩺 Registro errori**, da copiare e mandare.
 
@@ -172,6 +180,8 @@ Per i dispositivi poco comuni che EveryMac e Wikipedia non conoscono: **✨ Chie
 - Prima dei dati mostra l'anteprima con le **fonti consultate** e i dati che Gemini ritiene **incerti**; poi tutto passa nel modulo, da controllare prima di salvare.
 - Non tocca i dati personali (luogo, stato, prezzo pagato, note…) e non inventa i valori delle liste (tipologia, formato…): se non corrispondono vengono scartati.
 - **Limiti di Google**: Google conta le richieste gratuite modello per modello (al minuto e al giorno) e alcuni modelli, spesso i più nuovi, per certe chiavi ne hanno **zero**. Quando un modello risponde «troppe richieste» o «limite: 0», l'app passa da sola al successivo e se lo ricorda finché il limite si azzera: i secondi indicati da Google, oppure la mezzanotte in California per il limite giornaliero. Se è esaurita solo la quota della ricerca Google, riprova senza ricerca web e lo dice. **Salva e prova** fa una richiesta di prova vera e mostra quali modelli rispondono.
+- **Modelli**: in Menu → Gemini il menu mostra i modelli trovati con la tua chiave (la scansione parte appena la incolli e all'avvio dell'app, come in ARGOS) più quelli da provare a mano (3.6 Flash, 3.6 Flash Lite, 3.5, 2.5…); si può anche scrivere un nome qualsiasi. Il modello scelto si usa anche se la scansione non lo elenca.
+- **Due ingressi**: le ricerche usano l'ingresso normale di Google, con la ricerca web; se quello non risponde (rete o formato), l'app riprova da sola con l'ingresso «compatibile OpenAI», lo stesso di ARGOS, senza ricerca web, e lo segnala.
 - Serve una **chiave API** gratuita: Menu → **✨ Gemini** → incollala (si crea su aistudio.google.com/apikey). La chiave resta solo su quel telefono. L'app sceglie da sola il modello Flash stabile più recente disponibile per la chiave; si può cambiare dallo stesso menu.
 
 ## Versioni

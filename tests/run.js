@@ -36,7 +36,8 @@ async function ghApi(route) {
   const b = m === 'GET' ? null : JSON.parse(req.postData() || '{}');
   if (m === 'POST' && p === 'git/blobs') return J({ sha: putBlob(Buffer.from(b.content, b.encoding === 'base64' ? 'base64' : 'utf8')) }, 201);
   if (m === 'POST' && p === 'git/trees') { const base = new Map(gh.trees.get(b.base_tree).map(e => [e.path, e])); b.tree.forEach(e => e.sha === null ? base.delete(e.path) : base.set(e.path, e)); return J({ sha: putTree([...base.values()]) }, 201); }
-  if (m === 'POST' && p === 'git/commits') { const s = 'c' + (++gh.n); gh.commits.set(s, { tree: b.tree, parents: b.parents, message: b.message }); return J({ sha: s }, 201); }
+  if (m === 'POST' && p === 'git/commits') { const s = 'c' + (++gh.n); gh.commits.set(s, { tree: b.tree, parents: b.parents, message: b.message, date: new Date(Date.now() + gh.n * 1000).toISOString() }); return J({ sha: s }, 201); }
+  if (m === 'GET' && p === 'commits') { const out = []; for (let c = gh.ref; c && gh.commits.get(c); c = (gh.commits.get(c).parents || [])[0]) { const x = gh.commits.get(c); out.push({ sha: c, commit: { message: x.message || 'inizio', committer: { date: x.date || '2026-01-01T00:00:00Z' } } }); } return J(out); }
   if (m === 'PATCH' && p === 'git/refs/heads/main') { if (gh.commits.get(b.sha).parents[0] !== gh.ref) return J({ message: 'Update is not a fast forward' }, 422); gh.ref = b.sha; return J({ object: { sha: b.sha } }); }
   return J({ message: 'not mocked ' + m + ' ' + p }, 404);
 }
@@ -396,7 +397,9 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await G.context().route('https://generativelanguage.googleapis.com/**', r => {
       const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
       const u = new URL(q.url()); calls.push([q.method(), u.pathname, q.headers()['x-goog-api-key'], q.postData() ? JSON.parse(q.postData()) : null]);
-      if (q.headers()['x-goog-api-key'] !== 'AIzaTEST') return r.fulfill({ status: 400, headers: H, body: JSON.stringify({ error: { message: 'API key not valid. Please pass a valid API key.' } }) });
+      const keyOk = q.headers()['x-goog-api-key'] === 'AIzaTEST' || q.headers()['authorization'] === 'Bearer AIzaTEST';
+      if (!keyOk) return r.fulfill({ status: 400, headers: H, body: JSON.stringify([{ error: { code: 400, message: 'API key not valid. Please pass a valid API key.', status: 'INVALID_ARGUMENT' } }]) });
+      if (u.pathname.endsWith('/openai/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ object: 'list', data: ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-pro', 'gemini-3.6-flash-preview', 'gemini-3.5-flash-image', 'text-embedding-004'].map(n => ({ id: 'models/' + n, object: 'model' })) }) });
       if (u.pathname.endsWith('/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ models: ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-pro', 'gemini-3.6-flash-preview', 'gemini-3.5-flash-image', 'text-embedding-004'].map(n => ({ name: 'models/' + n, supportedGenerationMethods: n.includes('embedding') ? ['embedContent'] : ['generateContent'] })) }) });
       const body = JSON.parse(q.postData()), conv = !body.tools;
       const obj = { nome: 'Olivetti M24', marca: 'Olivetti', tipologia: 'computer desktop', anno: 'introdotto nel 1984', cpu: 'Intel 8086 a 8 MHz', ram: '128 KB (espandibile a 640 KB)', os_orig: 'MS-DOS 2.11', tv_formato: '5:4', descrizione: 'Personal computer IBM compatibile prodotto da Olivetti.', specs: [['Tastiera', '102 tasti'], { etichetta: 'Video', valore: 'CGA 640×400' }], incerti: ['ram'], immagine: 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Olivetti_M24.jpg' };
@@ -429,6 +432,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await G.context().route('https://generativelanguage.googleapis.com/**', r => {
       const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
       const u = new URL(q.url());
+      if (u.pathname.endsWith('/openai/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ data: ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(n => ({ id: 'models/' + n })) }) });
       if (u.pathname.endsWith('/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ models: ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(n => ({ name: 'models/' + n, supportedGenerationMethods: ['generateContent'] })) }) });
       const model = u.pathname.match(/models\/([^:]+):/)[1], body = JSON.parse(q.postData()), search = !!body.tools; posts.push(model + (search ? '+web' : ''));
       const f = plan[model + (search ? '+web' : '')] || plan[model];
@@ -472,6 +476,34 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await G.context().close();
   });
 
+  await test('Gemini: modelli scansionati e da provare, scelta manuale, ingresso compatibile come ARGOS', async () => {
+    const G = await phone('G3');
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'content-type': 'application/json' };
+    const seen = []; let nativeDown = false;
+    await G.context().route('https://generativelanguage.googleapis.com/**', r => {
+      const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(q.url()); seen.push(q.method() + ' ' + u.pathname.replace('/v1beta', ''));
+      if (u.pathname.endsWith('/openai/models')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ data: [{ id: 'models/gemini-2.5-flash' }, { id: 'models/gemini-2.5-flash-lite' }, { id: 'models/text-embedding-004' }] }) });
+      if (u.pathname.endsWith('/openai/chat/completions')) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ choices: [{ message: { content: JSON.stringify({ nome: 'Olivetti M24', marca: 'Olivetti', anno: 1984 }) } }] }) });
+      if (nativeDown) return r.abort();
+      return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify({ nome: 'Olivetti M24', marca: 'Olivetti', anno: 1984 }) }] } }] }) });
+    });
+    await G.evaluate(() => openGemSettings()); await G.fill('#gk', 'AIzaTEST1234567890abcdefghij'); await G.waitForFunction(() => /2 modelli trovati \(ingresso compatibile\)/.test(document.querySelector('#gmi').textContent), null, { timeout: 5000 });
+    const opts = await G.evaluate(() => [...document.querySelectorAll('#gmd optgroup')].map(g => [g.label, [...g.querySelectorAll('option')].map(o => o.value)]));
+    eq(opts[0], ['Trovati con la tua chiave (2)', ['gemini-2.5-flash', 'gemini-2.5-flash-lite']], 'modelli scansionati');
+    ok(opts[1][1].includes('gemini-3.6-flash') && opts[1][1].includes('gemini-3.6-flash-lite') && opts[1][1].includes('gemini-3.5-flash'), 'nomi da provare a mano');
+    await G.selectOption('#gmd', 'gemini-3.6-flash');
+    eq(await G.evaluate(() => [gemCfg().model, gemOrder(['gemini-2.5-flash', 'gemini-2.5-flash-lite'])[0]]), ['gemini-3.6-flash', 'gemini-3.6-flash'], 'il modello scelto a mano si usa anche se non è nell\'elenco');
+    await G.fill('#gmn', 'models/gemini-9.9-flash'); await G.dispatchEvent('#gmn', 'change');
+    eq(await G.evaluate(() => gemCfg().model), 'gemini-9.9-flash', 'nome scritto a mano');
+    seen.length = 0;
+    eq(await G.evaluate(() => gemAsk('Olivetti M24', '').then(r => [r.fields.nome, r.noSearch, r.via || 'nativo'])), ['Olivetti M24', false, 'nativo'], 'ingresso nativo con ricerca');
+    ok(seen.some(x => x === 'POST /models/gemini-9.9-flash:generateContent'), 'chiamata al modello scelto');
+    nativeDown = true;
+    eq(await G.evaluate(() => gemAsk('Olivetti M24', '').then(r => [r.fields.anno, r.noSearch, r.via])), [1984, true, 'compatibile'], 'ingresso nativo irraggiungibile → compatibile senza ricerca');
+    await G.context().close();
+  });
+
   await test('errori di rete nelle ricerche: scheda con spiegazione e Riprova', async () => {
     await p.evaluate(() => openLookup({ prefill: 'Psion', marca: 'Psion', onResult() {} })); await p.click('#lg'); await p.waitForSelector('.errc', { timeout: 8000 });
     ok(await p.evaluate(() => { const c = document.querySelector('.errc'); return /Nessuna connessione|Qualcosa non ha funzionato/.test(c.textContent) && !!c.querySelector('[data-eretry]') && !!c.querySelector('pre'); }), 'scheda d\'errore nella ricerca');
@@ -510,6 +542,65 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await p.evaluate(() => { const f = stack[stack.length - 1].querySelector('[name="tipologia"]'); f.value = 'Portatile'; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); }); await p.waitForTimeout(100);
     eq(await vis(), [false, false], 'ricompaiono cambiando tipologia');
     await p.evaluate(() => goBase()); await p.waitForTimeout(300);
+  });
+
+  await test('doppione all\'inserimento: aggiunto come esemplare dell\'oggetto che c\'è già', async () => {
+    const D = await phone('D');
+    await D.evaluate(async () => { await saveDev({ id: 'dpa', nome: 'Macintosh Classic II', modello: 'M4150', tipologia: 'All-in-one', stato: 'Funzionante', luogo: 'Damiano', creato: Date.now() }); render(); openForm({ nome: 'Macintosh Classic II', modello: 'M-4150', tipologia: 'All-in-one', stato: 'Da riparare' }); });
+    await D.waitForTimeout(300); await D.click('[data-save]'); await D.waitForSelector('.modal .chs');
+    ok(await D.evaluate(() => /Hai già «Macintosh Classic II» \(Damiano\)/.test(document.querySelector('.modal').textContent)), 'avviso');
+    await D.click('.modal [data-c="0"]'); await D.waitForTimeout(700);
+    eq(await D.evaluate(() => { const d = devices.find(x => x.id === 'dpa'); return [d.esemplari.length, d.esemplari.map(u => u.stato), devices.filter(x => x.nome === 'Macintosh Classic II').length]; }), [2, ['Funzionante', 'Da riparare'], 1], 'unito come secondo esemplare');
+    await D.context().close();
+  });
+
+  await test('filtri salvati: si salvano dalla pagina Filtri e si applicano con un tocco', async () => {
+    await p.evaluate(() => { S.view = 'col'; S.q = ''; S.sel = { luogo: ['Alex'] }; render(); openFilters(); }); await p.waitForTimeout(300);
+    await p.fill('#sName', 'Da Alex'); await p.click('[data-ssave]'); await p.waitForTimeout(200);
+    await p.evaluate(() => { goBase(); S.sel = {}; render(); }); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => !$('#smart').hidden && /★ Da Alex/.test($('#smart').textContent)), 'capsula sotto la ricerca');
+    await p.click('#smart [data-smart]'); await p.waitForTimeout(150);
+    eq(await p.evaluate(() => [S.sel.luogo, $('#smart .chip').classList.contains('on'), render.items.every(id => vals(devices.find(d => d.id === id), 'luogo').includes('Alex'))]), [['Alex'], true, true], 'filtro applicato');
+    await p.click('#smart [data-smart]'); await p.waitForTimeout(150);
+    eq(await p.evaluate(() => Object.values(S.sel).flat().length), 0, 'secondo tocco: filtro tolto');
+  });
+
+  await test('scheda: si passa all\'oggetto vicino nell\'ordine dell\'elenco', async () => {
+    await p.evaluate(() => { S.view = 'col'; S.q = ''; S.sel = {}; render(); openDetail(render.items[1]); }); await p.waitForTimeout(500);
+    const r = await p.evaluate(() => [stack[stack.length - 1].querySelector('.hpos').textContent, render.items.length]);
+    eq(r[0], `2 / ${r[1]}`, 'posizione nell\'elenco');
+    await p.evaluate(() => detailStep(render.items[1], 1)); await p.waitForTimeout(500);
+    eq(await p.evaluate(() => [stack.length, stack[stack.length - 1].dataset.did === render.items[2], stack[stack.length - 1].classList.contains('sw-next')]), [1, true, true], 'scheda successiva al posto della precedente');
+    await p.evaluate(() => goBase()); await p.waitForTimeout(400);
+  });
+
+  await test('versioni precedenti: si recupera un oggetto eliminato dalla cronologia su GitHub', async () => {
+    const A = await phone('A4');
+    await A.evaluate(() => LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }));
+    await A.evaluate(async () => { const v = document.createElement('canvas'); v.width = v.height = 20; v.getContext('2d').fillRect(0, 0, 20, 20); const img = v.toDataURL('image/jpeg', .8);
+      await saveDev({ id: 'vr1', nome: 'Apple IIc', luogo: 'Alex', foto: [img], thumb: img, creato: Date.now() }); await saveDev({ id: 'vr2', nome: 'Commodore 64', luogo: 'Damiano', creato: Date.now() }); await ghSync(true);
+      const d = devices.find(x => x.id === 'vr1'); await DB.del(d.id); markDeleted(d.id); devices = devices.filter(x => x.id !== 'vr1');
+      const c = devices.find(x => x.id === 'vr2'); c.luogo = 'Alex'; await saveDev(c); await ghSync(true); render(); });
+    await A.evaluate(() => openVersions()); await A.waitForSelector('[data-ver]');
+    const n = await A.evaluate(() => document.querySelectorAll('[data-ver]').length); ok(n >= 2, 'cronologia: ' + n + ' versioni');
+    await A.click('[data-ver]:nth-child(2)'); await A.waitForSelector('[data-vr]');
+    ok(await A.evaluate(() => { const t = stack[stack.length - 1].textContent; return /Apple IIc/.test(t) && /eliminato da allora/.test(t) && /Commodore 64/.test(t) && /modificato da allora/.test(t); }), 'differenze con oggi');
+    await A.click('[data-vr="vr1"]'); await A.waitForTimeout(600);
+    eq(await A.evaluate(() => { const d = devices.find(x => x.id === 'vr1'); return d ? [d.nome, /^data:image/.test(d.foto[0]), deletedMap().has('vr1')] : null; }), ['Apple IIc', true, false], 'oggetto eliminato ripristinato con la foto');
+    await A.context().close();
+  });
+
+  await test('Fold aperto: elenco a sinistra e scheda nel pannello a destra', async () => {
+    const W = await phone('W', { viewport: { width: 760, height: 900 } });
+    await W.evaluate(async () => { for (const [id, n] of [['w1', 'iBook G3'], ['w2', 'PowerBook G4']]) await saveDev({ id, nome: n, tipologia: 'Portatile', creato: Date.now() }); render(); });
+    const r = await W.evaluate(() => { const lw = $('#list').getBoundingClientRect().width; return [Math.round(lw), getComputedStyle($('#pane0')).display]; });
+    ok(r[0] >= 300 && r[0] <= 440 && r[1] === 'grid', 'colonna dell\'elenco e pannello vuoto: ' + r);
+    await W.click('#list [data-id="w1"]'); await W.waitForTimeout(600);
+    const pg = await W.evaluate(() => { const b = stack[stack.length - 1].getBoundingClientRect(); return [Math.round(b.left), stack.length]; });
+    ok(pg[0] >= 300 && pg[1] === 1, 'scheda nel pannello destro: ' + pg);
+    await W.click('#list [data-id="w2"]'); await W.waitForTimeout(600);
+    eq(await W.evaluate(() => [stack.length, stack[stack.length - 1].dataset.did]), [1, 'w2'], 'un altro oggetto sostituisce la scheda');
+    await W.context().close();
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });

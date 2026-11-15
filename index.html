@@ -635,6 +635,30 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .empty{padding:70px 20px}
 /* iOS installata: la pagina passa sotto la barra di stato; un velo scuro tiene leggibili ora e batteria (testo bianco) */
 @media (display-mode:standalone){@supports (-webkit-touch-callout:none){body::after{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 10px);z-index:200;pointer-events:none;background:linear-gradient(rgba(20,12,4,.34),rgba(20,12,4,0))}}}
+/* filtri salvati sotto la ricerca */
+.smart{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}.smart::-webkit-scrollbar{display:none}.smart .chip{flex:none;padding:6px 12px;font-size:13.5px}
+.chs{display:flex;flex-direction:column;gap:8px}.chs .btn{width:100%}
+/* scheda: posizione nell'elenco e passaggio alla scheda vicina */
+.hpos{position:absolute;top:calc(20px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:2;color:#fff;font:650 12.5px/1 system-ui,sans-serif;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.page.sw-next{animation:sw-in-r .34s cubic-bezier(.2,.85,.25,1) both}.page.sw-prev{animation:sw-in-l .34s cubic-bezier(.2,.85,.25,1) both}
+@keyframes sw-in-r{from{transform:translate3d(38%,0,0);opacity:0}to{transform:none;opacity:1}}@keyframes sw-in-l{from{transform:translate3d(-38%,0,0);opacity:0}to{transform:none;opacity:1}}
+#pane0{display:none}
+/* Fold aperto, tablet: elenco a sinistra, schede e pagine nel pannello a destra */
+@media (min-width:640px){
+  :root{--lw:clamp(300px,42vw,440px)}
+  #hdr,#top,#list{width:var(--lw)}
+  #dock{left:12px;max-width:calc(var(--lw) - 92px)}#dock .seg button{padding:12px 13px}
+  .fab{right:auto;left:calc(var(--lw) - 70px)}
+  #toast{left:calc(var(--lw) / 2);max-width:calc(var(--lw) - 24px)}
+  #bulk{right:auto;width:calc(var(--lw) - 24px)}
+  .page{left:var(--lw);box-shadow:-1px 0 0 var(--line),-18px 0 40px rgba(40,20,0,.12)}
+  .page.museum,.page.viewer{left:0;box-shadow:none}
+  #pane0{display:grid;place-items:center;position:fixed;top:0;bottom:0;right:0;left:var(--lw);z-index:1;text-align:center;color:var(--mute);box-shadow:-1px 0 0 var(--line)}
+  #pane0>div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 34px;border-radius:30px;background:var(--glass);box-shadow:var(--shadow)}
+  #pane0 .ic{width:46px;height:46px;stroke-width:1.4;color:var(--acc-ink);margin-bottom:4px}#pane0 b{color:var(--ink);font-size:17px}
+  .hero{border-radius:0 0 30px 30px}
+}
+@media (prefers-reduced-motion:reduce){.page.sw-next,.page.sw-prev{animation:none!important}}
 /* errori */
 .errc{border-radius:24px;padding:14px;margin:6px 0;background:color-mix(in srgb,var(--dng) 9%,var(--glass));box-shadow:var(--rim),0 0 0 1px color-mix(in srgb,var(--dng) 22%,transparent),var(--drop)}
 .errc .eh{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}.errc .ei{font-size:24px;line-height:1.1;flex:none}.errc b{display:block;font-size:16px}.errc small{display:block;color:var(--mute);font-size:14px;margin-top:3px;line-height:1.4}
@@ -722,8 +746,10 @@ html.lg .hb{background:rgba(255,255,255,.07)}
     <button class="ibtn" id="bMenu" aria-label="Menu"><svg class="ic" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
   </div>
   <div id="sum"></div>
+  <div id="smart" class="smart" hidden></div>
 </div>
 <div id="list"></div>
+<div id="pane0" aria-hidden="true"><div><svg class="ic" viewBox="0 0 24 24"><rect x="3.5" y="5" width="11" height="8.5" rx="2"/><rect x="11.5" y="8" width="6.5" height="11" rx="1.8"/><circle cx="8" cy="16.5" r="3"/></svg><b>Scegli un oggetto</b><small>La scheda si apre qui accanto</small></div></div>
 <nav id="dock" aria-label="Sezioni"><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></nav>
 <button class="fab" id="fab" aria-label="Aggiungi"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 <div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="merge">⧉ Unisci come esemplari</button><button data-b="del" class="dng">🗑</button></div>
@@ -736,8 +762,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.1';
+const APP_VER='2.2';
 const NOVITA=[
+ ['2.2','2026-11-15',['Fold aperto e tablet: elenco a sinistra e scheda a destra','Nella scheda: scorri a sinistra o a destra per passare all\'oggetto vicino (con la posizione nell\'elenco)','Filtri salvati: capsule sotto la ricerca, si creano dalla pagina Filtri','Avviso di doppione: «Hai già questo oggetto: aggiungerlo come esemplare?»','Menu → Versioni precedenti: recupera oggetti eliminati o modificati dalla cronologia su GitHub','Gemini: modelli trovati con la tua chiave più quelli da provare a mano (3.6 Flash, Flash Lite…), scansione appena incolli la chiave e all\'avvio, e ingresso compatibile come ARGOS se quello normale non risponde']],
  ['2.1','2026-11-15',['Ricambi: niente più sezione «Manutenzione» né anno (e non finiscono nel giro di ricarica)','Barra delle notifiche: su iPhone l\'app ci passa sotto, su Android prende il colore dello sfondo (e della foto, nella scheda)','Le pagine non scorrono più di lato: i link lunghi vanno a capo e la fonte mostra solo il nome del sito','Aprendo una scheda, titolo, etichette e sezioni entrano in sequenza dopo l\'ingrandimento della foto']],
  ['2.0','2026-11-14',['Nuova icona: schermo, palmare e ghiera come tre lastre di vetro su fondo nero, con la versione tonda e quella monocromatica per le icone a tema di Android','Nuova grafica Liquid Glass da capo: sfondo con macchie di colore, superfici di vetro, titolo grande, ricerca a capsula con pulsanti tondi e icone disegnate, barra in basso fluttuante con Collezione/Wishlist e il + a parte, intestazioni che sfumano','Errori spiegati: cosa è successo, cosa fare, dettagli tecnici da copiare e Riprova; Menu → Registro errori','Gemini: se un modello ha finito le richieste gratuite (o non le ha) passa da solo a un altro e se lo ricorda fino all\'azzeramento; «Salva e prova» fa una prova vera e mostra quali modelli rispondono']],
  ['1.1','2026-11-14',['Vetro liquido: barra in alto, pulsante +, avvisi, dialoghi, intestazioni e pulsanti sulle foto deformano e illuminano quello che passa sotto (Menu → Aspetto)','La goccia del selettore Collezione/Wishlist scorre e si allunga; i pulsanti rimbalzano quando li premi','✨ Chiedi a Gemini: cerca sul web e compila la scheda degli oggetti rari (serve una chiave API, Menu → Gemini)']],
@@ -798,6 +825,7 @@ const LD_SVG={
 };
 function loader(kind,msg,sub=''){return `<div class="ld ld-${kind}" role="status">${LD_SVG[kind]||LD_SVG.web}<div class="ldm">${esc(String(msg).replace(/…$/,''))}</div>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
 const ldKind=m=>/everymac|specifiche|scheda everymac/i.test(m)?'mac':/annunc/i.test(m)?'ann':/screenshot|testo/i.test(m)?'scan':'web';
+const wide=()=>matchMedia('(min-width:640px)').matches;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(m,ms=2600,act){const t=$('#toast');t.textContent=m;if(act){const b=document.createElement('button');b.textContent=act.label;b.onclick=()=>{t.style.display='none';act.fn()};t.append(b)}t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',ms)}
 function ask(msg,ok='Conferma',danger){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn sec" data-n>Annulla</button><button class="btn ${danger?'dng':''}" data-y>${esc(ok)}</button></div></div>`;m.onclick=e=>{if(e.target.matches('[data-y]')){m.remove();res(true)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(false)}};document.body.append(m);lgScan(m)})}
@@ -973,6 +1001,7 @@ function render(){
     html+=oggiHTML();
     const inc=P.filter(d=>missing(d).length).length;if(inc&&!(S.sel.completezza||[]).length)sum+=`<button class="pill" data-inc>✎ ${inc} da completare</button>`}
   writeSum();
+  {const sm=$('#smart');if(sm){const L=smartList();sm.hidden=!L.length||!!SELM;if(L.length)sm.innerHTML=smartHTML()}}
   const block=a=>lay==='grid'?`<div class="grid">${a.map(gcard).join('')}</div>`:a.map(card).join('');
   const grp=curGroup();
   if(lay==='time')html+=timeline(items);
@@ -1034,7 +1063,10 @@ history.replaceState({p:0},'');
 function openFilters(){
   const el=openPage('Filtri e ordinamento','',{actions:'<button class="btn sm sec" data-reset>Azzera</button>'});
   const draw=()=>{
-    let h=`<div class="grid2"><div><label class="f">Raggruppa per</label><select class="in" id="gSel">${Object.entries(GROUPS).map(([k,v])=>`<option value="${k}" ${curGroup()===k?'selected':''}>${v}</option>`).join('')}</select></div>
+    const SL=smartList(),cur=smartNow();
+    let h=`<div class="sec-t" style="margin-top:4px">Filtri salvati</div>${SL.length?`<div class="chips">${SL.map(f=>`<span class="mchip"><button data-sapply="${f.id}">★ ${esc(f.n)}</button><button data-sdel="${f.id}" aria-label="Elimina">✕</button></span>`).join('')}</div>`:'<p class="note" style="margin:0 0 6px">Scegli ricerca e filtri qui sotto, poi salvali con un nome: compaiono come capsule sotto la barra di ricerca.</p>'}
+    <div class="row" style="margin:6px 0 4px"><input class="in" id="sName" placeholder="${smartEmpty(cur)?'Prima scegli qualche filtro':'Nome, es. Portatili da testare'}" ${smartEmpty(cur)?'disabled':''} autocomplete="off"><button class="btn sm" data-ssave ${smartEmpty(cur)?'disabled':''}>Salva</button></div>`;
+    h+=`<div class="grid2"><div><label class="f">Raggruppa per</label><select class="in" id="gSel">${Object.entries(GROUPS).map(([k,v])=>`<option value="${k}" ${curGroup()===k?'selected':''}>${v}</option>`).join('')}</select></div>
     <div><label class="f">Ordina per</label><select class="in" id="sSel">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}" ${curSort()===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`;
     for(const [k,lab] of FACETS){
       const cnt=new Map();pool().filter(d=>pass(d,k)).forEach(d=>vals(d,k).forEach(v=>cnt.set(v,(cnt.get(v)||0)+1)));
@@ -1050,6 +1082,9 @@ function openFilters(){
     const c=e.target.closest('.chip');
     if(c){const k=c.dataset.k,v=c.dataset.v;const a=S.sel[k]=S.sel[k]||[];const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);draw();render()}
     if(e.target.closest('[data-reset]')){S.sel={};S.q='';$('#q').value='';draw();render()}
+    const sa=e.target.closest('[data-sapply]');if(sa){smartApply(sa.dataset.sapply);draw()}
+    const sd=e.target.closest('[data-sdel]');if(sd){LS.set('rd_smart',smartList().filter(f=>f.id!==sd.dataset.sdel));draw();render();toast('Filtro eliminato')}
+    if(e.target.closest('[data-ssave]')){const n=($('#sName',el).value||'').trim();if(!n){$('#sName',el).focus();return}LS.set('rd_smart',[...smartList(),Object.assign({id:uid(),n},smartNow())]);draw();render();toast(`Filtro «${n}» salvato ★`)}
   });
   el.addEventListener('change',e=>{if(e.target.id==='gSel'){if(isWishView())S.groupW=e.target.value;else S.group=e.target.value}if(e.target.id==='sSel'){if(isWishView())S.sortW=e.target.value;else S.sort=e.target.value}render()});
 }
@@ -1100,12 +1135,13 @@ function fieldDisplay(d,k){
   return esc(d[k]);
 }
 function openDetailFrom(card,id){
+  const top=stack[stack.length-1];if(wide()&&top&&top.classList.contains('det'))return openDetail(id,true);
   const img=card&&card.querySelector('.th img,.gi img');
   if(!img||!document.startViewTransition||RM())return openDetail(id);
   img.style.viewTransitionName='hero-x';
   vt('vt-det',()=>{img.style.viewTransitionName='';openDetail(id,false,true)},()=>{document.querySelectorAll('.himg').forEach(h=>h.style.viewTransitionName='')});
 }
-function openDetail(id,replace,morph,quiet){
+function openDetail(id,replace,morph,quiet,dir){
   const d=devices.find(x=>x.id===id);if(!d)return;
   const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
@@ -1113,7 +1149,7 @@ function openDetail(id,replace,morph,quiet){
   const hchips=[d.prestito&&`<span class="hchip">${d.prestito.tipo==='Esposizione'?'🖼️ In esposizione':'📤 In prestito'}${loanOverdue(d)?' ⚠️':''}</span>`,...(d.tags||[]).map(t=>`<span class="hchip">#${esc(t)}</span>`),d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,linkedTo(d)&&`<span class="hchip">↳ ${esc(linkedTo(d).nome)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
-    <button class="hb l" data-back aria-label="Indietro">${IC.back}</button>
+    <button class="hb l" data-back aria-label="Indietro">${IC.back}</button>${(()=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&L.length>1?`<span class="hpos">${i+1} / ${L.length}</span>`:''})()}
     <div class="hbr">${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
     <div class="cap">${sub?`<small>${esc(sub)}</small>`:''}<h1>${esc(d.nome)}</h1>${hchips?`<div class="hchips">${hchips}</div>`:''}</div>
   </div>`;
@@ -1158,7 +1194,9 @@ function openDetail(id,replace,morph,quiet){
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
     h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
   }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet?' no-anim':'')+(quiet?' quiet':''),mount(el){
+  openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
+    el.dataset.did=d.id;{let sx=0,sy=0,st=0;el.addEventListener('touchstart',e=>{st=0;if(e.touches.length!==1||e.target.closest('.thumbs,.photos,.chips,.chart,.pcmp,input,textarea,select,.hchips'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;if(sx<24||sx>innerWidth-24)return;st=Date.now()},{passive:true});
+      el.addEventListener('touchend',e=>{if(!st)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Date.now()-st<700&&Math.abs(dx)>70&&Math.abs(dy)<Math.abs(dx)*.55)detailStep(d.id,dx<0?1:-1);st=0},{passive:true})}
     const v0=DV;el._refresh=()=>{if(DV!==v0&&devices.some(x=>x.id===d.id))openDetail(d.id,true,false,true)};
     if(morph){const hi=$('.himg',el);if(hi){hi.style.viewTransitionName='hero-x';
       el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40)h.style.viewTransitionName='hero-x'},
@@ -2040,14 +2078,25 @@ const msToPacificMidnight=()=>{try{const p=new Intl.DateTimeFormat('en-US',{time
 const gemCds=()=>{const c=LS.get('rd_gem_cd',{}),now=Date.now(),k=gemCfg().key.slice(-6);for(const m of Object.keys(c))if(c[m].until<=now||c[m].key!==k)delete c[m];return c};
 function gemCool(model,e){const c=gemCds(),ms=e.kind==='gratis0'?7*864e5:e.kind==='giorno'?msToPacificMidnight():e.waitMs||60000;c[model]={until:Date.now()+ms,kind:e.kind,key:gemCfg().key.slice(-6)};LS.set('rd_gem_cd',c);e.until=c[model].until}
 const gemCooling=m=>gemCds()[m];
-async function gemModels(force){const k=gemCfg().key.slice(-6),c=LS.get('rd_gem_models',null);if(!force&&c&&c.key===k&&Date.now()-c.t<864e5&&c.list.length)return c.list;
-  const j=await gemFetch('models?pageSize=200');
-  const list=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(n=>/^gemini-/.test(n)&&!/image|tts|audio|live|embed|vision|robotics|computer-use|nano|learnlm|exp-/.test(n));
-  LS.set('rd_gem_models',{t:Date.now(),key:k,list});return list}
+/* nomi da provare a mano anche se la scansione non li elenca */
+const GEM_PRESET=['gemini-3.6-flash','gemini-3.6-flash-lite','gemini-3.5-flash','gemini-3.5-flash-lite','gemini-2.5-flash','gemini-2.5-flash-lite','gemini-flash-latest','gemini-flash-lite-latest','gemini-2.0-flash'];
+const gemChat=n=>/^gemini-/.test(n)&&!/image|tts|audio|live|embed|vision|robotics|computer-use|nano|learnlm|exp-/.test(n);
+/* ingresso «compatibile OpenAI» di Google (quello che usa ARGOS): chiave come Bearer, /models e /chat/completions */
+async function gemCompatFetch(path,body,model){const c=gemCfg();if(!c.key)throw new AppErr('manca','manca la chiave API');
+  let r;try{r=await fetch(`${GEM}/openai/${path}`,{method:body?'POST':'GET',headers:Object.assign({Authorization:'Bearer '+c.key},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(120000)})}
+  catch(e){throw new AppErr(e.name==='TimeoutError'?'timeout':'rete',e.message||String(e),{model,via:'compatibile'})}
+  if(!r.ok){const e=await gemErr(r,model);e.via='compatibile';throw e}
+  return r.json()}
+const GEM_KEYERR=['manca','chiave','permesso','paese','credito'];
+async function gemModels(force){const k=gemCfg().key.slice(-6),c=LS.get('rd_gem_models',null);if(!force&&c&&c.key===k&&Date.now()-c.t<6*3600e3&&c.list.length)return c.list;
+  let list=[],via='',err=null;
+  try{const j=await gemCompatFetch('models');list=(j.data||[]).map(m=>String(m.id||'').replace(/^models\//,'')).filter(gemChat);via='compatibile'}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;err=e}
+  if(!list.length){try{const j=await gemFetch('models?pageSize=200');list=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace(/^models\//,'')).filter(gemChat);via='nativo'}catch(e){if(GEM_KEYERR.includes(e.kind)||!err)throw e;throw err}}
+  list=[...new Set(list)];LS.set('rd_gem_models',{t:Date.now(),key:k,list,via});return list}
 const gemScore=n=>{const v=parseFloat((n.match(/^gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100+(/flash/.test(n)?30:/pro/.test(n)?10:0)-(/lite/.test(n)?25:0)-(/preview|exp/.test(n)?15:0)-(/-\d{3}$|-\d{2}-\d{2,4}$/.test(n)?2:0)};
 function gemPick(list){return list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length)[0]||''}
 /* ordine dei tentativi: modello scelto a mano, ultimo che ha funzionato, poi i flash (stabili prima), i lite, i pro */
-function gemOrder(list){const c=gemCfg(),o=list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length);return [...new Set([c.model,c.ok,...o].filter(m=>m&&list.includes(m)))]}
+function gemOrder(list){const c=gemCfg(),L=list&&list.length?list:GEM_PRESET,o=L.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length);return [...new Set([c.model,L.includes(c.ok)?c.ok:'',...o].filter(Boolean))]}
 async function gemModel(force){const c=gemCfg();if(c.model&&!force)return c.model;const m=gemPick(await gemModels(force));if(!m)throw new AppErr('modello','nessun modello Gemini disponibile per questa chiave');return m}
 /* campi che Gemini può compilare: tutti quelli tecnici e descrittivi; niente dati personali (luogo, stato, prezzo pagato…) */
 const GEM_SKIP=new Set(['seriale','compat','collegato','tv_telecomando','batt_stato','man_freq','man_on','man_charge','raccolta','ruolo','garanzia','tags','luogo','quantita','stato','scatola','condizione','acq_anno','acq_prezzo','valore','note','w_priorita','w_budget','w_link','w_note']);
@@ -2078,7 +2127,15 @@ function gemResult(o,meta){const F=gemFields(),fields={},str=v=>typeof v==='stri
   const img=typeof o.immagine==='string'&&/^https:\/\/upload\.wikimedia\.org\/\S+\.(jpe?g|png|webp)$/i.test(o.immagine)?o.immagine:'';
   const src=meta.sources||[];
   return {fields,specs,imageUrl:img,fonte:(src[0]||{}).uri||'',fonteNome:`Gemini (${meta.model}) con Google Search${src.length?' · '+src.slice(0,4).map(s=>s.title).join(', '):''}`,sources:src,incerti:Array.isArray(o.incerti)?o.incerti.filter(k=>typeof k==='string'):[],gemini:true}}
-async function gemTry(model,q,ctx,search){
+async function gemTryCompat(model,q,ctx){
+  const j=await gemCompatFetch('chat/completions',{model,messages:[{role:'user',content:gemPrompt(q,ctx)}]},model);
+  const txt=String((((j.choices||[])[0]||{}).message||{}).content||''),o=gemJSON(txt);
+  if(!o)throw new AppErr('risposta','nessun JSON nella risposta',{model,via:'compatibile',raw:txt.slice(0,600)});
+  const r=gemResult(o,{model,sources:[]});r.noSearch=true;r.via='compatibile';r.fonteNome=`Gemini (${model}) senza ricerca web`;if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model});return r}
+async function gemTry(model,q,ctx,search){try{return await gemTryNative(model,q,ctx,search)}
+  catch(e){if(!['rete','altro','risposta'].includes(e.kind))throw e;
+    try{return await gemTryCompat(model,q,ctx)}catch(e2){e2.raw=`${e2.raw||e2.message}\n— ingresso nativo: ${e.raw||e.message}`;throw e2}}}
+async function gemTryNative(model,q,ctx,search){
   const body={contents:[{role:'user',parts:[{text:gemPrompt(q,ctx)}]}]};if(search)body.tools=[{google_search:{}}];
   const j=await gemFetch(`models/${model}:generateContent`,body,model);
   const cand=(j.candidates||[])[0]||{},gm=cand.groundingMetadata||{};
@@ -2094,7 +2151,7 @@ const GEM_STOP=['manca','chiave','permesso','paese','credito','rete','bloccata']
 async function gemAsk(q,ctx,onStep){const list=await gemModels(),order=gemOrder(list),tried=[];let last=null,searchHit=false;
   const run=async search=>{for(const m of order){const cd=gemCooling(m);if(cd){tried.push([m,cd.kind]);continue}
       onStep&&onStep(m,tried.slice(),search);
-      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m});r.tried=tried.slice();r.noSearch=!search;return r}
+      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m,via:r.via||'nativo'});r.tried=tried.slice();r.noSearch=r.noSearch||!search;return r}
       catch(e){if(GEM_STOP.includes(e.kind)){e.tried=tried;throw e}
         if(['minuto','giorno','gratis0'].includes(e.kind)){if(e.search&&search){searchHit=true;tried.push([m,'ricerca '+e.kind]);last=e;continue}gemCool(m,e)}
         if(e.kind==='modello')LS.set('rd_gem_models',null);
@@ -2135,33 +2192,96 @@ function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={
   }});
 }
 /* prova della chiave: elenco dei modelli e una richiesta vera, modello per modello, finché uno risponde */
-async function gemProbe(onLine){const list=await gemModels(true),order=gemOrder(list).slice(0,6),res=[];
+async function gemProbe(onLine){let list=[];try{list=await gemModels(true)}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;logErr('Gemini · elenco modelli',e)}
+  const order=gemOrder(list).slice(0,6),res=[];
   for(const m of order){const cd=gemCooling(m);if(cd){res.push([m,cd.kind]);onLine(res);continue}
-    try{await gemFetch(`models/${m}:generateContent`,{contents:[{role:'user',parts:[{text:'Rispondi solo: OK'}]}],generationConfig:{maxOutputTokens:5}},m);res.push([m,'ok']);onLine(res);gemSet({ok:m});return {list,res,ok:m}}
+    try{let via='nativo';try{await gemFetch(`models/${m}:generateContent`,{contents:[{role:'user',parts:[{text:'Rispondi solo: OK'}]}],generationConfig:{maxOutputTokens:5}},m)}catch(e){if(!['rete','altro'].includes(e.kind))throw e;await gemCompatFetch('chat/completions',{model:m,messages:[{role:'user',content:'Rispondi solo: OK'}],max_tokens:5},m);via='compatibile'}
+      res.push([m,'ok',null,via]);onLine(res);gemSet({ok:m,via});return {list,res,ok:m,via}}
     catch(e){if(GEM_STOP.includes(e.kind))throw e;if(['minuto','giorno','gratis0'].includes(e.kind))gemCool(m,e);res.push([m,e.kind,e]);onLine(res)}}
   return {list,res,ok:''}}
 function openGemSettings({replace=false,then}={}){const c=gemCfg();
   openPage('Gemini',`<p style="margin-top:0">Con una <b>chiave API di Gemini</b> l'app può chiedere a Gemini di cercare sul web i dati di un oggetto e compilare la scheda.</p>
     <label class="f">Chiave API</label><input class="in" id="gk" type="password" value="${esc(c.key)}" placeholder="AIza…" autocomplete="off">
-    <label class="f">Modello</label><select class="in" id="gmd"><option value="">Automatico (sceglie e cambia da solo)</option>${c.model?`<option value="${esc(c.model)}" selected>${esc(c.model)}</option>`:''}</select>
+    <label class="f">Modello</label><select class="in" id="gmd"></select><small id="gmi" style="display:block;color:var(--mute);margin:6px 4px 0"></small>
+    <input class="in" id="gmn" placeholder="…oppure scrivi il nome di un modello (es. gemini-3.6-flash)" autocomplete="off" style="margin-top:8px">
     <div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn" id="gks">Salva e prova</button>${c.key?'<button class="btn sec" id="gkx">Scollega</button>':''}</div><div id="gkm" style="margin-top:10px"></div>
     <p style="margin-bottom:2px"><b>Come ottenere la chiave</b> (gratis, una volta sola):</p>
     <ol style="padding-left:18px;margin:4px 0"><li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> con il tuo account Google</li><li><b>Create API key</b> (o «Crea chiave API»), copiala e incollala qui.</li></ol>
     <p class="note">🔒 La chiave resta solo su questo telefono: non va su GitHub né negli altri telefoni. Google conta i limiti gratuiti modello per modello: quando uno è esaurito l'app passa da sola a un altro. Con il livello gratuito Google può usare le richieste per migliorare i suoi prodotti (qui si inviano solo nomi e dati dei dispositivi).</p>`,{replace,mount(el){
     const box=$('#gkm',el);
-    const lines=res=>box.innerHTML=`<div class="log">${res.map(([m,k])=>`<div class="li"><span class="lb"><b>${k==='ok'?'✓':'✗'} ${esc(m)}</b><small>${k==='ok'?'risponde':esc(GEM_WHY[k]||(ERR_INFO[k]||ERR_INFO.altro)[1])}</small></span></div>`).join('')}</div>`;
+    const fill=()=>{const cur=gemCfg().model,cache=LS.get('rd_gem_models',null),found=cache&&cache.key===gemCfg().key.slice(-6)?cache.list:[],srt=a=>a.slice().sort((x,y)=>gemScore(y)-gemScore(x)||x.localeCompare(y)),tag=m=>{const cd=gemCooling(m);return cd?' · '+(GEM_WHY[cd.kind]||cd.kind):m===gemCfg().ok?' · ✓ funziona':''};
+      const extra=GEM_PRESET.filter(m=>!found.includes(m)).concat(cur&&!found.includes(cur)&&!GEM_PRESET.includes(cur)?[cur]:[]);
+      $('#gmd',el).innerHTML=`<option value="">Automatico (sceglie e cambia da solo)</option>`+(found.length?`<optgroup label="Trovati con la tua chiave (${found.length})">${srt(found).map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}${tag(m)}</option>`).join('')}</optgroup>`:'')+`<optgroup label="${found.length?'Altri da provare':'Da provare (scansione non ancora fatta)'}">${extra.map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}${tag(m)}</option>`).join('')}</optgroup>`;
+      $('#gmi',el).textContent=found.length?`${found.length} modelli trovati${cache.via?' (ingresso '+cache.via+')':''} · aggiornato ${new Date(cache.t).toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'})}`:gemCfg().key?'Scansione dei modelli non ancora riuscita':'Incolla la chiave: i modelli disponibili compaiono qui'};
+    let scanT=null;const scan=async(quiet)=>{const key=$('#gk',el).value.trim();if(key.length<20)return fill();if(key!==gemCfg().key){LS.set('rd_gem_models',null);LS.set('rd_gem_cd',{});LS.set('rd_gem',{key,model:gemCfg().model,ok:''})}
+      $('#gmi',el).textContent='Cerco i modelli disponibili…';try{await gemModels(true)}catch(e){logErr('Gemini · elenco modelli',e);if(!quiet)errBox(box,e,'Elenco modelli',()=>scan())}fill()};
+    fill();if(c.key){const cc=LS.get('rd_gem_models',null);if(!cc||Date.now()-cc.t>3600e3)scan(true)}
+    $('#gk',el).addEventListener('input',()=>{clearTimeout(scanT);scanT=setTimeout(()=>scan(true),900)});
+    $('#gmn',el).onchange=()=>{const v=$('#gmn',el).value.trim().replace(/^models\//,'');if(!v)return;gemSet({model:v});$('#gmn',el).value='';fill();toast('Modello: '+v)};
+    const lines=res=>box.innerHTML=`<div class="log">${res.map(([m,k,e,via])=>`<div class="li"><span class="lb"><b>${k==='ok'?'✓':'✗'} ${esc(m)}</b><small>${k==='ok'?'risponde'+(via==='compatibile'?' (ingresso compatibile)':''):esc(GEM_WHY[k]||(ERR_INFO[k]||ERR_INFO.altro)[1])}${e&&e.raw?' — '+esc(String(e.raw).split('\n')[0].slice(0,140)):''}</small></span></div>`).join('')}</div>`;
     $('#gks',el).onclick=async()=>{const key=$('#gk',el).value.trim();if(!key){box.innerHTML='<p class="note">Incolla la chiave</p>';return}const b=$('#gks',el);b.disabled=true;
       if(key!==c.key){LS.set('rd_gem_models',null);LS.set('rd_gem_cd',{})}
       LS.set('rd_gem',{key,model:$('#gmd',el).value,ok:key===c.key?c.ok:''});box.innerHTML=loader('web','Provo la chiave…','una richiesta di prova per ogni modello, finché uno risponde');
-      try{const {list,res,ok}=await gemProbe(lines),cur=$('#gmd',el).value;
-        $('#gmd',el).innerHTML=`<option value="">Automatico (sceglie e cambia da solo)</option>`+list.slice().sort().map(m=>`<option value="${esc(m)}" ${m===cur?'selected':''}>${esc(m)}${gemCooling(m)?' · '+(GEM_WHY[gemCooling(m).kind]||''):''}</option>`).join('');
+      try{const {res,ok,via}=await gemProbe(lines),cur=$('#gmd',el).value;fill();
         lines(res);
-        if(ok){box.insertAdjacentHTML('afterbegin',`<p class="note" style="margin-top:0">✅ Chiave valida: userò <b>${esc(cur||ok)}</b>.</p>`);toast('Gemini collegato ✨');if(then)setTimeout(then,700)}
+        if(ok){box.insertAdjacentHTML('afterbegin',`<p class="note" style="margin-top:0">✅ Chiave valida: userò <b>${esc(cur||ok)}</b>${via==='compatibile'?' (ingresso compatibile, come ARGOS: senza ricerca web)':''}.</p>`);toast('Gemini collegato ✨');if(then)setTimeout(then,700)}
         else{const last=(res.find(r=>r[2])||[])[2];const all0=res.length&&res.every(r=>r[1]==='gratis0');box.insertAdjacentHTML('afterbegin',errCard(all0?new AppErr('gratis0tutti','nessun modello con quota gratuita',{tried:res.map(r=>[r[0],r[1]]),raw:last&&last.raw}):(last||new AppErr('modello','nessun modello ha risposto')),{where:'Prova della chiave'}));logErr('Prova della chiave',last||'nessun modello')}}
       catch(e){errBox(box,e,'Prova della chiave',()=>$('#gks',el).click())}
       b.disabled=false};
-    $('#gmd',el).onchange=()=>{gemSet({model:$('#gmd',el).value});toast('Modello: '+($('#gmd',el).value||'automatico'))};
+    $('#gmd',el).onchange=()=>{gemSet({model:$('#gmd',el).value});toast('Modello: '+($('#gmd',el).value||'automatico'));fill()};
     const x=$('#gkx',el);if(x)x.onclick=()=>{LS.set('rd_gem',{});LS.set('rd_gem_models',null);LS.set('rd_gem_cd',{});toast('Gemini scollegato');history.back()};
+  }});
+}
+/* finestra con più scelte (resolve: indice, oppure -1 se annullata) */
+function choose(msg,opts){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><p>${esc(msg)}</p><div class="chs">${opts.map((o,i)=>`<button class="btn ${i?'sec':''}" data-c="${i}">${esc(o)}</button>`).join('')}<button class="btn sec" data-c="-1">Annulla</button></div></div>`;
+  m.onclick=e=>{const b=e.target.closest('[data-c]');if(b||e.target===m){m.remove();res(b?+b.dataset.c:-1)}};document.body.append(m);lgScan(m)})}
+/* ===== filtri salvati: ricerca + filtri, riapribili con un tocco ===== */
+const smartList=()=>LS.get('rd_smart',[]);
+const smartNorm=f=>stable({view:f.view||'col',q:String(f.q||'').trim().toLowerCase(),sel:Object.fromEntries(Object.entries(f.sel||{}).filter(([,v])=>v&&v.length).map(([k,v])=>[k,v.slice().sort()]))});
+const smartNow=()=>({view:S.view,q:S.q||'',sel:JSON.parse(JSON.stringify(S.sel||{}))});
+const smartEmpty=f=>!String(f.q||'').trim()&&!Object.values(f.sel||{}).some(v=>v&&v.length);
+function smartApply(id){const f=smartList().find(x=>x.id===id);if(!f)return;
+  if(smartNorm(f)===smartNorm(smartNow())){S.sel={};S.q='';$('#q').value='';toast('Filtro tolto')}
+  else{S.view=f.view||'col';S.q=f.q||'';$('#q').value=S.q;S.sel=JSON.parse(JSON.stringify(f.sel||{}))}
+  render();scrollTo({top:0,behavior:RM()?'auto':'smooth'})}
+function smartHTML(){const L=smartList(),cur=smartNorm(smartNow());return L.map(f=>`<button class="chip ${smartNorm(f)===cur?'on':''}" data-smart="${f.id}">★ ${esc(f.n)}</button>`).join('')}
+/* ===== scorrere tra le schede: l'ordine è quello dell'elenco (con ricerca e filtri) ===== */
+function detailStep(id,dir){const L=render.items||[],i=L.indexOf(id);if(i<0)return;const n=L[i+dir];
+  if(!n){toast(dir>0?'Ultimo oggetto dell\'elenco':'Primo oggetto dell\'elenco',1600);try{navigator.vibrate&&navigator.vibrate([8,40,8])}catch(_){}return}
+  openDetail(n,true,false,false,dir>0?'next':'prev')}
+addEventListener('keydown',e=>{if(!/Arrow(Left|Right)/.test(e.key)||e.target.closest('input,textarea,select'))return;const top=stack[stack.length-1];if(!top||!top.classList.contains('det')||!top.dataset.did)return;detailStep(top.dataset.did,e.key==='ArrowRight'?1:-1)});
+/* ===== versioni precedenti: ogni sincronizzazione è un commit di collezione.json su GitHub ===== */
+const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti'].includes(k))));
+function openVersions(){
+  if(!ghOn())return openPage('Versioni precedenti','<p class="note" style="margin-top:0">Le versioni precedenti sono le sincronizzazioni salvate su GitHub: serve il <b>salvataggio automatico su GitHub</b> (Menu → Database su GitHub → token).</p>');
+  openPage('Versioni precedenti',`<p class="note" style="margin-top:0">Ogni sincronizzazione con GitHub conserva la collezione com'era in quel momento. Scegli una data per vedere cosa è cambiato da allora e recuperare oggetti eliminati o modificati per errore.</p><div id="vl">${loader('web','Leggo la cronologia…')}</div>`,{mount(el){
+    (async()=>{try{const cs=await gh('commits?path=collezione.json&per_page=50');
+        $('#vl',el).innerHTML=cs.length?`<div class="log">${cs.map(c=>{const dt=new Date((c.commit&&(c.commit.committer||c.commit.author)||{}).date||0);return `<button class="li" data-ver="${esc(c.sha)}" data-when="${esc(dt.toISOString())}"><span class="ld">${dt.toLocaleDateString('it',{day:'numeric',month:'short'})}<br><small style="font-weight:500">${dt.toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'})}</small></span><span class="lb"><b>${esc(String((c.commit||{}).message||'').split('\n')[0].replace(/^RDDC:\s*/,'')||'Modifica')}</b><small>${esc(String(c.sha).slice(0,7))}</small></span></button>`}).join('')}</div>`:'<p class="note">Nessuna versione salvata.</p>'}
+      catch(e){errBox($('#vl',el),e,'Versioni precedenti',()=>{history.back();setTimeout(openVersions,60)})}})();
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-ver]');if(b)openVersion(b.dataset.ver,new Date(b.dataset.when))});
+  }});
+}
+function openVersion(sha,when){
+  openPage(when.toLocaleString('it',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),`<div id="vv">${loader('web','Carico la versione…')}</div>`,{mount(el){let tmap=null,old=[],flt='diff';
+    const fetchPhoto=async p=>{const sh=tmap.get(String(p).replace(/^\.\//,''));if(!sh)throw new Error('foto mancante');return (await gh(`git/blobs/${sh}`,{raw:true})).blob()};
+    const status=o=>{const c=devices.find(x=>x.id===o.id);return !c?'eliminato':verKey(c)!==verKey(o)?'diverso':'uguale'};
+    const draw=()=>{const st=old.map(o=>[o,status(o)]),nDel=st.filter(x=>x[1]==='eliminato').length,nDif=st.filter(x=>x[1]==='diverso').length,nNew=devices.filter(d=>!old.some(o=>o.id===d.id)).length;
+      const L=st.filter(([,k])=>flt==='tutti'||(flt==='diff'?k!=='uguale':k===flt)).sort((a,b)=>String(a[0].nome).localeCompare(b[0].nome,'it'));
+      $('#vv',el).innerHTML=`<div class="tiles"><div class="tile"><small>In questa versione</small><b>${old.length} oggetti</b></div><div class="tile"><small>Eliminati da allora</small><b>${nDel}</b></div><div class="tile"><small>Modificati da allora</small><b>${nDif}</b></div><div class="tile"><small>Aggiunti dopo</small><b>${nNew}</b></div></div>
+        <div class="chips" style="margin-top:12px">${[['diff','Eliminati e modificati'],['eliminato','Solo eliminati'],['diverso','Solo modificati'],['tutti','Tutti']].map(([k,l])=>`<button class="chip ${flt===k?'on':''}" data-vf="${k}">${l}</button>`).join('')}</div>
+        ${L.length?L.map(([o,k])=>`<div class="pz shp"><span><b>${esc(o.nome)}</b><small>${k==='eliminato'?'🗑 eliminato da allora':k==='diverso'?'✎ modificato da allora':'✓ uguale a oggi'}${o.luogo?' · 📍 '+esc(o.luogo):''}</small></span>${k!=='uguale'?`<button class="btn sm sec" data-vr="${esc(o.id)}">Ripristina</button>`:''}</div>`).join(''):'<p class="note">Niente da recuperare: da allora non è cambiato nulla.</p>'}
+        ${nDel+nDif?`<button class="btn" data-vall style="width:100%;margin-top:12px">Ripristina tutti gli eliminati e i modificati (${nDel+nDif})</button>`:''}
+        <p class="note">Il ripristino riporta l'oggetto com'era in quella versione, foto comprese, e alla prossima sincronizzazione arriva anche sugli altri telefoni. Gli oggetti aggiunti dopo restano.</p>`};
+    const restore=async o=>{const c=JSON.parse(JSON.stringify(o));await localizePhotos(c,fetchPhoto);unmarkDeleted(c.id);c.modificato=Date.now();const i=devices.findIndex(x=>x.id===c.id);await saveDev(c);if(i<0&&!devices.includes(c))devices.push(c)};
+    (async()=>{try{const cm=await gh(`git/commits/${sha}`),tr=await gh(`git/trees/${cm.tree.sha}?recursive=1`);tmap=new Map(tr.tree.filter(x=>x.type==='blob').map(x=>[x.path,x.sha]));
+        if(!tmap.has('collezione.json'))throw new AppErr('altro','in questa versione non c\'è collezione.json');
+        const j=JSON.parse(await (await gh(`git/blobs/${tmap.get('collezione.json')}`,{raw:true})).text());old=(Array.isArray(j)?j:j.devices||[]).filter(o=>o&&o.id&&o.nome);draw()}
+      catch(e){errBox($('#vv',el),e,'Versioni precedenti')}})();
+    el.addEventListener('click',async e=>{const f=e.target.closest('[data-vf]');if(f){flt=f.dataset.vf;return draw()}
+      const r=e.target.closest('[data-vr]');if(r){const o=old.find(x=>x.id===r.dataset.vr),k=status(o);if(k==='diverso'&&!await ask(`Riportare «${o.nome}» com'era in questa versione? Le modifiche fatte dopo si perdono.`,'Ripristina'))return;
+        r.disabled=true;try{await restore(o);render();toast(`«${o.nome}» ripristinato`);draw()}catch(er){r.disabled=false;errBox($('#vv',el),er,'Ripristino')}return}
+      if(e.target.closest('[data-vall]')){const L=old.filter(o=>status(o)!=='uguale');if(!await ask(`Ripristinare ${L.length} oggetti com'erano in questa versione? Le modifiche fatte dopo a quegli oggetti si perdono; gli oggetti aggiunti dopo restano.`,'Ripristina'))return;
+        try{for(const o of L)await restore(o);render();toast(`${L.length} oggetti ripristinati`);draw()}catch(er){errBox($('#vv',el),er,'Ripristino')}}});
   }});
 }
 /* ===== doppioni: un oggetto per ogni pezzo fisico ===== */
@@ -2214,9 +2334,9 @@ function openUnit(d,u,fresh){
       await saveDev(c);d.esemplari=d.esemplari.filter(x=>x!==u);await done('Separato in un nuovo oggetto')};
   }});
 }
-async function mergeAsUnits(L){
+async function mergeAsUnits(L,quiet){
   const main=L[0],others=L.slice(1);
-  if(!await ask(`Unire ${L.length} oggetti in «${main.nome}» con ${L.length} esemplari? I dati del modello sono quelli di «${main.nome}»; di ogni oggetto restano stato, estetica, scatola, seriale, luogo, prezzo e note. Foto, allegati e interventi vengono riuniti.`,'Unisci'))return false;
+  if(!quiet&&!await ask(`Unire ${L.length} oggetti in «${main.nome}» con ${L.length} esemplari? I dati del modello sono quelli di «${main.nome}»; di ogni oggetto restano stato, estetica, scatola, seriale, luogo, prezzo e note. Foto, allegati e interventi vengono riuniti.`,'Unisci'))return false;
   const snap=[...L,...devices.filter(x=>L.slice(1).some(o=>o.id===x.collegato))].map(x=>JSON.parse(JSON.stringify(x)));
   const units=d=>hasUnits(d)?d.esemplari:[Object.assign(unitFrom(d,true),{note:d.note&&d!==main?d.note:''})];
   main.esemplari=L.flatMap(units);delete main.collegato;
@@ -2657,7 +2777,12 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         o.id=o.id||uid();o.creato=o.creato||Date.now();o.modificato=Date.now();
         if(!o.wish&&o.valore!==''&&String(+o.valore)!==String(+d.valore||'')){seedVal(o,d);o.valori.push({id:uid(),data:today(),valore:+o.valore,fonte:'Stima personale'})}
         const dup=devices.find(x=>x.id!==o.id&&!!x.wish===!!o.wish&&x.nome===o.nome&&(x.modello||'')===(o.modello||'')&&(x.emc||'')===(o.emc||'')&&(x.collegato||'')===(o.collegato||'')&&(x.seriale||'')===(o.seriale||''));
-        if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
+        const nrm=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+        const sim=isNew&&!o.wish?devices.find(x=>x.id!==o.id&&!x.wish&&kindOf(x.tipologia)===kindOf(o.tipologia)&&((nrm(o.modello).length>2&&nrm(x.modello)===nrm(o.modello))||(nrm(o.nome).length>2&&nrm(x.nome)===nrm(o.nome)))):null;
+        if(sim){const ch=await choose(`Hai già «${sim.nome}»${sim.luogo?' ('+sim.luogo+')':''}${hasUnits(sim)?`, con ${sim.esemplari.length} esemplari`:''}. È un altro pezzo dello stesso modello?`,[`Aggiungi come esemplare di «${sim.nome}»`,'Salva come oggetto a parte']);
+          if(ch<0)return;
+          if(ch===0){stamp(o);idx(o);await DB.put(o);devices.push(o);await mergeAsUnits([sim,o],true);goBase(()=>openDetail(sim.id));return}}
+        else if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
         stamp(o);idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
         dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');
@@ -3755,6 +3880,7 @@ function openMenu(){
   <li><b>Permissions</b> → <i>Repository permissions</i> → <b>Contents</b>: <i>Read and write</i></li>
   <li><b>Generate token</b>, copialo (inizia con <i>github_pat_</i>) e incollalo qui.</li></ol>
   <p>🔒 Il token resta solo su questo telefono e può modificare soltanto quel repository.</p></details>
+  <button class="res" data-m="vers"><b>🕰️ Versioni precedenti</b><small>Recupera oggetti eliminati o modificati per errore, dalla cronologia su GitHub</small></button>
   <button class="res" data-m="dbexp"><b>⬆️ Esporta «collezione.json» (metodo manuale)</b><small>Senza token: scaricalo e caricalo tu su GitHub (repository → Add file → Upload files → Commit changes).</small></button>
   <label class="f">Indirizzo del database (lettura)</label>
   <input class="in" id="dbu" value="${esc(dbUrl())}" placeholder="collezione.json">
@@ -3804,6 +3930,7 @@ function openMenu(){
       if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
       if(a==='gem')openGemSettings();
       if(a==='errlog')openErrLog();
+      if(a==='vers')openVersions();
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
       if(a==='stats')openStats();
       if(a==='cat')openCatalog();
@@ -3987,6 +4114,7 @@ $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
 function openNovita(){openPage('Novità',`<p class="note" style="margin-top:0">Stai usando <b>RDDC ${APP_VER}</b>. Se dopo un aggiornamento vedi ancora il numero vecchio, chiudi e riapri l'app.</p>`+NOVITA.map(([v,dt,l])=>`<div class="sec-t">Versione ${v} · ${fmtD(dt)}</div><ul class="nov" style="margin:0;padding-left:20px">${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join(''))}
 $('#bVer').textContent=APP_VER;$('#bVer').onclick=openNovita;
+$('#smart').addEventListener('click',e=>{const b=e.target.closest('[data-smart]');if(b)smartApply(b.dataset.smart)});
 $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=openAdd;
 /* pressione lunga su un elemento della lista → anteprima (stile 3D Touch) */
 let lp=null,lpSwallow=0;
@@ -4121,6 +4249,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   writeManCache();
   lgSet(LS.get('rd_glass','lite'));{const sc=()=>document.body.classList.toggle('scrolled',scrollY>($('#hdr').offsetHeight||90)-6);addEventListener('scroll',sc,{passive:true});sc()}addEventListener('resize',()=>{clearTimeout(segDrop.t);segDrop.t=setTimeout(()=>{const i=$('.segi');if(i&&i._s)i._s.init=false;segDrop()},120)});
+  if(gemOn()&&navigator.onLine!==false){const cc=LS.get('rd_gem_models',null);if(!cc||Date.now()-cc.t>6*3600e3)setTimeout(()=>gemModels(true).catch(e=>logErr('Gemini · elenco modelli',e)),2500)}
   if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
   if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
