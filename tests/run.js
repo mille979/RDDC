@@ -443,14 +443,14 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     // 1) il modello più nuovo non ha richieste gratuite (limite 0): si passa da soli al successivo e lo si ricorda
     plan = { 'gemini-3.5-flash': { body: q429('Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.5-flash', 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '0') } };
     const r1 = await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.fields.nome, r.tried.map(t => t.join(':')), gemCfg().ok, gemCooling('gemini-3.5-flash').kind]));
-    eq(r1, ['Psion Series 5mx', ['gemini-3.5-flash:gratis0'], 'gemini-2.5-flash', 'gratis0'], 'Piano B dopo il limite 0');
+    eq(r1, ['Psion Series 5mx', ['gemini-3.5-flash:ricerca gratis0', 'gemini-3.5-flash:gratis0'], 'gemini-2.5-flash', 'gratis0'], 'Piano B dopo il limite 0 (prima senza ricerca, poi altro modello)');
     posts.length = 0; await G.evaluate(() => gemAsk('Psion Series 5mx', ''));
     eq(posts, ['gemini-2.5-flash+web'], 'la volta dopo parte subito dal modello che funziona e salta quello esaurito');
     // 2) nessun modello con quota gratuita → spiegazione chiara con i modelli provati
     await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); });
     plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m, { body: q429(`Quota exceeded ... limit: 0, model: ${m}`, 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '0') }]));
     await G.evaluate(() => openGemini({ q: 'Psion Series 5mx', onResult() {} })); await G.waitForSelector('.errc');
-    ok(await G.evaluate(() => { const t = document.querySelector('.errc').textContent; return /Nessun modello gratuito per questa chiave/.test(t) && /modelli provati: gemini-3\.5-flash → gratis0, gemini-2\.5-flash → gratis0, gemini-2\.5-flash-lite → gratis0/.test(t) && /limit: 0/.test(t) && !!document.querySelector('.errc [data-eretry]') && !!document.querySelector('.errc [data-eset="gem"]'); }), 'scheda d\'errore con rimedio, dettagli, Riprova e Impostazioni');
+    ok(await G.evaluate(() => { const t = document.querySelector('.errc').textContent; return /Nessun modello gratuito per questa chiave/.test(t) && /modelli provati: gemini-3\.5-flash → ricerca gratis0, gemini-3\.5-flash → gratis0, gemini-2\.5-flash → ricerca gratis0, gemini-2\.5-flash → gratis0/.test(t) && /limit: 0/.test(t) && !!document.querySelector('.errc [data-eretry]') && !!document.querySelector('.errc [data-eset="gem"]'); }), 'scheda d\'errore con rimedio, dettagli, Riprova e Impostazioni');
     await G.evaluate(() => goBase()); await G.waitForTimeout(300);
     // 3) limite giornaliero su tutti: si dice a che ora torna disponibile
     await G.evaluate(() => { LS.set('rd_gem_cd', {}); });
@@ -466,6 +466,14 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     posts.length = 0;
     eq(await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.noSearch, r.fields.nome]).catch(e => e.kind + ' ' + e.message)), [true, 'Psion Series 5mx'], 'risultato senza ricerca web');
     eq(posts.slice(-1), ['gemini-3.5-flash'], 'ultimo tentativo senza strumenti di ricerca');
+    // 5b) la ricerca web ha limite 0 (messaggio generico, senza parlare di ricerca): stesso modello senza ricerca, e la volta dopo niente ricerca
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem_ns', null); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); });
+    plan = Object.fromEntries(['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].map(m => [m + '+web', { body: q429(`Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: ${m}`, 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', '0') }]));
+    posts.length = 0;
+    eq(await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.noSearch, r.searchBlocked, r.fields.nome, gemCooling('gemini-3.5-flash') || null, gemNoSearch()])), [true, true, 'Psion Series 5mx', null, true], 'stesso modello senza ricerca, modello non segnato come esaurito');
+    eq(posts, ['gemini-3.5-flash+web', 'gemini-3.5-flash'], 'due sole richieste');
+    posts.length = 0; await G.evaluate(() => gemAsk('Psion Series 5mx', '')); eq(posts, ['gemini-3.5-flash'], 'la volta dopo direttamente senza ricerca');
+    await G.evaluate(() => LS.set('rd_gem_ns', null));
     // 6) chiave sbagliata: si ferma subito, senza provare altri modelli
     plan = { 'gemini-3.5-flash+web': { status: 400, body: { error: { code: 400, status: 'INVALID_ARGUMENT', message: 'API key not valid. Please pass a valid API key.', details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }] } } } };
     await G.evaluate(() => LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' })); posts.length = 0;
