@@ -89,7 +89,7 @@ Menu → «🛠️ Laboratorio» (o dalla scheda **Oggi**, o dalla sezione «Lab
 In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: oggetti da accendere o ricaricare, progetti aperti (e cronometro acceso), oggetti da collaudare, pezzi da comprare o in arrivo, interventi e collaudi in programma, oggetti fuori casa, garanzie in scadenza, annunci con prezzo sceso.
 
 ## Ruolo e raccolte
-- **Ruolo**: Collezione, **In uso** (es. il computer di tutti i giorni: niente inventario, museo e «da completare», con scadenza della garanzia e «Ritira in collezione»), Ricambi, Da vendere
+- **Ruolo**: Collezione, **In uso** (es. il computer di tutti i giorni: niente inventario, museo e «da completare», con «Ritira in collezione»), Ricambi, Da vendere; ogni oggetto parte come «Collezione»
 - **Raccolta** (es. Apple, Console, Server): filtro, raggruppamento, statistiche e **sale del museo**
 - Ogni esemplare ha anche il suo **«Va con»** (es. due telecomandi uguali: uno con l'Apple TV, uno sciolto)
 - «Altra marca» in «Cerca dati online» usa anche le sezioni delle pagine Wikipedia che raccolgono più modelli

@@ -762,8 +762,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.4';
+const APP_VER='2.5';
 const NOVITA=[
+ ['2.5','2026-11-15',['Tolta la voce «Garanzia» (modulo, scheda, Oggi e calendario)','Ruolo: ogni oggetto è «Collezione» di partenza, senza voce vuota nel modulo']],
  ['2.4','2026-11-15',['OpenRouter come servizio di riserva (Menu → OpenRouter): quando Gemini non risponde la ricerca passa a un modello gratuito; funziona anche da solo','Gemini prova davvero tutti i modelli: il messaggio «hai superato la quota… billing» non blocca più tutto al primo modello']],
  ['2.3','2026-11-15',['Gemini: corretto un errore per cui il messaggio «hai superato la quota» veniva preso per un problema di fatturazione e l\'app si fermava al primo modello: ora prova tutti i modelli uno dopo l\'altro, come ARGOS, finché uno risponde','Gemini: se con la ricerca web Google risponde «troppe richieste» (succede quando il livello gratuito prevede 0 ricerche, anche con la console vuota), l\'app riprova subito lo stesso modello senza ricerca e se lo ricorda per la giornata','Messaggi più chiari: «limite 0» non vuol dire che hai consumato qualcosa']],
  ['2.2','2026-11-15',['Fold aperto e tablet: elenco a sinistra e scheda a destra','Nella scheda: scorri a sinistra o a destra per passare all\'oggetto vicino (con la posizione nell\'elenco)','Filtri salvati: capsule sotto la ricerca, si creano dalla pagina Filtri','Avviso di doppione: «Hai già questo oggetto: aggiungerlo come esemplare?»','Menu → Versioni precedenti: recupera oggetti eliminati o modificati dalla cronologia su GitHub','Gemini: modelli trovati con la tua chiave più quelli da provare a mano (3.6 Flash, Flash Lite…), scansione appena incolli la chiave e all\'avvio, e ingresso compatibile come ARGOS se quello normale non risponde']],
@@ -899,7 +900,7 @@ const SECTIONS=[
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
  ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart'],
- ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['garanzia','Garanzia / AppleCare fino al','date'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
+ ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
 const FACETS=[['lab','Laboratorio'],['manut','Manutenzione'],['raccolta','Raccolta'],['ruolo','Ruolo'],['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
@@ -1123,7 +1124,7 @@ function serialHTML(d){const r=decodeSerial(d.seriale,d.anno);if(!r)return '';
   return `<div class="sn">🏭 ${esc(r.fabbrica)} · 📅 ${esc(r.quando)}${r.modello?` · codice modello ${esc(r.modello)}`:''}${warn}<small> (indicativo)</small></div>`}
 function fieldDisplay(d,k){
   if(k==='seriale')return esc(d.seriale)+serialHTML(d);
-  if(k==='garanzia'||k==='man_on'||k==='man_charge')return esc(fmtD(d[k]))+(k==='garanzia'?(d[k]<today()?' <small style="color:var(--mute)">(scaduta)</small>':` <small style="color:var(--mute)">(${Math.round((Date.parse(d[k])-Date.parse(today()))/864e5)} giorni)</small>`):'');
+  if(k==='man_on'||k==='man_charge')return esc(fmtD(d[k]));
   if(k==='luogo')return esc(d.luogo)+(d.verificato?`<div class="sn">✓ verificato il ${fmtD(d.verificato)}</div>`:'');
   if(k==='compat')return (d.compat||[]).map(id=>devices.find(x=>x.id===id)).filter(Boolean).map(o=>`<a href="#" data-go="${o.id}">${esc(o.nome)}</a>`).join(', ')||'—';
   if(k==='colore')return `<span style="display:inline-flex;gap:7px;align-items:center"><i class="sw" style="--c:${esc(colHex(d)||'transparent')};width:16px;height:16px"></i>${esc(d.colore)}</span>`;
@@ -1172,7 +1173,7 @@ function openDetail(id,replace,morph,quiet,dir){
     if(rows.length)h+=`<div class="sec-t">${t}</div>`+kv(rows);
   }
   if(!d.wish){
-    if(d.ruolo==='In uso')h+=`<div class="note" style="display:flex;gap:10px;align-items:center;margin-top:12px"><span style="flex:1">🟢 <b>In uso</b> tutti i giorni${d.garanzia?` · garanzia ${d.garanzia<today()?'scaduta il':'fino al'} ${fmtD(d.garanzia)}`:''}. Non conta nell'inventario, nel museo e tra i «da completare».</span><button class="btn sm" data-retire>Ritira in collezione</button></div>`;
+    if(d.ruolo==='In uso')h+=`<div class="note" style="display:flex;gap:10px;align-items:center;margin-top:12px"><span style="flex:1">🟢 <b>In uso</b> tutti i giorni. Non conta nell'inventario, nel museo e tra i «da completare».</span><button class="btn sm" data-retire>Ritira in collezione</button></div>`;
     h+=unitsHTML(d)+labHTML(d)+manHTML(d)+valoreHTML(d)+loanHTML(d);
     const mv=(d.spostamenti||[]).slice().reverse();
     if(mv.length)h+=`<details class="more"><summary>Spostamenti (${mv.length})</summary><div class="log">${mv.map(x=>`<div class="li"><span class="ld">${fmtD(x.data)}</span><span class="lb"><b>${esc(x.da||'—')} → ${esc(x.a||'—')}</b></span></div>`).join('')}</div></details>`;
@@ -1524,7 +1525,6 @@ function buildICS(list=devices){
   for(const d of list){if(d.wish)continue;
     (d.interventi||[]).filter(i=>i.prossimo&&!i.fatto).forEach(i=>add(d.id+'-int-'+i.id,i.prossimo,'🔧 '+(i.tipo||'Intervento')+': '+d.nome,i.desc));
     if(d.prestito&&d.prestito.al)add(d.id+'-loan',d.prestito.al,'📤 Rientro: '+d.nome,[d.prestito.tipo,d.prestito.a].filter(Boolean).join(' · '));
-    if(d.garanzia)add(d.id+'-gar',d.garanzia,'🛡️ Scade la garanzia: '+d.nome,'');
     (d.progetti||[]).filter(p=>p.scad&&p.stato!=='Finito').forEach(p=>add(d.id+'-prj-'+p.id,p.scad,'🛠️ Scadenza progetto: '+p.titolo,d.nome))}
   ev.sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1]));
   return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//RDDC//Collezione//IT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:RDDC – promemoria\r\nX-WR-TIMEZONE:Europe/Rome\r\n${ev.map(x=>x[1]).join('')}END:VCALENDAR\r\n`;
@@ -1542,8 +1542,6 @@ function oggiHTML(){
   const tt=toTest();if(tt.length)lines.push(`<button class="og" id="labC"><span>🧪 <b>${tt.length}</b> da collaudare</span><small>${esc(tt.slice(0,3).map(x=>x.d.nome).join(', '))}${tt.length>3?'…':''}</small></button>`);
   const sh=shopList(),sb=sh.filter(x=>x.z.stato==='Da comprare').length,so=sh.length-sb;if(sh.length)lines.push(`<button class="og" id="labS"><span>🛒 ${sb?`<b>${sb}</b> ${sb===1?'pezzo da comprare':'pezzi da comprare'}`:''}${sb&&so?' · ':''}${so?`📦 <b>${so}</b> in arrivo`:''}</span><small>${esc(sh.slice(0,3).map(x=>x.z.t).join(', '))}${sh.length>3?'…':''}</small></button>`);
   const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;if(out.length)lines.push(`<button class="og ${late?'late':''}" id="loanB"><span>📤 <b>${out.length}</b> ${out.length===1?'oggetto fuori casa':'oggetti fuori casa'}</span><small>${late?`⚠️ ${late} in ritardo sul rientro`:'prestiti ed esposizioni'}</small></button>`);
-  const war=devices.filter(d=>!d.wish&&d.garanzia&&d.garanzia>=addDays(today(),-7)&&d.garanzia<=addDays(today(),60)).sort((a,b)=>a.garanzia.localeCompare(b.garanzia));
-  if(war.length)lines.push(`<button class="og" id="warB" data-go="${war[0].id}"><span>🛡️ Garanzia ${war[0].garanzia<today()?'scaduta':'in scadenza'}: <b>${esc(war[0].nome)}</b></span><small>${fmtD(war[0].garanzia)}${war.length>1?` · e altri ${war.length-1}`:''}</small></button>`);
   const drop=devices.filter(d=>d.wish&&(d.annunci||[]).some(a=>a.prezzo_prima&&+a.prezzo<+a.prezzo_prima));
   if(drop.length)lines.push(`<button class="og" id="annB"><span>🏷️ Prezzo sceso in <b>${drop.length}</b> ${drop.length===1?'desiderio':'desideri'}</span><small>${esc(drop[0].nome)} → apri la wishlist</small></button>`);
   if(!lines.length)return '';
@@ -2749,7 +2747,8 @@ function listOpts(kind){
 }
 function fieldHTML(k,l,t,v,d){
   v=v==null?'':v;t=t||'';
-  if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}"><option value=""></option>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
+  if(k==='ruolo'&&!v)v='Collezione';
+  if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}">${k==='ruolo'?'':'<option value=""></option>'}${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
   if(t==='links'){const cur=Array.isArray(v)?v:[];const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&['pc','tv'].includes(kindOf(x.tipologia))).sort((a,b)=>(cur.includes(b.id)-cur.includes(a.id))||String(a.nome).localeCompare(b.nome,'it'));
     return `<label class="f">${l}</label><input class="in" id="lnkq" placeholder="Cerca un computer…" autocomplete="off"><div class="lnkbox" id="lnkbox">${opts.map(x=>`<label class="lnk"><input type="checkbox" value="${x.id}" ${cur.includes(x.id)?'checked':''}> ${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</label>`).join('')||'<small style="color:var(--mute)">Nessun computer in collezione</small>'}</div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='tags'){const cur=Array.isArray(v)?v:[];const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[]),...cur])];

@@ -273,17 +273,17 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
         { id: 'mp', nome: 'PowerBook G4', tipologia: 'Portatile', luogo: 'Alex', man_on: old, man_charge: old, batt_stato: 'Regge' },
         { id: 'mi', nome: 'iBook G3', tipologia: 'Portatile', luogo: 'Alex', man_on: rec, batt_stato: 'Morta' },
         { id: 'ms', nome: 'Macintosh SE', tipologia: 'All-in-one', luogo: 'Damiano', man_on: rec },
-        { id: 'mu', nome: 'MacBook Pro 2017', tipologia: 'Portatile', ruolo: 'In uso', garanzia: addDays(today(), 20) }]) { d.creato = Date.now(); await saveDev(d); }
+        { id: 'mu', nome: 'MacBook Pro 2017', tipologia: 'Portatile', ruolo: 'In uso' }]) { d.creato = Date.now(); await saveDev(d); }
       S.view = 'col'; S.q = ''; S.sel = {}; render();
     });
     const due = await p.evaluate(() => manDue().filter(t => ['mp', 'mi', 'ms', 'mu'].includes(t.d.id)).map(t => t.d.id + (t.st.dueOn ? '+on' : '') + (t.st.dueCh ? '+ch' : '')));
     eq(due, ['mp+on+ch'], 'da fare (batteria morta, fissi recenti e oggetti in uso esclusi)');
-    eq(await p.evaluate(() => [manTargets(devices.find(d => d.id === 'mu')).length, missing(devices.find(d => d.id === 'mu')).length, !!document.querySelector('.oggi #manB'), !!document.querySelector('.oggi #warB')]), [0, 0, true, true], 'oggetti in uso e scheda Oggi');
+    eq(await p.evaluate(() => [manTargets(devices.find(d => d.id === 'mu')).length, missing(devices.find(d => d.id === 'mu')).length, !!document.querySelector('.oggi #manB'), !!document.querySelector('.oggi #warB')]), [0, 0, true, false], 'oggetti in uso e scheda Oggi');
     await p.click('#manB'); await p.click('[data-mid="mp"] [data-mg="on"]'); await p.click('[data-mid="mp"] [data-mg="charge"]'); await p.waitForTimeout(300);
     eq(await p.evaluate(() => { const d = devices.find(x => x.id === 'mp'); return [d.man_on === today(), d.man_charge === today(), d.manutenzioni.map(m => m.tipo), manState({ d, u: null }).dueOn]; }), [true, true, ['on', 'charge'], false], 'giro');
     await p.evaluate(() => goBase()); await p.waitForTimeout(300);
     const ics = await p.evaluate(() => buildICS());
-    ok(/BEGIN:VCALENDAR/.test(ics) && /SUMMARY:⚡ Accendere: PowerBook G4/.test(ics) && /SUMMARY:🔋 Ricaricare: PowerBook G4/.test(ics) && /Scade la garanzia: MacBook Pro 2017/.test(ics) && !/Ricaricare: iBook/.test(ics), 'calendario');
+    ok(/BEGIN:VCALENDAR/.test(ics) && /SUMMARY:⚡ Accendere: PowerBook G4/.test(ics) && /SUMMARY:🔋 Ricaricare: PowerBook G4/.test(ics) && !/garanzia/i.test(ics) && !/Ricaricare: iBook/.test(ics), 'calendario');
     eq(await p.evaluate(() => buildICS() === buildICS()), true, 'calendario stabile (nessun commit inutile)');
   });
 
