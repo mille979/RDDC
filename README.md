@@ -177,6 +177,11 @@ Menu → **🛟 OpenRouter (riserva)**: con una chiave gratuita di openrouter.ai
 - L'elenco dei modelli gratuiti si aggiorna da solo (i migliori per primi); si può sceglierne uno o scriverne il nome. Se un modello ha finito le richieste, l'app passa al successivo.
 - Limiti dei modelli gratuiti: 20 richieste al minuto e 50 al giorno (1000 con almeno 10 $ di credito). Senza ricerca web rispondono dalla loro memoria: la ricerca web di OpenRouter si può attivare, ma è a pagamento.
 
+## Velocità delle schede online
+Dopo «Usa questi dati» (EveryMac incollato, Gemini, OpenRouter, Wikipedia, iFixit…) il modulo si apre subito:
+- **niente foto scaricate dalle fonti**: le foto le aggiungi tu (Scatta, Galleria o «Cerca sul web» nel modulo). L'immagine nell'anteprima è solo indicativa. Prima l'app provava a scaricarla anche attraverso proxy pubblici, con attese che potevano superare il minuto;
+- **traduzione in sottofondo**: se la descrizione è in inglese viene tradotta dopo il salvataggio, senza bloccare.
+
 ## Errori spiegati
 Quando qualcosa non va (Gemini, ricerche online, guide iFixit, sincronizzazione) l'app mostra una scheda con **cosa è successo**, **cosa fare**, i **dettagli tecnici** (il messaggio vero del servizio) e i pulsanti **Riprova**, **Impostazioni** e **Copia dettagli**. Gli ultimi 40 errori restano in Menu → **🩺 Registro errori**, da copiare e mandare.
 
