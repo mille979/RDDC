@@ -474,9 +474,16 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(posts, ['gemini-3.5-flash+web', 'gemini-3.5-flash'], 'due sole richieste');
     posts.length = 0; await G.evaluate(() => gemAsk('Psion Series 5mx', '')); eq(posts, ['gemini-3.5-flash'], 'la volta dopo direttamente senza ricerca');
     await G.evaluate(() => LS.set('rd_gem_ns', null));
+    // 5c) messaggio reale di Google: «You exceeded your current quota, please check your plan and billing details» senza dettagli → non è fatturazione: si prova il modello successivo
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem_ns', null); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); });
+    const generic = { error: { code: 429, status: 'RESOURCE_EXHAUSTED', message: 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit.' } };
+    plan = { 'gemini-3.5-flash': { body: generic }, 'gemini-2.5-flash-lite': { body: generic } };
+    posts.length = 0;
+    eq(await G.evaluate(() => gemAsk('Psion Series 5mx', '').then(r => [r.fields.nome, gemCfg().ok, r.tried.map(t => t.join(':')), gemCooling('gemini-3.5-flash').kind]).catch(e => 'ERRORE ' + e.kind)), ['Psion Series 5mx', 'gemini-2.5-flash', ['gemini-3.5-flash:ricerca quota', 'gemini-3.5-flash:quota'], 'quota'], 'quota generica: si passa al modello successivo');
+    eq(await G.evaluate(() => { const e = new AppErr('x', 'y'); return [errInfo(new AppErr('quota', 'q')).title, ERR_INFO.credito[1]]; }), ['Quota del modello esaurita o non disponibile', 'Fatturazione o credito'], 'messaggi');
     // 6) chiave sbagliata: si ferma subito, senza provare altri modelli
     plan = { 'gemini-3.5-flash+web': { status: 400, body: { error: { code: 400, status: 'INVALID_ARGUMENT', message: 'API key not valid. Please pass a valid API key.', details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }] } } } };
-    await G.evaluate(() => LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' })); posts.length = 0;
+    await G.evaluate(() => { LS.set('rd_gem_cd', {}); LS.set('rd_gem', { key: 'AIzaTEST', model: '', ok: '' }); }); posts.length = 0;
     eq(await G.evaluate(() => gemAsk('x', '').catch(e => e.kind)), 'chiave', 'chiave non valida'); eq(posts, ['gemini-3.5-flash+web'], 'nessun altro modello provato');
     // 7) registro degli errori
     ok(await G.evaluate(() => { const a = LS.get('rd_errlog', []); return a.length >= 1 && a.some(x => x.kind === 'gratis0tutti' && /limit: 0/.test(x.d)); }), 'errori nel registro');
