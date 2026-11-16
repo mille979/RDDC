@@ -738,6 +738,25 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.7.1: la foto vola tra miniatura e scheda con lo stesso ritaglio, anche se non è quadrata', async () => {
+    const U = await phone('U6', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { const v = document.createElement('canvas'); v.width = 1200; v.height = 900; v.getContext('2d').fillRect(0, 0, 1200, 900); const img = v.toDataURL('image/jpeg', .8);
+      await saveDev({ id: 'fl', nome: 'Apple Lisa', tipologia: 'Computer', foto: [img], thumb: img, creato: Date.now() }); render();
+      window._fly = []; const o = heroFly; window.heroFly = (a, b, f, t, op) => { const T = typeof t === 'function' ? t : () => t; const done = op.onDone; return o(a, b, f, t, { ...op, onDone() { const x = T(); window._fly.push([f.r, x && x.r]); done && done(); } }); }; });
+    await U.waitForTimeout(300);
+    await U.click('#list [data-id="fl"] .th img'); await U.waitForTimeout(800);
+    const r1 = await U.evaluate(() => { const h = stack[0].querySelector('.hero').getBoundingClientRect(), th = document.querySelector('#list [data-id="fl"] .th img'); return [window._fly.length, document.querySelectorAll('.hfly').length, stack[0].classList.contains('fly-in'), th.style.visibility, Math.round(window._fly[0][1].width) === Math.round(h.width) && Math.round(window._fly[0][1].height) === Math.round(h.height)]; });
+    eq(r1, [1, 0, false, '', true], 'apertura: atterra sulla foto grande e poi sparisce');
+    await U.evaluate(() => history.back()); await U.waitForTimeout(800);
+    const r2 = await U.evaluate(() => { const t = document.querySelector('#list [data-id="fl"] .th img').getBoundingClientRect(), x = window._fly[1][1]; return [stack.length, document.querySelectorAll('.page,.hfly').length, Math.abs(x.left - t.left) < 1 && Math.abs(x.width - t.width) < 1]; });
+    eq(r2, [0, 0, true], 'chiusura: torna esattamente sulla miniatura');
+    await U.click('#list [data-id="fl"] .th img'); await U.waitForTimeout(800);
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await T('touchStart', 200, 300); for (let i = 1; i <= 12; i++) { await T('touchMove', 200, 300 + i * 20); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(900);
+    eq(await U.evaluate(() => [stack.length, history.state && history.state.p, document.querySelectorAll('.page,.hfly,.pd-dim').length, window._fly.length]), [0, 0, 0, 4], 'tirata in basso: un solo passo indietro, la foto vola sulla miniatura');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
