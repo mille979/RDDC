@@ -263,7 +263,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await p.evaluate(() => stack.length), 1, 'scheda aperta');
     await p.evaluate(() => history.back()); await p.waitForTimeout(700);
     eq(await p.evaluate(() => [stack.length, document.querySelectorAll('.page').length, [...document.querySelectorAll('*')].filter(x => x.style && x.style.viewTransitionName).length]), [0, 0, 0], 'dopo indietro');
-    eq(await p.evaluate(() => /class="ld ld-ann"/.test(loader('ann', 'x')) && /ld-mac/.test(loader(ldKind('Cerco su EveryMac…'), 'x'))), true, 'animazioni di attesa');
+    eq(await p.evaluate(() => /class="ldr ld-ann"/.test(loader('ann', 'x')) && /ld-mac/.test(loader(ldKind('Cerco su EveryMac…'), 'x'))), true, 'animazioni di attesa');
   });
 
   await test('manutenzione: giro di accensioni e ricariche, stato batteria, Oggi e calendario', async () => {
@@ -670,6 +670,79 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
       return [Math.round(performance.now() - t0) < 300, m.nome, !!(m.foto && m.foto.length), /^The PowerBook/.test(m.descrizione)]; });
     eq(r, [true, 'PowerBook G4 400', false, true], 'pronto in meno di 0,3 s, senza foto, descrizione da tradurre dopo');
     eq(hits.length, 0, 'nessun tentativo di scaricare la foto');
+  });
+
+  await test('2.7: interventi leggibili (data sopra al testo) e niente manutenzione per gli accessori', async () => {
+    const U = await phone('U');
+    await U.evaluate(async () => { await saveDev({ id: 'pb', nome: 'PowerBook G4 400', tipologia: 'Portatile', creato: Date.now(), interventi: [{ id: 'i1', data: '2026-04-20', tipo: 'Retrobright', desc: 'Riverniciatura cardini e restauro completo angolari', costo: '15' }], valori: [{ id: 'v1', data: '2026-01-02', valore: 500, fonte: 'Stima' }], valore: 500 });
+      await saveDev({ id: 'ch', nome: 'PowerBook G4 Power Adapter', tipologia: 'Alimentatore / caricabatterie', collegato: 'pb', creato: Date.now() }); render(); openDetail('pb'); });
+    await U.waitForTimeout(500);
+    const r = await U.evaluate(() => [...document.querySelectorAll('.page.det .li')].map(li => { const a = li.querySelector('.ld').getBoundingClientRect(), b = li.querySelector('.lb').getBoundingClientRect(); return [a.bottom <= b.top + 1, b.width > 250]; }));
+    ok(r.length >= 2 && r.every(x => x[0] && x[1]), 'data sopra e testo largo (interventi e valutazioni): ' + JSON.stringify(r));
+    eq(await U.evaluate(() => { const c = devices.find(x => x.id === 'ch'); return [manTargets(c).length, manBadge(c), manHTML(c)]; }), [0, '', ''], 'caricabatterie fuori dal giro');
+    await U.evaluate(() => goBase(() => openForm(devices.find(x => x.id === 'ch')))); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [...stack[stack.length - 1].querySelectorAll('.sec-t')].find(x => x.textContent === 'Manutenzione').parentElement.hidden), true, 'sezione Manutenzione nascosta per un accessorio');
+    await U.evaluate(() => goBase(() => openForm({ nome: 'iMac G3', tipologia: 'All-in-one' }))); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => { const pg = stack[stack.length - 1]; return [pg.querySelector('[name="man_freq"]').value, !!pg.querySelector('header [data-save]')]; }), ['6', true], 'accensione e ricarica ogni 6 mesi di serie, Salva in alto');
+    await U.evaluate(() => goBase()); await U.waitForTimeout(300);
+    await U.context().close();
+  });
+
+  await test('2.7: prezzo chiesto quando un pezzo diventa «Ordinato»', async () => {
+    const U = await phone('U2');
+    await U.evaluate(async () => { await saveDev({ id: 'pp', nome: 'iBook G3', tipologia: 'Portatile', creato: Date.now(), progetti: [{ id: 'pj', titolo: 'Restauro', stato: 'In attesa pezzi', creato: '2026-01-01', pezzi: [{ id: 'z1', t: 'Batteria', qta: 2, stato: 'Da comprare' }, { id: 'z2', t: 'Viti', qta: 1, prezzo: 3, stato: 'Da comprare' }] }] }); });
+    U.evaluate(() => { const d = devices.find(x => x.id === 'pp'), p = d.progetti[0]; window._pz = pzNext(d, p, p.pezzi[0]); });
+    await U.waitForSelector('#apv'); ok(await U.evaluate(() => /×2/.test(document.querySelector('.modal').textContent)), 'ricorda che è il prezzo di un pezzo');
+    await U.fill('#apv', '12.5'); await U.click('.modal [data-y]'); await U.evaluate(() => window._pz);
+    eq(await U.evaluate(() => { const z = devices.find(x => x.id === 'pp').progetti[0].pezzi[0]; return [z.stato, z.prezzo]; }), ['Ordinato', 12.5], 'prezzo salvato');
+    await U.evaluate(async () => { const d = devices.find(x => x.id === 'pp'), p = d.progetti[0]; await pzNext(d, p, p.pezzi[1]); });
+    eq(await U.evaluate(() => [!!document.querySelector('#apv'), devices.find(x => x.id === 'pp').progetti[0].pezzi[1].stato]), [false, 'Ordinato'], 'con il prezzo già scritto non chiede nulla');
+    await U.context().close();
+  });
+
+  await test('2.7: tasti della scheda ordinati, foglio «Altro», menu semplificato con Esporta…', async () => {
+    const U = await phone('U3');
+    await U.evaluate(async () => { await saveDev({ id: 'ac', nome: 'Macintosh SE', tipologia: 'All-in-one', creato: Date.now() }); render(); openDetail('ac'); }); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => [...document.querySelectorAll('.page.det .acts2>.btn')].map(b => b.textContent.trim())), ['Modifica', '🔎 Aggiorna', '⋯'], 'due tasti principali e «Altro»');
+    await U.click('.page.det [data-moreacts]'); await U.waitForSelector('.modal.sheet');
+    const it = await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].map(b => [b.textContent.trim(), b.classList.contains('dng')]));
+    ok(it.some(x => /Duplica/.test(x[0])) && it[it.length - 1][0].includes('Elimina') && it[it.length - 1][1], 'azioni raggruppate, Elimina in rosso: ' + JSON.stringify(it));
+    await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /Duplica/.test(b.textContent)).click()); await U.waitForTimeout(500);
+    ok(await U.evaluate(() => devices.some(x => x.nome === 'Macintosh SE (copia)')), 'la voce del foglio esegue l\'azione');
+    await U.evaluate(() => goBase(() => openMenu())); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => ['ai', 'db', 'exp', 'imp'].map(k => !!document.querySelector(`[data-m="${k}"]`)).concat([!!document.querySelector('#px'), !!document.querySelector('[data-m="gem"]')])), [true, true, true, true, false, false], 'voci raggruppate, proxy personale tolto');
+    await U.evaluate(() => { window._dl = []; window.dl = (n, t, c) => window._dl.push(n); });
+    await U.click('[data-m="exp"]'); await U.waitForSelector('.modal.sheet');
+    eq(await U.evaluate(() => document.querySelectorAll('.modal.sheet .shi').length), 4, 'quattro modi di esportare');
+    await U.click('.modal.sheet [data-c="1"]'); await U.waitForTimeout(200);
+    eq(await U.evaluate(() => window._dl), ['rddc.csv'], 'scelta la tabella CSV');
+    await U.click('[data-m="ai"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => ['gem', 'orset', 'errlog'].map(k => !!stack[stack.length - 1].querySelector(`[data-m="${k}"]`))), [true, true, true], 'Collegamento IA: Gemini, OpenRouter e registro errori');
+    await U.evaluate(() => history.back()); await U.waitForTimeout(300); await U.click('[data-m="db"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [stack[stack.length - 1].querySelectorAll('#dbi').length, !!stack[stack.length - 1].querySelector('#ght'), !!stack[stack.length - 1].querySelector('[data-m="vers"]')]), [1, true, true], 'Database su GitHub in una pagina');
+    await U.context().close();
+  });
+
+  await test('2.7: la scheda si chiude tirandola in basso e torna sulla sua miniatura', async () => {
+    const U = await phone('U4', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { const v = document.createElement('canvas'); v.width = 400; v.height = 300; v.getContext('2d').fillRect(0, 0, 400, 300); const img = v.toDataURL('image/jpeg', .8);
+      await saveDev({ id: 'pd', nome: 'Apple IIe', tipologia: 'Computer', foto: [img], thumb: img, creato: Date.now() }); render(); openDetail('pd'); }); await U.waitForTimeout(600);
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await T('touchStart', 200, 300); for (let i = 1; i <= 5; i++) { await T('touchMove', 200, 300 + i * 12); await U.waitForTimeout(20); }
+    ok(await U.evaluate(() => { const m = new DOMMatrix(getComputedStyle(stack[0]).transform); return m.a < 1 && m.f > 0; }), 'la scheda segue il dito e si rimpicciolisce');
+    await T('touchEnd'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => stack.length), 1, 'trascinamento corto: torna a posto');
+    await T('touchStart', 200, 300); for (let i = 1; i <= 12; i++) { await T('touchMove', 200, 300 + i * 20); await U.waitForTimeout(16); }
+    await T('touchEnd'); await U.waitForTimeout(800);
+    eq(await U.evaluate(() => [stack.length, document.querySelectorAll('.page,.pd-dim').length]), [0, 0], 'chiusa, senza pagine rimaste');
+    await U.context().close();
+  });
+
+  await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
+    const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
+    eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
+    await U.evaluate(() => lgSet('off')); eq(await U.evaluate(() => document.documentElement.classList.contains('lgs')), false, 'spento');
+    await U.context().close();
   });
 
   await test('nessun errore JavaScript', async () => { eq(errors, [], 'errori'); });
