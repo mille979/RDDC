@@ -17,17 +17,17 @@
 <style>
 :root{color-scheme:light;--bg:#f5ede0;--ink:#22180a;--mute:#76674f;--acc:#f2a531;--acc-ink:#9a5800;--on-acc:#2b1a02;--acc2:#3d7a66;--dng:#c0352b;--glow:rgba(242,165,49,.45);
   --card:rgba(255,251,245,.64);--chip:rgba(255,244,226,.6);--line:rgba(120,85,30,.13);--field:rgba(255,252,248,.84);
-  --glass:rgba(255,251,245,.62);--glass-hi:rgba(255,252,248,.80);--lens:rgba(255,255,255,.72);
+  --glass:rgba(255,251,245,.62);--glass-hi:rgba(255,252,248,.80);--spec:rgba(255,255,255,.42);--spec2:rgba(255,255,255,.8);--lens:rgba(255,255,255,.72);
   --rim:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(255,255,255,.5);--drop:0 1px 2px rgba(90,55,10,.07),0 8px 26px rgba(90,55,10,.10);--shadow:var(--rim),var(--drop);
   --wall:radial-gradient(60% 45% at 12% 8%,rgba(242,165,49,.36),transparent 70%),radial-gradient(55% 40% at 94% 22%,rgba(222,120,80,.22),transparent 70%),radial-gradient(60% 45% at 80% 90%,rgba(61,122,102,.20),transparent 70%),radial-gradient(55% 45% at 4% 78%,rgba(255,206,130,.32),transparent 70%),linear-gradient(180deg,#f8f1e6,#f0e4d1)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#100c07;--ink:#f7ecd9;--mute:#ab9a7e;--acc:#ffb547;--acc-ink:#ffc266;--on-acc:#2b1a02;--acc2:#7cc4ad;--dng:#e0574b;--glow:rgba(255,181,71,.35);
   --card:rgba(54,41,26,.52);--chip:rgba(74,57,36,.46);--line:rgba(255,235,200,.09);--field:rgba(36,27,16,.78);
-  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--lens:rgba(255,240,215,.15);
+  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--spec:rgba(255,240,220,.13);--spec2:rgba(255,240,220,.34);--lens:rgba(255,240,215,.15);
   --rim:inset 0 1px 0 rgba(255,240,215,.17),inset 0 0 0 1px rgba(255,240,215,.07);--drop:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.42);
   --wall:radial-gradient(60% 45% at 12% 6%,rgba(255,165,50,.20),transparent 70%),radial-gradient(55% 40% at 96% 26%,rgba(200,85,45,.16),transparent 70%),radial-gradient(60% 45% at 78% 92%,rgba(80,170,145,.13),transparent 70%),radial-gradient(50% 40% at 4% 75%,rgba(255,190,100,.10),transparent 70%),linear-gradient(180deg,#15100a,#0b0805)}}
 :root[data-theme=dark]{color-scheme:dark;--bg:#100c07;--ink:#f7ecd9;--mute:#ab9a7e;--acc:#ffb547;--acc-ink:#ffc266;--on-acc:#2b1a02;--acc2:#7cc4ad;--dng:#e0574b;--glow:rgba(255,181,71,.35);
   --card:rgba(54,41,26,.52);--chip:rgba(74,57,36,.46);--line:rgba(255,235,200,.09);--field:rgba(36,27,16,.78);
-  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--lens:rgba(255,240,215,.15);
+  --glass:rgba(54,41,26,.5);--glass-hi:rgba(42,32,19,.74);--spec:rgba(255,240,220,.13);--spec2:rgba(255,240,220,.34);--lens:rgba(255,240,215,.15);
   --rim:inset 0 1px 0 rgba(255,240,215,.17),inset 0 0 0 1px rgba(255,240,215,.07);--drop:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.42);
   --wall:radial-gradient(60% 45% at 12% 6%,rgba(255,165,50,.20),transparent 70%),radial-gradient(55% 40% at 96% 26%,rgba(200,85,45,.16),transparent 70%),radial-gradient(60% 45% at 78% 92%,rgba(80,170,145,.13),transparent 70%),radial-gradient(50% 40% at 4% 75%,rgba(255,190,100,.10),transparent 70%),linear-gradient(180deg,#15100a,#0b0805)}
 :root{color-scheme:light;--c1:#c27a0e;--c2:#2f6fb0}
@@ -226,6 +226,8 @@ details.more[open]>summary::before{transform:rotate(90deg)}
 .li{display:flex;gap:12px;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-top:1px solid var(--line)}
 .li:first-child{border-top:0}
 .ld{flex:none;width:92px;color:var(--acc-ink);font-weight:700;font-size:13px}
+/* data sopra al testo (2.7): leggibile anche sugli schermi stretti */
+.li:has(>.ld:first-child){flex-direction:column;gap:2px}.li:has(>.ld:first-child)>.ld{width:auto;font-size:12.5px;letter-spacing:.02em}.li>.lb{flex:1}
 .lb{min-width:0}.lb b{display:block}.lb span{display:block;font-size:14px;white-space:pre-line}.lb small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
 .due{display:block;width:100%;text-align:left;border:1px solid var(--acc);background:var(--chip);color:var(--ink);border-radius:14px;padding:10px 12px;margin:10px 0 4px;font-weight:600}
 .due.late{border-color:var(--dng)}
@@ -464,6 +466,9 @@ html.vt-det::view-transition-new(root){animation:vt-rise .36s cubic-bezier(.2,.8
 html.vt-det-back::view-transition-old(root){animation:vt-sink .3s ease both}
 html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 ::view-transition-group(hero-x){animation-duration:.42s;animation-timing-function:cubic-bezier(.3,0,.15,1);z-index:3}
+/* 2.7: la foto resta arrotondata per tutto il viaggio (dal raggio della miniatura a quello della foto grande e ritorno) */
+::view-transition-group(hero-x){overflow:hidden;border-radius:var(--hr1,0 0 30px 30px);animation:-ua-view-transition-group-anim-hero-x .42s cubic-bezier(.3,0,.15,1) both,hero-r .42s cubic-bezier(.3,0,.15,1) both}
+@keyframes hero-r{from{border-radius:var(--hr0,16px)}to{border-radius:var(--hr1,0 0 30px 30px)}}
 ::view-transition-old(hero-x),::view-transition-new(hero-x){height:100%;object-fit:cover;overflow:hidden}
 @keyframes vt-rise{from{opacity:0;transform:translateY(24px)}}
 @keyframes vt-sink{to{opacity:0;transform:translateY(24px)}}
@@ -484,15 +489,15 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 .boot #list>*:nth-child(2){animation-delay:.04s}.boot #list>*:nth-child(3){animation-delay:.08s}.boot #list>*:nth-child(4){animation-delay:.12s}.boot #list>*:nth-child(5){animation-delay:.16s}.boot #list>*:nth-child(6){animation-delay:.2s}.boot #list>*:nth-child(n+7){animation-delay:.24s}
 .selc.on{animation:sel-pop .22s ease}@keyframes sel-pop{50%{transform:scale(.98)}}
 /* ===== animazioni di attesa ===== */
-.ld{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;box-sizing:border-box;padding:18px 0 8px;text-align:center;color:var(--mute)}
-.ld svg{width:min(170px,46vw);height:auto;overflow:visible}
+.ldr{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;box-sizing:border-box;padding:18px 0 8px;text-align:center;color:var(--mute)}
+.ldr svg{width:min(170px,46vw);height:auto;overflow:visible}
 .ldm{font-size:14.5px;font-weight:600;color:var(--ink)}
 .ldm::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:ld-dots 1.2s steps(4) infinite}
 @keyframes ld-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
-.ld small{font-size:12.5px}
-.ld .bar2{width:min(220px,60vw);height:6px;border-radius:3px;background:var(--chip);overflow:hidden;margin-top:4px}.ld .bar2 i{display:block;height:100%;width:0;background:var(--acc);border-radius:3px;transition:width .3s}
-.ld .st{stroke:var(--mute);stroke-width:1.6;fill:var(--card)}
-.ld .fl{fill:var(--chip)}.ld .ac{fill:var(--acc)}.ld .ink{fill:var(--mute)}
+.ldr small{font-size:12.5px}
+.ldr .bar2{width:min(220px,60vw);height:6px;border-radius:3px;background:var(--chip);overflow:hidden;margin-top:4px}.ldr .bar2 i{display:block;height:100%;width:0;background:var(--acc);border-radius:3px;transition:width .3s}
+.ldr .st{stroke:var(--mute);stroke-width:1.6;fill:var(--card)}
+.ldr .fl{fill:var(--chip)}.ldr .ac{fill:var(--acc)}.ldr .ink{fill:var(--mute)}
 /* EveryMac: Macintosh che legge la scheda e la passa all'app */
 .ld-mac .scr{fill:#16211a}.ld-mac .ln{fill:#8fe3a1;opacity:.85}
 .ld-mac .scroll{animation:ld-scroll 2.4s linear infinite}
@@ -536,7 +541,7 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 @keyframes ld-orb{to{transform:rotate(360deg)}}
 .ld-web .doc{animation:ld-doc 2.2s ease-in-out infinite}
 @keyframes ld-doc{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@media (prefers-reduced-motion:reduce){.page,.page.pg-out,.page.pg-swap,.modal,.modal>div,#toast,#bulk,.rv>*,.boot #list>*,.ld *,.ldm::after{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.page,.page.pg-out,.page.pg-swap,.modal,.modal>div,#toast,#bulk,.rv>*,.boot #list>*,.ldr *,.ldm::after{animation:none!important;transition:none!important}}
 /* ===================== RDDC 2.0 · Liquid Glass =====================
    Sfondo con macchie di colore morbide, superfici di vetro (traslucide con bordo luminoso),
    comandi fluttuanti: titolo grande, ricerca a capsula, barra in basso, intestazioni con sfumatura. */
@@ -638,10 +643,28 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* filtri salvati sotto la ricerca */
 .smart{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}.smart::-webkit-scrollbar{display:none}.smart .chip{flex:none;padding:6px 12px;font-size:13.5px}
 .chs{display:flex;flex-direction:column;gap:8px}.chs .btn{width:100%}
+/* 2.7: tasti della scheda più ordinati + foglio di azioni */
+.acts.acts2{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.acts2 .btn{justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:12px;padding-right:12px}.acts2 .btn.more{width:52px;padding:0;font-size:22px;letter-spacing:-.04em;line-height:1}
+.modal.sheet{place-items:end center;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+.modal.sheet>div{max-width:440px;padding:10px;border-radius:30px;animation:sheet-up .3s cubic-bezier(.2,.9,.3,1.06) both}
+.modal.sheet.out{animation:vt-fade-out .18s ease both}.modal.sheet.out>div{animation:sheet-down .18s ease both}
+@keyframes sheet-up{from{transform:translate3d(0,40px,0);opacity:0}}@keyframes sheet-down{to{transform:translate3d(0,30px,0);opacity:0}}
+.sh-t{margin:6px 10px 8px!important;font-size:13px!important;color:var(--mute);font-weight:600}
+.shl{display:flex;flex-direction:column;max-height:62vh;overflow:auto;border-radius:22px}
+.shi{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:12px 12px;border-radius:16px;font:inherit}
+.shi:active{background:var(--chip)}.shi b{display:block;font-size:15.5px;font-weight:600}.shi small{display:block;color:var(--mute);font-size:12.5px;margin-top:1px}
+.shic{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--chip);font-size:17px}
+.shi.dng b{color:#d0362a}.shi.dng .shic{background:color-mix(in srgb,#d0362a 14%,transparent)}
+.shs{display:block;height:1px;background:var(--line);margin:4px 12px}
+.shx{width:100%;margin-top:8px}
 /* scheda: posizione nell'elenco e passaggio alla scheda vicina */
 .hpos{position:absolute;top:calc(20px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:2;color:#fff;font:650 12.5px/1 system-ui,sans-serif;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.page.sw-next{animation:sw-in-r .34s cubic-bezier(.2,.85,.25,1) both}.page.sw-prev{animation:sw-in-l .34s cubic-bezier(.2,.85,.25,1) both}
-@keyframes sw-in-r{from{transform:translate3d(38%,0,0);opacity:0}to{transform:none;opacity:1}}@keyframes sw-in-l{from{transform:translate3d(-38%,0,0);opacity:0}to{transform:none;opacity:1}}
+.page.sw-next{animation:sw-in-r .26s cubic-bezier(.25,.8,.3,1) both}.page.sw-prev{animation:sw-in-l .26s cubic-bezier(.25,.8,.3,1) both}
+.page.det{overscroll-behavior-y:contain}.page.det.pd-drag,.page.det.pd-fly,.page.det.sw-drag{animation:none}.page.det .body{overscroll-behavior-y:contain}
+.page.det.pd-drag{will-change:transform;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.3)}.page.det.pd-fly{pointer-events:none}.page.det.pd-fly .hero>:not(.himg):not(.hbg){opacity:0;transition:opacity .16s}.page.det.pd-fly .body{overflow:hidden}
+.pd-dim{position:fixed;inset:0;z-index:19;background:color-mix(in srgb,var(--bg) 55%,rgba(0,0,0,.35));pointer-events:none}
+.page.det.sw-drag{will-change:transform;box-shadow:0 0 0 1px var(--line),0 0 46px rgba(0,0,0,.22)}.page.det.sw-drag.pg-swapout{animation:none}
+@keyframes sw-in-r{from{transform:translate3d(100%,0,0)}to{transform:none}}@keyframes sw-in-l{from{transform:translate3d(-100%,0,0)}to{transform:none}}
 #pane0{display:none}
 /* Fold aperto, tablet: elenco a sinistra, schede e pagine nel pannello a destra */
 @media (min-width:640px){
@@ -707,6 +730,11 @@ html.lg .fab{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 66%,
 html.lg .modal>div{background:color-mix(in srgb,var(--glass-hi) 72%,transparent)}
 html.lg #toast{background:rgba(30,20,8,.52)}
 html.lg .hb{background:rgba(255,255,255,.07)}
+/* 2.7: vetro simulato dove la rifrazione vera non è possibile (iPhone e iPad: Safari, Chrome e ogni altro browser usano WebKit, che non accetta filtri SVG sul vetro) */
+html.lgs .ibtn,html.lgs .search,html.lgs .mubtn,html.lgs #dock,html.lgs #bulk,html.lgs .modal>div{background:linear-gradient(162deg,var(--spec),transparent 46%,color-mix(in srgb,var(--spec) 45%,transparent)),color-mix(in srgb,var(--glass-hi) 50%,transparent);-webkit-backdrop-filter:blur(9px) saturate(2.1) brightness(1.07) contrast(1.05);backdrop-filter:blur(9px) saturate(2.1) brightness(1.07) contrast(1.05);box-shadow:inset 0 1px .5px var(--spec2),inset 0 -1px 1px color-mix(in srgb,var(--spec2) 35%,transparent),inset 1px 0 .5px color-mix(in srgb,var(--spec2) 40%,transparent),inset -1px 0 .5px color-mix(in srgb,var(--spec2) 25%,transparent),0 8px 24px rgba(0,0,0,.14)}
+html.lgs .modal>div{background:linear-gradient(162deg,var(--spec),transparent 40%),color-mix(in srgb,var(--glass-hi) 78%,transparent);-webkit-backdrop-filter:blur(22px) saturate(2);backdrop-filter:blur(22px) saturate(2)}
+html.lgs .hb{background:linear-gradient(162deg,rgba(255,255,255,.3),rgba(255,255,255,.08) 50%,rgba(255,255,255,.16)),rgba(20,14,6,.18);-webkit-backdrop-filter:blur(10px) saturate(1.35) brightness(1.04);backdrop-filter:blur(10px) saturate(1.35) brightness(1.04);box-shadow:inset 0 1px .5px rgba(255,255,255,.6),inset 0 -1px 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.2)}
+html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter:blur(14px) saturate(1.8);box-shadow:inset 0 1px .5px rgba(255,255,255,.3),0 10px 30px rgba(0,0,0,.25)}
 #print{display:none}
 @media print{
   @page{size:A4;margin:12mm}
@@ -762,8 +790,9 @@ html.lg .hb{background:rgba(255,255,255,.07)}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.6';
+const APP_VER='2.7';
 const NOVITA=[
+ ['2.7','2026-11-16',['Scheda: si chiude tirandola in basso, come nella galleria del telefono (la foto torna sulla sua miniatura); l\'animazione di apertura tiene la foto arrotondata per tutto il viaggio','Scorrere tra le schede molto più rapido: la scheda segue il dito e la successiva entra subito','Tasti in fondo alla scheda più ordinati: Modifica, Aggiorna e «⋯» con le altre azioni raggruppate (Elimina in rosso)','Modifica: tasto Salva anche in alto, accanto a «Dati online»','Corretti registro interventi e storico del valore: la data sta sopra al testo, che non va più a capo lettera per lettera','Manutenzione: accensione e ricarica ogni 6 mesi già impostate nel modulo; caricabatterie e altri accessori fuori dal giro','Laboratorio: un pezzo senza prezzo te lo chiede quando lo segni «Ordinato»','Menu più semplice: «Collegamento IA» (Gemini, OpenRouter, registro errori), «Database su GitHub» in una pagina, un solo «Esporta…» che chiede come; tolto il proxy personale','Vetro liquido simulato su iPhone e iPad, dove Safari e Chrome non permettono quello vero']],
  ['2.6','2026-11-15',['Dati da EveryMac, Gemini e dalle altre fonti molto più veloci: il modulo si apre subito, senza aspettare lo scaricamento della foto (le foto le aggiungi tu) né la traduzione, che ora avviene in sottofondo dopo il salvataggio']],
  ['2.5','2026-11-15',['Tolta la voce «Garanzia» (modulo, scheda, Oggi e calendario)','Ruolo: ogni oggetto è «Collezione» di partenza, senza voce vuota nel modulo']],
  ['2.4','2026-11-15',['OpenRouter come servizio di riserva (Menu → OpenRouter): quando Gemini non risponde la ricerca passa a un modello gratuito; funziona anche da solo','Gemini prova davvero tutti i modelli: il messaggio «hai superato la quota… billing» non blocca più tutto al primo modello']],
@@ -827,7 +856,7 @@ const LD_SVG={
  web:`<svg viewBox="0 0 120 100" aria-hidden="true"><circle class="st" cx="60" cy="50" r="26"/><ellipse class="mer" cx="60" cy="50" rx="10" ry="26"/><ellipse class="mer m2" cx="60" cy="50" rx="10" ry="26"/><ellipse class="mer m3" cx="60" cy="50" rx="10" ry="26"/>
   <path d="M35 42 h50 M35 58 h50" stroke="var(--mute)" stroke-width="1.2" fill="none" opacity=".6"/><g class="orb"><g class="doc"><rect class="ac" x="92" y="40" width="14" height="18" rx="3"/><rect x="95" y="45" width="8" height="1.8" fill="#2a1a05" opacity=".6"/><rect x="95" y="49" width="6" height="1.8" fill="#2a1a05" opacity=".6"/></g></g></svg>`
 };
-function loader(kind,msg,sub=''){return `<div class="ld ld-${kind}" role="status">${LD_SVG[kind]||LD_SVG.web}<div class="ldm">${esc(String(msg).replace(/…$/,''))}</div>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
+function loader(kind,msg,sub=''){return `<div class="ldr ld-${kind}" role="status">${LD_SVG[kind]||LD_SVG.web}<div class="ldm">${esc(String(msg).replace(/…$/,''))}</div>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
 const ldKind=m=>/everymac|specifiche|scheda everymac/i.test(m)?'mac':/annunc/i.test(m)?'ann':/screenshot|testo/i.test(m)?'scan':'web';
 const wide=()=>matchMedia('(min-width:640px)').matches;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -900,7 +929,7 @@ const SECTIONS=[
  ['Accessorio',[['collegato','Va con (dispositivo della collezione)','link'],['acc_compat','Compatibile con','area'],['acc_connettore','Connettore / attacco','list:connettori'],['acc_uscita','Uscita (es. 18,5 V 4,6 A – 85 W)'],['acc_ingresso','Ingresso (es. 100–240 V)'],['acc_lunghezza','Lunghezza']],'acc'],
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
- ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart'],
+ ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione e ricarica ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart noacc'],
  ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
@@ -1059,7 +1088,7 @@ addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(
   const top=stack[stack.length-1];if(top&&top._refresh)setTimeout(()=>{if(stack[stack.length-1]===top)top._refresh()},0);
   const out=(rem.find(x=>x.classList.contains('mu-root'))||rem[rem.length-1])._out;
   const run=()=>{rem.forEach(x=>x.remove());out&&out.after&&out.after()};
-  if(!out){if(RM())return run();rem.forEach((x,i)=>{if(i<rem.length-1)return x.remove();x.classList.add('pg-out');setTimeout(()=>x.remove(),270)});return}out.before&&out.before();vt(out.cls,run,out.done)});
+  if(!out){if(RM()||rem.every(x=>x.classList.contains('pd-done')))return run();rem.forEach((x,i)=>{if(i<rem.length-1)return x.remove();x.classList.add('pg-out');setTimeout(()=>x.remove(),270)});return}out.before&&out.before();vt(out.cls,run,out.done)});
 function goBase(cb){const n=(history.state&&history.state.p)||0;if(!n){cb&&cb();return}const once=()=>{removeEventListener('popstate',once);cb&&cb()};addEventListener('popstate',once);history.go(-n)}
 history.replaceState({p:0},'');
 
@@ -1138,11 +1167,42 @@ function fieldDisplay(d,k){
   if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
 }
+/* raggi degli angoli per il viaggio della foto */
+const thumbR=img=>{const g=img.closest('.gcard');if(g){const r=getComputedStyle(g).borderTopLeftRadius;return `${r} ${r} 0 0`}const t=img.closest('.th');return t?getComputedStyle(t).borderRadius:'16px'};
+const HERO_R=()=>{const h=document.querySelector('.page.det .hero');return h?getComputedStyle(h).borderRadius:'0 0 30px 30px'};
+const setHR=(a,b)=>{const s=document.documentElement.style;s.setProperty('--hr0',a);s.setProperty('--hr1',b)};
+/* tasti in fondo alla scheda (2.7): due principali + «Altro» che apre un foglio con le azioni raggruppate */
+function actsHTML(prim,more){more=more.filter(Boolean);
+  return `<div class="acts acts2">${prim.map(([a,t,_,p])=>`<button class="btn ${p?'':'sec'}" ${a}>${t}</button>`).join('')}${more.length?`<button class="btn sec more" data-moreacts="${esc(JSON.stringify(more.map(({ic,t,sub,dng,g})=>({ic,t,sub,dng,g}))))}" aria-label="Altre azioni" title="Altre azioni">⋯</button>`:''}</div>
+  <div class="acts-h" hidden>${more.map((o,i)=>o.href?`<a data-mi="${i}" target="_blank" rel="noopener" href="${esc(o.href)}"></a>`:`<button data-mi="${i}" ${o.a}></button>`).join('')}</div>`}
+async function moreActs(el,btn){const items=JSON.parse(btn.dataset.moreacts||'[]');
+  const i=await sheet('',items);if(i<0)return;const b=$(`.acts-h [data-mi="${i}"]`,el);b&&b.click()}
+function sheet(title,items){return new Promise(res=>{const m=document.createElement('div');m.className='modal sheet';let g0=null;
+  m.innerHTML=`<div>${title?`<p class="sh-t">${esc(title)}</p>`:''}<div class="shl">${items.map((o,i)=>{const sep=g0!==null&&o.g!==g0;g0=o.g;return `${sep?'<i class="shs"></i>':''}<button class="shi ${o.dng?'dng':''}" data-c="${i}"><span class="shic">${o.ic||''}</span><span class="sht"><b>${esc(o.t)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span></button>`}).join('')}</div><button class="btn sec shx" data-c="-1">Annulla</button></div>`;
+  m.onclick=e=>{const b=e.target.closest('[data-c]');if(b||e.target===m){m.classList.add('out');setTimeout(()=>m.remove(),180);res(b?+b.dataset.c:-1)}};document.body.append(m);lgScan(m)})}
+/* chiusura tirando in basso: dalla posizione del dito la foto si posa sulla miniatura nell'elenco (o la scheda scivola via) */
+function pullClose(el,id,dim){
+  const cs=getComputedStyle(el),m=new DOMMatrix(cs.transform==='none'?undefined:cs.transform),o=cs.transformOrigin.split(' ').map(parseFloat);
+  const sc=m.a||1,tx=m.e+o[0]*(1-sc),ty=m.f+o[1]*(1-sc);
+  el.style.transition='none';el.style.transformOrigin='0 0';el.style.transform=`translate3d(${tx}px,${ty}px,0) scale(${sc})`;el.classList.add('pd-fly');
+  const hero=$('.hero',el),hi=$('.himg',el),W=el.offsetWidth,H=el.offsetHeight;
+  const th=hi&&document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);
+  let T=th&&th.getBoundingClientRect();if(T&&(T.bottom<0||T.top>innerHeight||T.width<4))T=null;
+  const R=el.style.borderRadius||'24px';el.style.borderRadius='0';el.style.clipPath=`inset(0 0 0 0 round ${R})`;
+  void el.offsetWidth;const D=.42,ease='cubic-bezier(.3,.6,.2,1)';
+  if(T&&hero){const hh=hero.offsetHeight,ta=T.width/T.height,cw=Math.min(W,hh*ta),ch=cw/ta,l=(W-cw)/2,t=(hh-ch)/2,k=T.width/cw;
+    const rad=parseFloat(th.closest('.gcard')?getComputedStyle(th.closest('.gcard')).borderTopLeftRadius:getComputedStyle(th.closest('.th')||th).borderTopLeftRadius)||16;
+    el.style.transition=`transform ${D}s ${ease},clip-path ${D}s ${ease}`;
+    el.style.transform=`translate3d(${T.left-l*k-el.offsetLeft}px,${T.top-t*k-el.offsetTop}px,0) scale(${k})`;
+    el.style.clipPath=`inset(${t}px ${W-l-cw}px ${H-t-ch}px ${l}px round ${rad/k}px)`}
+  else{el.style.transition=`transform ${D}s ${ease},opacity ${D}s ease`;el.style.transform=`translate3d(${tx}px,${innerHeight}px,0) scale(${sc*.9})`;el.style.opacity='0'}
+  if(dim){dim.style.transition=`opacity ${D}s ease`;dim.style.opacity='0'}
+  setTimeout(()=>{el._out=null;el.classList.add('pd-done');dim&&dim.remove();history.back()},D*1000+20)}
 function openDetailFrom(card,id){
   const top=stack[stack.length-1];if(wide()&&top&&top.classList.contains('det'))return openDetail(id,true);
   const img=card&&card.querySelector('.th img,.gi img');
   if(!img||!document.startViewTransition||RM())return openDetail(id);
-  img.style.viewTransitionName='hero-x';
+  img.style.viewTransitionName='hero-x';setHR(thumbR(img),HERO_R());
   vt('vt-det',()=>{img.style.viewTransitionName='';openDetail(id,false,true)},()=>{document.querySelectorAll('.himg').forEach(h=>h.style.viewTransitionName='')});
 }
 function openDetail(id,replace,morph,quiet,dir){
@@ -1196,15 +1256,44 @@ function openDetail(id,replace,morph,quiet,dir){
     const own=devices.filter(x=>!x.wish&&((d.modello&&x.modello===d.modello)||String(x.nome).toLowerCase()===String(d.nome).toLowerCase()));
     if(own.length)h=h.replace('<div class="dbody">',`<div class="dbody"><div class="note" style="margin-top:14px">ℹ️ Ce l'hai già in collezione: ${own.map(x=>`<a href="#" data-go="${x.id}">${esc(x.nome)}</a>`).join(', ')}</div>`);
     const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
-    h+=`<div class="acts"><button class="btn" data-got>✅ Preso! Sposta in collezione</button>${d.w_link&&/^https?:/i.test(d.w_link)?`<a class="btn sec" target="_blank" rel="noopener" href="${esc(d.w_link)}">🔗 Annuncio</a>`:''}<a class="btn sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}">🛒 Cerca su eBay</a><a class="btn sec" target="_blank" rel="noopener" href="https://www.subito.it/annunci-italia/vendita/usato/?q=${q}">🛒 Cerca su Subito</a><button class="btn sec" data-edit>Modifica</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button><button class="btn dng" data-del>Elimina</button></div></div>`;
-  }else h+=`<div class="acts"><button class="btn" data-edit>Modifica</button><button class="btn sec" data-upd>🔎 Aggiorna da web</button><button class="btn sec" data-paste>📋 Incolla da EveryMac</button>${kindOf(d.tipologia)==='part'?(d.montato_su?'':'<button class="btn sec" data-mount>🔧 Monta su…</button>')+(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):kindOf(d.tipologia)==='acc'?(+d.quantita>1&&!hasUnits(d)?`<button class="btn sec" data-split>✂️ Dividi in ${+d.quantita} oggetti</button>`:''):`<button class="btn sec" data-addacc>＋ Accessorio</button>${devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)?'<button class="btn sec" data-copyacc>📋 Copia accessori da…</button>':''}<button class="btn sec" data-cut>🏛️ Scontorno per il museo</button>`}${d.prestito?'':'<button class="btn sec" data-loan>📤 Presta / esponi</button>'}<button class="btn sec" data-cmp>⇆ Confronta con…</button><button class="btn sec" data-dup>Duplica</button><button class="btn dng" data-del>Elimina</button></div></div>`;
+    h+=actsHTML([['data-got','✅ Preso!','',1],['data-edit','Modifica']],[
+      d.w_link&&/^https?:/i.test(d.w_link)&&{href:d.w_link,ic:'🔗',t:'Apri l\'annuncio'},
+      {href:`https://www.ebay.it/sch/i.html?_nkw=${q}`,ic:'🛒',t:'Cerca su eBay',g:'Cerca'},{href:`https://www.subito.it/annunci-italia/vendita/usato/?q=${q}`,ic:'🛒',t:'Cerca su Subito',g:'Cerca'},
+      {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
+      {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>';
+  }else{const kd=kindOf(d.tipologia),split=+d.quantita>1&&!hasUnits(d)&&{a:'data-split',ic:'✂️',t:`Dividi in ${+d.quantita} oggetti`,g:'Oggetto'};
+    h+=actsHTML([['data-edit','Modifica','',1],['data-upd','🔎 Aggiorna']],[
+      {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
+      ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
+      !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
+      {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>'}
   openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
-    el.dataset.did=d.id;{let sx=0,sy=0,st=0;el.addEventListener('touchstart',e=>{st=0;if(e.touches.length!==1||e.target.closest('.thumbs,.photos,.chips,.chart,.pcmp,input,textarea,select,.hchips'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;if(sx<24||sx>innerWidth-24)return;st=Date.now()},{passive:true});
-      el.addEventListener('touchend',e=>{if(!st)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Date.now()-st<700&&Math.abs(dx)>70&&Math.abs(dy)<Math.abs(dx)*.55)detailStep(d.id,dx<0?1:-1);st=0},{passive:true})}
+    el.dataset.did=d.id;{/* gesti (2.7): di lato si passa all'oggetto vicino, verso il basso (dalla cima) si chiude come nella galleria */
+      let sx=0,sy=0,st=0,dx=0,dy=0,mode=0,lx=0,ly=0,lt=0,vx=0,vy=0,dim=null;const can=k=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&!!L[i+k]};
+      const bd=()=>$('.body',el);
+      el.addEventListener('touchstart',e=>{st=0;mode=0;dx=dy=0;if(e.touches.length!==1||el.classList.contains('pd-fly')||e.target.closest('.thumbs,.photos,.chips,.chart,.pcmp,input,textarea,select,.hchips,.modal'))return;sx=lx=e.touches[0].clientX;sy=ly=e.touches[0].clientY;if(sx<24||sx>innerWidth-24)return;st=lt=Date.now();vx=vy=0},{passive:true});
+      el.addEventListener('touchmove',e=>{if(!st||mode<0)return;const t=e.touches[0],ddx=t.clientX-sx,ddy=t.clientY-sy;
+        if(!mode){if(Math.abs(ddx)<10&&Math.abs(ddy)<10)return;if(RM()){mode=-1;return}
+          if(Math.abs(ddx)>Math.abs(ddy)*1.3){mode=1;el.style.transition='none';el.classList.add('sw-drag')}
+          else if(ddy>0&&Math.abs(ddy)>Math.abs(ddx)*1.2&&bd().scrollTop<=0){mode=2;sy=t.clientY;el.style.transition='none';el.style.transformOrigin=`${sx-el.getBoundingClientRect().left}px ${sy}px`;el.classList.add('pd-drag');
+            dim=document.createElement('div');dim.className='pd-dim';el.before(dim)}
+          else{mode=-1;return}}
+        if(e.cancelable)e.preventDefault();const now=Date.now();if(now>lt){vx=(t.clientX-lx)/(now-lt);vy=(t.clientY-ly)/(now-lt)}lx=t.clientX;ly=t.clientY;lt=now;
+        if(mode===1){dx=can(ddx<0?1:-1)?ddx:ddx*.22;el.style.transform=`translate3d(${dx}px,0,0)`;return}
+        dx=ddx;dy=Math.max(0,t.clientY-sy);const p=Math.min(1,dy/(innerHeight*.6)),sc=1-p*.45;
+        el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sc})`;el.style.borderRadius=Math.min(38,12+dy/5)/sc+'px';if(dim)dim.style.opacity=String(1-p*1.15)},{passive:false});
+      const end=()=>{const m=mode;st=0;mode=0;if(m===2)return pullEnd();if(m!==1)return;const w=el.offsetWidth,k=dx<0?1:-1,fast=Math.abs(vx)>.45&&Math.abs(dx)>30&&Math.sign(vx)===Math.sign(dx);
+        if((Math.abs(dx)>w*.22||fast)&&can(k)){el.style.transition='transform .22s cubic-bezier(.3,.7,.3,1)';el.style.transform=`translate3d(${-k*w}px,0,0)`;detailStep(d.id,k)}
+        else{el.style.transition='transform .3s cubic-bezier(.2,.9,.3,1.12)';el.style.transform='';setTimeout(()=>{if(!el.style.transform){el.classList.remove('sw-drag');el.style.transition=''}},320);if(Math.abs(dx)>14&&!can(k))detailStep(d.id,k)}};
+      const pullEnd=()=>{
+        if(!(dy>110||(vy>.5&&dy>36))){el.style.transition='transform .38s cubic-bezier(.2,.9,.3,1.12),border-radius .38s';el.style.transform='';el.style.borderRadius='';if(dim){dim.style.transition='opacity .3s';dim.style.opacity='1';const x=dim;setTimeout(()=>x.remove(),380);dim=null}
+          setTimeout(()=>{if(!el.style.transform){el.classList.remove('pd-drag');el.style.transition='';el.style.transformOrigin=''}},400);return}
+        pullClose(el,d.id,dim);dim=null};
+      el.addEventListener('touchend',end,{passive:true});el.addEventListener('touchcancel',end,{passive:true})}
     const v0=DV;el._refresh=()=>{if(DV!==v0&&devices.some(x=>x.id===d.id))openDetail(d.id,true,false,true)};
     if(morph){const hi=$('.himg',el);if(hi){hi.style.viewTransitionName='hero-x';
-      el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40)h.style.viewTransitionName='hero-x'},
-        after(){const c=document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);if(c){const r=c.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)c.style.viewTransitionName='hero-x'}},
+      el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40){h.style.viewTransitionName='hero-x';setHR(getComputedStyle(h.closest('.hero')).borderRadius,'16px')}},
+        after(){const c=document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);if(c){const r=c.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight){c.style.viewTransitionName='hero-x';setHR(document.documentElement.style.getPropertyValue('--hr0'),thumbR(c))}}},
         done(){document.querySelectorAll('[style*="view-transition-name"]').forEach(x=>x.style.viewTransitionName='')}}}}
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
@@ -1212,6 +1301,7 @@ function openDetail(id,replace,morph,quiet,dir){
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
       const t=e.target;
+      {const mb=t.closest('[data-moreacts]');if(mb)return moreActs(el,mb)}
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
       if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
@@ -1427,8 +1517,8 @@ function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
       drawWl();const wq=$('#wq',el);if(wq)wq.oninput=drawWl;
       $('#ash',el).onclick=()=>$('#ashf',el).click();$('#ashf',el).onchange=e=>{const fs=[...e.target.files];if(fs.length){keep();readShots(fs)}}};
     const readShots=async fs=>{sh=fs;const pr=$('#aprog',el);
-      try{if(pr){pr.innerHTML=loader('scan','Leggo lo screenshot…','La prima volta scarico il lettore di testo')+'';pr.querySelector('.ld').insertAdjacentHTML('beforeend','<div class="bar2"><i></i></div>');pr.scrollIntoView({behavior:'smooth',block:'center'})}
-        const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(!x||!x.querySelector('.ld'))return;if(m)x.querySelector('.ldm').textContent=m.replace(/…$/,'');const sm=x.querySelector('small');if(sm&&v)sm.textContent=Math.round(v*100)+'%';const b=x.querySelector('.bar2 i');if(b&&v!=null)b.style.width=Math.round(v*100)+'%'});
+      try{if(pr){pr.innerHTML=loader('scan','Leggo lo screenshot…','La prima volta scarico il lettore di testo')+'';pr.querySelector('.ldr').insertAdjacentHTML('beforeend','<div class="bar2"><i></i></div>');pr.scrollIntoView({behavior:'smooth',block:'center'})}
+        const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(!x||!x.querySelector('.ldr'))return;if(m)x.querySelector('.ldm').textContent=m.replace(/…$/,'');const sm=x.querySelector('small');if(sm&&v)sm.textContent=Math.round(v*100)+'%';const b=x.querySelector('.bar2 i');if(b&&v!=null)b.style.width=Math.round(v*100)+'%'});
         const r=parseListingText(txt);a.ocr=txt.slice(0,4000);
         if(r.titolo)a.titolo=r.titolo;if(r.prezzo)a.prezzo=r.prezzo;if(r.sito&&!a.sito)a.sito=r.sito;if(r.url&&!a.url){a.url=r.url;a.sito=a.sito||siteName(r.url)}
         a.desc=[r.desc||a.desc,r.condizione&&'Condizione: '+r.condizione,r.luogo&&'Luogo: '+r.luogo].filter(Boolean).join('\n');
@@ -1455,10 +1545,10 @@ function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
 const manCfg=()=>Object.assign({on:6,charge:6,notif:false,cal:true},LS.get('rd_man',{}));
 const addMonths=(s,n)=>{const d=new Date(s+'T12:00');d.setMonth(d.getMonth()+n);return d.toISOString().slice(0,10)};
 const agoTxt=s=>{if(!s)return 'mai registrata';const days=Math.round((Date.parse(today())-Date.parse(s))/864e5);return days<=0?'oggi':days===1?'ieri':days<60?days+' giorni fa':Math.round(days/30.4)+' mesi fa'};
-const battGuess=d=>/portatil|smartphone|tablet|lettore musicale|palmare/i.test(d.tipologia||'')||/powerbook|ibook|macbook|iphone|ipad|ipod|psp|vita|game ?boy|gba|nintendo ds|3ds|switch|newton/i.test(d.nome||'')?'Ricaricabile (da tenere carica)':'';
+const battGuess=d=>['acc','part'].includes(kindOf(d.tipologia))?'':/portatil|smartphone|tablet|lettore musicale|palmare/i.test(d.tipologia||'')||/powerbook|ibook|macbook|iphone|ipad|ipod|psp|vita|game ?boy|gba|nintendo ds|3ds|switch|newton/i.test(d.nome||'')?'Ricaricabile (da tenere carica)':'';
 const manBatt=d=>d.man_batt||battGuess(d);
 function manTargets(d){
-  if(d.wish||['In uso','Ricambi'].includes(d.ruolo)||d.man_freq==='Mai (non serve)'||kindOf(d.tipologia)==='part')return [];
+  if(d.wish||['In uso','Ricambi'].includes(d.ruolo)||d.man_freq==='Mai (non serve)'||['part','acc'].includes(kindOf(d.tipologia)))return [];
   const kd=kindOf(d.tipologia),rech=/^Ricaricabile/.test(manBatt(d));
   if(!(kd==='pc'||kd==='tv'||rech))return [];
   return hasUnits(d)?d.esemplari.map((u,i)=>({d,u,i})):[{d,u:null,i:-1}];
@@ -1473,7 +1563,7 @@ const manDue=()=>manAll().filter(t=>t.st.dueOn||t.st.dueCh);
 function manLog(d,u,tipo){const x=u||d;if(tipo!=='charge')x.man_on=today();if(tipo==='charge'||tipo==='both')x.man_charge=today();if(tipo==='both')x.man_on=today();
   (d.manutenzioni=d.manutenzioni||[]).push(Object.assign({data:today(),tipo},u?{es:u.id}:{}))}
 const unitName=t=>t.d.nome+(t.u?` · n. ${t.i+1}${t.u.etichetta?' ('+t.u.etichetta+')':''}`:'');
-function manHTML(d){if(kindOf(d.tipologia)==='part')return '';const ts=manTargets(d);if(!ts.length&&!manBatt(d)&&!d.batt_stato)return '';
+function manHTML(d){if(['part','acc'].includes(kindOf(d.tipologia)))return '';const ts=manTargets(d);if(!ts.length&&!manBatt(d)&&!d.batt_stato)return '';
   const rows=ts.map(t=>{const st=manState(t),x=t.u||t.d;return `<div class="mrow" data-mt="${t.u?t.u.id:''}"><div class="mi"><b>${t.u?`Esemplare n. ${t.i+1}${t.u.etichetta?' · '+esc(t.u.etichetta):''}`:'Ultima accensione'}</b>
     <small>${t.u?'acceso '+agoTxt(x.man_on):agoTxt(x.man_on)}${st.nextOn?` · prossima ${st.dueOn?'<b class="late">da fare</b>':fmtD(st.nextOn)}`:''}</small>
     ${st.rech?`<small>🔋 carica: ${agoTxt(x.man_charge)}${st.nextCh?` · prossima ${st.dueCh?'<b class="late">da fare</b>':fmtD(st.nextCh)}`:''}</small>`:st.bs?`<small>🔋 batteria ${esc(st.bs.toLowerCase())}: niente ricariche</small>`:''}</div>
@@ -1745,7 +1835,14 @@ function openProject(d,pid,replace){
     });
   }});
 }
+/* 2.7: un pezzo messo in lista senza prezzo lo chiede quando diventa «Ordinato» */
+function askPrice(msg,q){return new Promise(res=>{const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div><p>${esc(msg)}</p><label class="f">Quanto l'hai pagato (€)${q>1?` · prezzo di un pezzo, ×${q}`:''}</label><input class="in" id="apv" type="number" inputmode="decimal" step="any" min="0" placeholder="es. 12,50"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Dopo</button><button class="btn" data-y>Salva il prezzo</button></div></div>`;
+  const inp=m.querySelector('#apv'),ok=()=>{const v=parseFloat(String(inp.value).replace(',','.'));if(isNaN(v)||v<0){inp.focus();return}m.remove();res(v)};
+  m.onclick=e=>{if(e.target.matches('[data-y]'))ok();else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};inp.onkeydown=e=>{if(e.key==='Enter')ok()};
+  document.body.append(m);lgScan(m);setTimeout(()=>inp.focus(),120)})}
 async function pzNext(d,p,z){const i=PZ_ST.indexOf(z.stato);z.stato=PZ_ST[(i+1)%PZ_ST.length];
+  if(z.stato==='Ordinato'&&!z.part&&!(parseFloat(z.prezzo)>0)){const v=await askPrice(`«${z.t}» ordinato! Quanto l'hai pagato?`,+z.qta||1);if(v!=null)z.prezzo=v}
   if(z.stato==='Arrivato'&&!z.part&&await ask(`«${z.t}» è arrivato! Lo registro anche nel magazzino ricambi (compatibile con «${d.nome}»)? Alla fine del progetto risulterà montato.`,'Sì, nel magazzino')){
     const o={id:uid(),nome:z.t,tipologia:'Ricambio',part_cat:partCat(z.t),compat:[d.id],quantita:+z.qta||1,luogo:d.luogo||'',acq_anno:new Date().getFullYear(),creato:Date.now(),modificato:Date.now()};if(z.prezzo)o.acq_prezzo=z.prezzo;
     stamp(o);idx(o);await DB.put(o);devices.push(o);z.part=o.id}
@@ -1977,7 +2074,7 @@ function lgScan(root=document){if(!LG.on)return;const els=[...(root.matches&&roo
   for(const el of els){if(el.matches('#dock,#bulk,.search'))el.dataset.lgBlur='1';
     if(!LG.els.has(el)){LG.els.add(el);LG.ro.observe(el)}requestAnimationFrame(()=>lgApply(el))}
   for(const el of LG.els)if(!el.isConnected){LG.ro.unobserve(el);LG.els.delete(el)}}
-function lgSet(m){LS.set('rd_glass',m);const on=m!=='off'&&LG.supported();document.documentElement.classList.toggle('lg',on);
+function lgSet(m){LS.set('rd_glass',m);const on=m!=='off'&&LG.supported();document.documentElement.classList.toggle('lg',on);document.documentElement.classList.toggle('lgs',m!=='off'&&!LG.supported());
   LG.filters.clear();if(LG.svg)LG.svg.innerHTML='';for(const el of LG.els){el._lgk='';el.style.backdropFilter=el.style.webkitBackdropFilter=''}
   if(on){try{lgGL()}catch(e){console.warn('vetro liquido',e);document.documentElement.classList.remove('lg');return}lgScan()}}
 /* «pressione» del modello: la lente si ingrandisce e si solleva con una molla sottosmorzata */
@@ -2277,7 +2374,7 @@ function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={
     const run=async()=>{const qq=$('#gmq',el).value.trim();if(!qq)return $('#gmq',el).focus();
       const c2=[ctx,$('#gmm',el).value.trim()&&'marca: '+$('#gmm',el).value.trim(),$('#gmt',el).value.trim()&&'tipo: '+$('#gmt',el).value.trim()].filter(Boolean).join('; ');
       $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web',gemOn()?'Gemini cerca sul web…':'Cerco con OpenRouter…','di solito 10–30 secondi');
-      const step=(m,tried,search)=>{const s=$('.ld small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
+      const step=(m,tried,search)=>{const s=$('.ldr small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
       try{const r=await aiAsk(qq,c2,step);
         const notes=[r.via==='openrouter'&&r.gemErr?`🛟 Gemini non ha risposto (${esc(errInfo(r.gemErr).title.toLowerCase())}): ho usato la riserva <b>OpenRouter</b> con ${esc(orCfg().ok)}.`:'',r.tried.length&&r.via!=='openrouter'?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch&&r.via==='openrouter'?'⚠️ <b>Senza ricerca web</b>: i modelli gratuiti di OpenRouter rispondono dalla loro memoria, quindi i dati sono più facili da sbagliare. Controllali prima di salvare.':r.noSearch?(r.searchBlocked||gemNoSearch()?'⚠️ <b>Senza ricerca web</b>: con la ricerca Google il tuo livello gratuito risponde «limite 0», quindi ho chiesto a Gemini senza ricerca. I dati vengono dalla sua memoria e sono più facili da sbagliare: controllali. Riproverò con la ricerca dopo l\'azzeramento delle quote (le 9 del mattino da noi).':r.via==='compatibile'?'⚠️ <b>Senza ricerca web</b>: ha risposto solo l\'ingresso compatibile (come ARGOS), che non fa ricerche sul web. Controlla i dati.':'⚠️ <b>Senza ricerca web</b>: dati dalla memoria di Gemini, controllali.'):'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
         out.innerHTML=previewHTML(r)+notes.map(n=>`<p class="note" style="margin-top:6px">${n}</p>`).join('')
@@ -2347,7 +2444,7 @@ function smartHTML(){const L=smartList(),cur=smartNorm(smartNow());return L.map(
 /* ===== scorrere tra le schede: l'ordine è quello dell'elenco (con ricerca e filtri) ===== */
 function detailStep(id,dir){const L=render.items||[],i=L.indexOf(id);if(i<0)return;const n=L[i+dir];
   if(!n){toast(dir>0?'Ultimo oggetto dell\'elenco':'Primo oggetto dell\'elenco',1600);try{navigator.vibrate&&navigator.vibrate([8,40,8])}catch(_){}return}
-  openDetail(n,true,false,false,dir>0?'next':'prev')}
+  openDetail(n,true,false,true,dir>0?'next':'prev')}
 addEventListener('keydown',e=>{if(!/Arrow(Left|Right)/.test(e.key)||e.target.closest('input,textarea,select'))return;const top=stack[stack.length-1];if(!top||!top.classList.contains('det')||!top.dataset.did)return;detailStep(top.dataset.did,e.key==='ArrowRight'?1:-1)});
 /* ===== versioni precedenti: ogni sincronizzazione è un commit di collezione.json su GitHub ===== */
 const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti'].includes(k))));
@@ -2748,7 +2845,8 @@ function listOpts(kind){
 function fieldHTML(k,l,t,v,d){
   v=v==null?'':v;t=t||'';
   if(k==='ruolo'&&!v)v='Collezione';
-  if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}">${k==='ruolo'?'':'<option value=""></option>'}${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
+  if(k==='man_freq'&&!v)v=['3','6','12'].includes(String(manCfg().on))?String(manCfg().on):'6';
+  if(t.startsWith('select:')){const o=t.slice(7).split('|');if(v&&!o.includes(v))o.push(v);return `<label class="f">${l}</label><select class="in" name="${k}">${k==='ruolo'||k==='man_freq'?'':'<option value=""></option>'}${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
   if(t==='links'){const cur=Array.isArray(v)?v:[];const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&['pc','tv'].includes(kindOf(x.tipologia))).sort((a,b)=>(cur.includes(b.id)-cur.includes(a.id))||String(a.nome).localeCompare(b.nome,'it'));
     return `<label class="f">${l}</label><input class="in" id="lnkq" placeholder="Cerca un computer…" autocomplete="off"><div class="lnkbox" id="lnkbox">${opts.map(x=>`<label class="lnk"><input type="checkbox" value="${x.id}" ${cur.includes(x.id)?'checked':''}> ${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</label>`).join('')||'<small style="color:var(--mute)">Nessun computer in collezione</small>'}</div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='tags'){const cur=Array.isArray(v)?v:[];const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[]),...cur])];
@@ -2777,7 +2875,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
   h+=`<div class="sec-t">Altre specifiche</div><label class="f">Una per riga, formato «Etichetta: valore»</label><textarea class="in" name="_specs" style="min-height:140px">${esc((d.specs||[]).map(p=>p[0]+': '+p[1]).join('\n'))}</textarea>`;
   h+=fieldHTML('fonte','Fonte (URL)','',d.fonte,d);
   h+=`<div class="row" style="margin-top:20px"><button class="btn" style="flex:1" data-save>Salva</button></div></form>`;
-  const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button>`;
+  const acts=`<button class="btn sm sec" data-look>🔎 Dati online</button><button class="btn sm" data-save>Salva</button>`;
   openPage(isNew?(d.wish?'Nuovo desiderio':'Nuovo oggetto'):'Modifica',h,{replace:fromLookup,actions:acts,mount(el){
     const fm=$('#f',el);
     let dropDiag='';
@@ -2820,7 +2918,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       drawPh()});
     el.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>/^image\//.test(f.type));if(fs.length){e.preventDefault();addFiles(fs)}});
     drawPh();
-    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' '),kinds=w.filter(v=>['pc','tv','part','acc'].includes(v));x.hidden=(w.includes('wish')&&!d.wish)||(w.includes('own')&&!!d.wish)||(w.includes('nopart')&&k==='part')||(kinds.length>0&&!kinds.includes(k))})};
+    const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' '),kinds=w.filter(v=>['pc','tv','part','acc'].includes(v));x.hidden=(w.includes('wish')&&!d.wish)||(w.includes('own')&&!!d.wish)||(w.includes('nopart')&&k==='part')||(w.includes('noacc')&&k==='acc')||(kinds.length>0&&!kinds.includes(k))})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);
     /* compatibilità multipla dei ricambi */
     const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
@@ -2945,26 +3043,15 @@ function openAdd(){
 
 /* ============ rete / proxy ============ */
 function proxyUrl(p,url){const e=encodeURIComponent(url);if(p.includes('{url}'))return p.replace('{url}',e);if(/[=?/]$/.test(p)&&/[?=]/.test(p))return p+e;return p.replace(/\/?$/,'/?url=')+e}
-const WORKER_CODE=`export default {
-  async fetch(req) {
-    const u = new URL(req.url).searchParams.get('url') || '';
-    const h = {'Access-Control-Allow-Origin': '*'};
-    if (!/^https:\\/\\/(www\\.)?everymac\\.com\\//.test(u)) return new Response('Solo everymac.com', {status: 403, headers: h});
-    const r = await fetch(u, {headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36', 'Accept-Language': 'en-US,en'}, cf: {cacheTtl: 86400}});
-    return new Response(r.body, {status: r.status, headers: {...h, 'Content-Type': r.headers.get('Content-Type') || 'text/html', 'Cache-Control': 'public, max-age=86400'}});
-  }
-}`;
 function proxies(){
-  const mine=(LS.get('rd_proxy','')||'').trim();
-  const list=['https://corsproxy.io/?url={url}','https://api.allorigins.win/raw?url={url}','https://api.codetabs.com/v1/proxy?quest={url}'];
-  return mine?[mine,...list]:list;
+  return ['https://corsproxy.io/?url={url}','https://api.allorigins.win/raw?url={url}','https://api.codetabs.com/v1/proxy?quest={url}'];
 }
 async function viaProxy(url,blob){
   let last;
   for(const p of proxies()){
     try{
       const u=proxyUrl(p,url);
-      const r=await fetch(u,{signal:AbortSignal.timeout(20000)});
+      const r=await fetch(u,{signal:AbortSignal.timeout(8000)});
       if(!r.ok)throw new Error('HTTP '+r.status);
       if(blob)return await r.blob();
       const t=await r.text();
@@ -3957,14 +4044,74 @@ function openMenu(){
   <button class="res" data-m="man"><b>🔌 Manutenzione</b><small>Giro di accensioni e ricariche${manDue().length?` · ${manDue().length} da fare`:''}</small></button>
   <button class="res" data-m="inv"><b>📋 Inventario</b><small>Controlla luogo per luogo cosa c'è davvero${LS.get('rd_inv',null)?' · inventario in corso':''}</small></button>
 
-  <div class="sec-t">Ricerche con l'intelligenza artificiale</div>
-  <button class="res" data-m="errlog"><b>🩺 Registro errori</b><small>${(()=>{const n=LS.get('rd_errlog',[]).length;return n?`${n} ${n===1?'errore registrato':'errori registrati'}: dettagli da copiare e mandare`:'Nessun errore registrato'})()}</small></button>
-  <button class="res" data-m="orset"><b>🛟 OpenRouter (riserva)</b><small>${orOn()?`Collegato · ${esc(orCfg().model||'modelli gratuiti automatici')}`:'Modelli gratuiti da usare quando Gemini non risponde'}</small></button>
-  <button class="res" data-m="gem"><b>✨ Gemini</b><small>${gemOn()?`Collegato · modello ${esc(gemCfg().model||'automatico')}`:'Collega una chiave API per far cercare e compilare le schede degli oggetti rari'}</small></button>
+  <div class="sec-t">Collegamenti e backup</div>
+  <button class="res" data-m="ai"><b>🤖 Collegamento IA</b><small>${[gemOn()?'Gemini collegato':'Gemini non collegato',orOn()?'riserva OpenRouter attiva':'',(n=>n?`${n} ${n===1?'errore':'errori'} nel registro`:'')(LS.get('rd_errlog',[]).length)].filter(Boolean).join(' · ')}</small></button>
+  <button class="res" data-m="db"><b>☁️ Database su GitHub</b><small>${ghOn()?`Salvataggio automatico su ${esc(ghCfg().repo)}`:'Solo lettura: collega un token per salvare in automatico'}${(l=>l?' · ultima sincronizzazione '+agoShort(l.t):'')(LS.get('rd_db_last',null))}</small></button>
+  <button class="res" data-m="exp"><b>💾 Esporta…</b><small>Backup completo, tabella per Excel, laboratorio o collezione.json</small></button>
+  <button class="res" data-m="imp"><b>📥 Importa un backup</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
+  <input type="file" id="fi" accept=".json,application/json" hidden>
+  <p class="note" id="bk" style="margin-top:6px"></p>
+  <div class="sec-t">Impostazioni</div>
+  <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
+  <label class="f">Vetro liquido</label><div class="chips">${(LG.supported()?[['full','💧 Completo'],['lite','Leggero'],['off','Spento']]:[['lite','💧 Simulato'],['off','Spento']]).map(([v,l])=>`<button class="chip ${(LG.mode()===v||(!LG.supported()&&v==='lite'&&LG.mode()!=='off'))?'on':''}" data-m="glass" data-v="${v}">${l}</button>`).join('')}</div>${LG.supported()?'':`<p class="note" style="margin:6px 0 0">${/iPhone|iPad|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document?'Su iPhone e iPad ogni browser (anche Chrome) usa il motore di Safari, che non permette la rifrazione vera del vetro: qui l\'effetto è simulato con sfocatura e riflessi.':'Questo browser non permette la rifrazione vera del vetro (serve Chrome su Android o computer): l\'effetto è simulato.'}</p>`}
+  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
+  <details class="note"><summary><b>🔌 Promemoria di manutenzione</b> · accensione ogni ${manCfg().on} mesi, ricarica ogni ${manCfg().charge}</summary>
+  <div class="grid2"><div><small>Accensione ogni</small><select class="in" id="mfo">${[3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().on===n?'selected':''}>${n} mesi</option>`).join('')}</select></div><div><small>Ricarica ogni</small><select class="in" id="mfc">${[2,3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().charge===n?'selected':''}>${n} mesi</option>`).join('')}</select></div></div>
+  <label class="row" style="gap:10px;font-size:14px;margin:8px 0"><input type="checkbox" id="mcal" ${manCfg().cal!==false?'checked':''} style="width:20px;height:20px"> Metti accensioni e ricariche nel calendario (calendario.ics)</label>
+  <div class="row" style="flex-wrap:wrap;gap:6px"><button class="btn sm sec" data-m="mans">Salva</button><button class="btn sm sec" data-m="notif">🔔 Notifiche sul telefono</button></div><p class="note" id="ntst" style="margin:6px 0">${manCfg().notif?(manCfg().bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili: usa il calendario.'):'Le notifiche dipendono dal telefono: il modo più affidabile è il calendario qui sotto.'}</p>
+  <details class="note"><summary><b>📅 Promemoria in Google Calendar (consigliato)</b></summary><p>A ogni sincronizzazione con GitHub l'app aggiorna <b>calendario.ics</b> con le prossime accensioni e ricariche, gli interventi in programma, i rientri dei prestiti e le scadenze delle garanzie.</p>
+  <ol style="padding-left:18px;margin:6px 0"><li>Copia l'indirizzo: <button class="btn sm sec" data-m="calcp">📋 Copia</button><br><small style="word-break:break-all">${esc(calUrl())}</small></li><li>Da un computer (o dal browser del telefono in versione desktop) apri <b>calendar.google.com</b> → ⚙️ Impostazioni → <b>Aggiungi calendario → Da URL</b> → incolla → Aggiungi.</li><li>Nelle impostazioni del nuovo calendario «RDDC – promemoria» imposta la notifica per gli <b>eventi di un giorno intero</b> (es. alle 9:00).</li></ol>
+  <p>Google aggiorna i calendari sottoscritti da solo, di solito entro qualche ora. Il file è pubblico come collezione.json.</p></details>
+  </details>
+  <div class="sec-t">Zona pericolosa</div>
+  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>
+  <button class="res" data-m="nov" style="margin-top:22px;text-align:center"><b>RDDC · versione ${APP_VER}</b><small>${fmtD(NOVITA[0][1])} · Novità →</small></button>`;
+  openPage('Menu',h,{mount(el){
+    (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
+    const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
+    el.addEventListener('click',async e=>{
+      const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
+      if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':!LG.supported()?'Vetro liquido simulato 💧':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
+      if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
+      if(a==='stats')openStats();
+      if(a==='cat')openCatalog();
+      if(a==='due')openDue();
+      if(a==='inv')openInventory();
+      if(a==='man')openMaintenance();
+      if(a==='lab')openLab();
+      if(a==='nov')openNovita();
+      if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
+      if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
+      if(a==='calcp'){try{await navigator.clipboard.writeText(calUrl());toast('Indirizzo copiato')}catch(e){toast(calUrl(),6000)}}
+      if(a==='exp')exportSheet();
+      if(a==='ai')openAILink();
+      if(a==='db')openDBSettings();
+      if(a==='imp')$('#fi',el).click();
+      if(a==='clr'&&await ask('Cancellare TUTTI gli oggetti (anche la wishlist)? Non si può annullare. Se usi il database GitHub, verrà ricaricato al prossimo avvio.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};LS.set('rd_deleted',[]);LS.set('rd_db_sig','');render();toast('Collezione svuotata')}
+    });
+    $('#fi',el).onchange=async e=>{
+      try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
+        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();stamp(d);idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
+        render();dirty();toast(n+' oggetti importati')}catch(err){toast('File non valido')}
+    };
+  }});
+}
 
-  <div class="sec-t">Database su GitHub</div>
-  <div class="note" id="dbi"></div>
-  <button class="res" data-m="dbsync"><b>🔄 Sincronizza ora</b><small id="dbsm"></small></button>
+const agoShort=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'adesso':m<60?m+' min fa':m<1440?Math.round(m/60)+' h fa':new Date(t).toLocaleDateString('it',{day:'numeric',month:'short'})};
+/* 2.7: impostazioni raggruppate */
+function openAILink(){
+  const body=()=>{const n=LS.get('rd_errlog',[]).length;return `<p class="note" style="margin-top:0">Gemini cerca sul web e compila le schede degli oggetti rari. Se non risponde, l'app prova da sola i modelli gratuiti di OpenRouter.</p>
+  <button class="res" data-m="gem"><b>✨ Gemini</b><small>${gemOn()?`Collegato · modello ${esc(gemCfg().model||'automatico')}`:'Collega una chiave API gratuita'}</small></button>
+  <button class="res" data-m="orset"><b>🛟 OpenRouter (riserva)</b><small>${orOn()?`Collegato · ${esc(orCfg().model||'modelli gratuiti automatici')}`:'Modelli gratuiti da usare quando Gemini non risponde'}</small></button>
+  <button class="res" data-m="errlog"><b>🩺 Registro errori</b><small>${n?`${n} ${n===1?'errore registrato':'errori registrati'}: dettagli da copiare e mandare`:'Nessun errore registrato'}</small></button>`};
+  openPage('Collegamento IA',body(),{mount(el){
+    el._refresh=()=>{$('.body',el).innerHTML=body()};
+    el.addEventListener('click',e=>{const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
+      if(a==='gem')openGemSettings();if(a==='orset')openORSettings();if(a==='errlog')openErrLog()})}});
+}
+function openDBSettings(){
+  openPage('Database su GitHub',`<div class="note" id="dbi" style="margin-top:0"></div>
+  <button class="btn" data-m="dbsync" style="width:100%;margin:6px 0 4px">🔄 Sincronizza ora</button><p class="note" id="dbsm" style="margin:2px 2px 12px"></p>
   <details class="note" ${ghOn()?'':'open'}><summary><b>🔑 Salvataggio automatico su GitHub</b>${ghOn()?' – attivo ✔︎':''}</summary>
   <p>Con un <b>token</b> l'app invia da sola le modifiche a GitHub (foto comprese) e riceve quelle fatte sugli altri telefoni: niente più esportazioni a mano. Ogni telefono che deve <i>salvare</i> ha bisogno del token; chi deve solo <i>vedere</i> la collezione non ne ha bisogno.</p>
   <label class="f">Repository (utente/nome)</label><input class="in" id="ghr" value="${esc(ghCfg().repo)}" placeholder="utente/repository" autocomplete="off">
@@ -3978,70 +4125,19 @@ function openMenu(){
   <li><b>Generate token</b>, copialo (inizia con <i>github_pat_</i>) e incollalo qui.</li></ol>
   <p>🔒 Il token resta solo su questo telefono e può modificare soltanto quel repository.</p></details>
   <button class="res" data-m="vers"><b>🕰️ Versioni precedenti</b><small>Recupera oggetti eliminati o modificati per errore, dalla cronologia su GitHub</small></button>
+  <button class="res" data-m="vers"><b>🕰️ Versioni precedenti</b><small>Recupera oggetti eliminati o modificati per errore, dalla cronologia su GitHub</small></button>
+  <details class="note"><summary><b>⚙️ Avanzate</b>: indirizzo di lettura e metodo manuale</summary>
   <button class="res" data-m="dbexp"><b>⬆️ Esporta «collezione.json» (metodo manuale)</b><small>Senza token: scaricalo e caricalo tu su GitHub (repository → Add file → Upload files → Commit changes).</small></button>
   <label class="f">Indirizzo del database (lettura)</label>
   <input class="in" id="dbu" value="${esc(dbUrl())}" placeholder="collezione.json">
   <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="dba" ${LS.get('rd_db_auto',true)?'checked':''} style="width:20px;height:20px"> Controlla all'avvio dell'app</label>
-  <button class="btn sec" data-m="dbs">Salva impostazioni database</button>
-  <div class="sec-t">Backup (importante!)</div>
-  <div class="note" id="bk"></div>
-  <button class="res" data-m="exp"><b>💾 Esporta backup completo (JSON con foto)</b></button>
-  <button class="res" data-m="csv"><b>📄 Esporta tabella (CSV per Excel/Fogli)</b></button>
-  <button class="res" data-m="labcsv"><b>🛠️ Esporta il laboratorio (CSV)</b><small>Progetti, pezzi, collaudi, registro interventi, sessioni di lavoro</small></button>
-  <button class="res" data-m="imp"><b>📥 Importa backup JSON</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
-  <input type="file" id="fi" accept=".json,application/json" hidden>
-  <div class="sec-t">Impostazioni</div>
-  <label class="f">Promemoria di manutenzione</label><div class="grid2"><div><small>Accensione ogni</small><select class="in" id="mfo">${[3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().on===n?'selected':''}>${n} mesi</option>`).join('')}</select></div><div><small>Ricarica ogni</small><select class="in" id="mfc">${[2,3,4,6,9,12].map(n=>`<option value="${n}" ${manCfg().charge===n?'selected':''}>${n} mesi</option>`).join('')}</select></div></div>
-  <label class="row" style="gap:10px;font-size:14px;margin:8px 0"><input type="checkbox" id="mcal" ${manCfg().cal!==false?'checked':''} style="width:20px;height:20px"> Metti accensioni e ricariche nel calendario (calendario.ics)</label>
-  <div class="row" style="flex-wrap:wrap;gap:6px"><button class="btn sm sec" data-m="mans">Salva</button><button class="btn sm sec" data-m="notif">🔔 Notifiche sul telefono</button></div><p class="note" id="ntst" style="margin:6px 0">${manCfg().notif?(manCfg().bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili: usa il calendario.'):'Le notifiche dipendono dal telefono: il modo più affidabile è il calendario qui sotto.'}</p>
-  <details class="note"><summary><b>📅 Promemoria in Google Calendar (consigliato)</b></summary><p>A ogni sincronizzazione con GitHub l'app aggiorna <b>calendario.ics</b> con le prossime accensioni e ricariche, gli interventi in programma, i rientri dei prestiti e le scadenze delle garanzie.</p>
-  <ol style="padding-left:18px;margin:6px 0"><li>Copia l'indirizzo: <button class="btn sm sec" data-m="calcp">📋 Copia</button><br><small style="word-break:break-all">${esc(calUrl())}</small></li><li>Da un computer (o dal browser del telefono in versione desktop) apri <b>calendar.google.com</b> → ⚙️ Impostazioni → <b>Aggiungi calendario → Da URL</b> → incolla → Aggiungi.</li><li>Nelle impostazioni del nuovo calendario «RDDC – promemoria» imposta la notifica per gli <b>eventi di un giorno intero</b> (es. alle 9:00).</li></ol>
-  <p>Google aggiorna i calendari sottoscritti da solo, di solito entro qualche ora. Il file è pubblico come collezione.json.</p></details>
-  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
-  <label class="f">Vetro liquido</label><div class="chips">${LG.supported()?[['full','💧 Completo'],['lite','Leggero'],['off','Spento']].map(([v,l])=>`<button class="chip ${LG.mode()===v?'on':''}" data-m="glass" data-v="${v}">${l}</button>`).join(''):'<small style="color:var(--mute)">Non disponibile in questo browser (serve Chrome o un browser basato su Chromium).</small>'}</div>
-  <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
-  <label class="f">Proxy personale per la ricerca su EveryMac</label>
-  <input class="in" id="px" value="${esc(LS.get('rd_proxy',''))}" placeholder="https://tuo-worker.workers.dev/?url={url}">
-  <div class="row" style="margin-top:8px"><button class="btn sec" data-m="pxs">Salva</button><button class="btn sec" data-m="pxt">🧪 Prova la ricerca</button></div>
-  <div id="pxo"></div>
-  <details class="note"><summary><b>Come crearlo gratis in 5 minuti (Cloudflare)</b></summary>
-  <p>I proxy pubblici gratuiti ormai sono a pagamento o bloccati da EveryMac: per la ricerca automatica serve il tuo.</p>
-  <ol style="padding-left:18px;margin:6px 0"><li>Vai su <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a> e crea un account gratuito.</li>
-  <li>Menu <b>Compute (Workers)</b> → <b>Workers & Pages</b> → <b>Create</b> → <b>Start with Hello World</b> → dagli un nome (es. <i>rddc</i>) → <b>Deploy</b>.</li>
-  <li><b>Edit code</b>: cancella tutto, incolla il codice qui sotto, poi <b>Deploy</b>.</li>
-  <li>Copia l'indirizzo del worker (es. <i>https://rddc.tuonome.workers.dev</i>), incollalo nel campo qui sopra, <b>Salva</b> e <b>Prova la ricerca</b>.</li></ol>
-  <button class="btn sm" data-m="pxc">📋 Copia il codice del worker</button>
-  <pre style="white-space:pre-wrap;font-size:11px;background:var(--card);padding:8px;border-radius:8px;overflow:auto;max-height:180px">${esc(WORKER_CODE)}</pre></details>
-  <p class="note">Senza proxy funzionano comunque «Incolla da EveryMac» e «Carica pagina salvata».</p>
-  <div class="sec-t">Zona pericolosa</div>
-  <button class="btn dng" data-m="clr">Cancella tutta la collezione</button>
-  <button class="res" data-m="nov" style="margin-top:22px;text-align:center"><b>RDDC · versione ${APP_VER}</b><small>${fmtD(NOVITA[0][1])} · Novità →</small></button>`;
-  openPage('Menu',h,{mount(el){
+  <button class="btn sec" data-m="dbs">Salva</button>
+  </details>`,{mount(el){
     const dbInfo=()=>{const l=LS.get('rd_db_last',null);
       $('#dbi',el).innerHTML=(ghOn()?`Sincronizzazione automatica con <b>${esc(ghCfg().repo)}</b> attiva.`:`Il file <b>collezione.json</b> nel repository GitHub dell'app viene caricato automaticamente su ogni telefono.`)+(l?`<br>Ultima sincronizzazione: ${new Date(l.t).toLocaleString('it')} · ${l.n} oggetti${l.nuovi||l.agg||l.canc?` · ricevuti ${l.nuovi} nuovi, ${l.agg} aggiornati${l.canc?', '+l.canc+' eliminati':''}`:''}${l.inviati?` · inviati ${l.inviati} oggetti${l.foto?' e '+l.foto+' foto':''}`:''}`:'');
       $('#dbsm',el).textContent=ghOn()?'Riceve le novità dagli altri telefoni e invia le tue modifiche.':'Aggiunge gli oggetti nuovi e aggiorna quelli modificati più di recente. Le modifiche fatte su questo telefono non vengono perse.'};dbInfo();
-    (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
-    const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
-    el.addEventListener('click',async e=>{
-      const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
-      if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
-      if(a==='gem')openGemSettings();
-      if(a==='orset')openORSettings();
-      if(a==='errlog')openErrLog();
+    el.addEventListener('click',async e=>{const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='vers')openVersions();
-      if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
-      if(a==='stats')openStats();
-      if(a==='cat')openCatalog();
-      if(a==='due')openDue();
-      if(a==='inv')openInventory();
-      if(a==='man')openMaintenance();
-      if(a==='lab')openLab();
-      if(a==='nov')openNovita();
-      if(a==='labcsv')openLab('stat');
-      if(a==='mans'){const c=manCfg();LS.set('rd_man',Object.assign(c,{on:+$('#mfo',el).value||6,charge:+$('#mfc',el).value||6,cal:$('#mcal',el).checked}));writeManCache();render();toast('Salvato')}
-      if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
-      if(a==='calcp'){try{await navigator.clipboard.writeText(calUrl());toast('Indirizzo copiato')}catch(e){toast(calUrl(),6000)}}
-      if(a==='exp'){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',exportJSON());toast('Backup scaricato')}
       if(a==='dbexp'){dl('collezione.json','application/json',exportJSON());toast('Scaricato collezione.json: caricalo nel repository GitHub',4000)}
       if(a==='dbs'){LS.set('rd_db_url',$('#dbu',el).value.trim()||'collezione.json');LS.set('rd_db_auto',$('#dba',el).checked);LS.set('rd_db_sig','');toast('Salvato')}
       if(a==='dbsync'){m.disabled=true;await (ghOn()?ghSync(true):syncDB(true));m.disabled=false;dbInfo()}
@@ -4050,23 +4146,19 @@ function openMenu(){
         LS.set('rd_gh',{repo,token,branch:'main'});m.disabled=true;
         try{if(token){await gh('');toast('Token valido ✔︎ sincronizzo…');await ghSync(true)}else toast('Salvato (senza token: solo lettura)')}catch(err){toast('Controllo non riuscito: '+err.message,5000)}
         m.disabled=false;dbInfo()}
-      if(a==='ghx'&&await ask('Scollegare GitHub da questo telefono? La collezione resta sul telefono.','Scollega')){const c=LS.get('rd_gh',{});delete c.token;LS.set('rd_gh',c);history.back();setTimeout(openMenu,50)}
-      if(a==='csv'){dl('rddc.csv','text/csv',csv())}
-      if(a==='imp')$('#fi',el).click();
-      if(a==='pxs'){LS.set('rd_proxy',$('#px',el).value.trim());toast('Salvato')}
-      if(a==='pxc'){try{await navigator.clipboard.writeText(WORKER_CODE);toast('Codice copiato')}catch(e){toast('Copia non riuscita: selezionalo a mano')}}
-      if(a==='pxt'){LS.set('rd_proxy',$('#px',el).value.trim());const o=$('#pxo',el);o.innerHTML=`<p>${spin('Provo a cercare A1278 su EveryMac…')}</p>`;
-        const res=[];for(const p of proxies()){const t0=Date.now();try{const t=await (async()=>{const r=await fetch(proxyUrl(p,EM+'/ultimate-mac-lookup/?search_keywords=A1278'),{signal:AbortSignal.timeout(20000)});if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})();
-          const ok=parseEMSearch(t,EM+'/').length>0;res.push(`<div>${ok?'✅':'⚠️'} <b>${esc(p.replace(/^https?:\/\//,'').slice(0,40))}</b> – ${ok?'funziona ('+((Date.now()-t0)/1000).toFixed(1)+' s)':/challenge|Just a moment/i.test(t)?'bloccato da Cloudflare':'risposta non valida'}</div>`)}
-          catch(err){res.push(`<div>❌ <b>${esc(p.replace(/^https?:\/\//,'').slice(0,40))}</b> – ${esc(err.message)}</div>`)}o.innerHTML=`<div class="note">${res.join('')}</div>`}}
-      if(a==='clr'&&await ask('Cancellare TUTTI gli oggetti (anche la wishlist)? Non si può annullare. Se usi il database GitHub, verrà ricaricato al prossimo avvio.','Cancella tutto',true)){await DB.clear();devices=[];S.sel={};LS.set('rd_deleted',[]);LS.set('rd_db_sig','');render();toast('Collezione svuotata')}
-    });
-    $('#fi',el).onchange=async e=>{
-      try{const j=JSON.parse(await e.target.files[0].text());const arr=j.devices||j;if(!Array.isArray(arr))throw 0;
-        let n=0;for(const d of arr){if(!d||!d.nome)continue;d.id=d.id||uid();d.modificato=d.modificato||Date.now();stamp(d);idx(d);await DB.put(d);const i=devices.findIndex(x=>x.id===d.id);i<0?devices.push(d):devices[i]=d;n++}
-        render();dirty();toast(n+' oggetti importati')}catch(err){toast('File non valido')}
-    };
-  }});
+      if(a==='ghx'&&await ask('Scollegare GitHub da questo telefono? La collezione resta sul telefono.','Scollega')){const c=LS.get('rd_gh',{});delete c.token;LS.set('rd_gh',c);history.back();setTimeout(openDBSettings,50)}
+    })}});
+}
+async function exportSheet(){
+  const i=await sheet('Come vuoi esportare?',[
+    {ic:'💾',t:'Backup completo',sub:'File JSON con tutte le schede e le foto: per ripristinare tutto',g:1},
+    {ic:'📄',t:'Tabella per Excel o Fogli',sub:'CSV con una riga per oggetto',g:1},
+    {ic:'🛠️',t:'Laboratorio',sub:'Progetti, pezzi, collaudi, registro interventi, sessioni (CSV)',g:1},
+    {ic:'⬆️',t:'collezione.json per GitHub',sub:'Metodo manuale, senza token: caricalo tu nel repository',g:2}]);
+  if(i===0){dl(`rddc-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json',exportJSON());toast('Backup scaricato')}
+  if(i===1){dl('rddc.csv','text/csv',csv());toast('Tabella scaricata')}
+  if(i===2){const k=await sheet('Quale parte del laboratorio?',Object.entries(LAB_CSV).map(([k,[nm]])=>({ic:'📄',t:nm,g:1})));if(k>=0)labCsv(Object.keys(LAB_CSV)[k])}
+  if(i===3){dl('collezione.json','application/json',exportJSON());toast('Scaricato collezione.json: caricalo nel repository GitHub',4000)}
 }
 
 /* ============ database su GitHub ============ */

@@ -19,10 +19,10 @@ In alto, accanto a «RDDC», si passa da **Collezione** a **Wishlist**. Gli ogge
 Dalla scheda: «Cerca su eBay / Subito», avviso se ce l'hai già, e **«✅ Preso!»** per spostarlo in collezione.
 
 ## Database su GitHub (collezione condivisa tra telefoni)
-**Automatico (consigliato)** – Menu → «🔑 Salvataggio automatico su GitHub»: incolla un *token* e l'app sincronizza da sola, in entrambe le direzioni (all'avvio, dopo ogni modifica e quando chiudi l'app). Ogni sincronizzazione è un solo commit; le foto vanno in `foto/` (una volta sola ciascuna) e `collezione.json` resta leggero. Le eliminazioni arrivano anche sugli altri telefoni.
+**Automatico (consigliato)** – Menu → «☁️ Database su GitHub» → «🔑 Salvataggio automatico su GitHub»: incolla un *token* e l'app sincronizza da sola, in entrambe le direzioni (all'avvio, dopo ogni modifica e quando chiudi l'app). Ogni sincronizzazione è un solo commit; le foto vanno in `foto/` (una volta sola ciascuna) e `collezione.json` resta leggero. Le eliminazioni arrivano anche sugli altri telefoni.
 Per creare il token: <https://github.com/settings/personal-access-tokens/new> → *Only select repositories* → questo repository → *Repository permissions* → **Contents: Read and write** → *Generate token*.
 
-**Manuale** – Menu → «Esporta collezione.json», poi su GitHub *Add file → Upload files*. Chi non ha il token (solo lettura) riceve comunque tutto all'avvio.
+**Manuale** – Menu → «💾 Esporta…» → «collezione.json per GitHub», poi su GitHub *Add file → Upload files*. Chi non ha il token (solo lettura) riceve comunque tutto all'avvio.
 
 Le modifiche vengono unite **campo per campo**: se sui due telefoni si cambiano campi diversi dello stesso oggetto (es. luogo da una parte, note dall'altra) si tengono entrambe; sullo stesso campo vince la modifica più recente. Le foto e gli allegati che non usa più nessuno vengono tolti dal repository alla sincronizzazione.
 ⚠️ Il repository è pubblico (serve per GitHub Pages): `collezione.json` e le foto sono leggibili da chiunque conosca l'indirizzo.
@@ -62,9 +62,9 @@ Le anteprime passano da servizi gratuiti di lettura delle pagine (r.jina.ai, con
 
 ## Manutenzione: giro di accensioni e ricariche
 Menu → «🔌 Manutenzione» (o dalla scheda **Oggi**): luogo per luogo, segni ⚡ acceso, 🔋 caricato o ✗ non si accende (che segna «Da riparare» e scrive nel registro interventi). Ogni oggetto, o ogni singolo esemplare, ricorda **ultima accensione** e **ultima carica**, con lo storico.
-- Promemoria ogni **6 mesi** (modificabili in Impostazioni; per un oggetto anche 3/12 mesi o «Mai»)
+- Promemoria ogni **6 mesi**, già impostati nel modulo di ogni oggetto (modificabili in Impostazioni; per un oggetto anche 3/12 mesi o «Mai»)
 - **Batteria**: ricaricabile, tampone PRAM/BIOS (con l'avviso di controllare che non perda) o nessuna; **stato della batteria**: nuova, buona, regge, tampona ma non regge, morta, assente. La ricarica viene chiesta solo per le batterie ricaricabili non morte né assenti; i fissi fanno solo il giro di accensione
-- Fuori dal giro: oggetti «In uso», «Ricambi», accessori senza batteria e wishlist
+- Fuori dal giro: oggetti «In uso», «Ricambi», tutti gli accessori (caricabatterie compresi) e wishlist
 - **Notifiche**: «🔔 Notifiche sul telefono» in Impostazioni, se il telefono permette i controlli in background; il modo più affidabile è **Google Calendar**: a ogni sincronizzazione l'app aggiorna `calendario.ics` (accensioni, ricariche, interventi, rientri dei prestiti, scadenze delle garanzie) da aggiungere una volta sola in Google Calendar → «Da URL»
 
 ## Laboratorio: collaudi, progetti di restauro, lista della spesa
@@ -104,7 +104,7 @@ In cima alla collezione, la scheda **☀︎ Oggi** riassume cosa c'è da fare: o
 - **Statistiche**: spesa per anno di acquisto, valore per luogo, da quanto possiedi gli oggetti, verifiche dell'inventario. Nuovi ordinamenti: valore, rivalutazione, acquistati di recente, posseduti da più tempo.
 
 ## Animazioni
-Le schermate entrano scorrendo da destra e escono all'indietro; aprendo un oggetto dalla lista la sua foto «vola» nella scheda (e torna al suo posto chiudendola). Mentre l'app lavora compaiono piccole animazioni: un Macintosh che legge la scheda EveryMac e la passa all'app, una lente d'ingrandimento che scorre un annuncio fino al prezzo, un telefono con un raggio che legge lo screenshot (con avanzamento) e un mappamondo per le ricerche online. Se nel telefono è attiva «Riduci animazioni», l'app le disattiva.
+Le schermate entrano scorrendo da destra e escono all'indietro; aprendo un oggetto dalla lista la sua foto «vola» nella scheda restando arrotondata (e torna al suo posto chiudendola). La scheda si chiude anche **tirandola in basso** dalla cima, come nella galleria del telefono: segue il dito rimpicciolendosi e, lasciandola, la foto si posa sulla sua miniatura. Mentre l'app lavora compaiono piccole animazioni: un Macintosh che legge la scheda EveryMac e la passa all'app, una lente d'ingrandimento che scorre un annuncio fino al prezzo, un telefono con un raggio che legge lo screenshot (con avanzamento) e un mappamondo per le ricerche online. Se nel telefono è attiva «Riduci animazioni», l'app le disattiva.
 
 ## Altro
 - **In italiano**: etichette, valori e date importati da EveryMac e Wikipedia sono mostrati in italiano (dizionario integrato, offline). Le descrizioni e le frasi lunghe vengono tradotte **una volta sola**, in automatico, e la traduzione resta salvata e sincronizzata; l'originale si vede con «Mostra originale». Le traduzioni dell'arretrato sono già pronte in `traduzioni.json`; per i testi nuovi l'app usa il traduttore del telefono, se disponibile, o il servizio gratuito MyMemory (circa 5.000 caratteri al giorno: se il limite è raggiunto riprova da sola più tardi). Si può disattivare in Menu → Impostazioni.
@@ -134,20 +134,7 @@ Quando la ricerca automatica non riesce a leggere EveryMac:
 Vengono letti: nome, linea, codici (Axxxx/Mxxxx, EMC, Model ID, n° ordine), date, CPU, RAM, archiviazione, grafica, display, sistema operativo, connettività, porte, batteria, dimensioni (convertite in cm), peso, prezzo USA e Italia, descrizione, colore e tutte le altre specifiche.
 
 ## Recupero automatico da EveryMac
-EveryMac non permette richieste dirette da altri siti (CORS) e i proxy pubblici gratuiti ormai sono a pagamento o bloccati: per la ricerca automatica serve un proxy tuo, gratuito, su Cloudflare Workers (5 minuti, istruzioni anche nell'app):
-
-```js
-export default {
-  async fetch(req) {
-    const u = new URL(req.url).searchParams.get('url') || '';
-    const h = {'Access-Control-Allow-Origin': '*'};
-    if (!/^https:\/\/(www\.)?everymac\.com\//.test(u)) return new Response('Solo everymac.com', {status: 403, headers: h});
-    const r = await fetch(u, {headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36', 'Accept-Language': 'en-US,en'}, cf: {cacheTtl: 86400}});
-    return new Response(r.body, {status: r.status, headers: {...h, 'Content-Type': r.headers.get('Content-Type') || 'text/html', 'Cache-Control': 'public, max-age=86400'}});
-  }
-}
-```
-Nell'app basta incollare l'indirizzo del worker (es. `https://rddc.tuonome.workers.dev`) in Menu → Impostazioni e premere «Prova la ricerca». Il codice si copia anche direttamente dall'app.
+EveryMac non permette richieste dirette da altri siti (CORS): la ricerca automatica prova i proxy pubblici gratuiti (al massimo 8 secondi ciascuno) e, se sono bloccati, propone subito di aprire la pagina e incollarla. Il metodo consigliato resta «Incolla da EveryMac».
 
 ## Grafica (2.0): Liquid Glass
 - **Icona**: schermo, palmare e ghiera come tre lastre di vetro sovrapposte su fondo nero-grigio (`icon.svg`, PNG da 192 e 512). C'è la versione «maskable», ritagliabile tonda da Android senza perdere niente, e quella monocromatica per le icone a tema (Android le colora con i colori dello sfondo).
@@ -162,11 +149,12 @@ Dalla versione 2.0 l'interfaccia è ridisegnata da capo attorno al vetro liquido
 Barra in alto, pulsante **+**, barra della selezione, avvisi, finestre di conferma, intestazioni delle pagine e pulsanti tondi sopra le foto sono di **vetro liquido**: deformano, sfocano leggermente e illuminano sul bordo quello che ci passa sotto (la lista che scorre, la foto della scheda).
 - Il modello WebGL «Liquid Glass» (profilo del bordo a squircle convesso, rifrazione con indice 1,38, dispersione dei colori, riflessi solo sul bordo) calcola per ogni elemento la mappa di rifrazione e quella della luce; il browser le applica all'interfaccia vera con un filtro SVG (`backdrop-filter`). WebGL da solo non può leggere i pixel della pagina, per questo serve il filtro.
 - La goccia del selettore Collezione/Wishlist scorre con una molla e si allunga nel verso del moto; il pulsante + e i pulsanti sulle foto si ingrandiscono e rimbalzano quando li premi (la «pressione» del modello).
-- Menu → Aspetto → **Vetro liquido**: Leggero (predefinito, il più fluido), Completo (aggiunge la dispersione dei colori sui bordi, più pesante da calcolare), Spento. Funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet); altrove resta l'aspetto normale.
+- Menu → Impostazioni → **Vetro liquido**: Leggero (predefinito, il più fluido), Completo (aggiunge la dispersione dei colori sui bordi, più pesante da calcolare), Spento. La rifrazione vera funziona su Chrome e sui browser basati su Chromium (anche Samsung Internet).
+- **iPhone e iPad**: lì ogni browser, Chrome compreso, è obbligato a usare il motore di Safari (WebKit), che non accetta filtri SVG nel `backdrop-filter`. Al posto della rifrazione c'è un vetro **simulato**: sfocatura e saturazione più forti, riflesso in diagonale e bordi luminosi.
 
 ## Comodità (2.2)
 - **Fold aperto e tablet**: elenco a sinistra e scheda (o qualsiasi pagina) nel pannello a destra; toccando un altro oggetto la scheda si sostituisce. Museo e visore delle foto restano a schermo intero.
-- **Scorrere tra le schede**: nella scheda, un gesto a sinistra o a destra passa all'oggetto vicino nell'ordine dell'elenco (con ricerca e filtri attivi); sulla foto compare la posizione, es. «5 / 47». Da tastiera: frecce ← →.
+- **Scorrere tra le schede**: nella scheda, un gesto a sinistra o a destra (la scheda segue il dito) passa all'oggetto vicino nell'ordine dell'elenco (con ricerca e filtri attivi); sulla foto compare la posizione, es. «5 / 47». Da tastiera: frecce ← →.
 - **Filtri salvati**: nella pagina Filtri scegli ricerca e filtri e salvali con un nome; compaiono come capsule sotto la barra di ricerca (un tocco applica, un secondo tocco toglie).
 - **Avviso di doppione**: aggiungendo un oggetto con lo stesso nome o modello di uno che hai già, l'app chiede se aggiungerlo come esemplare, salvarlo a parte o annullare.
 - **Versioni precedenti** (Menu, serve il token GitHub): ogni sincronizzazione è una versione; scegli una data, vedi cosa è stato eliminato o modificato da allora e ripristina un oggetto (foto comprese) o tutti insieme.
@@ -203,4 +191,10 @@ Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in 
 `npm test` avvia l'app in Chromium (Playwright) e controlla le funzioni principali, compresa la sincronizzazione con una finta API GitHub. Le prove partono da sole su ogni pull request (GitHub Actions, `.github/workflows/test.yml`).
 
 ## Backup
-I dati stanno solo sul dispositivo: Menu → "Esporta backup completo" ogni tanto (include le foto).
+I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup completo» ogni tanto (include le foto). Dallo stesso tasto: tabella CSV per Excel/Fogli, CSV del laboratorio e `collezione.json` per GitHub.
+
+## Menu e scheda (2.7)
+- **Menu**: «🤖 Collegamento IA» raccoglie Gemini, OpenRouter e il registro errori; «☁️ Database su GitHub» ha stato, sincronizzazione, token, versioni precedenti e (in «Avanzate») indirizzo di lettura e metodo manuale; «💾 Esporta…» chiede come esportare.
+- **Scheda**: in fondo Modifica, Aggiorna e «⋯», che apre un foglio con le altre azioni raggruppate (Incolla da EveryMac, accessori, scontorno, prestito, confronto, duplica; Elimina in rosso).
+- **Modifica**: il tasto Salva è anche in alto, accanto a «Dati online».
+- **Laboratorio**: un pezzo messo in lista senza prezzo, quando lo segni «Ordinato», chiede quanto l'hai pagato (prezzo del singolo pezzo).
