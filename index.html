@@ -465,11 +465,6 @@ html.vt-det::view-transition-old(root){animation:vt-fade-out .28s ease both}
 html.vt-det::view-transition-new(root){animation:vt-rise .36s cubic-bezier(.2,.85,.25,1) both}
 html.vt-det-back::view-transition-old(root){animation:vt-sink .3s ease both}
 html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
-::view-transition-group(hero-x){animation-duration:.42s;animation-timing-function:cubic-bezier(.3,0,.15,1);z-index:3}
-/* 2.7: la foto resta arrotondata per tutto il viaggio (dal raggio della miniatura a quello della foto grande e ritorno) */
-::view-transition-group(hero-x){overflow:hidden;border-radius:var(--hr1,0 0 30px 30px);animation:-ua-view-transition-group-anim-hero-x .42s cubic-bezier(.3,0,.15,1) both,hero-r .42s cubic-bezier(.3,0,.15,1) both}
-@keyframes hero-r{from{border-radius:var(--hr0,16px)}to{border-radius:var(--hr1,0 0 30px 30px)}}
-::view-transition-old(hero-x),::view-transition-new(hero-x){height:100%;object-fit:cover;overflow:hidden}
 @keyframes vt-rise{from{opacity:0;transform:translateY(24px)}}
 @keyframes vt-sink{to{opacity:0;transform:translateY(24px)}}
 /* piccoli tocchi: pulsanti, finestre, avvisi, risultati */
@@ -660,8 +655,15 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* scheda: posizione nell'elenco e passaggio alla scheda vicina */
 .hpos{position:absolute;top:calc(20px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:2;color:#fff;font:650 12.5px/1 system-ui,sans-serif;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.2);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .page.sw-next{animation:sw-in-r .26s cubic-bezier(.25,.8,.3,1) both}.page.sw-prev{animation:sw-in-l .26s cubic-bezier(.25,.8,.3,1) both}
-.page.det{overscroll-behavior-y:contain}.page.det.pd-drag,.page.det.pd-fly,.page.det.sw-drag{animation:none}.page.det .body{overscroll-behavior-y:contain}
-.page.det.pd-drag{will-change:transform;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.3)}.page.det.pd-fly{pointer-events:none}.page.det.pd-fly .hero>:not(.himg):not(.hbg){opacity:0;transition:opacity .16s}.page.det.pd-fly .body{overflow:hidden}
+.page.det{overscroll-behavior-y:contain}.page.det.pd-drag,.page.det.pd-fly,.page.det.sw-drag{animation:none}
+/* 2.7.1: durante i gesti la pagina si sposta solo con trasformazioni (niente vetro da ricalcolare a ogni fotogramma) */
+.page.det.pd-drag,.page.det.pd-drag *,.page.det.sw-drag,.page.det.sw-drag *,.page.det.fly-out *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.page.det.pd-drag{border-radius:34px;contain:paint}
+/* volo della foto tra miniatura e scheda */
+.hfly{position:fixed;left:0;top:0;z-index:45;object-fit:cover;background:center/cover no-repeat;pointer-events:none;will-change:transform,width,height;box-shadow:0 10px 30px rgba(0,0,0,.16)}
+.page.det.no-anim.fly-in{animation:fly-page .3s ease both}.page.det.fly-in .himg,.page.det.fly-in .hbg,.page.det.fly-out .himg,.page.det.fly-out .hbg{visibility:hidden}
+@keyframes fly-page{from{opacity:0}}.page.det .body{overscroll-behavior-y:contain}
+.page.det.pd-drag{will-change:transform;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.28)}.page.det.pd-fly{pointer-events:none}.page.det.pd-fly .hero>:not(.himg):not(.hbg){opacity:0;transition:opacity .16s}.page.det.pd-fly .body{overflow:hidden}
 .pd-dim{position:fixed;inset:0;z-index:19;background:color-mix(in srgb,var(--bg) 55%,rgba(0,0,0,.35));pointer-events:none}
 .page.det.sw-drag{will-change:transform;box-shadow:0 0 0 1px var(--line),0 0 46px rgba(0,0,0,.22)}.page.det.sw-drag.pg-swapout{animation:none}
 @keyframes sw-in-r{from{transform:translate3d(100%,0,0)}to{transform:none}}@keyframes sw-in-l{from{transform:translate3d(-100%,0,0)}to{transform:none}}
@@ -790,8 +792,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.7';
+const APP_VER='2.7.1';
 const NOVITA=[
+ ['2.7.1','2026-11-16',['Animazioni della foto rifatte: aprendo, chiudendo o tirando in basso la scheda vola una sola foto che cambia misura e angoli, con lo stesso ritaglio della miniatura e della foto grande (niente più due immagini sovrapposte con le foto non quadrate)','Tirare in basso la scheda è fluido anche tenendo il dito fermo: durante il gesto la pagina si sposta senza ricalcolare il vetro','Corretto: chiudendo tirando in basso a volte si tornava indietro di due pagine']],
  ['2.7','2026-11-16',['Scheda: si chiude tirandola in basso, come nella galleria del telefono (la foto torna sulla sua miniatura); l\'animazione di apertura tiene la foto arrotondata per tutto il viaggio','Scorrere tra le schede molto più rapido: la scheda segue il dito e la successiva entra subito','Tasti in fondo alla scheda più ordinati: Modifica, Aggiorna e «⋯» con le altre azioni raggruppate (Elimina in rosso)','Modifica: tasto Salva anche in alto, accanto a «Dati online»','Corretti registro interventi e storico del valore: la data sta sopra al testo, che non va più a capo lettera per lettera','Manutenzione: accensione e ricarica ogni 6 mesi già impostate nel modulo; caricabatterie e altri accessori fuori dal giro','Laboratorio: un pezzo senza prezzo te lo chiede quando lo segni «Ordinato»','Menu più semplice: «Collegamento IA» (Gemini, OpenRouter, registro errori), «Database su GitHub» in una pagina, un solo «Esporta…» che chiede come; tolto il proxy personale','Vetro liquido simulato su iPhone e iPad, dove Safari e Chrome non permettono quello vero']],
  ['2.6','2026-11-15',['Dati da EveryMac, Gemini e dalle altre fonti molto più veloci: il modulo si apre subito, senza aspettare lo scaricamento della foto (le foto le aggiungi tu) né la traduzione, che ora avviene in sottofondo dopo il salvataggio']],
  ['2.5','2026-11-15',['Tolta la voce «Garanzia» (modulo, scheda, Oggi e calendario)','Ruolo: ogni oggetto è «Collezione» di partenza, senza voce vuota nel modulo']],
@@ -1088,6 +1091,7 @@ addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(
   const top=stack[stack.length-1];if(top&&top._refresh)setTimeout(()=>{if(stack[stack.length-1]===top)top._refresh()},0);
   const out=(rem.find(x=>x.classList.contains('mu-root'))||rem[rem.length-1])._out;
   const run=()=>{rem.forEach(x=>x.remove());out&&out.after&&out.after()};
+  if(out&&out.fly){if(out.fly(run))return;rem.forEach((x,i)=>{if(i<rem.length-1)return x.remove();x.classList.add('pg-out');setTimeout(()=>x.remove(),270)});return}
   if(!out){if(RM()||rem.every(x=>x.classList.contains('pd-done')))return run();rem.forEach((x,i)=>{if(i<rem.length-1)return x.remove();x.classList.add('pg-out');setTimeout(()=>x.remove(),270)});return}out.before&&out.before();vt(out.cls,run,out.done)});
 function goBase(cb){const n=(history.state&&history.state.p)||0;if(!n){cb&&cb();return}const once=()=>{removeEventListener('popstate',once);cb&&cb()};addEventListener('popstate',once);history.go(-n)}
 history.replaceState({p:0},'');
@@ -1167,10 +1171,30 @@ function fieldDisplay(d,k){
   if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
 }
-/* raggi degli angoli per il viaggio della foto */
-const thumbR=img=>{const g=img.closest('.gcard');if(g){const r=getComputedStyle(g).borderTopLeftRadius;return `${r} ${r} 0 0`}const t=img.closest('.th');return t?getComputedStyle(t).borderRadius:'16px'};
-const HERO_R=()=>{const h=document.querySelector('.page.det .hero');return h?getComputedStyle(h).borderRadius:'0 0 30px 30px'};
-const setHR=(a,b)=>{const s=document.documentElement.style;s.setProperty('--hr0',a);s.setProperty('--hr1',b)};
+/* volo della foto (2.7.1): una sola immagine, sempre ritagliata come appare, che cambia posizione, misura e angoli.
+   Così il ritaglio passa con continuità da quello della miniatura a quello della foto grande (anche con foto non quadrate) */
+const RAD=v=>{const p=String(v||'0').split('/')[0].trim().split(/\s+/).map(x=>parseFloat(x)||0);const a=p[0]||0,b=p[1]??a,c=p[2]??a,d=p[3]??b;return [a,b,c,d]};
+function thumbOf(id,img){const c=img||document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);if(!c)return null;
+  const r=c.getBoundingClientRect();if(r.bottom<=0||r.top>=innerHeight||r.width<4)return null;
+  const g=c.closest('.gcard');let rad;if(g){const x=parseFloat(getComputedStyle(g).borderTopLeftRadius)||0;rad=[x,x,0,0]}else rad=RAD(getComputedStyle(c.closest('.th')||c).borderRadius);
+  return {el:c,r:{left:r.left,top:r.top,width:r.width,height:r.height},rad}}
+function heroRect(el){const hero=$('.hero',el),hi=$('.himg',el);if(!hero||!hi)return null;
+  const hb=hero.getBoundingClientRect(),k=hb.width/(hero.offsetWidth||1);
+  if(!hero.classList.contains('fit'))return {r:{left:hb.left,top:hb.top,width:hb.width,height:hb.height},rad:RAD(getComputedStyle(hero).borderRadius).map(x=>x*k)};
+  const cs=getComputedStyle(hi),pt=parseFloat(cs.paddingTop)*k,pr=parseFloat(cs.paddingRight)*k,pb=parseFloat(cs.paddingBottom)*k,pl=parseFloat(cs.paddingLeft)*k;
+  const bw=hb.width-pl-pr,bh=hb.height-pt-pb,a=hi.naturalWidth&&hi.naturalHeight?hi.naturalWidth/hi.naturalHeight:4/3;let w=bw,h=bw/a;if(h>bh){h=bh;w=bh*a}
+  return {r:{left:hb.left+pl+(bw-w)/2,top:hb.top+pt+(bh-h)/2,width:w,height:h},rad:[4*k,4*k,4*k,4*k]}}
+const easeFly=t=>1-Math.pow(1-t,4);
+function heroFly(src,ph,from,to,{dur=420,onDone}={}){
+  const f=document.createElement('img');f.className='hfly';f.alt='';f.decoding='sync';f.src=src;if(ph&&ph!==src)f.style.backgroundImage=`url("${ph}")`;document.body.append(f);
+  const t0=performance.now();let last=null,done=false;const fin=()=>{if(done)return;done=true;onDone&&onDone()};
+  const step=now=>{if(done)return;const p=Math.min(1,Math.max(0,(now-t0)/dur)),e=easeFly(p),T=(typeof to==='function'?to():to)||last;last=T;
+    if(!T){f.remove();fin();return}
+    const L=(a,b)=>a+(b-a)*e;
+    f.style.transform=`translate3d(${L(from.r.left,T.r.left)}px,${L(from.r.top,T.r.top)}px,0)`;f.style.width=L(from.r.width,T.r.width)+'px';f.style.height=L(from.r.height,T.r.height)+'px';
+    f.style.borderRadius=from.rad.map((x,i)=>L(x,T.rad[i]).toFixed(1)+'px').join(' ');
+    if(p<1)requestAnimationFrame(step);else{fin();requestAnimationFrame(()=>f.remove())}};
+  step(t0);return f}
 /* tasti in fondo alla scheda (2.7): due principali + «Altro» che apre un foglio con le azioni raggruppate */
 function actsHTML(prim,more){more=more.filter(Boolean);
   return `<div class="acts acts2">${prim.map(([a,t,_,p])=>`<button class="btn ${p?'':'sec'}" ${a}>${t}</button>`).join('')}${more.length?`<button class="btn sec more" data-moreacts="${esc(JSON.stringify(more.map(({ic,t,sub,dng,g})=>({ic,t,sub,dng,g}))))}" aria-label="Altre azioni" title="Altre azioni">⋯</button>`:''}</div>
@@ -1180,30 +1204,25 @@ async function moreActs(el,btn){const items=JSON.parse(btn.dataset.moreacts||'[]
 function sheet(title,items){return new Promise(res=>{const m=document.createElement('div');m.className='modal sheet';let g0=null;
   m.innerHTML=`<div>${title?`<p class="sh-t">${esc(title)}</p>`:''}<div class="shl">${items.map((o,i)=>{const sep=g0!==null&&o.g!==g0;g0=o.g;return `${sep?'<i class="shs"></i>':''}<button class="shi ${o.dng?'dng':''}" data-c="${i}"><span class="shic">${o.ic||''}</span><span class="sht"><b>${esc(o.t)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span></button>`}).join('')}</div><button class="btn sec shx" data-c="-1">Annulla</button></div>`;
   m.onclick=e=>{const b=e.target.closest('[data-c]');if(b||e.target===m){m.classList.add('out');setTimeout(()=>m.remove(),180);res(b?+b.dataset.c:-1)}};document.body.append(m);lgScan(m)})}
-/* chiusura tirando in basso: dalla posizione del dito la foto si posa sulla miniatura nell'elenco (o la scheda scivola via) */
+/* chiusura tirando in basso: dalla posizione del dito la foto vola sulla miniatura nell'elenco (o la scheda scivola via) */
 function pullClose(el,id,dim){
-  const cs=getComputedStyle(el),m=new DOMMatrix(cs.transform==='none'?undefined:cs.transform),o=cs.transformOrigin.split(' ').map(parseFloat);
-  const sc=m.a||1,tx=m.e+o[0]*(1-sc),ty=m.f+o[1]*(1-sc);
-  el.style.transition='none';el.style.transformOrigin='0 0';el.style.transform=`translate3d(${tx}px,${ty}px,0) scale(${sc})`;el.classList.add('pd-fly');
-  const hero=$('.hero',el),hi=$('.himg',el),W=el.offsetWidth,H=el.offsetHeight;
-  const th=hi&&document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);
-  let T=th&&th.getBoundingClientRect();if(T&&(T.bottom<0||T.top>innerHeight||T.width<4))T=null;
-  const R=el.style.borderRadius||'24px';el.style.borderRadius='0';el.style.clipPath=`inset(0 0 0 0 round ${R})`;
-  void el.offsetWidth;const D=.42,ease='cubic-bezier(.3,.6,.2,1)';
-  if(T&&hero){const hh=hero.offsetHeight,ta=T.width/T.height,cw=Math.min(W,hh*ta),ch=cw/ta,l=(W-cw)/2,t=(hh-ch)/2,k=T.width/cw;
-    const rad=parseFloat(th.closest('.gcard')?getComputedStyle(th.closest('.gcard')).borderTopLeftRadius:getComputedStyle(th.closest('.th')||th).borderTopLeftRadius)||16;
-    el.style.transition=`transform ${D}s ${ease},clip-path ${D}s ${ease}`;
-    el.style.transform=`translate3d(${T.left-l*k-el.offsetLeft}px,${T.top-t*k-el.offsetTop}px,0) scale(${k})`;
-    el.style.clipPath=`inset(${t}px ${W-l-cw}px ${H-t-ch}px ${l}px round ${rad/k}px)`}
-  else{el.style.transition=`transform ${D}s ${ease},opacity ${D}s ease`;el.style.transform=`translate3d(${tx}px,${innerHeight}px,0) scale(${sc*.9})`;el.style.opacity='0'}
-  if(dim){dim.style.transition=`opacity ${D}s ease`;dim.style.opacity='0'}
-  setTimeout(()=>{el._out=null;el.classList.add('pd-done');dim&&dim.remove();history.back()},D*1000+20)}
+  const d=devices.find(x=>x.id===id),T=!wide()&&d&&d.foto&&d.foto.length?thumbOf(id):null,F=T&&heroRect(el),D=380;
+  const fin=()=>{el._out=null;el.classList.add('pd-done');dim&&dim.remove();history.back()};
+  if(dim){dim.style.transition=`opacity ${D}ms ease`;dim.style.opacity='0'}
+  if(T&&F){const k=el.getBoundingClientRect().width/(el.offsetWidth||1),pr=(parseFloat(getComputedStyle(el).borderTopLeftRadius)||0)*k;F.rad[0]=Math.max(F.rad[0],pr);F.rad[1]=Math.max(F.rad[1],pr);
+    T.el.style.visibility='hidden';el.classList.add('pd-fly','fly-out');el.style.transition='opacity .2s ease';el.style.opacity='0';
+    heroFly($('.himg',el).currentSrc||d.foto[0],T.el.currentSrc||T.el.src,F,T,{dur:D,onDone(){T.el.style.visibility='';fin()}});return}
+  const cs=getComputedStyle(el),m=new DOMMatrix(cs.transform==='none'?undefined:cs.transform);
+  el.classList.add('pd-fly');el.style.transition=`transform ${D}ms cubic-bezier(.3,.6,.2,1),opacity ${D}ms ease`;el.style.transform=`translate3d(${m.e}px,${innerHeight}px,0) scale(${(m.a||1)*.9})`;el.style.opacity='0';
+  setTimeout(fin,D+20)}
 function openDetailFrom(card,id){
   const top=stack[stack.length-1];if(wide()&&top&&top.classList.contains('det'))return openDetail(id,true);
-  const img=card&&card.querySelector('.th img,.gi img');
-  if(!img||!document.startViewTransition||RM())return openDetail(id);
-  img.style.viewTransitionName='hero-x';setHR(thumbR(img),HERO_R());
-  vt('vt-det',()=>{img.style.viewTransitionName='';openDetail(id,false,true)},()=>{document.querySelectorAll('.himg').forEach(h=>h.style.viewTransitionName='')});
+  const img=card&&card.querySelector('.th img,.gi img'),d=devices.find(x=>x.id===id);
+  if(!img||RM()||!d||!d.foto||!d.foto.length)return openDetail(id);
+  const F=thumbOf(id,img);if(!F)return openDetail(id);
+  const el=openDetail(id,false,true);if(!el)return;
+  img.style.visibility='hidden';
+  heroFly(d.foto[0],img.currentSrc||img.src,F,()=>el.isConnected?heroRect(el):null,{dur:440,onDone(){el.classList.remove('fly-in');img.style.visibility=''}});
 }
 function openDetail(id,replace,morph,quiet,dir){
   const d=devices.find(x=>x.id===id);if(!d)return;
@@ -1267,9 +1286,9 @@ function openDetail(id,replace,morph,quiet,dir){
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
       !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
       {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>'}
-  openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
+  return openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(morph?' fly-in':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
     el.dataset.did=d.id;{/* gesti (2.7): di lato si passa all'oggetto vicino, verso il basso (dalla cima) si chiude come nella galleria */
-      let sx=0,sy=0,st=0,dx=0,dy=0,mode=0,lx=0,ly=0,lt=0,vx=0,vy=0,dim=null;const can=k=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&!!L[i+k]};
+      let sx=0,sy=0,st=0,dx=0,dy=0,mode=0,lx=0,ly=0,lt=0,vx=0,vy=0,dim=null,raf=0;const can=k=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&!!L[i+k]};
       const bd=()=>$('.body',el);
       el.addEventListener('touchstart',e=>{st=0;mode=0;dx=dy=0;if(e.touches.length!==1||el.classList.contains('pd-fly')||e.target.closest('.thumbs,.photos,.chips,.chart,.pcmp,input,textarea,select,.hchips,.modal'))return;sx=lx=e.touches[0].clientX;sy=ly=e.touches[0].clientY;if(sx<24||sx>innerWidth-24)return;st=lt=Date.now();vx=vy=0},{passive:true});
       el.addEventListener('touchmove',e=>{if(!st||mode<0)return;const t=e.touches[0],ddx=t.clientX-sx,ddy=t.clientY-sy;
@@ -1279,22 +1298,22 @@ function openDetail(id,replace,morph,quiet,dir){
             dim=document.createElement('div');dim.className='pd-dim';el.before(dim)}
           else{mode=-1;return}}
         if(e.cancelable)e.preventDefault();const now=Date.now();if(now>lt){vx=(t.clientX-lx)/(now-lt);vy=(t.clientY-ly)/(now-lt)}lx=t.clientX;ly=t.clientY;lt=now;
-        if(mode===1){dx=can(ddx<0?1:-1)?ddx:ddx*.22;el.style.transform=`translate3d(${dx}px,0,0)`;return}
-        dx=ddx;dy=Math.max(0,t.clientY-sy);const p=Math.min(1,dy/(innerHeight*.6)),sc=1-p*.45;
-        el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sc})`;el.style.borderRadius=Math.min(38,12+dy/5)/sc+'px';if(dim)dim.style.opacity=String(1-p*1.15)},{passive:false});
-      const end=()=>{const m=mode;st=0;mode=0;if(m===2)return pullEnd();if(m!==1)return;const w=el.offsetWidth,k=dx<0?1:-1,fast=Math.abs(vx)>.45&&Math.abs(dx)>30&&Math.sign(vx)===Math.sign(dx);
+        if(mode===1)dx=can(ddx<0?1:-1)?ddx:ddx*.22;else{dx=ddx;dy=Math.max(0,t.clientY-sy)}
+        if(!raf)raf=requestAnimationFrame(paint)},{passive:false});
+      const paint=()=>{raf=0;if(mode===1){el.style.transform=`translate3d(${dx}px,0,0)`;return}if(mode!==2)return;
+        const p=Math.min(1,dy/(innerHeight*.6)),sc=1-p*.45;el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sc})`;if(dim)dim.style.opacity=String(1-p*1.15)};
+      const end=()=>{if(raf){cancelAnimationFrame(raf);raf=0;paint()}const m=mode;st=0;mode=0;if(m===2)return pullEnd();if(m!==1)return;const w=el.offsetWidth,k=dx<0?1:-1,fast=Math.abs(vx)>.45&&Math.abs(dx)>30&&Math.sign(vx)===Math.sign(dx);
         if((Math.abs(dx)>w*.22||fast)&&can(k)){el.style.transition='transform .22s cubic-bezier(.3,.7,.3,1)';el.style.transform=`translate3d(${-k*w}px,0,0)`;detailStep(d.id,k)}
         else{el.style.transition='transform .3s cubic-bezier(.2,.9,.3,1.12)';el.style.transform='';setTimeout(()=>{if(!el.style.transform){el.classList.remove('sw-drag');el.style.transition=''}},320);if(Math.abs(dx)>14&&!can(k))detailStep(d.id,k)}};
       const pullEnd=()=>{
-        if(!(dy>110||(vy>.5&&dy>36))){el.style.transition='transform .38s cubic-bezier(.2,.9,.3,1.12),border-radius .38s';el.style.transform='';el.style.borderRadius='';if(dim){dim.style.transition='opacity .3s';dim.style.opacity='1';const x=dim;setTimeout(()=>x.remove(),380);dim=null}
+        if(!(dy>110||(vy>.5&&dy>36))){el.style.transition='transform .38s cubic-bezier(.2,.9,.3,1.12)';el.style.transform='';if(dim){dim.style.transition='opacity .3s';dim.style.opacity='1';const x=dim;setTimeout(()=>x.remove(),380);dim=null}
           setTimeout(()=>{if(!el.style.transform){el.classList.remove('pd-drag');el.style.transition='';el.style.transformOrigin=''}},400);return}
         pullClose(el,d.id,dim);dim=null};
       el.addEventListener('touchend',end,{passive:true});el.addEventListener('touchcancel',end,{passive:true})}
     const v0=DV;el._refresh=()=>{if(DV!==v0&&devices.some(x=>x.id===d.id))openDetail(d.id,true,false,true)};
-    if(morph){const hi=$('.himg',el);if(hi){hi.style.viewTransitionName='hero-x';
-      el._out={cls:'vt-det-back',before(){const h=$('.himg',el);document.querySelectorAll('.himg').forEach(x=>x.style.viewTransitionName='');if(h&&h.getBoundingClientRect().bottom>40){h.style.viewTransitionName='hero-x';setHR(getComputedStyle(h.closest('.hero')).borderRadius,'16px')}},
-        after(){const c=document.querySelector(`#list [data-id="${CSS.escape(id)}"] .th img, #list [data-id="${CSS.escape(id)}"] .gi img`);if(c){const r=c.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight){c.style.viewTransitionName='hero-x';setHR(document.documentElement.style.getPropertyValue('--hr0'),thumbR(c))}}},
-        done(){document.querySelectorAll('[style*="view-transition-name"]').forEach(x=>x.style.viewTransitionName='')}}}}
+    if(d.foto&&d.foto.length)el._out={fly(run){if(wide()||RM())return false;const T=thumbOf(d.id),F=heroRect(el);if(!T||!F||F.r.top+F.r.height<60)return false;
+      T.el.style.visibility='hidden';el.classList.add('fly-out');el.style.transition='opacity .24s ease';el.style.opacity='0';
+      heroFly($('.himg',el).currentSrc||d.foto[0],T.el.currentSrc||T.el.src,F,T,{dur:400,onDone(){T.el.style.visibility='';run()}});return true}};
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
     const hi=$('.himg',el);
