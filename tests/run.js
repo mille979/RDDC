@@ -906,8 +906,8 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
     await T('touchStart', 200, 330); for (let i = 1; i <= 12; i++) { await T('touchMove', 200, 330 + i * 16); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(900);
     eq(await U.evaluate(() => window._synced), 1, 'tirando giù dalla cima parte la sincronizzazione');
-    await U.evaluate(() => { window._sh = 'attesa'; sheet('Prova', [{ t: 'Uno' }, { t: 'Due' }]).then(i => window._sh = i); }); await U.waitForSelector('.modal.sheet');
-    const b = await U.evaluate(() => { const r = document.querySelector('.modal.sheet>div').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + 20 }; });
+    await U.evaluate(() => { window._sh = 'attesa'; sheet('Prova', [{ t: 'Uno' }, { t: 'Due' }]).then(i => window._sh = i); }); await U.waitForSelector('.modal.sheet'); await U.waitForFunction(() => !document.querySelector('.modal.sheet>div').getAnimations().some(a => a.playState === 'running')); await U.waitForTimeout(100);
+    const b = await U.evaluate(() => { const r = document.querySelector('.modal.sheet>div').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
     await T('touchStart', b.x, b.y); for (let i = 1; i <= 10; i++) { await T('touchMove', b.x, b.y + i * 22); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(500);
     eq(await U.evaluate(() => [window._sh, !!document.querySelector('.modal')]), [-1, false], 'foglio chiuso trascinandolo in basso (come Annulla)');
     await U.evaluate(() => { S.sel = {}; S.q = ''; render(); S.sort = S.sort === 'anno_d' ? 'anno_a' : 'anno_d'; LS.set('rd_sort', S.sort); render(); });
