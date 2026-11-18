@@ -133,8 +133,17 @@ Quando la ricerca automatica non riesce a leggere EveryMac:
 
 Vengono letti: nome, linea, codici (Axxxx/Mxxxx, EMC, Model ID, n° ordine), date, CPU, RAM, archiviazione, grafica, display, sistema operativo, connettività, porte, batteria, dimensioni (convertite in cm), peso, prezzo USA e Italia, descrizione, colore e tutte le altre specifiche.
 
-## Recupero automatico da EveryMac
-EveryMac non permette richieste dirette da altri siti (CORS): la ricerca automatica prova i proxy pubblici gratuiti (al massimo 8 secondi ciascuno) e, se sono bloccati, propone subito di aprire la pagina e incollarla. Il metodo consigliato resta «Incolla da EveryMac».
+## Recupero automatico da EveryMac (worker Cloudflare)
+EveryMac non lascia leggere le sue pagine direttamente da un'app web (CORS) e i proxy pubblici gratuiti sono bloccati. Serve un piccolo **worker Cloudflare** tuo, gratuito, che fa da ponte: Menu → «🌐 Ricerca automatica su EveryMac» ha le istruzioni, il codice da copiare e il tasto «Salva e prova».
+1. Crea un account gratuito su <https://dash.cloudflare.com/sign-up/workers-and-pages> (non serve la carta di credito).
+2. **Compute (Workers) → Workers & Pages → Create → Start with Hello World!**, nome per esempio `rddc`, **Deploy**.
+3. **Edit code**: cancella tutto, incolla il codice copiato dall'app, **Deploy**.
+4. Copia l'indirizzo (es. `https://rddc.tuonome.workers.dev`), incollalo nell'app e premi **Salva e prova**.
+
+Con il worker collegato l'app usa solo quello (i proxy pubblici restano per chi non l'ha). Il worker accetta solo pagine di everymac.com; il piano gratuito permette 100.000 richieste al giorno (una ricerca ne usa 2–4).
+- **Codici vecchi** (Mxxxx, es. M5884): EveryMac li riconosce ma elenca solo i nomi dei modelli, senza link; l'app apre l'indice della famiglia (es. PowerBook G4) e trova da sola la scheda giusta.
+- **Condividi → RDDC**: da Chrome su una scheda di EveryMac seleziona tutto il testo e scegli *Condividi → RDDC* (funziona anche senza worker), oppure condividi il link della pagina (serve il worker): si apre l'analisi con la scheda già compilata.
+- Trovati i dati, il tasto di ricerca diventa **«✓ Inserisci i dati»** e a sinistra compare un piccolo **↻** per ripetere la ricerca.
 
 ## Grafica (2.0): Liquid Glass
 - **Icona**: schermo, palmare e ghiera come tre lastre di vetro sovrapposte su fondo nero-grigio (`icon.svg`, PNG da 192 e 512). C'è la versione «maskable», ritagliabile tonda da Android senza perdere niente, e quella monocromatica per le icone a tema (Android le colora con i colori dello sfondo).
