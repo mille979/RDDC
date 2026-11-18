@@ -638,6 +638,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* filtri salvati sotto la ricerca */
 .smart{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}.smart::-webkit-scrollbar{display:none}.smart .chip{flex:none;padding:6px 12px;font-size:13.5px}
 .chs{display:flex;flex-direction:column;gap:8px}.chs .btn{width:100%}
+.btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
 /* 2.7: tasti della scheda più ordinati + foglio di azioni */
 .acts.acts2{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.acts2 .btn{justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:12px;padding-right:12px}.acts2 .btn.more{width:52px;padding:0;font-size:22px;letter-spacing:-.04em;line-height:1}
 .modal.sheet{place-items:end center;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
@@ -792,8 +793,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.7.1';
+const APP_VER='2.8';
 const NOVITA=[
+ ['2.8','2026-11-18',['Trovati i dati, il tasto di ricerca diventa «✓ Inserisci i dati» e a sinistra compare un piccolo ↻ per ripetere la ricerca (EveryMac, Gemini, Incolla): niente più ricerche ripetute per sbaglio','Ricerca automatica su EveryMac con il tuo worker Cloudflare gratuito: Menu → «🌐 Ricerca automatica su EveryMac», con istruzioni, codice da copiare e prova','I vecchi codici (Mxxxx, es. M5884) ora trovano la scheda: EveryMac dà solo i nomi e l\'app cerca il link nell\'indice della famiglia','Da EveryMac con «Condividi» → RDDC: il testo selezionato della pagina (o il link, con il worker) apre la scheda già compilata']],
  ['2.7.1','2026-11-16',['Animazioni della foto rifatte: aprendo, chiudendo o tirando in basso la scheda vola una sola foto che cambia misura e angoli, con lo stesso ritaglio della miniatura e della foto grande (niente più due immagini sovrapposte con le foto non quadrate)','Tirare in basso la scheda è fluido anche tenendo il dito fermo: durante il gesto la pagina si sposta senza ricalcolare il vetro','Corretto: chiudendo tirando in basso a volte si tornava indietro di due pagine']],
  ['2.7','2026-11-16',['Scheda: si chiude tirandola in basso, come nella galleria del telefono (la foto torna sulla sua miniatura); l\'animazione di apertura tiene la foto arrotondata per tutto il viaggio','Scorrere tra le schede molto più rapido: la scheda segue il dito e la successiva entra subito','Tasti in fondo alla scheda più ordinati: Modifica, Aggiorna e «⋯» con le altre azioni raggruppate (Elimina in rosso)','Modifica: tasto Salva anche in alto, accanto a «Dati online»','Corretti registro interventi e storico del valore: la data sta sopra al testo, che non va più a capo lettera per lettera','Manutenzione: accensione e ricarica ogni 6 mesi già impostate nel modulo; caricabatterie e altri accessori fuori dal giro','Laboratorio: un pezzo senza prezzo te lo chiede quando lo segni «Ordinato»','Menu più semplice: «Collegamento IA» (Gemini, OpenRouter, registro errori), «Database su GitHub» in una pagina, un solo «Esporta…» che chiede come; tolto il proxy personale','Vetro liquido simulato su iPhone e iPad, dove Safari e Chrome non permettono quello vero']],
  ['2.6','2026-11-15',['Dati da EveryMac, Gemini e dalle altre fonti molto più veloci: il modulo si apre subito, senza aspettare lo scaricamento della foto (le foto le aggiungi tu) né la traduzione, che ora avviene in sottofondo dopo il salvataggio']],
@@ -2387,18 +2389,18 @@ function openGemini({q='',ctx='',marca='',tipologia='',onResult,replace=false}={
     <label class="f">Oggetto (nome, modello o codice)</label><input class="in" id="gmq" value="${esc(q)}" placeholder="Es. Olivetti M24, Sony KV-1400, Psion Series 5mx" autocomplete="off">
     <div class="grid2"><div><label class="f">Marca (facoltativa)</label><input class="in" id="gmm" value="${esc(marca)}" list="dl_gm_m" autocomplete="off"></div><div><label class="f">Tipo (facoltativo)</label><input class="in" id="gmt" value="${esc(tipologia)}" list="dl_gm_t" autocomplete="off"></div></div>
     <datalist id="dl_gm_m">${MARCHE0.map(m=>`<option value="${esc(m)}">`).join('')}</datalist><datalist id="dl_gm_t">${TIPI.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
-    <button class="btn" id="gmb" style="width:100%;margin-top:14px">✨ Cerca e compila</button><div id="gmo" style="margin-top:14px"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="gmb" style="flex:1">✨ Cerca e compila</button></div><div id="gmo" style="margin-top:14px"></div>
     <p class="note">${gemOn()?`Gemini: ${esc(gemCfg().model||(gemCfg().ok?gemCfg().ok+' (automatico)':'automatico'))} · <a href="#" data-gms>impostazioni</a>`:''}${gemOn()&&orOn()?'<br>':''}${orOn()?`Riserva OpenRouter: ${esc(orCfg().model||(orCfg().ok?orCfg().ok+' (automatico)':'automatico'))} · <a href="#" data-ors>impostazioni</a>`:gemOn()?' · <a href="#" data-ors>aggiungi OpenRouter come riserva</a>':''}. L'IA può sbagliare: controlla i dati nel modulo prima di salvare.</p>`,{replace,mount(el){
     const out=$('#gmo',el);
     const run=async()=>{const qq=$('#gmq',el).value.trim();if(!qq)return $('#gmq',el).focus();
       const c2=[ctx,$('#gmm',el).value.trim()&&'marca: '+$('#gmm',el).value.trim(),$('#gmt',el).value.trim()&&'tipo: '+$('#gmt',el).value.trim()].filter(Boolean).join('; ');
-      $('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web',gemOn()?'Gemini cerca sul web…':'Cerco con OpenRouter…','di solito 10–30 secondi');
+      {const b=$('#gmb',el);b._reset&&b._reset()}$('#gmb',el).disabled=true;out.onclick=null;out.innerHTML=loader('web',gemOn()?'Gemini cerca sul web…':'Cerco con OpenRouter…','di solito 10–30 secondi');
       const step=(m,tried,search)=>{const s=$('.ldr small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
       try{const r=await aiAsk(qq,c2,step);
         const notes=[r.via==='openrouter'&&r.gemErr?`🛟 Gemini non ha risposto (${esc(errInfo(r.gemErr).title.toLowerCase())}): ho usato la riserva <b>OpenRouter</b> con ${esc(orCfg().ok)}.`:'',r.tried.length&&r.via!=='openrouter'?`🔁 Ho usato <b>${esc(r.tried.length?gemCfg().ok:'')}</b>: ${esc(r.tried.map(t=>`${t[0]} ${GEM_WHY[t[1]]||t[1]}`).join(', '))}.`:'',r.noSearch&&r.via==='openrouter'?'⚠️ <b>Senza ricerca web</b>: i modelli gratuiti di OpenRouter rispondono dalla loro memoria, quindi i dati sono più facili da sbagliare. Controllali prima di salvare.':r.noSearch?(r.searchBlocked||gemNoSearch()?'⚠️ <b>Senza ricerca web</b>: con la ricerca Google il tuo livello gratuito risponde «limite 0», quindi ho chiesto a Gemini senza ricerca. I dati vengono dalla sua memoria e sono più facili da sbagliare: controllali. Riproverò con la ricerca dopo l\'azzeramento delle quote (le 9 del mattino da noi).':r.via==='compatibile'?'⚠️ <b>Senza ricerca web</b>: ha risposto solo l\'ingresso compatibile (come ARGOS), che non fa ricerche sul web. Controlla i dati.':'⚠️ <b>Senza ricerca web</b>: dati dalla memoria di Gemini, controllali.'):'',r.incerti.length?`⚠️ Dati incerti secondo Gemini: ${esc(r.incerti.map(k=>(gemFields().find(f=>f.k===k)||{l:k}).l).join(', '))}`:''].filter(Boolean);
         out.innerHTML=previewHTML(r)+notes.map(n=>`<p class="note" style="margin-top:6px">${n}</p>`).join('')
           +(r.sources.length?`<details class="more" style="margin-top:8px"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(s=>`<a class="res" href="${esc(s.uri)}" target="_blank" rel="noopener"><b>${esc(s.title)}</b></a>`).join('')}</details>`:'');
-        const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r)}
+        const u=$('[data-use]',out);if(u)u.onclick=()=>onResult(r);morphSearch($('#gmb',el),{use:()=>onResult(r),again:run,inputs:[$('#gmq',el),$('#gmm',el),$('#gmt',el)]})}
       catch(e){const k=toAppErr(e).kind,orE=toAppErr(e).via==='openrouter';errBox(out,e,orE?'OpenRouter':'Gemini',run,GEM_STOP.includes(k)||/gratis0|quota/.test(k)||orE?(orE?'or':'gem'):'');if(!orOn()&&gemOn()&&/gratis0|quota|minuto|giorno/.test(k))out.insertAdjacentHTML('beforeend','<p class="note">💡 Con OpenRouter come riserva, quando Gemini non risponde la ricerca passa a un modello gratuito di OpenRouter. <a href="#" data-ors>Collegalo</a>.</p>')}
       $('#gmb',el).disabled=false};
     $('#gmb',el).onclick=run;$('#gmq',el).onkeydown=e=>{if(e.key==='Enter')run()};
@@ -2617,6 +2619,9 @@ async function sharedToData(files){
 }
 function openShared({files,meta}){
   const lk=[meta.url,meta.text,meta.title].filter(Boolean).join(' ').match(/https?:\/\/\S+/);
+  /* 2.8: da EveryMac con «Condividi»: il link di una scheda (letto dal worker) o il testo selezionato della pagina */
+  const emUrl=lk&&/^https?:\/\/(www\.)?everymac\.com\/\S+/i.test(lk[0])?lk[0]:'',emText=(meta.text||'').length>200&&/Introduction Date|Apple Model No|Apple Order No|Model Identifier|Processor Speed/i.test(meta.text||'');
+  if(!files.length&&(emUrl||emText))return openImport({shared:{text:emText?meta.text:'',url:emUrl},onResult:async r=>openForm(await mergeFetched({},r,true),{fromLookup:true})});
   if(files.length&&lk&&files.every(isImgFile))return openListing(lk[0],[meta.title,meta.text].filter(Boolean).join(' '),{shots:files});
   if(!files.length&&lk)return openListing(lk[0],[meta.title,meta.text].filter(Boolean).join(' '));
   const imgs=files.filter(isImgFile),others=files.filter(f=>!isImgFile(f)),urls=[];
@@ -3062,15 +3067,65 @@ function openAdd(){
 
 /* ============ rete / proxy ============ */
 function proxyUrl(p,url){const e=encodeURIComponent(url);if(p.includes('{url}'))return p.replace('{url}',e);if(/[=?/]$/.test(p)&&/[?=]/.test(p))return p+e;return p.replace(/\/?$/,'/?url=')+e}
+/* 2.8: worker Cloudflare personale (gratuito) per leggere EveryMac. Con il worker si usa solo quello; senza, i proxy pubblici */
+const WORKER_CODE=`// RDDC – ponte verso EveryMac (Cloudflare Worker, piano gratuito)
+export default {
+  async fetch(req) {
+    const h = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Allow-Headers': '*', 'Access-Control-Expose-Headers': 'X-Final-Url'};
+    if (req.method === 'OPTIONS') return new Response(null, {status: 204, headers: h});
+    const u = new URL(req.url).searchParams.get('url') || '';
+    if (!u) return new Response('RDDC worker attivo', {headers: h});
+    if (!/^https:\\/\\/(www\\.)?everymac\\.com\\//.test(u)) return new Response('Solo everymac.com', {status: 403, headers: h});
+    const r = await fetch(u, {redirect: 'follow', headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,image/*,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9'}, cf: {cacheTtl: 86400, cacheEverything: true}});
+    return new Response(r.body, {status: r.status, headers: {...h, 'Content-Type': r.headers.get('Content-Type') || 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=86400', 'X-Final-Url': r.url}});
+  }
+};`;
+const myProxy=()=>{let v=(LS.get('rd_proxy','')||'').trim();if(v&&!/^https?:\/\//i.test(v))v='https://'+v;return v};
 function proxies(){
+  const mine=myProxy();if(mine)return [mine];
   return ['https://corsproxy.io/?url={url}','https://api.allorigins.win/raw?url={url}','https://api.codetabs.com/v1/proxy?quest={url}'];
+}
+async function testWorker(u){
+  const t0=Date.now(),w=s=>((Date.now()-t0)/1000).toFixed(1)+' s';
+  try{const r=await fetch(u.replace(/\?.*$/,'').replace(/\{url\}.*$/,''),{signal:AbortSignal.timeout(12000)});const t=await r.text();if(!r.ok||!/RDDC worker attivo/.test(t))return {ok:false,msg:r.ok?'L\'indirizzo risponde, ma non è il worker di RDDC: hai incollato e pubblicato (Deploy) il codice?':`Il worker risponde con un errore (HTTP ${r.status}): ripubblica il codice con Deploy.`}}
+  catch(e){return {ok:false,msg:'Worker non raggiungibile: controlla l\'indirizzo (es. https://rddc.tuonome.workers.dev) e la connessione.'}}
+  try{const r=await fetch(proxyUrl(u,EM+'/ultimate-mac-lookup/?search_keywords=A1278'),{signal:AbortSignal.timeout(20000)});const t=await r.text();
+    if(parseEMSearch(t,EM+'/').length)return {ok:true,msg:`Funziona: EveryMac risponde in ${w()}.`};
+    return {ok:false,msg:/challenge|Just a moment/i.test(t)?'Il worker è attivo, ma EveryMac lo ha bloccato con una verifica anti-robot. Riprova più tardi.':`Il worker è attivo, ma la risposta di EveryMac non è valida (HTTP ${r.status}).`}}
+  catch(e){return {ok:false,msg:'Il worker è attivo, ma EveryMac non ha risposto in tempo.'}}
+}
+function openEMSettings(){
+  const cur=myProxy();
+  openPage('Ricerca automatica su EveryMac',`<p class="note" style="margin-top:0">EveryMac non lascia leggere le sue pagine direttamente da un'app web. Un <b>worker Cloudflare</b> tuo, gratuito, fa da ponte: l'app gli chiede la pagina, lui la scarica da EveryMac e gliela passa. Così «Cerca» compila la scheda da solo, senza copiare e incollare.</p>
+  <label class="f">Indirizzo del tuo worker</label><input class="in" id="px" value="${esc(cur)}" placeholder="https://rddc.tuonome.workers.dev" autocomplete="off" inputmode="url">
+  <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn" data-w="save">Salva e prova</button>${cur?'<button class="btn sec" data-w="off">Scollega</button>':''}</div>
+  <div id="pxo" style="margin-top:10px"></div>
+  <details class="note" ${cur?'':'open'}><summary><b>Come crearlo (gratis, 5 minuti, da telefono o computer)</b></summary>
+  <ol style="padding-left:18px;margin:6px 0">
+  <li>Apri <a href="https://dash.cloudflare.com/sign-up/workers-and-pages" target="_blank" rel="noopener">dash.cloudflare.com</a> e crea un account gratuito (email e password, conferma l'email). Non serve una carta di credito.</li>
+  <li>Nel menu a sinistra: <b>Compute (Workers)</b> → <b>Workers &amp; Pages</b> → <b>Create</b> (o «Create application»).</li>
+  <li>Scegli <b>Start with Hello World!</b>, dagli un nome, per esempio <i>rddc</i>, e premi <b>Deploy</b>.</li>
+  <li>Premi <b>Edit code</b>: cancella tutto il codice che c'è a sinistra, incolla quello qui sotto (tasto «Copia il codice»), poi <b>Deploy</b> in alto a destra.</li>
+  <li>Copia l'indirizzo del worker (sotto il nome, tipo <i>https://rddc.tuonome.workers.dev</i>), incollalo qui sopra e premi <b>Salva e prova</b>.</li></ol>
+  <p>Il piano gratuito permette 100.000 richieste al giorno: una ricerca ne usa due. Il worker accetta solo pagine di everymac.com.</p>
+  <button class="btn sm" data-w="copy">📋 Copia il codice del worker</button>
+  <pre style="white-space:pre-wrap;font-size:11px;background:var(--card);padding:8px;border-radius:8px;overflow:auto;max-height:200px;margin-top:8px">${esc(WORKER_CODE)}</pre></details>`,{mount(el){
+    const o=$('#pxo',el);
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-w]');if(!b)return;const a=b.dataset.w;
+      if(a==='copy'){try{await navigator.clipboard.writeText(WORKER_CODE);toast('Codice copiato')}catch(err){toast('Copia non riuscita: selezionalo a mano')}}
+      if(a==='off'){LS.set('rd_proxy','');toast('Worker scollegato');history.back()}
+      if(a==='save'){let v=$('#px',el).value.trim().replace(/\/+$/,'');if(!v){toast('Incolla l\'indirizzo del worker');return}if(!/^https?:\/\//i.test(v))v='https://'+v;
+        $('#px',el).value=v;LS.set('rd_proxy',v);b.disabled=true;o.innerHTML=loader('mac','Provo a cercare A1278 su EveryMac…');
+        const r=await testWorker(v);b.disabled=false;o.innerHTML=`<div class="note">${r.ok?'✅':'⚠️'} ${esc(r.msg)}</div>`;if(r.ok)toast('Ricerca automatica attiva ✔︎')}})}});
 }
 async function viaProxy(url,blob){
   let last;
   for(const p of proxies()){
     try{
       const u=proxyUrl(p,url);
-      const r=await fetch(u,{signal:AbortSignal.timeout(8000)});
+      const r=await fetch(u,{signal:AbortSignal.timeout(p===myProxy()?20000:8000)});
       if(!r.ok)throw new Error('HTTP '+r.status);
       if(blob)return await r.blob();
       const t=await r.text();
@@ -3254,8 +3309,31 @@ async function emLookup(q){
   if(links.length>1)return {choices:links};
   if(links.length===1){const h2=await viaProxy(links[0].href);return {result:finishEM(h2,links[0].href)}}
   if(/Introduction Date/i.test(html)){return {result:finishEM(html,'')}}
+  /* 2.8: con i vecchi codici (Mxxxx) EveryMac elenca solo i nomi, senza link: li cerco nell'indice della famiglia */
+  const names=emResultNames(html);
+  if(names.length){const found=await emNamesToLinks(names);
+    if(found.length===1){const h2=await viaProxy(found[0].href);return {result:finishEM(h2,found[0].href)}}
+    if(found.length)return {choices:found};
+    return {names,url:su}}
   return {none:true,url:su};
 }
+function emResultNames(html){const d=new DOMParser().parseFromString(html,'text/html'),t=d.querySelector('textarea#results');
+  return t?[...new Set(t.textContent.split('\n').map(x=>clean(x)).filter(Boolean))].slice(0,20):[]}
+const EM_FAM=new Map();
+function emFamCands(n){const lo=n.toLowerCase().replace(/["“”]/g,''),out=[];
+  Object.entries(EM_LINEE).filter(([,v])=>lo.startsWith(v.toLowerCase())).sort((a,b)=>b[1].length-a[1].length).forEach(([k])=>out.push(k));
+  const w=lo.split(/[\s/]+/);for(let i=Math.min(3,w.length);i>=1;i--){const k=w.slice(0,i).join('_').replace(/[^a-z0-9_]/g,'');if(k&&!out.includes(k))out.push(k)}
+  return out}
+async function emNamesToLinks(names){const out=[],want=new Set(names);let fetched=0;
+  for(const n of names){if(out.some(x=>x.name===n))continue;
+    for(const k of emFamCands(n)){
+      if(!EM_FAM.has(k)){if(fetched>=3)break;fetched++;let h=null;try{h=await viaProxy(`${EM}/systems/apple/${k}/`)}catch(e){}EM_FAM.set(k,h)}
+      const h=EM_FAM.get(k);if(!h)continue;
+      const d=new DOMParser().parseFromString(h,'text/html');let hit=false;
+      d.querySelectorAll('a[href]').forEach(a=>{const t=clean(a.textContent);if(!want.has(t)||out.some(x=>x.name===t))return;let href;try{href=new URL(a.getAttribute('href'),EM+'/').href}catch(e){return}
+        if(/\/specs\/.+\.html/.test(href)){out.push({name:t,href});if(t===n)hit=true}});
+      if(hit)break}}
+  return names.map(n=>out.find(x=>x.name===n)).filter(Boolean)}
 function finishEM(html,url){
   const p=parseEMDoc(html,url);
   if(p.pairs.length<3)throw new Error('Pagina EveryMac non riconosciuta');
@@ -3317,9 +3395,17 @@ function previewHTML(r){
   const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
   return `${img?`<figure style="margin:0 0 10px"><img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block" onerror="this.parentNode.remove()"><figcaption style="font-size:12px;color:var(--mute);margin-top:4px">Solo anteprima: la foto non viene salvata, la aggiungi tu.</figcaption></figure>`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.gemini?Object.keys(f).length+' campi compilati, ':''}${r.specs.length} ${r.specs.length===1?'specifica':'specifiche'} ${r.gemini?'in più':(r.specs.length===1?'trovata':'trovate')}${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
 }
-function showPreview(out,r,onResult){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r)}
+function showPreview(out,r,onResult,m){out.innerHTML=previewHTML(r);$('[data-use]',out).onclick=()=>onResult(r);if(m)morphSearch(m.btn,{use:()=>onResult(r),again:m.again,inputs:m.inputs})}
+/* 2.8: trovati i dati, il tasto di ricerca diventa «Inserisci i dati» e a sinistra compare un piccolo ↻ per ripetere la ricerca */
+function morphSearch(btn,{use,again,inputs=[]}){if(!btn)return;
+  if(btn._reset)btn._reset();
+  const o={html:btn.innerHTML,onclick:btn.onclick},rb=document.createElement('button');
+  rb.type='button';rb.className='btn sec again';rb.innerHTML='↻';rb.title='Ripeti la ricerca';rb.setAttribute('aria-label','Ripeti la ricerca');btn.before(rb);
+  const reset=()=>{if(!btn._reset)return;btn._reset=null;rb.remove();btn.innerHTML=o.html;btn.onclick=o.onclick;btn.classList.remove('use');inputs.forEach(i=>i&&i.removeEventListener('input',reset))};
+  btn._reset=reset;btn.innerHTML='✓ Inserisci i dati';btn.classList.add('use');btn.onclick=()=>use();
+  rb.onclick=()=>{reset();again()};inputs.forEach(i=>i&&i.addEventListener('input',reset))}
 
-function openImport({onResult,replace=false,code=''}={}){
+function openImport({onResult,replace=false,code='',shared=null}={}){
   const h=`<div class="note step"><b>1.</b> Apri la scheda del modello su EveryMac.
     <div class="row" style="margin-top:8px"><input class="in" id="ic" value="${esc(code)}" placeholder="A1278, EMC 2554, M5521…" autocomplete="off"><a class="btn sm" id="io" target="_blank" rel="noopener" href="${EM}/">Apri ↗</a></div></div>
   <div class="note step"><b>2.</b> Sulla pagina del modello copia tutto: <b>tieni premuto</b> su una parola → <b>Seleziona tutto</b> → <b>Copia</b>. Da computer: Ctrl+A, Ctrl+C. Va bene anche solo la tabella delle specifiche.<br><small>In alternativa: in Chrome ⋮ → ⬇︎ Scarica, poi «Carica pagina salvata» qui sotto (porta anche la foto).</small></div>
@@ -3327,7 +3413,7 @@ function openImport({onResult,replace=false,code=''}={}){
   <textarea class="in" id="pt" placeholder="Tieni premuto qui → Incolla" style="min-height:140px"></textarea>
   <div class="row" style="flex-wrap:wrap;margin:8px 0"><button class="btn sm sec" id="pc">📋 Incolla dagli appunti</button><button class="btn sm sec" id="pf">📄 Carica pagina salvata</button><button class="btn sm sec" id="px">✕ Svuota</button></div>
   <input type="file" id="pfi" hidden>
-  <button class="btn" id="pa" style="width:100%">Analizza</button>
+  <div class="row"><button class="btn" id="pa" style="flex:1">Analizza</button></div>
   <div id="po" style="margin-top:14px"></div>`;
   openPage('Incolla da EveryMac',h,{replace,mount(el){
     let html='',srcUrl='',parts=[];
@@ -3345,7 +3431,7 @@ function openImport({onResult,replace=false,code=''}={}){
       let r=null;try{r=importEM({html,text:html?'':txt,url:srcUrl,parts})}catch(e){console.error(e)}
       if(!r&&html&&txt){try{r=importEM({text:txt})}catch(e){}}
       if(!r){out.innerHTML=diagnose(txt,html);return}
-      showPreview(out,r,onResult);
+      showPreview(out,r,onResult,{btn:$('#pa',el),again:analyze,inputs:[ta]});
       out.scrollIntoView({behavior:'smooth',block:'start'});
     };
     ta.addEventListener('paste',e=>{
@@ -3356,6 +3442,7 @@ function openImport({onResult,replace=false,code=''}={}){
     });
     let deb;ta.addEventListener('input',()=>{if(!ta.value.trim()){html='';parts=[];out.innerHTML='';return}clearTimeout(deb);deb=setTimeout(()=>{if(ta.value.trim().length>40)analyze()},700)});
     $('#pa',el).onclick=analyze;
+    if(shared&&(shared.text||shared.url)){ta.value=shared.text||shared.url;html='';srcUrl='';parts=[];setTimeout(analyze,80)}
     $('#px',el).onclick=()=>{ta.value='';html='';parts=[];srcUrl='';out.innerHTML='';ta.focus()};
     $('#pc',el).onclick=async()=>{
       try{
@@ -3754,10 +3841,10 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
     const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: scrivi il <b>nome</b> (es. iMac G3, PowerBook G4 12) e scegli il modello, oppure cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, MacBookPro9,2 o il nome (es. iMac G3)':'Marca e modello'};
-    hint();$('#lb',el).onchange=hint;
+    hint();$('#lb',el).onchange=()=>{hint();const b=$('#lg',el);b._reset&&b._reset()};
     const out=$('#lo',el);
     const busy=m=>out.innerHTML=loader(ldKind(m),m);out.classList.add('rv');
-    const preview=r=>showPreview(out,r,onResult);
+    const preview=r=>showPreview(out,r,onResult,{btn:$('#lg',el),again:go,inputs:[$('#lq',el)]});
     const paste=()=>openImport({replace:true,code:$('#lq',el).value.trim(),onResult});
     $('#lp',el).onclick=paste;
     $('#lgem',el).onclick=()=>{const v=$('#lb',el).value;openGemini({q:$('#lq',el).value.trim(),marca:v==='apple'?'Apple':(marca&&!/^apple$/i.test(marca)?marca:''),tipologia:tipologia||'',onResult})};
@@ -3771,6 +3858,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
     };
     const go=async()=>{
       const q=$('#lq',el).value.trim();if(!q)return;
+      {const b=$('#lg',el);b._reset&&b._reset()}
       out.onclick=null;
       const ap=$('#lb',el).value==='apple';
       if($('#lb',el).value==='acc'){busy('Cerco nelle fonti per accessori…');try{
@@ -3795,6 +3883,7 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
       try{
         const r=await emLookup(q);
         if(r.result)return preview(r.result);
+        if(r.names){out.innerHTML=`<p><b>EveryMac riconosce il codice</b> ma non dà il link alla scheda:</p>${r.names.map(n=>`<div class="note" style="margin:4px 0">${esc(n)}</div>`).join('')}<div class="row" style="flex-wrap:wrap;margin-top:8px"><a class="btn sec sm" target="_blank" rel="noopener" href="${esc(r.url)}">Apri su EveryMac ↗</a><button class="btn sm" id="lpp">📋 Incolla la scheda</button></div><p class="note">Suggerimento: cerca con il <b>Model Identifier</b> (es. PowerBook3,2), che porta dritto alla scheda.</p>`;$('#lpp',el).onclick=paste;return}
         if(r.choices){
           out.innerHTML=`<b>${r.choices.length} modelli corrispondono – scegli:</b>`+r.choices.map((x,i)=>`<button class="res" data-c="${i}"><b>${esc(x.name)}</b></button>`).join('');
           out.onclick=async e=>{const b=e.target.closest('[data-c]');if(!b)return;const c=r.choices[+b.dataset.c];busy('Carico le specifiche…');try{preview(finishEM(await viaProxy(c.href),c.href))}catch(err){out.innerHTML=`<p>Errore: ${esc(err.message)}</p><a class="btn sec sm" target="_blank" rel="noopener" href="${esc(c.href)}">Apri la pagina ↗</a> poi usa «Incolla la scheda».`}};
@@ -3802,7 +3891,8 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
         }
         await wikiFlow('Apple '+q,'Apple');
       }catch(e){
-        out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Nessun problema: apri la pagina, copiala e incollala.</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}">Apri su EveryMac ↗</a><button class="btn sm" id="lpp">📋 Incolla la scheda</button><button class="btn sec sm" id="lw">Prova Wikipedia</button></div>`;
+        out.innerHTML=`<p><b>EveryMac non raggiungibile</b> (${esc(e.message)}).</p><p>Nessun problema: apri la pagina, copiala e incollala.</p><div class="row" style="flex-wrap:wrap"><a class="btn sec sm" target="_blank" rel="noopener" href="${EM}/ultimate-mac-lookup/?search_keywords=${encodeURIComponent(emKeyword(q))}">Apri su EveryMac ↗</a><button class="btn sm" id="lpp">📋 Incolla la scheda</button><button class="btn sec sm" id="lw">Prova Wikipedia</button></div>${myProxy()?'<p class="note">Il tuo worker non ha risposto: controllalo in Menu → «🌐 Ricerca automatica su EveryMac».</p>':'<button class="res" id="lwk" style="margin-top:10px"><b>🌐 Ricerca automatica sempre funzionante</b><small>Collega un worker Cloudflare gratuito (5 minuti, una volta sola)</small></button>'}`;
+        {const wk=$('#lwk',el);if(wk)wk.onclick=openEMSettings}
         $('#lpp',el).onclick=paste;
         $('#lw',el).onclick=()=>wikiFlow('Apple '+q,'Apple').catch(er=>errBox(out,er,'Cerca dati online',go));
       }
@@ -4066,6 +4156,7 @@ function openMenu(){
   <div class="sec-t">Collegamenti e backup</div>
   <button class="res" data-m="ai"><b>🤖 Collegamento IA</b><small>${[gemOn()?'Gemini collegato':'Gemini non collegato',orOn()?'riserva OpenRouter attiva':'',(n=>n?`${n} ${n===1?'errore':'errori'} nel registro`:'')(LS.get('rd_errlog',[]).length)].filter(Boolean).join(' · ')}</small></button>
   <button class="res" data-m="db"><b>☁️ Database su GitHub</b><small>${ghOn()?`Salvataggio automatico su ${esc(ghCfg().repo)}`:'Solo lettura: collega un token per salvare in automatico'}${(l=>l?' · ultima sincronizzazione '+agoShort(l.t):'')(LS.get('rd_db_last',null))}</small></button>
+  <button class="res" data-m="emw"><b>🌐 Ricerca automatica su EveryMac</b><small>${myProxy()?'Worker collegato · '+esc(myProxy().replace(/^https?:\/\//,'').slice(0,40)):'Collega il tuo worker Cloudflare gratuito'}</small></button>
   <button class="res" data-m="exp"><b>💾 Esporta…</b><small>Backup completo, tabella per Excel, laboratorio o collezione.json</small></button>
   <button class="res" data-m="imp"><b>📥 Importa un backup</b><small>Unisce con la collezione attuale (stesso id = aggiornato)</small></button>
   <input type="file" id="fi" accept=".json,application/json" hidden>
@@ -4103,6 +4194,7 @@ function openMenu(){
       if(a==='notif'){const bg=await enableNotif();const x=$('#ntst',el);if(x)x.textContent=bg?'Notifiche attive ✓':'Notifiche permesse; controlli in background non disponibili su questo telefono: usa il calendario.'}
       if(a==='calcp'){try{await navigator.clipboard.writeText(calUrl());toast('Indirizzo copiato')}catch(e){toast(calUrl(),6000)}}
       if(a==='exp')exportSheet();
+      if(a==='emw')openEMSettings();
       if(a==='ai')openAILink();
       if(a==='db')openDBSettings();
       if(a==='imp')$('#fi',el).click();

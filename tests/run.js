@@ -757,6 +757,46 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.8: worker Cloudflare per EveryMac, codici vecchi risolti dall\'indice e tasto «Inserisci i dati»', async () => {
+    const U = await phone('U7'); const seen = [];
+    const SPEC = `<html><head><title>PowerBook G4 400 (Original - Ti) Specs: EveryMac.com</title></head><body><h1>PowerBook G4 400 (Original - Ti) Specs</h1><table>
+      <tr><td>Introduction Date:</td><td>January 9, 2001</td><td>Discontinued Date:</td><td>October 16, 2001</td></tr>
+      <tr><td>Processor Speed:</td><td>400 MHz</td><td>Processor Type:</td><td>PowerPC 7410 (G4)</td></tr>
+      <tr><td>Standard RAM:</td><td>128 MB</td><td>Maximum RAM:</td><td>1 GB</td></tr>
+      <tr><td>Apple Order No:</td><td>M7952LL/A</td><td>Apple Model No:</td><td>M5884</td></tr>
+      <tr><td>Model ID:</td><td>PowerBook3,2</td><td>EMC:</td><td>1854</td></tr></table></body></html>`;
+    await U.context().route('https://rddc.prova.workers.dev/**', r => { const u = new URL(r.request().url()).searchParams.get('url') || ''; seen.push(u); const H = { 'access-control-allow-origin': '*', 'content-type': 'text/html' };
+      if (!u) return r.fulfill({ status: 200, headers: H, body: 'RDDC worker attivo' });
+      if (/search_keywords=A1278/.test(u)) return r.fulfill({ status: 200, headers: H, body: '<a class="specs" href="/systems/apple/macbook/specs/macbook-a-specs.html">MacBook A</a><a class="specs" href="/systems/apple/macbook/specs/macbook-b-specs.html">MacBook B</a>' });
+      if (/search_keywords=M5884/.test(u)) return r.fulfill({ status: 200, headers: H, body: '<html><body><div id="contentcenter_4colwrapper"><br></div><textarea id="results">PowerBook G4 400 (Original - Ti)\n</textarea></body></html>' });
+      if (/\/systems\/apple\/powerbook_g4\/$/.test(u)) return r.fulfill({ status: 200, headers: H, body: '<a href="/systems/apple/powerbook_g4/specs/powerbook_g4_400.html">PowerBook G4 400 (Original - Ti)</a><a href="/systems/apple/powerbook_g4/specs/powerbook_g4_500.html">PowerBook G4 500 (Original - Ti)</a>' });
+      if (/powerbook_g4_400\.html$/.test(u)) return r.fulfill({ status: 200, headers: H, body: SPEC });
+      return r.fulfill({ status: 404, headers: H, body: '' }); });
+    await U.evaluate(() => goBase(() => openMenu())); await U.waitForTimeout(300); await U.click('[data-m="emw"]'); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => /export default/.test(stack[stack.length - 1].querySelector('pre').textContent)), 'codice del worker nella pagina');
+    await U.fill('#px', 'rddc.prova.workers.dev'); await U.click('[data-w="save"]'); await U.waitForFunction(() => /Funziona|⚠️/.test(document.querySelector('#pxo').textContent));
+    eq(await U.evaluate(() => [LS.get('rd_proxy'), /✅ Funziona/.test(document.querySelector('#pxo').textContent), proxies()]), ['https://rddc.prova.workers.dev', true, ['https://rddc.prova.workers.dev']], 'collegato e provato; si usa solo il worker');
+    await U.evaluate(() => goBase(() => openLookup({ prefill: 'M5884', onResult: r => { window._used = r.fields.nome } }))); await U.waitForTimeout(400);
+    await U.click('#lg'); await U.waitForSelector('#lg.use', { timeout: 8000 });
+    eq(await U.evaluate(() => [document.querySelector('#lg').textContent.trim(), !!document.querySelector('.btn.again'), /PowerBook G4 400/.test(document.querySelector('#lo').textContent)]), ['✓ Inserisci i dati', true, true], 'codice vecchio → scheda trovata dall\'indice; il tasto diventa «Inserisci i dati»');
+    ok(seen.some(u => /\/systems\/apple\/powerbook_g4\/$/.test(u)), 'indice della famiglia consultato');
+    await U.fill('#lq', 'A1278'); eq(await U.evaluate(() => [document.querySelector('#lg').textContent.trim(), !!document.querySelector('.btn.again')]), ['Cerca', false], 'cambiando il codice torna «Cerca»');
+    await U.fill('#lq', 'M5884'); await U.click('#lg'); await U.waitForSelector('#lg.use', { timeout: 8000 });
+    const n = seen.length; await U.click('.btn.again'); await U.waitForSelector('#lg.use', { timeout: 8000 }); ok(seen.length > n, 'il piccolo ↻ ripete la ricerca');
+    await U.click('#lg'); await U.waitForTimeout(200); eq(await U.evaluate(() => window._used), 'PowerBook G4 400 (Original - Ti)', 'il tasto grande inserisce i dati');
+    await U.context().close();
+  });
+
+  await test('2.8: da EveryMac con «Condividi» la scheda si compila da sola', async () => {
+    const U = await phone('U8');
+    const txt = 'PowerBook G4 400 (Original - Ti) Specs\nIntroduction Date:\nJanuary 9, 2001\nProcessor Speed:\n400 MHz\nProcessor Type:\nPowerPC 7410 (G4)\nStandard RAM:\n128 MB\nApple Model No:\nM5884\nModel ID:\nPowerBook3,2\nEMC:\n1854\n';
+    await U.evaluate(t => openShared({ files: [], meta: { title: '', text: t, url: '' } }), txt); await U.waitForSelector('#pa.use', { timeout: 8000 });
+    eq(await U.evaluate(() => [stack[stack.length - 1].querySelector('h2').textContent, /PowerBook3,2/.test(document.querySelector('#po').textContent)]), ['Incolla da EveryMac', true], 'testo condiviso analizzato subito');
+    await U.click('#pa'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => stack[stack.length - 1].querySelector('[name="nome"]').value), 'PowerBook G4 400 (Original - Ti)', 'modulo compilato');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
