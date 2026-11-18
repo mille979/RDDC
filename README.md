@@ -143,6 +143,7 @@ EveryMac non lascia leggere le sue pagine direttamente da un'app web (CORS) e i 
 Con il worker collegato l'app usa solo quello (i proxy pubblici restano per chi non l'ha). Il worker accetta solo pagine di everymac.com; il piano gratuito permette 100.000 richieste al giorno (una ricerca ne usa 2–4).
 - **Codici vecchi** (Mxxxx, es. M5884): EveryMac li riconosce ma elenca solo i nomi dei modelli, senza link; l'app apre l'indice della famiglia (es. PowerBook G4) e trova da sola la scheda giusta.
 - **Condividi → RDDC**: da Chrome su una scheda di EveryMac seleziona tutto il testo e scegli *Condividi → RDDC* (funziona anche senza worker), oppure condividi il link della pagina (serve il worker): si apre l'analisi con la scheda già compilata.
+- **RAM e memoria**: lette anche dalle schede di iPhone, iPod e iPad («Onboard RAM», «Storage Capacity») e dei Mac vecchi («Standard Hard Drive»). Quando EveryMac elenca più **tagli** (es. «8, 16 GB», «32 MB, 64 MB»), nel modulo compaiono come scelte rapide sotto Archiviazione e RAM: un tocco aggiorna il campo e, se c'è, anche il nome.
 - Trovati i dati, il tasto di ricerca diventa **«✓ Inserisci i dati»** e a sinistra compare un piccolo **↻** per ripetere la ricerca.
 
 ## Grafica (2.0): Liquid Glass
