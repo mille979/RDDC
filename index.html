@@ -54,7 +54,12 @@ button{cursor:pointer}
 .oggi{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:10px 10px 6px;margin:10px 0 14px}
 .ogh{display:flex;align-items:baseline;gap:8px;padding:0 4px 6px}.ogh b{font-size:16px}.ogh small{color:var(--mute);font-size:12.5px}
 .og{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;border:0;background:var(--chip);border-radius:12px;padding:9px 12px;margin:0 0 6px;color:var(--ink);font-size:14.5px}
-.og small{color:var(--mute);font-size:12.5px;margin-top:2px}.og.late{background:color-mix(in srgb,var(--dng) 16%,var(--card))}
+.og small{color:var(--mute);font-size:12.5px;margin-top:2px}
+.ogw{position:relative;margin:0 0 6px;border-radius:18px;overflow:hidden;transition:height .25s ease,margin .25s ease,opacity .2s ease}.ogw .ogt{display:flex;transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+.ogw .og{flex:0 0 100%;margin:0}.ogb{flex:none;display:flex;gap:6px;padding-left:8px}
+.ogb button{border:0;border-radius:16px;padding:0 14px;font:650 13.5px/1.1 system-ui,sans-serif;color:var(--on-acc);background:var(--acc);white-space:nowrap;transition:transform .2s}
+.ogb button+button{background:color-mix(in srgb,var(--ink) 58%,transparent);color:var(--bg)}.ogw.full .ogb button:first-child{transform:scale(1.06)}.ogw.gone{opacity:0}
+.og-hid{display:block;width:100%;border:0;background:none;color:var(--mute);font:500 12.5px system-ui,sans-serif;padding:2px 6px 8px;text-align:left}.og.late{background:color-mix(in srgb,var(--dng) 16%,var(--card))}
 .mb{color:var(--acc-ink,var(--acc));font-weight:650}
 .mrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:8px 8px 8px 12px;margin:6px 0}
 .mrow .mi{flex:1 1 100%;min-width:0}.mrow .mi small{display:block;color:var(--mute);font-size:12.5px}.mrow .late{color:var(--dng)}
@@ -163,7 +168,10 @@ textarea.in{min-height:70px;resize:vertical}
 .res{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
 .res small{display:block;color:var(--mute)}
 .bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px}
-.bar div{height:14px;background:var(--acc);border-radius:7px;min-width:3px}
+.bar div{height:14px;background:var(--acc);border-radius:7px;min-width:3px;animation:bar-grow .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes bar-grow{from{width:0;min-width:0}}
+.chart .ln{stroke-dasharray:1;stroke-dashoffset:0;animation:ln-draw 1s ease-out both}@keyframes ln-draw{from{stroke-dashoffset:1}}
+.btn.saved{animation:use-in .3s cubic-bezier(.2,.9,.3,1.3) both}
 .bar span:last-child{white-space:nowrap}
 .bar.b2 div{background:var(--acc2)}.bar.b3 div{background:color-mix(in srgb,var(--acc2) 55%,var(--acc))}.bar.b4 div{background:var(--dng)}
 .bar span:first-child{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -320,6 +328,11 @@ html.tilting .o3{animation:none}
 .cut-prev.dark{background:radial-gradient(#3a2716,#140c06)}
 .cut-prev img{max-width:100%;max-height:300px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.4))}
 /* icona di sincronizzazione */
+ html{overscroll-behavior-y:contain}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);z-index:30;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--glass-hi);box-shadow:var(--rim),var(--shadow);-webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);transform:translate3d(-50%,-56px,0) scale(.6);opacity:0;transition:transform .35s cubic-bezier(.2,.9,.3,1.2),opacity .3s;pointer-events:none}
+#ptr svg{width:28px;height:28px;overflow:visible}#ptr .cl{fill:var(--chip);stroke:var(--mute);stroke-width:1.3}#ptr .ar path,#ptr .sy{fill:none;stroke:var(--acc-ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#ptr .sy{display:none}#ptr .ar{transform-origin:12px 14px;transition:transform .2s}#ptr.ready .ar{transform:rotate(180deg)}#ptr.run .ar,#ptr.ok .ar{display:none}#ptr.run g.sy{display:block;transform-origin:12px 14px;animation:ptr-spin .9s linear infinite}#ptr.ok path.sy{display:block}
+@keyframes ptr-spin{to{transform:rotate(360deg)}}
 .sync{margin-left:auto;display:inline-flex;align-items:center;gap:4px;border:0;background:none;color:var(--mute);font-size:12px;padding:0 2px;min-height:24px}
 .sync svg{width:22px;height:22px;overflow:visible;flex:none}
 .sync .cl{fill:var(--chip);stroke:var(--mute);stroke-width:1.3}
@@ -638,6 +651,16 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* filtri salvati sotto la ricerca */
 .smart{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}.smart::-webkit-scrollbar{display:none}.smart .chip{flex:none;padding:6px 12px;font-size:13.5px}
 .chs{display:flex;flex-direction:column;gap:8px}.chs .btn{width:100%}
+.vest{text-align:center;padding:14px;border-radius:22px;background:var(--card);box-shadow:var(--shadow)}.vest small{display:block;color:var(--mute);font-size:12.5px}.vest b{display:block;font-size:34px;letter-spacing:-.02em;margin:2px 0 10px}
+.vrange{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 30%,transparent),var(--acc));margin:0 6px}.vrange i{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--card);box-shadow:0 0 0 3px var(--acc);transform:translate(-50%,-50%)}
+.vr2{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute);margin:6px 2px 4px}.vf{margin:4px 0 8px;padding-left:20px;font-size:14px}.vf li{margin:2px 0}
+.scanv{position:fixed;inset:0;z-index:70;background:#000;display:grid;place-items:center;animation:vt-fade-in .2s ease both}.scanv.out{animation:vt-fade-out .2s ease both}
+.scanv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.scanf{position:relative;width:min(78vw,340px);height:min(40vw,170px);border-radius:22px;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.9)}
+.scanv p{position:absolute;top:calc(env(safe-area-inset-top) + 24px);left:0;right:0;text-align:center;color:#fff;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.6)}.scanv .btn{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 28px)}
+.gapf{margin:0 0 14px}.gaph{display:flex;align-items:baseline;gap:8px;padding:0 4px}.gaph b{font-size:16px}.gaph small{margin-left:auto;color:var(--mute)}
+.gbar{height:6px;border-radius:3px;background:var(--chip);margin:6px 4px 2px;overflow:hidden}.gbar i{display:block;height:100%;border-radius:3px;background:var(--acc);animation:bar-grow .7s cubic-bezier(.2,.8,.2,1) both}
+.gapr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.gapr:first-child{border-top:0}.gapr .lb{flex:1}.gapr.own b{color:var(--acc-ink)}.gapw{font-size:12.5px;color:var(--mute);white-space:nowrap}
+.lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
 .chips.cuts{margin:7px 0 2px;align-items:center;gap:6px}.chips.cuts small{color:var(--mute);font-size:12px;margin-right:2px}
 .btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
 /* 2.7: tasti della scheda più ordinati + foglio di azioni */
@@ -772,7 +795,7 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 </header>
 <div id="top">
   <div class="row">
-    <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off">
+    <input id="q" class="search" type="search" placeholder="Cerca: nome, A1278, EMC, colore, note…" autocomplete="off" list="dl_recenti"><datalist id="dl_recenti"></datalist>
     <button class="ibtn" id="bView" aria-label="Cambia vista"></button>
     <button class="ibtn" id="bFil" aria-label="Filtri"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span class="badge" id="nF" hidden></span></button>
     <button class="ibtn" id="bMenu" aria-label="Menu"><svg class="ic" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
@@ -794,8 +817,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.8.2';
+const APP_VER='2.9';
 const NOVITA=[
+ ['2.9','2026-11-18',['Oggi: scorri una voce verso sinistra per rimandarla a domani o a un intervallo a scelta (3 giorni, una settimana, due settimane, un mese, una data); scorrendo fino in fondo va a domani','📷 Dalla foto dell\'etichetta: Gemini legge modello, EMC e numero di serie e cerca la scheda; nel modulo «Leggi dall\'etichetta» riempie i campi vuoti','✨ Stima del valore con Gemini nella sezione Valore: forbice, prezzo tipico e fonti, poi con un tocco nello storico','🧩 Cosa manca (Menu): per ogni linea Apple che hai, i modelli che mancano, da mettere in wishlist con un tocco','Pressione lunga su un oggetto: anche Acceso oggi, Caricato oggi, Sposta e Aggiungi intervento','Tira giù dalla cima dell\'elenco per sincronizzare; scorciatoie tenendo premuta l\'icona (Aggiungi, Manutenzione, Cerca); ultime ricerche suggerite; codici a barre con la fotocamera nella ricerca','Giro di manutenzione: la ✗ chiede cosa non va (batteria che non regge, batteria morta, non si accende); le batterie esaurite escono dal giro di ricarica e resta l\'accensione','Animazioni: finestre e fogli si chiudono trascinandoli in basso, l\'elenco si riordina con movimento, Salva diventa una spunta, statistiche che contano e grafici che si disegnano, vibrazioni leggere uniformi (spegnibili)']],
  ['2.8.2','2026-11-18',['Miniature: le foto verticali sono centrate (prima si vedeva solo la parte alta)','Chiudendo una scheda la foto atterra esattamente sulla miniatura, senza lo scatto finale','Barra in fondo: Collezione/Wishlist e il tasto + centrati alla stessa altezza, e la goccia copre esattamente la voce scelta']],
  ['2.8.1','2026-11-18',['RAM e memoria lette meglio da EveryMac: anche per iPhone, iPod e iPad («Onboard RAM», «Storage Capacity») e per i Mac vecchi (disco «Standard Hard Drive»), con una ricerca di riserva su ogni voce che parli di RAM o memoria','Tagli di memoria: quando EveryMac elenca più versioni (es. 8, 16 GB o 32 MB, 64 MB) nel modulo compaiono come scelte rapide sotto Archiviazione e RAM; un tocco aggiorna il campo e anche il nome (es. «iPhone 3G 16 GB»)']],
  ['2.8','2026-11-18',['Trovati i dati, il tasto di ricerca diventa «✓ Inserisci i dati» e a sinistra compare un piccolo ↻ per ripetere la ricerca (EveryMac, Gemini, Incolla): niente più ricerche ripetute per sbaglio','Ricerca automatica su EveryMac con il tuo worker Cloudflare gratuito: Menu → «🌐 Ricerca automatica su EveryMac», con istruzioni, codice da copiare e prova','I vecchi codici (Mxxxx, es. M5884) ora trovano la scheda: EveryMac dà solo i nomi e l\'app cerca il link nell\'indice della famiglia','Da EveryMac con «Condividi» → RDDC: il testo selezionato della pagina (o il link, con il worker) apre la scheda già compilata']],
@@ -884,6 +908,8 @@ const DB={
 
 /* ============ modello dati ============ */
 const BATT_ST=['Nuova','Buona','Regge','Tampona ma non regge','Morta','Assente'];
+/* batterie esaurite: fuori dal giro di ricarica, resta solo l'accensione */
+const BATT_NOCH=['Tampona ma non regge','Morta','Assente'];
 const STATI=['Funzionante','Da testare','Da riparare','Non funzionante','Per ricambi'];
 const PART_CAT=['RAM','Disco / SSD','Batteria','Alimentatore','Scheda logica','Schermo / pannello','Tastiera / trackpad','Unità ottica','Ventola / dissipatore','Cavo / flat','Scheda di espansione','Altro'];
 const TIPI=['Ricambio','Computer desktop','All-in-one','Portatile','Server','Televisore CRT','Monitor CRT','Monitor','Smartphone','Tablet','Lettore musicale','Console','Fotocamera','Stampante','Periferica','Rete',
@@ -1054,9 +1080,25 @@ function render(){
     const none=['anno','decennio'].includes(grp)?'Senza anno':'Non indicato';
     for(const k of keys){html+=`<div class="gh">${esc(k==='—'?none:k)} <small>${map.get(k).length}</small></div>`+block(map.get(k))}
   }else html+=block(items);
+  /* 2.9: l'elenco si riordina con movimento quando cambiano filtri, ordine, gruppi, vista o sezione */
+  const sig=[S.view,JSON.stringify(S.sel),curSort(),grp,lay].join('|'),flip=render._sig&&render._sig!==sig&&!RM()&&!SELM,swap=render._view&&render._view!==S.view;render._sig=sig;render._view=S.view;
+  const before=flip&&!swap?listRects(L):null;
   L.innerHTML=html;
+  if(flip)flipList(L,before);
   if(SELM)L.querySelectorAll('[data-id]').forEach(c=>{c.classList.add('selc');c.classList.toggle('on',SELM.has(c.dataset.id))});
 }
+/* 2.9: il tasto Salva diventa una spunta prima di chiudere il modulo */
+function savedMorph(el){el.querySelectorAll('[data-save]').forEach(b=>{b.disabled=true;b.classList.add('saved');b.innerHTML='✓ Salvato'});buzz('ok');return sleep(RM()?0:300)}
+/* 2.9: numeri che contano fino al valore (statistiche) */
+function countUp(root){if(RM())return;root.querySelectorAll('.tile b,.vhead b').forEach(b=>{if(b.children.length)return;const t=b.textContent,m=t.match(/\d{1,3}(?:\.\d{3})+|\d+(?:,\d+)?/);if(!m)return;
+    const raw=m[0],dec=raw.includes(','),v=parseFloat(raw.replace(/\./g,'').replace(',','.'));if(!isFinite(v)||v<2)return;const pre=t.slice(0,m.index),post=t.slice(m.index+raw.length),t0=performance.now(),D=700;
+    const f=now=>{const p=Math.min(1,(now-t0)/D),e=1-Math.pow(1-p,3),x=v*e;b.textContent=pre+(dec?x.toLocaleString('it',{minimumFractionDigits:raw.split(',')[1].length,maximumFractionDigits:raw.split(',')[1].length}):Math.round(x).toLocaleString('it'))+post;if(p<1)requestAnimationFrame(f);else b.textContent=t};requestAnimationFrame(f)})}
+function listRects(L){const m=new Map();L.querySelectorAll('[data-id]').forEach(c=>{const r=c.getBoundingClientRect();if(r.bottom>-40&&r.top<innerHeight+40)m.set(c.dataset.id,r)});return m}
+function flipList(L,before){let n=0;
+  for(const c of L.querySelectorAll('[data-id]')){const r=c.getBoundingClientRect();if(r.top>innerHeight||r.bottom<0)continue;if(++n>40)break;
+    const b=before&&before.get(c.dataset.id);
+    if(b){const dx=b.left-r.left,dy=b.top-r.top;if(Math.abs(dx)+Math.abs(dy)<1)continue;c.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.9,.3,1)'})}
+    else c.animate([{opacity:0,transform:'translateY(14px) scale(.97)'},{opacity:1,transform:'none'}],{duration:340,delay:Math.min(n,12)*22,easing:'cubic-bezier(.2,.9,.3,1)',fill:'backwards'})}}
 function card(d){
   const kd=kindOf(d.tipologia);
   const sub=[d.marca,d.linea,d.modello||d.identifier].filter(Boolean).join(' · ');
@@ -1345,6 +1387,7 @@ function openDetail(id,replace,morph,quiet,dir){
       if(t.closest('[data-loan]'))return openLoan(d);
       if(t.closest('[data-ret]')&&await ask(`«${d.nome}» è rientrato?`,'Sì, è rientrato')){(d.prestiti=d.prestiti||[]).push(Object.assign({},d.prestito,{rientro:today()}));delete d.prestito;await saveDev(d);render();toast('Bentornato a casa 🏠');return openDetail(d.id,true)}
       if(t.closest('[data-addval]'))return openValore(d);
+      if(t.closest('[data-valest]'))return openValEst(d);
       const vr=t.closest('[data-val]');if(vr)return openValore(d,(d.valori||[]).find(x=>x.id===vr.dataset.val));
       if(t.closest('[data-addatt]'))return $('#attf',el).click();
       const ao=t.closest('[data-att]');if(ao)return openAtt(d,ao.dataset.att);
@@ -1579,7 +1622,7 @@ function manTargets(d){
 }
 /* la ricarica serve solo a una batteria ricaricabile ancora viva: «morta» o «assente» (e i fissi) restano fuori */
 function manState(t){const x=t.u||t.d,c=manCfg(),fr=+t.d.man_freq||c.on,frc=+t.d.man_freq||c.charge,bs=x.batt_stato||t.d.batt_stato||'';
-  const rech=/^Ricaricabile/.test(manBatt(t.d))&&!['Morta','Assente'].includes(bs);
+  const rech=/^Ricaricabile/.test(manBatt(t.d))&&!BATT_NOCH.includes(bs);
   const nextOn=x.man_on?addMonths(x.man_on,fr):'',nextCh=rech&&x.man_charge?addMonths(x.man_charge,frc):'';
   return {rech,bs,never:!x.man_on,nextOn,nextCh,dueOn:!x.man_on||nextOn<=today(),dueCh:rech&&(!x.man_charge||nextCh<=today()),tamp:/^Tampone/.test(manBatt(t.d)),doneOn:x.man_on===today(),doneCh:x.man_charge===today()}}
 const manAll=(list=devices)=>list.flatMap(manTargets).map(t=>Object.assign(t,{st:manState(t)}));
@@ -1595,7 +1638,7 @@ function manHTML(d){if(['part','acc'].includes(kindOf(d.tipologia)))return '';co
   const hist=(d.manutenzioni||[]).slice(-8).reverse();
   return `<div class="sec-t">Manutenzione</div>${manBatt(d)?`<p class="note" style="margin:0 0 6px">Batteria: ${esc(manBatt(d))}${d.batt_stato?' · stato: '+esc(d.batt_stato):''}${/^Tampone/.test(manBatt(d))?' · ⚠️ le batterie tampone col tempo possono perdere: controllala o rimuovila':''}</p>`:''}
     ${rows||'<p class="note">Fuori dal giro (ruolo, tipo o impostazione «Mai»).</p>'}
-    ${hist.length?`<details class="more"><summary>Storico (${(d.manutenzioni||[]).length})</summary><div class="log">${hist.map(m=>`<div class="li"><span class="ld">${fmtD(m.data)}</span><span class="lb"><b>${{on:'⚡ Acceso',charge:'🔋 Caricato',both:'⚡🔋 Acceso e caricato',ko:'✗ Non si accende'}[m.tipo]||m.tipo}</b>${m.es&&hasUnits(d)?`<small>esemplare n. ${d.esemplari.findIndex(u=>u.id===m.es)+1}</small>`:''}</span></div>`).join('')}</div></details>`:''}`}
+    ${hist.length?`<details class="more"><summary>Storico (${(d.manutenzioni||[]).length})</summary><div class="log">${hist.map(m=>`<div class="li"><span class="ld">${fmtD(m.data)}</span><span class="lb"><b>${({on:'⚡ Acceso',charge:'🔋 Caricato',both:'⚡🔋 Acceso e caricato',ko:'✗ Non si accende',batt:'🪫 Batteria: '+String(m.bs||'').toLowerCase()})[m.tipo]||m.tipo}</b>${m.es&&hasUnits(d)?`<small>esemplare n. ${d.esemplari.findIndex(u=>u.id===m.es)+1}</small>`:''}</span></div>`).join('')}</div></details>`:''}`}
 function manBadge(d){const ts=manTargets(d);if(!ts.length)return '';const st=ts.map(manState),on=st.some(x=>x.dueOn),ch=st.some(x=>x.dueCh);
   return on||ch?`<span class="mb">${on?'⚡ da accendere':''}${on&&ch?' · ':''}${ch?'🔋 da caricare':''}</span>`:''}
 function openMaintenance(){
@@ -1616,10 +1659,15 @@ function openMaintenance(){
     $('#mon',el).onchange=e=>{only=e.target.checked;draw()};
     el.addEventListener('click',async e=>{const l=e.target.closest('[data-ml]');if(l){luogo=l.dataset.ml;LS.set('rd_man_l',luogo);return draw()}
       const b=e.target.closest('[data-mg]');if(!b)return;const row=b.closest('[data-mid]'),d=devices.find(x=>x.id===row.dataset.mid);if(!d)return;const u=row.dataset.mu?d.esemplari.find(x=>x.id===row.dataset.mu):null,a=b.dataset.mg;
-      if(a==='ko'){if(!await ask(`«${unitName({d,u,i:u?d.esemplari.indexOf(u):-1})}» non si accende? Lo segno «Da riparare» e aggiungo una nota nel registro interventi.`,'Sì, segna'))return;
+      if(a==='ko'){const nm=unitName({d,u,i:u?d.esemplari.indexOf(u):-1}),hasB=!!manBatt(d),tamp=/^Tampone/.test(manBatt(d));
+        /* 2.9: la ✗ chiede cosa non va: batteria (aggiorna lo stato nella scheda, resta solo il giro di accensione) o non si accende */
+        const opts=[...(hasB&&!tamp?[{ic:'🔋',t:'La batteria non regge',sub:'Si accende con l\'alimentatore ma la batteria tampona e non tiene la carica',bs:'Tampona ma non regge',g:1}]:[]),...(hasB?[{ic:'🪫',t:tamp?'Batteria tampone scarica o morta':'Batteria morta',sub:'Niente più ricariche: resta il giro di accensione',bs:'Morta',g:1}]:[]),{ic:'✗',t:'Non si accende',sub:'Lo segno «Da riparare» con una nota nel registro interventi',dng:1,g:2}];
+        const i=opts.length>1?await sheet(`Cosa non va in «${nm}»?`,opts):(await ask(`«${nm}» non si accende? Lo segno «Da riparare» e aggiungo una nota nel registro interventi.`,'Sì, segna')?0:-1);if(i<0)return;
+        if(opts[i].bs){const x=u||d;x.batt_stato=opts[i].bs;if(!u&&hasUnits(d))d.esemplari.forEach(z=>z.batt_stato=opts[i].bs);x.man_on=today();(d.manutenzioni=d.manutenzioni||[]).push(Object.assign({data:today(),tipo:'batt',bs:opts[i].bs},u?{es:u.id}:{}));
+          await saveDev(d);render();draw();buzz('ok');toast(`🔋 Batteria «${opts[i].bs.toLowerCase()}»: niente più ricariche, resta il giro di accensione`,4500);return}
         manLog(d,u,'ko');(u||d).stato='Da riparare';(d.interventi=d.interventi||[]).push({id:uid(),data:today(),tipo:'Revisione / test',desc:'Giro di manutenzione: non si accende'+(u?` (esemplare n. ${d.esemplari.indexOf(u)+1})`:'')})}
       else manLog(d,u,a);
-      await saveDev(d);render();draw();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}});
+      await saveDev(d);render();draw();buzz('long')});
   }});
 }
 /* promemoria: elenco delle prossime scadenze per il service worker (notifiche) e calendario .ics per Google Calendar */
@@ -1660,9 +1708,26 @@ function oggiHTML(){
   const drop=devices.filter(d=>d.wish&&(d.annunci||[]).some(a=>a.prezzo_prima&&+a.prezzo<+a.prezzo_prima));
   if(drop.length)lines.push(`<button class="og" id="annB"><span>🏷️ Prezzo sceso in <b>${drop.length}</b> ${drop.length===1?'desiderio':'desideri'}</span><small>${esc(drop[0].nome)} → apri la wishlist</small></button>`);
   if(!lines.length)return '';
+  /* 2.9: ogni voce si può rimandare scorrendola verso sinistra */
+  const snz=snoozes(),key=l=>(l.match(/id="(\w+)"/)||[])[1]||'',vis=lines.filter(l=>!snz[key(l)]),hid=lines.length-vis.length;
   const dt=new Date().toLocaleDateString('it',{weekday:'long',day:'numeric',month:'long'});
-  return `<div class="oggi"><div class="ogh"><b>☀︎ Oggi</b><small>${dt}</small></div>${lines.join('')}</div>`;
+  return `<div class="oggi"><div class="ogh"><b>☀︎ Oggi</b><small>${dt}</small></div>${vis.map(l=>`<div class="ogw" data-ogk="${key(l)}"><div class="ogt">${l}<div class="ogb"><button type="button" data-snz="1">⏰ Domani</button><button type="button" data-snz="pick">Rimanda…</button></div></div></div>`).join('')}${hid?`<button class="og-hid" type="button" data-snzshow>⏰ ${hid} ${hid===1?'voce rimandata':'voci rimandate'} · mostra</button>`:''}</div>`;
 }
+const snoozes=()=>{const o=LS.get('rd_snooze',{}),t=today();let ch=false;for(const k of Object.keys(o))if(!(o[k]>t)){delete o[k];ch=true}if(ch)LS.set('rd_snooze',o);return o};
+const snoozeLabel=u=>{const n=Math.round((Date.parse(u)-Date.parse(today()))/864e5);return n===1?'a domani':n<7?`di ${n} giorni`:'al '+fmtD(u)};
+function snoozeOg(k,until,w){const o=LS.get('rd_snooze',{});o[k]=until;LS.set('rd_snooze',o);buzz('ok');
+  const done=()=>{render();toast(`Rimandato ${snoozeLabel(until)}`,4000,{label:'ANNULLA',fn:()=>{const x=LS.get('rd_snooze',{});delete x[k];LS.set('rd_snooze',x);render()}})};
+  if(w&&!RM()){w.style.height=w.offsetHeight+'px';w.classList.add('gone');requestAnimationFrame(()=>{w.style.height='0px';w.style.marginBottom='0px'});setTimeout(done,260)}else done()}
+async function pickSnooze(k,w){const opts=[[1,'Domani'],[3,'Fra 3 giorni'],[7,'Fra una settimana'],[14,'Fra due settimane'],[30,'Fra un mese']];
+  const i=await sheet('Rimanda questa voce',[...opts.map(([n,t])=>({ic:'⏰',t,sub:fmtD(addDays(today(),n)),g:1})),{ic:'📅',t:'Scegli una data…',g:2}]);if(i<0)return closeOg(w);
+  if(i<opts.length)return snoozeOg(k,addDays(today(),opts[i][0]),w);
+  const d=await askDate('Rimanda fino al',addDays(today(),2));if(d&&d>today())snoozeOg(k,d,w);else closeOg(w)}
+function askDate(msg,v){return new Promise(res=>{const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div><p>${esc(msg)}</p><input class="in" type="date" id="adv" value="${esc(v)}" min="${addDays(today(),1)}"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Annulla</button><button class="btn" data-y>Rimanda</button></div></div>`;
+  m.onclick=e=>{if(e.target.matches('[data-y]')){const x=m.querySelector('#adv').value;m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
+function closeOg(w){const t=w&&w.querySelector('.ogt');if(t){t.style.transition='';t.style.transform='';w.classList.remove('open','full')}}
+/* vibrazioni leggere, uguali in tutta l'app (spegnibili in Impostazioni) */
+function buzz(k='tick'){if(LS.get('rd_buzz',true)===false)return;try{navigator.vibrate&&navigator.vibrate({tick:8,ok:[10,40,14],warn:[8,40,8],long:12}[k]||8)}catch(_){}}
 /* ===== laboratorio: collaudi, progetti di restauro, lista della spesa ===== */
 const collKind=d=>{const t=(d.tipologia||'')+' '+(d.nome||''),k=kindOf(d.tipologia);
   if(k==='tv'||k==='acc'||k==='part')return k;
@@ -1705,7 +1770,7 @@ function openCollaudo(d,u,prev){
     el.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='cnv'){e.preventDefault();el.querySelector('[data-cadd]').click()}});
     el.addEventListener('click',async e=>{const t=e.target;
       const cu=t.closest('[data-cu]');if(cu){unit=d.esemplari.find(x=>x.id===cu.dataset.cu);return drawU()}
-      const ce=t.closest('[data-ce]');if(ce){const r=rows[+ce.closest('[data-ci]').dataset.ci];r.e=r.e===ce.dataset.ce?'':ce.dataset.ce;draw();try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}
+      const ce=t.closest('[data-ce]');if(ce){const r=rows[+ce.closest('[data-ci]').dataset.ci];r.e=r.e===ce.dataset.ce?'':ce.dataset.ce;draw();buzz('tick')
         if(r.e==='ko'){const inp=el.querySelector(`[data-cm="${rows.indexOf(r)}"]`);inp&&inp.focus()}return}
       if(t.closest('[data-call]')){rows.forEach(r=>{if(!r.e)r.e='ok'});return draw()}
       if(t.closest('[data-cadd]')){const v=$('#cnv',el).value.trim();if(!v)return;$('#cnv',el).value='';rows.push({t:v,h:'',e:'',m:''});
@@ -1945,7 +2010,7 @@ function openLab(tab='prog'){
         if(sh.length)h+=`<button class="btn sm sec" data-sshare>📤 Condividi la lista</button>`;
         if(openP.length)h+=`<div class="sec-t">Aggiungi</div><select class="in" id="sap">${openP.map(({d,p})=>`<option value="${d.id}|${p.id}">${esc(p.titolo)} · ${esc(d.nome)}</option>`).join('')}</select><div class="pz" style="background:none;box-shadow:none;padding:6px 0"><input class="in" id="san" placeholder="Pezzo…" style="margin:0;flex:2"><input class="in" id="sav" inputmode="decimal" autocomplete="off" placeholder="€" style="margin:0;flex:1;max-width:84px"><button class="btn sm" data-sadd>＋</button></div>`}
       if(tab==='stat')h=labStats()+`<div class="sec-t">Esporta (CSV per Excel / Fogli)</div>${Object.entries(LAB_CSV).map(([k,[nm]])=>`<button class="res" data-csv="${k}"><b>📄 ${nm}</b></button>`).join('')}`;
-      $('#lb',el).innerHTML=h};
+      $('#lb',el).innerHTML=h;if(tab==='stat')countUp($('#lb',el))};
     el._refresh=draw;draw();
     el.addEventListener('click',async e=>{const t=e.target;
       const lt=t.closest('[data-lt]');if(lt){tab=lt.dataset.lt;return draw()}
@@ -2278,16 +2343,56 @@ async function gemTryNative(model,q,ctx,search){
     const j2=await gemFetch(`models/${model}:generateContent`,{contents:[{role:'user',parts:[{text:gemPrompt(q,ctx).replace(/^[\s\S]*?Rispondi SOLO/,'Trasforma il testo qui sotto in JSON. Rispondi SOLO')+'\n\nTesto:\n'+txt}]}],generationConfig:{responseMimeType:'application/json'}},model);o=gemJSON(gemText(j2))}
   if(!o)throw new AppErr('risposta',cand.finishReason&&cand.finishReason!=='STOP'?`risposta interrotta (${cand.finishReason})`:'nessun JSON nella risposta',{model,raw:String(txt).slice(0,600)});
   const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model});return r}
+/* 2.9: lavori di Gemini oltre alla scheda (stessa catena di modelli, limiti e riserve) */
+async function gemCall(model,parts,search,json=true){
+  const body={contents:[{role:'user',parts}]};if(search)body.tools=[{google_search:{}}];else if(json)body.generationConfig={responseMimeType:'application/json'};
+  const j=await gemFetch(`models/${model}:generateContent`,body,model);
+  const cand=(j.candidates||[])[0]||{},gm=cand.groundingMetadata||{};
+  if(!cand.content&&(cand.finishReason==='SAFETY'||(j.promptFeedback||{}).blockReason))throw new AppErr('bloccata',`risposta bloccata (${cand.finishReason||j.promptFeedback.blockReason})`,{model});
+  const sources=(gm.groundingChunks||[]).map(c=>c.web).filter(w=>w&&w.uri).map(w=>({uri:w.uri,title:w.title||w.domain||'web'})).filter((s,i,a)=>a.findIndex(x=>x.title===s.title)===i);
+  const txt=gemText(j),o=gemJSON(txt);if(!o)throw new AppErr('risposta','nessun JSON nella risposta',{model,raw:String(txt).slice(0,600)});
+  return {o,model,sources}}
+/* foto dell'etichetta → marca, modello, EMC, numero di serie… (senza ricerca web: si legge solo la foto) */
+const LABEL_PROMPT=`Nella foto c'è l'etichetta (o la targhetta, o la scatola) di un oggetto di elettronica, spesso vintage: computer, console, telefono, televisore, accessorio.
+Leggi con attenzione tutto il testo stampato e riconosci l'oggetto. Rispondi SOLO con un oggetto JSON con queste chiavi (ometti quelle che non si leggono, non inventare):
+- "marca"
+- "nome": nome commerciale del modello se lo riconosci con sicurezza (es. "iMac G3", "PowerBook G4 Titanium", "Game Boy Color")
+- "modello": numero di modello (es. A1278, M5521, CGB-001)
+- "emc": numero EMC (solo le cifre, es. 2554)
+- "identifier": Model Identifier se scritto (es. PowerBook3,2)
+- "seriale": numero di serie esattamente come stampato
+- "ordine": codice d'ordine o part number (es. MB466LL/A)
+- "anno": anno di produzione se scritto o deducibile dall'etichetta (numero)
+- "tipologia": uno tra ${'TIPI_PLACEHOLDER'}
+- "alimentazione": tensione, corrente, potenza se scritte
+- "testo": altro testo utile letto, in breve
+- "certezza": "alta", "media" o "bassa"`;
+async function labelRead(dataUrl,onStep){
+  const mime=(dataUrl.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',b64=dataUrl.split(',')[1];
+  const prompt=LABEL_PROMPT.replace('TIPI_PLACEHOLDER',TIPI.map(t=>`"${t}"`).join(', '));
+  return gemAsk('','',onStep,async m=>{const r=await gemCall(m,[{inline_data:{mime_type:mime,data:b64}},{text:prompt}],false);
+    if(!Object.keys(r.o).some(k=>['marca','nome','modello','emc','identifier','seriale','ordine'].includes(k)&&r.o[k]))throw new AppErr('vuoto','etichetta non leggibile',{model:m});return r})}
+/* stima del valore di mercato: vendite concluse e annunci, con le fonti */
+async function valueEstimate(d,onStep){
+  const what=[d.marca,d.nome,d.modello&&`(${d.modello})`].filter(Boolean).join(' '),ctx=[d.stato&&'stato: '+d.stato,d.condizione&&'estetica: '+d.condizione,d.scatola&&'scatola: '+d.scatola,hasUnits(d)&&`${d.esemplari.length} esemplari (stima per uno)`].filter(Boolean).join('; ');
+  const prompt=`Sei un esperto del mercato dell'elettronica vintage e da collezione. Stima il valore di mercato attuale in Italia/Europa, in euro, di questo oggetto usato:
+«${what}»${ctx?`
+Condizioni: ${ctx}`:''}
+Cerca sul web prezzi di vendite concluse (eBay venduti, Subito, Vinted, aste, forum di collezionisti) degli ultimi 12-18 mesi; considera le condizioni indicate.
+Rispondi SOLO con un oggetto JSON: {"min": numero, "max": numero, "tipico": numero, "valuta": "EUR", "base": "su cosa si basa la stima in una frase", "fattori": ["cosa fa salire o scendere il prezzo", "..."], "certezza": "alta"|"media"|"bassa"}`;
+  return gemAsk('','',onStep,async(m,search)=>{const r=await gemCall(m,[{text:prompt}],search,!search);const n=x=>{const v=parseFloat(String(x||'').replace(/[^\d.,]/g,'').replace(',','.'));return isFinite(v)?Math.round(v):null};
+    const o=r.o,t=n(o.tipico)??(n(o.min)!=null&&n(o.max)!=null?Math.round((n(o.min)+n(o.max))/2):null);if(t==null)throw new AppErr('vuoto','nessuna stima',{model:m});
+    return {min:n(o.min)??t,max:n(o.max)??t,tipico:t,base:typeof o.base==='string'?o.base:'',fattori:Array.isArray(o.fattori)?o.fattori.filter(x=>typeof x==='string').slice(0,5):[],certezza:o.certezza||'',sources:r.sources,model:m,noSearch:!search}})}
 /* «Piano B»: se un modello è al limite o non ha richieste gratuite si passa al successivo; errori di chiave/rete fermano tutto */
 const GEM_STOP=['manca','chiave','permesso','paese','credito','rete','bloccata'];
 /* la ricerca web può avere 0 richieste gratuite anche quando il modello ne ha: lo si ricorda fino all'azzeramento delle quote */
 const gemNoSearch=()=>{const x=LS.get('rd_gem_ns',null);return !!(x&&x.key===gemCfg().key.slice(-6)&&x.until>Date.now())};
-async function gemAsk(q,ctx,onStep){let list=[];try{list=await gemModels()}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;logErr('Gemini · elenco modelli',e)}
+async function gemAsk(q,ctx,onStep,job){let list=[];try{list=await gemModels()}catch(e){if(GEM_KEYERR.includes(e.kind))throw e;logErr('Gemini · elenco modelli',e)}
   const order=gemOrder(list),tried=[],useSearch=!gemNoSearch();let last=null;
   for(const m of order){const cd=gemCooling(m);if(cd){tried.push([m,cd.kind]);continue}
     let search=useSearch;
     for(;;){onStep&&onStep(m,tried.slice(),search);
-      try{const r=await gemTry(m,q,ctx,search);gemSet({ok:m,via:r.via||'nativo'});r.tried=tried.slice();r.noSearch=r.noSearch||!search;
+      try{const r=await (job?job(m,search):gemTry(m,q,ctx,search));gemSet({ok:m,via:r.via||'nativo'});r.tried=tried.slice();r.noSearch=r.noSearch||!search;
         if(useSearch&&!search){r.searchBlocked=true;LS.set('rd_gem_ns',{until:Date.now()+msToPacificMidnight(),key:gemCfg().key.slice(-6)})}
         return r}
       catch(e){if(GEM_STOP.includes(e.kind)){e.tried=tried;throw e}
@@ -2469,7 +2574,7 @@ function smartApply(id){const f=smartList().find(x=>x.id===id);if(!f)return;
 function smartHTML(){const L=smartList(),cur=smartNorm(smartNow());return L.map(f=>`<button class="chip ${smartNorm(f)===cur?'on':''}" data-smart="${f.id}">★ ${esc(f.n)}</button>`).join('')}
 /* ===== scorrere tra le schede: l'ordine è quello dell'elenco (con ricerca e filtri) ===== */
 function detailStep(id,dir){const L=render.items||[],i=L.indexOf(id);if(i<0)return;const n=L[i+dir];
-  if(!n){toast(dir>0?'Ultimo oggetto dell\'elenco':'Primo oggetto dell\'elenco',1600);try{navigator.vibrate&&navigator.vibrate([8,40,8])}catch(_){}return}
+  if(!n){toast(dir>0?'Ultimo oggetto dell\'elenco':'Primo oggetto dell\'elenco',1600);buzz('warn');return}
   openDetail(n,true,false,true,dir>0?'next':'prev')}
 addEventListener('keydown',e=>{if(!/Arrow(Left|Right)/.test(e.key)||e.target.closest('input,textarea,select'))return;const top=stack[stack.length-1];if(!top||!top.classList.contains('det')||!top.dataset.did)return;detailStep(top.dataset.did,e.key==='ArrowRight'?1:-1)});
 /* ===== versioni precedenti: ogni sincronizzazione è un commit di collezione.json su GitHub ===== */
@@ -2736,7 +2841,7 @@ function lineChart(el,series,{ref=null,H=180}={}){
   if(ref)g+=`<line class="ref" x1="${ml}" x2="${W-mr}" y1="${Y(ref.v).toFixed(1)}" y2="${Y(ref.v).toFixed(1)}"/><text class="ax" x="${ml+4}" y="${(Y(ref.v)-5).toFixed(1)}">${esc(ref.label)} ${eurS(ref.v)}</text>`;
   const labs=[];
   for(const s of series){const p=s.pts;let d=`M${X(p[0].t).toFixed(1)} ${Y(p[0].v).toFixed(1)}`;for(let i=1;i<p.length;i++)d+=`H${X(p[i].t).toFixed(1)}V${Y(p[i].v).toFixed(1)}`;
-    g+=`<path class="ln ${s.cls}" d="${d}"/>`+p.filter(q=>!q.virt).map(q=>`<circle class="mk ${s.cls}" cx="${X(q.t).toFixed(1)}" cy="${Y(q.v).toFixed(1)}" r="4"/>`).join('');
+    g+=`<path class="ln ${s.cls}" pathLength="1" d="${d}"/>`+p.filter(q=>!q.virt).map(q=>`<circle class="mk ${s.cls}" cx="${X(q.t).toFixed(1)}" cy="${Y(q.v).toFixed(1)}" r="4"/>`).join('');
     const lp=p[p.length-1];labs.push({y:Y(lp.v)-7,t:eurS(lp.v)})}
   labs.sort((a,b)=>a.y-b.y);for(let i=1;i<labs.length;i++)if(labs[i].y-labs[i-1].y<14)labs[i].y=labs[i-1].y+14;
   labs.forEach(l=>g+=`<text class="lv" x="${(W-mr).toFixed(1)}" y="${Math.max(10,l.y).toFixed(1)}" text-anchor="end">${l.t}</text>`);
@@ -2753,13 +2858,34 @@ function lineChart(el,series,{ref=null,H=180}={}){
 function valoreHTML(d){
   const vs=(d.valori||[]).slice().sort((a,b)=>String(a.data).localeCompare(b.data)),cur=+d.valore||0,paid=+d.acq_prezzo||0;
   const q=encodeURIComponent([d.marca,d.nome].filter(Boolean).join(' ').replace(/["“”]/g,''));
-  const sold=`<a class="btn sm sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}&LH_Sold=1&LH_Complete=1">🔎 Venduti su eBay</a>`;
+  const sold=`<button class="btn sm sec" data-valest>✨ Stima con Gemini</button><a class="btn sm sec" target="_blank" rel="noopener" href="https://www.ebay.it/sch/i.html?_nkw=${q}&LH_Sold=1&LH_Complete=1">🔎 Venduti su eBay</a>`;
   if(!cur&&!vs.length)return `<div class="sec-t">Valore</div><div class="row" style="flex-wrap:wrap"><button class="btn sm sec" data-addval>＋ Prima valutazione</button>${sold}</div>`;
   const dl=paid&&cur?cur-paid:null;
   return `<div class="sec-t">Valore</div><div class="valc"><div class="vhead"><div><small>Valore stimato</small><b>€ ${cur.toLocaleString('it')}</b></div>${dl!=null?`<div style="text-align:right"><small>rispetto ai € ${paid.toLocaleString('it')} pagati</small><b class="vd">${dl>=0?'▲':'▼'} € ${Math.abs(dl).toLocaleString('it')} (${dl>=0?'+':'−'}${Math.round(Math.abs(dl)/paid*100)}%)</b></div>`:''}</div>
     ${vs.length>=2||(vs.length&&paid)?'<div class="chart" id="vch"></div>':''}
     ${vs.length?`<div class="log">${vs.slice().reverse().map(v=>`<button class="li" data-val="${v.id}"><span class="ld">${fmtD(v.data)}</span><span class="lb"><b>€ ${(+v.valore).toLocaleString('it')}</b><small>${esc([v.fonte,v.note].filter(Boolean).join(' · '))}</small></span></button>`).join('')}</div>`:''}
     <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm sec" data-addval>＋ Nuova valutazione</button>${sold}</div></div>`;
+}
+/* 2.9: stima del valore con Gemini (vendite concluse e annunci) → con un tocco nello storico del valore */
+function openValEst(d){
+  openPage('Stima del valore',`<p class="note" style="margin-top:0">Gemini cerca vendite concluse e annunci recenti di «${esc(d.nome)}» e propone una forbice, tenendo conto di stato ed estetica.</p>${gemOn()?'':'<div class="note">⚠️ Serve Gemini: Menu → «🤖 Collegamento IA».</div>'}<div id="veo"></div>`,{mount(el){
+    const out=$('#veo',el);
+    const run=async()=>{if(!gemOn()){out.innerHTML='<button class="btn" data-ve="set">Collega Gemini</button>';return}
+      out.innerHTML=loader('web','Gemini cerca i prezzi…','di solito 10–30 secondi');
+      const step=(m,tried,search)=>{const x=$('.ldr small',out);if(x)x.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+`provo ${m}${search?'':' senza ricerca web'}`};
+      let r;try{r=await valueEstimate(d,step)}catch(e){logErr('Gemini · stima del valore',e);errBox(out,e,'Gemini',run,'gem');return}
+      const span=Math.max(1,r.max-r.min),pos=Math.min(100,Math.max(0,(r.tipico-r.min)/span*100)),paid=+d.acq_prezzo||0;
+      out.innerHTML=`<div class="vest"><small>Valore tipico</small><b>€ ${r.tipico.toLocaleString('it')}</b><div class="vrange"><i style="left:${pos}%"></i></div><div class="vr2"><span>€ ${r.min.toLocaleString('it')}</span><span>€ ${r.max.toLocaleString('it')}</span></div>
+        ${paid?`<small>${r.tipico>=paid?'▲':'▼'} rispetto ai € ${paid.toLocaleString('it')} pagati</small>`:''}</div>
+        ${r.base?`<p class="note">${esc(r.base)}</p>`:''}${r.fattori.length?`<div class="sec-t">Cosa conta</div><ul class="vf">${r.fattori.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}
+        <p class="note" style="margin:6px 2px">Gemini (${esc(r.model)})${r.noSearch?' senza ricerca web: stima meno affidabile':''}${r.certezza?' · certezza '+esc(String(r.certezza)):''}. È un'indicazione, non una perizia.</p>
+        ${r.sources.length?`<details class="more"><summary>Fonti consultate (${r.sources.length})</summary>${r.sources.map(x=>`<a class="res" href="${esc(x.uri)}" target="_blank" rel="noopener"><b>${esc(x.title)}</b></a>`).join('')}</details>`:''}
+        <div class="row" style="margin-top:12px"><button class="btn sec again" data-ve="again" title="Ripeti la stima" aria-label="Ripeti la stima">↻</button><button class="btn" data-ve="add" style="flex:1">＋ Nello storico · € ${r.tipico.toLocaleString('it')}</button></div>`;
+      out.onclick=async e=>{const b=e.target.closest('[data-ve]');if(!b)return;
+        if(b.dataset.ve==='again')return run();
+        if(b.dataset.ve==='add'){seedVal(d,d);d.valori.push({id:uid(),data:today(),valore:r.tipico,fonte:'Stima Gemini',note:`forbice € ${r.min.toLocaleString('it')}–${r.max.toLocaleString('it')}`});
+          d.valori.sort((a,b)=>String(a.data).localeCompare(b.data));d.valore=d.valori[d.valori.length-1].valore;await saveDev(d);render();buzz('ok');toast('Stima aggiunta allo storico del valore');goBase(()=>openDetail(d.id))}}};
+    el.addEventListener('click',e=>{if(e.target.closest('[data-ve="set"]'))openGemSettings()});run()}});
 }
 function openValore(d,v){
   const x=Object.assign({data:today(),fonte:'Stima personale'},v||{});
@@ -2913,7 +3039,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     /* riordino: col mouse si trascina subito, col dito dopo una breve pressione (così la pagina scorre normalmente) */
     let drag=null;
     const startDrag=(tile,e)=>{const r=tile.getBoundingClientRect(),g=tile.cloneNode(true);g.classList.add('ghost');Object.assign(g.style,{width:r.width+'px',height:r.height+'px',left:r.left+'px',top:r.top+'px'});document.body.append(g);
-      tile.classList.add('dragging');drag={tile,g,dx:e.clientX-r.left,dy:e.clientY-r.top,on:true};try{navigator.vibrate&&navigator.vibrate(10)}catch(er){}};
+      tile.classList.add('dragging');drag={tile,g,dx:e.clientX-r.left,dy:e.clientY-r.top,on:true};buzz('tick')};
     const phEl=$('#ph',el);
     phEl.addEventListener('pointerdown',e=>{const tile=e.target.closest('.pht');if(!tile||e.target.closest('button')||foto.length<2)return;
       const st={tile,x:e.clientX,y:e.clientY,id:e.pointerId};drag={pending:st};
@@ -2959,7 +3085,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       box.onclick=e=>{const b=e.target.closest('[data-cut]');if(!b)return;const o=b.dataset.cut,cur=inp.value.trim(),pv=pick(cur,t.list);
         inp.value=cur.includes(t.list)?cur.replace(t.list,o):pv?o+cur.slice(pv.length):(o+(cur?' '+cur:''));
         if(t.k==='storage'&&fm.nome){const n=fm.nome.value;if(n.includes(t.list))fm.nome.value=n.replace(t.list,o);else{const q=t.opts.find(x=>n.endsWith(' '+x));if(q)fm.nome.value=n.slice(0,-q.length)+o}}
-        inp.dispatchEvent(new Event('input',{bubbles:true}));mark()};
+        inp.dispatchEvent(new Event('input',{bubbles:true}));mark();buzz('tick')};
       inp.addEventListener('input',mark);mark()});
     /* compatibilità multipla dei ricambi */
     const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
@@ -2975,6 +3101,12 @@ function openForm(src,{fromLookup=false,focus=''}={}){
       sg.addEventListener('click',e=>{const a=e.target.closest('[data-sg]'),b=e.target.closest('[data-sga]'),c=e.target.closest('[data-sgo]');
         if(a)look(a.dataset.sg);if(b)look(b.dataset.sga,'Accessorio');if(c)openDetail(c.dataset.sgo)})}
     /* numero di serie decodificato mentre lo scrivi */
+    if(fm.seriale&&!d.wish){const lb=document.createElement('button');lb.type='button';lb.className='btn sm sec lbbtn';lb.innerHTML='📷 Leggi dall\'etichetta';fm.seriale.after(lb);
+      lb.onclick=async()=>{if(!gemOn())return openGemSettings();const file=await pickPhoto(true);if(!file)return;lb.disabled=true;lb.textContent='Gemini legge l\'etichetta…';
+        try{const r=await readLabelFile(file);const f=labelFields(r.o),got=[];
+          for(const k of ['seriale','modello','emc','identifier','ordine','marca','anno']){const inp=fm[k];if(inp&&f[k]!=null&&!String(inp.value).trim()){inp.value=f[k];inp.dispatchEvent(new Event('input',{bubbles:true}));got.push(k)}}
+          buzz('ok');toast(got.length?'Dall\'etichetta: '+got.map(k=>({seriale:'numero di serie',modello:'modello',emc:'EMC',identifier:'Model ID',ordine:'n° ordine',marca:'marca',anno:'anno'})[k]).join(', '):'Nessun campo vuoto da riempire',4000)}
+        catch(e){logErr('Gemini · etichetta',e);toast(errInfo(e).title,5000)}lb.disabled=false;lb.innerHTML='📷 Leggi dall\'etichetta'}}
     if(fm.seriale){const out=document.createElement('div');out.className='sn';fm.seriale.after(out);const dec=()=>{out.innerHTML=serialHTML({seriale:fm.seriale.value,anno:+fm.anno.value||0}).replace(/^<div class="sn">|<\/div>$/g,'')};dec();fm.seriale.addEventListener('input',dec)}
     /* etichette */
     const tagsIn=fm.tags,tb=$('#tagbox',el),setTags=()=>{tagsIn.value=JSON.stringify([...tb.querySelectorAll('.on')].map(b=>b.dataset.tag))};
@@ -3024,7 +3156,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
         else if(dup&&isNew&&!await ask(`Esiste già «${dup.nome}»${linkedTo(dup)?' collegato a «'+linkedTo(dup).nome+'»':''}, senza differenze di numero di serie. Se è un altro esemplare, collegalo al suo dispositivo o indica il numero di serie; se sono pezzi identici e intercambiabili puoi anche usare «Quantità». Salvare comunque?`,'Salva'))return;
         stamp(o);idx(o);await DB.put(o);
         const i=devices.findIndex(x=>x.id===o.id);i<0?devices.push(o):devices[i]=o;
-        dirty();render();goBase(()=>openDetail(o.id));toast('Salvato');setTimeout(autoTranslate,1200);
+        dirty();render();await savedMorph(el);goBase(()=>openDetail(o.id));toast('Salvato');setTimeout(autoTranslate,1200);
       }
     });
   }});
@@ -3056,12 +3188,89 @@ async function shrink(src,max,q=.82){
 }
 
 /* ============ scelta "aggiungi" ============ */
+/* 2.9: foto dell'etichetta → dati letti da Gemini → scheda (EveryMac, Gemini) o solo i dati letti */
+const LABEL_KEYS=[['marca','Marca'],['nome','Nome'],['modello','Modello'],['emc','EMC'],['identifier','Model ID'],['seriale','Numero di serie'],['ordine','N° ordine'],['anno','Anno'],['tipologia','Tipologia'],['alimentazione','Alimentazione'],['testo','Altro testo']];
+function labelFields(o){const f={};for(const [k] of LABEL_KEYS){let v=o[k];if(v==null||v==='')continue;v=typeof v==='number'?v:clean(String(v));if(!v)continue;
+    if(k==='anno'){const y=String(v).match(/\b(19[4-9]\d|20[0-4]\d)\b/);if(!y)continue;v=+y[1]}if(k==='tipologia'&&!TIPI.includes(v))continue;if(k==='emc')v=String(v).replace(/\D/g,'');f[k]=v}
+  if(f.alimentazione||f.testo){f.note=[f.alimentazione&&'Alimentazione: '+f.alimentazione,f.testo&&'Dall\'etichetta: '+f.testo].filter(Boolean).join('\n')}delete f.alimentazione;delete f.testo;return f}
+function pickPhoto(camera){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept='image/*';if(camera)i.capture='environment';i.onchange=()=>res(i.files[0]||null);i.oncancel=()=>res(null);i.click()})}
+async function readLabelFile(file,onStep){const u=await shrink(file,1600,.88),res=await labelRead(u,onStep);return {url:u,o:res.o,model:res.model}}
+function openLabel({onResult,replace=false}={}){
+  openPage('Dalla foto dell\'etichetta',`<p class="note" style="margin-top:0">Fotografa l'etichetta sotto l'oggetto (o la targhetta, o la scatola), ben illuminata e a fuoco: Gemini legge modello, EMC, numero di serie e riconosce l'oggetto.</p>
+  ${gemOn()?'':'<div class="note">⚠️ Serve Gemini: collegalo in Menu → «🤖 Collegamento IA». <button class="btn sm" data-lb="set">Collega</button></div>'}
+  <div class="row" style="flex-wrap:wrap"><button class="btn" data-lb="cam" style="flex:1">📷 Scatta</button><button class="btn sec" data-lb="gal" style="flex:1">🖼️ Galleria</button></div><div id="lbo" style="margin-top:14px"></div>`,{replace,mount(el){
+    const out=$('#lbo',el);
+    const run=async file=>{if(!file)return;if(!gemOn())return openGemSettings();
+      const prev=URL.createObjectURL(file);out.innerHTML=`<img src="${prev}" alt="" class="lbimg">`+loader('scan','Gemini legge l\'etichetta…','di solito pochi secondi');
+      const step=(m,tried)=>{const s=$('.ldr small',out);if(s)s.textContent=(tried.length?tried.map(t=>`${t[0]}: ${GEM_WHY[t[1]]||t[1]}`).join(' · ')+' → ':'')+'provo '+m};
+      let r;try{r=await readLabelFile(file,step)}catch(e){logErr('Gemini · etichetta',e);errBox(out,e,'Gemini',()=>run(file),'gem');return}
+      const f=labelFields(r.o),code=f.identifier||f.modello||(f.emc?'EMC '+f.emc:'')||f.ordine||'',extra=f;
+      const keep=x=>({...x,fields:{...Object.fromEntries(Object.entries(extra).filter(([k])=>!['nome','tipologia','note'].includes(k))),...x.fields,...(extra.seriale?{seriale:extra.seriale}:{}),...(extra.ordine&&!x.fields.ordine?{ordine:extra.ordine}:{})}});
+      out.innerHTML=`<img src="${prev}" alt="" class="lbimg"><div class="kv">${LABEL_KEYS.filter(([k])=>f[k]!=null||(k==='testo'&&r.o.testo)).map(([k,l])=>`<div>${l}</div><div>${esc(String(f[k]??r.o[k]))}</div>`).join('')}</div>
+        <p class="note" style="margin:8px 2px">Letta da Gemini (${esc(r.model||gemCfg().ok)})${r.o.certezza?` · certezza ${esc(String(r.o.certezza))}`:''}. Controlla il numero di serie: è il dato più facile da sbagliare.</p>
+        ${code?`<button class="btn" data-lb="look" style="width:100%">🔎 Cerca la scheda con «${esc(code)}»</button>`:''}
+        <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn sec" data-lb="gem" style="flex:1">✨ Compila con Gemini</button><button class="btn sec" data-lb="only" style="flex:1">✍️ Solo questi dati</button></div>`;
+      out.onclick=e=>{const b=e.target.closest('[data-lb]');if(!b)return;const a=b.dataset.lb;
+        if(a==='look')openLookup({prefill:code,marca:f.marca||'Apple',tipologia:f.tipologia||'',auto:true,onResult:x=>onResult(keep(x))});
+        if(a==='gem')openGemini({q:f.nome||code,marca:f.marca||'',tipologia:f.tipologia||'',ctx:Object.entries(f).filter(([k])=>!['note'].includes(k)).map(([k,v])=>k+': '+v).join('; '),onResult:x=>onResult(keep(x))});
+        if(a==='only')onResult({fields:f,specs:[]})}};
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-lb]');if(!b||b.closest('#lbo'))return;const a=b.dataset.lb;
+      if(a==='set')return openGemSettings();if(a==='cam'||a==='gal')run(await pickPhoto(a==='cam'))})}});
+}
+/* 2.9: buchi nella collezione — famiglie dall'indice dei modelli Apple (The Apple Wiki) */
+const gapFam=n=>String(n).replace(/\s*\(.*$/,'').trim();
+const gapNorm=s=>String(s||'').toLowerCase().replace(/["“”]/g,'').replace(/\s+/g,' ').trim();
+function gapMatch(d,x){const id=gapNorm(d.identifier),mo=gapNorm(d.modello),nm=gapNorm(d.nome),xi=gapNorm(x[2]),xn=gapNorm(x[1]),xf=gapNorm(gapFam(x[0]));
+  if(xi&&id&&id.split(/\s*[;/]\s*|\s+/).includes(xi))return true;
+  if(nm===gapNorm(x[0]))return true;
+  if(!(xi&&id)&&xn&&mo&&mo===xn&&nm.startsWith(xf))return true;
+  const xa=gapNorm(x[0]);if(!nm.startsWith(xa+' '))return false;
+  return xa.split(' ').length>=3||/^\s*(\(|\d+(?:[.,]\d+)?\s*[gt]b\b)/.test(nm.slice(xa.length))}
+function gapsData(L){const own=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))),wish=devices.filter(d=>d.wish),grp=new Map(),fams=new Map();
+  L.forEach(x=>{const f=gapFam(x[0]);if(!grp.has(f))grp.set(f,[]);const a=grp.get(f);if(!a.some(y=>y[0]===x[0]))a.push(x)});
+  /* i modelli senza parentesi rimasti soli («iBook SE», «iBook Firewire») vanno nella linea più specifica che li precede («iBook») */
+  const names=[...new Set(L.map(x=>gapNorm(x[0])))],under=k=>{k=gapNorm(k);return names.filter(n=>n===k||n.startsWith(k+' ')).length};
+  const real=[...grp.keys()].filter(f=>grp.get(f).length>=2).sort((a,b)=>b.length-a.length),loose=[...grp.keys()].filter(f=>under(f)>=2).sort((a,b)=>a.length-b.length);
+  const pre=(n,f)=>{f=gapNorm(f);return n===f||n.startsWith(f+' ')};
+  const famX=x=>{const g=gapFam(x[0]);if(grp.get(g).length>=2)return g;const n=gapNorm(x[0]);return real.find(f=>pre(n,f))||loose.find(f=>pre(n,f))||g};
+  L.forEach(x=>{const f=famX(x);if(!fams.has(f))fams.set(f,[]);const a=fams.get(f);if(!a.some(y=>y[0]===x[0]))a.push(x)});
+  const tok=s=>gapNorm(s).split(/[^a-z0-9]+/).filter(Boolean);
+  /* ogni oggetto va a un solo modello: quello col nome più simile (alcuni modelli condividono Model ID o codice) */
+  const best=d=>{const c=L.filter(x=>gapMatch(d,x));if(!c.length)return null;const dt=new Set(tok(d.nome));
+    return c.map(x=>{const xt=tok(x[0]),ov=xt.filter(t=>dt.has(t)).length;const idm=x[2]&&gapNorm(d.identifier).split(/\s*[;/]\s*|\s+/).includes(gapNorm(x[2])),mom=x[1]&&gapNorm(d.modello)===gapNorm(x[1]);
+      return {x,sc:ov-.15*(xt.length-ov)+(d.anno&&x[0].includes(String(d.anno))?1.5:0)+(idm?2:0)+(mom?1:0)}}).sort((a,b)=>b.sc-a.sc)[0].x};
+  const big=[...fams.keys()].filter(f=>fams.get(f).length>=2).sort((a,b)=>b.length-a.length);
+  const asg=new Map(own.map(d=>[d.id,best(d)])),wasg=new Map(wish.map(d=>[d.id,best(d)]));
+  const famOf=d=>{const b=asg.get(d.id);if(b)return famX(b);const nm=gapNorm(d.nome);return big.find(f=>nm.startsWith(gapNorm(f)))||''};
+  const out=[];
+  for(const [f,xs] of fams){if(xs.length<2)continue;
+    const inFam=own.filter(d=>famOf(d)===f);if(!inFam.length)continue;
+    const rows=xs.map(x=>({x,own:inFam.filter(d=>asg.get(d.id)===x),wish:wish.find(d=>wasg.get(d.id)===x)}));
+    out.push({f,rows,n:rows.filter(r=>r.own.length).length,tot:rows.length,loose:inFam.filter(d=>!asg.get(d.id))})}
+  return out.sort((a,b)=>b.n/b.tot-a.n/a.tot||b.n-a.n||a.f.localeCompare(b.f))}
+function openGaps(){
+  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quanti modelli hai e quali mancano. Fonte: l'elenco dei modelli di The Apple Wiki; l'abbinamento usa Model ID, codice modello e nome.</p><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
+    const out=$('#gpo',el);
+    const draw=L=>{const G=gapsData(L);
+      if(!G.length){out.innerHTML='<p class="note">Nessuna linea Apple riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio.</p>';return}
+      out.innerHTML=G.map((g,gi)=>`<div class="gapf"><div class="gaph"><b>${esc(g.f)}</b><small>${g.n} di ${g.tot}</small></div><div class="gbar"><i style="width:${Math.round(g.n/g.tot*100)}%"></i></div>
+        <details class="more"${G.length<=2?' open':''}><summary>${g.n===g.tot?'✓ completa':`${g.tot-g.n} ${g.tot-g.n===1?'mancante':'mancanti'}`}${g.loose.length?` · ${g.loose.length} da abbinare`:''}</summary>
+        <div class="log">${g.rows.map((r,ri)=>`<div class="gapr ${r.own.length?'own':''}"><span class="lb"><b>${r.own.length?'✓ ':''}${esc(r.x[0])}</b><small>${esc([r.x[1],r.x[2]].filter(Boolean).join(' · '))}${r.own.length?' · '+esc(r.own.map(d=>d.luogo||'in collezione').join(', ')):''}</small></span>${r.own.length?'':r.wish?'<span class="gapw">💭 in wishlist</span>':`<button class="btn sm sec" data-gw="${gi}|${ri}">＋ Wishlist</button>`}</div>`).join('')}</div>
+        ${g.loose.length?`<p class="note">Della linea ma non abbinati a un modello preciso: ${g.loose.map(d=>`<a href="#" data-go="${d.id}">${esc(d.nome)}</a>`).join(', ')}. Aggiungi il Model ID o il codice modello per abbinarli.</p>`:''}</details></div>`).join('');
+      out.onclick=async e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();return openDetail(go.dataset.go)}
+        const b=e.target.closest('[data-gw]');if(!b)return;const [gi,ri]=b.dataset.gw.split('|').map(Number),x=G[gi].rows[ri].x;
+        const t=x[3]==='Mac'?(/book/i.test(x[0])?'Portatile':/imac|emac|classic|color classic/i.test(x[0])?'All-in-one':/xserve/i.test(x[0])?'Server':'Computer desktop'):/iphone/i.test(x[3])?'Smartphone':/ipad/i.test(x[3])?'Tablet':/ipod/i.test(x[3])?'Lettore musicale':'';
+        const w={id:uid(),nome:x[0],marca:'Apple',modello:x[1]||'',identifier:x[2]||'',tipologia:TIPI.includes(t)?t:'',linea:gapFam(x[0]),wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
+        await saveDev(w);render();buzz('ok');b.outerHTML='<span class="gapw">💭 in wishlist</span>';toast(`«${x[0]}» in wishlist`,4000,{label:'APRI',fn:()=>openDetail(w.id)})}};
+    awIndex().then(draw).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openGaps()))}});
+}
 function openAdd(){
   const W=isWishView()?{wish:true,w_priorita:'Media'}:{};
   const toForm=async r=>openForm(await mergeFetched({...W},r,true),{fromLookup:true});
   openPage(W.wish?'Aggiungi alla wishlist':'Aggiungi',`
   <p>${W.wish?'Cosa stai cercando? Puoi già prendere i dati da EveryMac o Wikipedia.':'Come vuoi aggiungerlo?'}</p>
   <button class="res" data-a="look"><b>🔎 Cerca online con il codice</b><small>Apple: numero Axxxx, EMC o Model ID (EveryMac). Altre marche: nome del modello (Wikipedia).</small></button>
+  ${W.wish?'':'<button class="res" data-a="label"><b>📷 Dalla foto dell\'etichetta</b><small>Gemini legge modello, EMC e numero di serie dall\'etichetta sotto l\'oggetto, poi cerca la scheda.</small></button>'}
   <button class="res" data-a="lookacc"><b>🔌 Cerca un accessorio o un ricambio</b><small>Codice (A1424, M5769), codice prodotto, codice a barre o nome: dizionario interno, The Apple Wiki, Wikipedia, iFixit, Icecat.</small></button>
   <button class="res" data-a="gem"><b>✨ Chiedi a Gemini</b><small>Per gli oggetti rari: Gemini cerca sul web e compila la scheda${gemOn()?'':' (serve una chiave API gratuita)'}.</small></button>
   <button class="res" data-a="link"><b>🏷️ Da un annuncio (Vinted, Subito, eBay…)</b><small>Incolla il link: titolo, prezzo e foto finiscono nella wishlist. Dalle app: Condividi → RDDC.</small></button>
@@ -3076,6 +3285,7 @@ function openAdd(){
       if(a==='paste')openImport({replace:true,onResult:toForm});
       if(a==='link')askListing();
       if(a==='gem')openGemini({replace:true,onResult:toForm});
+      if(a==='label')openLabel({replace:true,onResult:toForm});
       if(a==='look')openLookup({prefill:'',marca:'Apple',replaceSelf:true,onResult:toForm});
       if(a==='lookacc')openLookup({prefill:'',marca:'',tipologia:'Accessorio',replaceSelf:true,onResult:toForm});
     });
@@ -3860,9 +4070,20 @@ async function accSearch(q,marca){
 }
 
 /* ============ ricerca online ============ */
+/* 2.9: codici a barre con la fotocamera (BarcodeDetector di Chrome) */
+const canScan=()=>'BarcodeDetector' in window&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+async function scanCode(){let fm=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','code_93','itf','qr_code','data_matrix'];
+  try{const sup=await BarcodeDetector.getSupportedFormats();fm=fm.filter(f=>sup.includes(f))}catch(e){}
+  const det=new BarcodeDetector({formats:fm});let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){toast('Fotocamera non disponibile: '+(e.message||e.name),5000);return null}
+  return new Promise(res=>{const m=document.createElement('div');m.className='scanv';m.innerHTML=`<video playsinline muted autoplay></video><div class="scanf"></div><p>Inquadra il codice a barre</p><button class="btn sec" type="button">Annulla</button>`;
+    const v=m.querySelector('video');v.srcObject=stream;let done=false;
+    const fin=x=>{if(done)return;done=true;stream.getTracks().forEach(t=>t.stop());m.classList.add('out');setTimeout(()=>m.remove(),200);res(x)};
+    m.querySelector('button').onclick=()=>fin(null);document.body.append(m);
+    const loop=async()=>{if(done)return;try{if(v.readyState>=2){const c=await det.detect(v);if(c.length){buzz('ok');return fin(c[0].rawValue)}}}catch(e){}setTimeout(loop,160)};loop()})}
 function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,auto=false}){
   const isApple=/^apple$/i.test(marca||'Apple'),isAcc=['acc','part'].includes(kindOf(tipologia))&&!!tipologia;
-  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, MacBookPro9,2 o il nome" autocomplete="off"></div>
+  const h=`<div class="row"><select class="in" id="lb" style="width:auto"><option value="apple" ${isApple&&!isAcc?'selected':''}>Apple</option><option value="altro" ${isApple||isAcc?'':'selected'}>Altra marca</option><option value="acc" ${isAcc?'selected':''}>Accessorio / ricambio</option></select><input class="in" id="lq" value="${esc(prefill)}" placeholder="A1278, MacBookPro9,2 o il nome" autocomplete="off">${canScan()?'<button class="btn sec again" id="lscan" type="button" title="Scansiona un codice a barre" aria-label="Scansiona un codice a barre">▦</button>':''}</div>
   <div class="row" style="margin-top:10px"><button class="btn" id="lg" style="flex:1">Cerca</button></div>
   <button class="res" id="lp" style="margin-top:12px"><b>📋 Incolla la scheda da EveryMac</b><small>Se la ricerca automatica non riesce a leggere EveryMac.</small></button>
   <button class="res" id="lgem"><b>✨ Chiedi a Gemini</b><small>${gemOn()?'Cerca sul web e compila tutti i campi: per gli oggetti rari.':'Cerca sul web e compila tutti i campi (serve una chiave API gratuita).'}</small></button>
@@ -3870,6 +4091,9 @@ function openLookup({prefill='',marca='Apple',tipologia='',onResult,replaceSelf,
   <p class="note" id="lh"></p>`;
   openPage('Cerca dati online',h,{replace:!!replaceSelf,mount(el){
     const hint=()=>{const ap=$('#lb',el).value==='apple';$('#lp',el).hidden=!ap;if($('#lb',el).value==='acc'){$('#lh',el).innerHTML='Accessori e ricambi (EarPods, caricabatterie, mouse, tastiere, AirPort…): cerca per <b>codice</b> (A1424, M5769), <b>codice prodotto</b> o <b>codice a barre</b>, oppure per nome. Fonti: dizionario interno, The Apple Wiki, Wikipedia (anche dentro le pagine che raccolgono più modelli, es. tutti i mouse Apple), iFixit e Icecat.';$('#lq',el).placeholder='A1424, Apple Pro Mouse, MD827ZM/A…';return}$('#lh',el).innerHTML=ap?'Apple: scrivi il <b>nome</b> (es. iMac G3, PowerBook G4 12) e scegli il modello, oppure cerca su <b>EveryMac.com</b> per numero modello (<b>A1278</b>, <b>M5521</b>), <b>EMC</b> (4 cifre, es. 2554), Model ID o codice d\'ordine. Se non trovato, provo Wikipedia.':'Altre marche: scrivi marca e modello (es. <b>Commodore 64</b>, <b>Sony Trinitron KV-2900</b>). I dati arrivano da Wikipedia (scheda tecnica e foto).';$('#lq',el).placeholder=ap?'A1278, MacBookPro9,2 o il nome (es. iMac G3)':'Marca e modello'};
+    {const sb=$('#lscan',el);if(sb)sb.onclick=async()=>{const v=await scanCode();if(!v)return;let q=v.trim();
+      if(/^1P/i.test(q))q=q.slice(2);else if(/^S[A-Z0-9]{11,12}$/.test(q)){toast('È il numero di serie: per cercare serve il codice del modello o il part number',5000);return}
+      $('#lq',el).value=q;if(/^\d{8,14}$/.test(q)){$('#lb',el).value='acc';hint()}go()}}
     hint();$('#lb',el).onchange=()=>{hint();const b=$('#lg',el);b._reset&&b._reset()};
     const out=$('#lo',el);
     const busy=m=>out.innerHTML=loader(ldKind(m),m);out.classList.add('rv');
@@ -3971,7 +4195,7 @@ function statsPage(devices,wl){
     +(()=>{const ps=devices.flatMap(d=>d.progetti||[]),cs=devices.flatMap(d=>d.collaudi||[]);if(!ps.length&&!cs.length)return '';const fin=ps.filter(p=>p.stato==='Finito'),mins=ps.reduce((s,p)=>s+(p.min||0),0),eu=ps.reduce((s,p)=>s+pzTot(p),0);
       return `<div class="sec-t">Laboratorio</div><div class="kv"><div>Progetti finiti</div><div>${fin.length} di ${ps.length}</div><div>Tempo di lavoro</div><div>${hm(mins)}${fin.length&&mins?` (in media ${hm(fin.reduce((s,p)=>s+(p.min||0),0)/fin.length)} a progetto)`:''}</div><div>Spesa in pezzi</div><div>${eur2(eu)}</div><div>Collaudi fatti</div><div>${cs.length}${cs.length?` · ${Math.round(cs.filter(c=>c.esito==='ok').length/cs.length*100)}% tutto ok`:''}</div></div><button class="btn sm sec" data-labst style="margin-top:8px">📊 Tutte le statistiche del laboratorio</button>`})()
     +`<div class="sec-t">Inventario</div><div class="kv"><div>Verificati nell'ultimo anno</div><div>${ver}</div><div>Mai verificati</div><div>${never}</div></div>`;
-  openPage('Statistiche',h2+h+h3,{mount(el){const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
+  openPage('Statistiche',h2+h+h3,{mount(el){countUp(el);const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
     el.addEventListener('click',e=>{if(e.target.closest('[data-labst]'))return openLab('stat');const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
 }
 
@@ -4177,6 +4401,7 @@ function csv(){
 function openMenu(){
   const h=`<div class="sec-t">Collezione</div>
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
+  <button class="res" data-m="gaps"><b>🧩 Cosa manca</b><small>Per ogni linea Apple che hai: i modelli che mancano, da mettere in wishlist con un tocco</small></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
   <button class="res" data-m="lab"><b>🛠️ Laboratorio</b><small>Progetti di restauro, collaudi, lista della spesa${(()=>{const n=allProjects().filter(x=>x.p.stato!=='Finito').length;return n?` · ${n} ${n===1?'progetto aperto':'progetti aperti'}`:''})()}</small></button>
@@ -4193,6 +4418,7 @@ function openMenu(){
   <p class="note" id="bk" style="margin-top:6px"></p>
   <div class="sec-t">Impostazioni</div>
   <label class="f">Tema</label><div class="chips" id="thc">${[['auto','📱 Automatico'],['light','☀️ Chiaro'],['dark','🌙 Scuro']].map(([v,l])=>`<button class="chip ${LS.get('rd_theme','auto')===v?'on':''}" data-m="theme" data-v="${v}">${l}</button>`).join('')}</div>
+  <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="buzc" ${LS.get('rd_buzz',true)!==false?'checked':''} style="width:20px;height:20px"> Vibrazioni leggere (salvataggi, gesti, scelte)</label>
   <label class="f">Vetro liquido</label><div class="chips">${(LG.supported()?[['full','💧 Completo'],['lite','Leggero'],['off','Spento']]:[['lite','💧 Simulato'],['off','Spento']]).map(([v,l])=>`<button class="chip ${(LG.mode()===v||(!LG.supported()&&v==='lite'&&LG.mode()!=='off'))?'on':''}" data-m="glass" data-v="${v}">${l}</button>`).join('')}</div>${LG.supported()?'':`<p class="note" style="margin:6px 0 0">${/iPhone|iPad|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document?'Su iPhone e iPad ogni browser (anche Chrome) usa il motore di Safari, che non permette la rifrazione vera del vetro: qui l\'effetto è simulato con sfocatura e riflessi.':'Questo browser non permette la rifrazione vera del vetro (serve Chrome su Android o computer): l\'effetto è simulato.'}</p>`}
   <label class="row" style="margin:10px 0;gap:10px;font-size:14px"><input type="checkbox" id="trc" ${trOn()?'checked':''} style="width:20px;height:20px"> Dati importati in italiano: etichette, valori e descrizioni tradotti in automatico (una volta sola; per i testi nuovi si usa il traduttore del telefono o il servizio gratuito MyMemory)</label>
   <details class="note"><summary><b>🔌 Promemoria di manutenzione</b> · accensione ogni ${manCfg().on} mesi, ricarica ogni ${manCfg().charge}</summary>
@@ -4208,12 +4434,14 @@ function openMenu(){
   <button class="res" data-m="nov" style="margin-top:22px;text-align:center"><b>RDDC · versione ${APP_VER}</b><small>${fmtD(NOVITA[0][1])} · Novità →</small></button>`;
   openPage('Menu',h,{mount(el){
     (async()=>{let p='';try{p=navigator.storage&&navigator.storage.persist?(await navigator.storage.persist()?'Archiviazione protetta dal browser ✔︎':'Archiviazione NON protetta: installa l\'app sulla Home e fai backup regolari.'):''}catch(e){}$('#bk',el).textContent='I dati sono salvati solo su questo dispositivo. '+p+' Fai un backup JSON ogni tanto.'})();
+    const bz=$('#buzc',el);if(bz)bz.onchange=()=>{LS.set('rd_buzz',bz.checked);if(bz.checked)buzz('ok')};
     const trc=$('#trc',el);if(trc)trc.onchange=()=>{LS.set('rd_tr',trc.checked);render();if(trc.checked)autoTranslate();toast(trc.checked?'Dati importati in italiano':'Dati importati in originale')};
     el.addEventListener('click',async e=>{
       const m=e.target.closest('[data-m]');if(!m)return;const a=m.dataset.m;
       if(a==='glass'){lgSet(m.dataset.v);el.querySelectorAll('[data-m=glass]').forEach(x=>x.classList.toggle('on',x===m));toast(m.dataset.v==='off'?'Vetro liquido spento':!LG.supported()?'Vetro liquido simulato 💧':m.dataset.v==='lite'?'Vetro liquido leggero (senza dispersione dei colori)':'Vetro liquido completo 💧')}
       if(a==='theme'){setTheme(m.dataset.v,m);el.querySelectorAll('[data-m=theme]').forEach(x=>x.classList.toggle('on',x===m))}
       if(a==='stats')openStats();
+      if(a==='gaps')openGaps();
       if(a==='cat')openCatalog();
       if(a==='due')openDue();
       if(a==='inv')openInventory();
@@ -4441,7 +4669,11 @@ async function syncDB(manual){
 
 /* ============ avvio ============ */
 $('#q').value=S.q||'';
-$('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
+$('#q').addEventListener('input',e=>{S.q=e.target.value;render();clearTimeout(qRecent.t);qRecent.t=setTimeout(qRecent,1800)});
+/* 2.9: ultime ricerche suggerite nel campo (si ricordano quelle che trovano qualcosa) */
+function qRecent(){const q=($('#q').value||'').trim();if(q.length>=2&&(render.items||[]).length){LS.set('rd_qrec',[q,...LS.get('rd_qrec',[]).filter(x=>x.toLowerCase()!==q.toLowerCase()&&!q.toLowerCase().startsWith(x.toLowerCase()))].slice(0,8))}qRecentDL()}
+function qRecentDL(){const d=$('#dl_recenti');if(d)d.innerHTML=LS.get('rd_qrec',[]).map(x=>`<option value="${esc(x)}">`).join('')}
+qRecentDL();$('#q').addEventListener('change',qRecent);
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b||b.dataset.view===S.view)return;S.view=b.dataset.view;render();scrollTo(0,0)});
 function openNovita(){openPage('Novità',`<p class="note" style="margin-top:0">Stai usando <b>RDDC ${APP_VER}</b>. Se dopo un aggiornamento vedi ancora il numero vecchio, chiudi e riapri l'app.</p>`+NOVITA.map(([v,dt,l])=>`<div class="sec-t">Versione ${v} · ${fmtD(dt)}</div><ul class="nov" style="margin:0;padding-left:20px">${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join(''))}
 $('#bVer').textContent=APP_VER;$('#bVer').onclick=openNovita;
@@ -4450,11 +4682,58 @@ $('#bFil').onclick=openFilters;$('#bMenu').onclick=openMenu;$('#fab').onclick=op
 /* pressione lunga su un elemento della lista → anteprima (stile 3D Touch) */
 let lp=null,lpSwallow=0;
 $('#list').addEventListener('pointerdown',e=>{const c=e.target.closest('[data-id]');if(!c||e.button>0||SELM)return;
-  c.classList.add('pressing');lp={c,x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp.fired=true;c.classList.remove('pressing');try{navigator.vibrate&&navigator.vibrate(12)}catch(er){}openPeek(c.dataset.id,c)},480)}});
+  c.classList.add('pressing');lp={c,x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp.fired=true;c.classList.remove('pressing');buzz('long');openPeek(c.dataset.id,c)},480)}});
 const lpEnd=ev=>{if(!lp)return;clearTimeout(lp.t);lp.c.classList.remove('pressing');if(lp.fired&&ev&&ev.type==='pointerup')lpSwallow=Date.now()+600;lp=null};
 $('#list').addEventListener('pointermove',e=>{if(lp&&!lp.fired&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10)lpEnd()});
 ['pointerup','pointercancel'].forEach(t=>addEventListener(t,lpEnd));
 $('#list').addEventListener('contextmenu',e=>{if(e.target.closest('[data-id]'))e.preventDefault()});
+/* 2.9: finestre, fogli e anteprima si chiudono trascinandoli in basso (come la scheda) */
+{let g=null;
+  addEventListener('touchstart',e=>{g=null;const card=e.target.closest('.modal>div,.peek .pk-card');if(!card||e.touches.length!==1||e.target.closest('input,textarea,select,.chart,.scanv'))return;
+    for(let el=e.target;el&&el!==card.parentElement;el=el.parentElement)if(el.scrollTop>0)return;
+    g={card,host:card.closest('.modal,.peek'),y:e.touches[0].clientY,x:e.touches[0].clientX,dy:0,on:false,t:Date.now()}},{passive:true});
+  addEventListener('touchmove',e=>{if(!g)return;const dy=e.touches[0].clientY-g.y,dx=e.touches[0].clientX-g.x;
+    if(!g.on){if(dy<8){if(dy<-6||Math.abs(dx)>12)g=null;return}if(Math.abs(dx)>dy){g=null;return}g.on=true;g.card.style.transition='none';g.card.style.animation='none';g.t=Date.now();g.y0=dy}
+    if(e.cancelable)e.preventDefault();g.dy=Math.max(0,dy-g.y0);g.card.style.transform=`translate3d(0,${g.dy}px,0)`},{passive:false});
+  addEventListener('touchend',()=>{if(!g||!g.on){g=null;return}const G=g;g=null;const v=G.dy/Math.max(1,Date.now()-G.t);
+    if(G.dy>110||(v>.55&&G.dy>36)){G.card.style.transition='transform .2s ease';G.card.style.transform=`translate3d(0,${innerHeight}px,0)`;buzz('tick');setTimeout(()=>{if(G.host.isConnected)G.host.click()},120)}
+    else{G.card.style.transition='transform .32s cubic-bezier(.2,.9,.3,1.15)';G.card.style.transform='';setTimeout(()=>{G.card.style.transition=''},340)}},{passive:true})}
+/* 2.9: tirando giù dalla cima dell'elenco si sincronizza (GitHub con il token, altrimenti la lettura del database) */
+{let p=null,busy=false;const TH=78;
+  const ind=()=>{let e=$('#ptr');if(!e){e=document.createElement('div');e.id='ptr';e.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path class="cl" d="M7.2 19h10.3a3.9 3.9 0 0 0 .6-7.75A5.8 5.8 0 0 0 7 9.9a4.55 4.55 0 0 0 .2 9.1z"/><g class="ar"><path d="M12 11.2v5.2M9.8 14.2l2.2 2.2 2.2-2.2"/></g>${SYNC_SVG.run}${SYNC_SVG.ok}</svg>`;document.body.append(e)}return e};
+  addEventListener('touchstart',e=>{p=null;if(busy||stack.length||SELM||document.querySelector('.peek,.modal')||scrollY>0||e.touches.length!==1||e.target.closest('#dock,#fab,#bulk,input,textarea,select'))return;
+    p={y:e.touches[0].clientY,x:e.touches[0].clientX,d:0,on:false}},{passive:true});
+  addEventListener('touchmove',e=>{if(!p)return;const dy=e.touches[0].clientY-p.y,dx=e.touches[0].clientX-p.x;
+    if(!p.on){if(dy<8||Math.abs(dx)>dy||scrollY>0){if(Math.abs(dx)>10||dy<-6)p=null;return}p.on=true;const i=ind();i.className='pull';i.style.transition='none'}
+    if(e.cancelable)e.preventDefault();p.d=Math.min(140,dy*.55);const k=Math.min(1,p.d/TH),i=ind();
+    i.style.transform=`translate3d(-50%,${p.d-56}px,0) scale(${.6+.4*k})`;i.style.opacity=String(Math.min(1,k*1.4));i.classList.toggle('ready',k>=1);
+    if(k>=1&&!p.rd){p.rd=true;buzz('tick')}else if(k<1)p.rd=false},{passive:false});
+  addEventListener('touchend',async()=>{if(!p||!p.on){p=null;return}const go=p.d>=TH;p=null;const i=ind();i.style.transition='';
+    if(!go){i.style.transform='translate3d(-50%,-56px,0) scale(.6)';i.style.opacity='0';return}
+    busy=true;i.className='pull run';i.style.transform='translate3d(-50%,22px,0)';i.style.opacity='1';
+    try{await (ghOn()?ghSync(true):syncDB(true));i.className='pull ok';buzz('ok')}catch(e){i.className='pull'}
+    setTimeout(()=>{i.style.transform='translate3d(-50%,-56px,0) scale(.6)';i.style.opacity='0';busy=false},650)},{passive:true})}
+/* 2.9: voci di Oggi — scorrendo a sinistra compaiono «Domani» e «Rimanda…»; scorrendo fino in fondo si rimanda a domani */
+{let g=null,swallow=0;const L=$('#list');
+  L.addEventListener('touchstart',e=>{const w=e.target.closest('.ogw');if(!w||e.touches.length!==1||e.target.closest('.ogb'))return;
+    document.querySelectorAll('.ogw.open').forEach(x=>{if(x!==w)closeOg(x)});
+    g={w,t:w.querySelector('.ogt'),x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,mode:0,base:w.classList.contains('open')?-w.querySelector('.ogb').offsetWidth:0,full:false}},{passive:true});
+  L.addEventListener('touchmove',e=>{if(!g)return;const tt=e.touches[0],dx=tt.clientX-g.x,dy=tt.clientY-g.y;
+    if(!g.mode){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;g.mode=Math.abs(dx)>Math.abs(dy)*1.2?1:-1;if(g.mode===1){g.t.style.transition='none';g.w.classList.add('ogdrag')}}
+    if(g.mode!==1)return;if(e.cancelable)e.preventDefault();
+    const W=g.w.offsetWidth,x=Math.min(0,g.base+dx);g.dx=x;
+    const full=x<-W*.55;if(full!==g.full){g.full=full;g.w.classList.toggle('full',full);if(full)buzz('tick')}
+    g.t.style.transform=`translate3d(${x}px,0,0)`},{passive:false});
+  const end=()=>{if(!g)return;const G=g;g=null;if(G.mode!==1)return;swallow=Date.now()+400;G.w.classList.remove('ogdrag');G.t.style.transition='';
+    const B=G.w.querySelector('.ogb').offsetWidth,W=G.w.offsetWidth;
+    if(G.full){G.t.style.transform=`translate3d(${-W-B}px,0,0)`;return snoozeOg(G.w.dataset.ogk,addDays(today(),1),G.w)}
+    if(G.dx<-Math.min(60,B/2)){G.t.style.transform=`translate3d(${-B}px,0,0)`;G.w.classList.add('open')}else closeOg(G.w)};
+  L.addEventListener('touchend',end,{passive:true});L.addEventListener('touchcancel',end,{passive:true});
+  L.addEventListener('click',e=>{if(Date.now()<swallow&&e.target.closest('.ogw')){e.stopImmediatePropagation();e.preventDefault();return}
+    const sz=e.target.closest('[data-snz]');
+    if(sz){e.stopImmediatePropagation();const w=sz.closest('.ogw');sz.dataset.snz==='pick'?pickSnooze(w.dataset.ogk,w):snoozeOg(w.dataset.ogk,addDays(today(),1),w);return}
+    if(e.target.closest('[data-snzshow]')){e.stopImmediatePropagation();LS.set('rd_snooze',{});render();toast('Le voci rimandate sono di nuovo visibili');return}
+    const w=e.target.closest('.ogw');if(w&&(Date.now()<swallow||w.classList.contains('open'))){e.stopImmediatePropagation();e.preventDefault();closeOg(w)}},true)}
 /* ===== selezione multipla e modifiche in blocco ===== */
 function startSel(id){if(SELM)return;SELM=new Set(id?[id]:[]);history.pushState({p:0,sel:1},'');render()}
 function endSel(){if(!SELM)return;SELM=null;render();if(history.state&&history.state.sel)history.back()}
@@ -4538,10 +4817,13 @@ function openPeek(id,src){
   const chips=[d.prestito&&(d.prestito.tipo==='Esposizione'?'🖼️ ':'📤 ')+(d.prestito.a||'fuori casa'),...(d.tags||[]).map(t=>'#'+t),missing(d).length&&'✎ da completare',linkedTo(d)&&'↳ '+linkedTo(d).nome,d.colore,d.luogo&&'📍 '+d.luogo,d.stato,d.wish&&d.w_priorita&&'★ '+d.w_priorita,d.wish&&d.w_budget&&'≤ € '+d.w_budget,+d.quantita>1&&'×'+d.quantita].filter(Boolean);
   const desc=(d.descrizione||'').split(/\n\s*\n/)[0];
   const canMu=!d.wish&&kindOf(d.tipologia)!=='acc';
+  /* 2.9: azioni rapide senza aprire la scheda */
+  const mt=manTargets(d),one=mt.length===1&&!mt[0].u,ms=one?manState(mt[0]):null;
+  const qa=d.wish?'':`${one?`<button data-pk="on">${ms.doneOn?'Già acceso oggi':'Acceso oggi'}<i>⚡</i></button>${ms.rech?`<button data-pk="ch">${ms.doneCh?'Già caricato oggi':'Caricato oggi'}<i>🔋</i></button>`:''}`:''}<button data-pk="mv">Sposta${d.luogo?` (ora: ${esc(d.luogo)})`:''}<i>📍</i></button><button data-pk="int">Aggiungi intervento<i>🔧</i></button>`;
   const m=document.createElement('div');m.className='peek';
   m.innerHTML=`<div class="pk-card"><div class="pk-hero ${ph?'':'noph'}">${ph?`<img src="${ph}" alt="">`:icon(d)}<div class="pk-cap">${sub?`<small>${esc(sub)}</small>`:''}<b>${esc(d.nome)}</b></div></div>
     <div class="pk-body">${chips.length?`<div class="chips">${chips.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`:''}${tl.length?`<div class="pk-tiles">${tl.map(([a,b])=>`<div><small>${esc(a)}</small><span>${esc(b)}</span></div>`).join('')}</div>`:''}${desc?`<p>${esc(desc.length>170?desc.slice(0,170)+'…':desc)}</p>`:''}</div></div>
-    <div class="pk-acts"><button data-pk="open">Apri la scheda<i>›</i></button><button data-pk="edit">Modifica<i>✎</i></button><button data-pk="sel">Seleziona più oggetti<i>☑︎</i></button>${canMu?'<button data-pk="mu">Sul piedistallo<i>🏛️</i></button>':''}<button data-pk="del" class="dng">Elimina<i>🗑</i></button></div>`;
+    <div class="pk-acts"><button data-pk="open">Apri la scheda<i>›</i></button><button data-pk="edit">Modifica<i>✎</i></button>${qa}<button data-pk="sel">Seleziona più oggetti<i>☑︎</i></button>${canMu?'<button data-pk="mu">Sul piedistallo<i>🏛️</i></button>':''}<button data-pk="del" class="dng">Elimina<i>🗑</i></button></div>`;
   const r=src.getBoundingClientRect();m.style.setProperty('--ox',Math.round(r.left+r.width/2-(innerWidth-Math.min(innerWidth*.92,380))/2)+'px');m.style.setProperty('--oy','30%');
   document.body.append(m);requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('on')));
   history.pushState({p:stack.length,pk:1},'');
@@ -4554,6 +4836,9 @@ function openPeek(id,src){
     const a=b.dataset.pk;await close();
     if(a==='open')openDetail(d.id);
     if(a==='sel')startSel(d.id);
+    if(a==='on'||a==='ch'){manLog(d,null,a==='on'?'on':'charge');await saveDev(d);render();buzz('ok');toast(`${a==='on'?'⚡ Acceso':'🔋 Caricato'} oggi: «${d.nome}»`)}
+    if(a==='mv'){const ls=[...new Set([...LUOGHI0,...devices.map(x=>x.luogo).filter(Boolean)])].filter(l=>l!==d.luogo);const l=await chooseLuogo(ls);if(l!=null&&setLuogo(d,l)){await saveDev(d);render();buzz('ok');toast(`📍 «${d.nome}» → ${l}`)}}
+    if(a==='int')openIntervento(d);
     if(a==='edit')openForm(d);
     if(a==='mu')vt('vt-pl',()=>openPlinth([d],0,false));
     if(a==='del'&&await ask(`Eliminare "${d.nome}"?`,'Elimina',true))delWithUndo(d);
@@ -4584,6 +4869,8 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
   if(/[?&]manutenzione=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);setTimeout(openMaintenance,300)}
   if(!RM()){document.body.classList.add('boot');setTimeout(()=>document.body.classList.remove('boot'),900)}
+  /* 2.9: scorciatoie dall'icona dell'app (tenendo premuta l'icona) */
+  {const az=(location.search.match(/[?&]azione=(\w+)/)||[])[1];if(az){history.replaceState({p:0},'',location.pathname);setTimeout(()=>{if(az==='aggiungi')openAdd();else if(az==='manutenzione')openMaintenance();else if(az==='cerca'){scrollTo(0,0);$('#q').focus()}},350)}}
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){

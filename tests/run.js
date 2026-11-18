@@ -828,6 +828,109 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.9: Oggi — una voce si rimanda scorrendola (Domani, Rimanda…, scorrimento completo) e si ritrova', async () => {
+    const U = await phone('V1', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { await saveDev({ id: 'm1', nome: 'PowerBook G3', tipologia: 'Portatile', creato: Date.now() }); await saveDev({ id: 'm2', nome: 'iBook', tipologia: 'Portatile', creato: Date.now(), interventi: [{ id: 'x', tipo: 'Pulizia', prossimo: '2026-01-01' }] }); render(); });
+    await U.waitForTimeout(300);
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    const box = async id => U.evaluate(id => { const b = document.querySelector('#' + id).getBoundingClientRect(); return { x: b.x, y: b.y + b.height / 2, w: b.width }; }, id);
+    let b = await box('manB');
+    await T('touchStart', b.x + b.w - 30, b.y); for (let i = 1; i <= 8; i++) { await T('touchMove', b.x + b.w - 30 - i * 15, b.y); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => document.querySelector('.ogw[data-ogk="manB"]').classList.contains('open')), 'scorrendo un po\' compaiono i tasti');
+    await U.click('.ogw[data-ogk="manB"] [data-snz="pick"]'); await U.waitForSelector('.modal.sheet');
+    await U.click('.modal.sheet [data-c="2"]'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => [LS.get('rd_snooze').manB === addDays(today(), 7), !document.querySelector('#manB'), !!document.querySelector('[data-snzshow]')]), [true, true, true], '«Fra una settimana»: voce nascosta, richiamo presente');
+    b = await box('dueB');
+    await T('touchStart', b.x + b.w - 20, b.y); for (let i = 1; i <= 14; i++) { await T('touchMove', b.x + b.w - 20 - i * 20, b.y); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(700);
+    eq(await U.evaluate(() => [LS.get('rd_snooze').dueB === addDays(today(), 1), /2 voci rimandate/.test(document.querySelector('[data-snzshow]').textContent)]), [true, true], 'scorrimento completo: a domani');
+    await U.click('[data-snzshow]'); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => [!!document.querySelector('#manB'), !!document.querySelector('#dueB')]), [true, true], '«mostra» le riporta');
+    await U.evaluate(() => LS.set('rd_snooze', { manB: today() })); await U.evaluate(() => render());
+    ok(await U.evaluate(() => !!document.querySelector('#manB')), 'alla data scelta la voce torna da sola');
+    await U.context().close();
+  });
+
+  await test('2.9: anteprima a pressione lunga con azioni rapide (acceso, sposta, intervento)', async () => {
+    const U = await phone('V2');
+    await U.evaluate(async () => { await saveDev({ id: 'q1', nome: 'iMac G4', tipologia: 'All-in-one', luogo: 'Damiano', creato: Date.now() }); render(); openPeek('q1', document.querySelector('#list [data-id="q1"]')); });
+    await U.waitForSelector('.peek [data-pk="on"]');
+    eq(await U.evaluate(() => [...document.querySelectorAll('.peek [data-pk]')].map(b => b.dataset.pk)), ['open', 'edit', 'on', 'mv', 'int', 'sel', 'mu', 'del'], 'azioni nell\'anteprima, Elimina in fondo');
+    await U.click('.peek [data-pk="on"]'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => devices.find(d => d.id === 'q1').man_on), await U.evaluate(() => today()), 'segnato acceso oggi');
+    await U.evaluate(() => openPeek('q1', document.querySelector('#list [data-id="q1"]'))); await U.waitForSelector('.peek [data-pk="mv"]');
+    await U.click('.peek [data-pk="mv"]'); await U.waitForSelector('.modal [data-cl="Alex"]'); await U.click('.modal [data-cl="Alex"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => { const d = devices.find(d => d.id === 'q1'); return [d.luogo, d.spostamenti.length]; }), ['Alex', 1], 'spostato, con lo storico degli spostamenti');
+    await U.context().close();
+  });
+
+  await test('2.9: Gemini legge l\'etichetta dalla foto e stima il valore (con le fonti) nello storico', async () => {
+    const U = await phone('V3'); const seen = [];
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' };
+    await U.context().route('https://generativelanguage.googleapis.com/**', r => { const q = r.request(); if (q.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+      const u = new URL(q.url()); if (/\/models$/.test(u.pathname)) return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ data: [{ id: 'gemini-3.5-flash' }], models: [{ name: 'models/gemini-3.5-flash', supportedGenerationMethods: ['generateContent'] }] }) });
+      const b = JSON.parse(q.postData()), parts = b.contents[0].parts; seen.push({ img: parts.some(p => p.inline_data), web: !!b.tools });
+      const txt = parts.some(p => p.inline_data) ? JSON.stringify({ marca: 'Apple', nome: 'iBook G3', modello: 'M2453', seriale: 'UV0123ABCDE', identifier: 'PowerBook2,1', anno: 2000, alimentazione: '24V 1.875A', certezza: 'alta' })
+        : JSON.stringify({ min: 60, max: 140, tipico: 95, valuta: 'EUR', base: 'Vendite eBay 2025-2026', fattori: ['batteria', 'cerniere'], certezza: 'media' });
+      return r.fulfill({ status: 200, headers: H, body: JSON.stringify({ candidates: [{ content: { parts: [{ text: txt }] }, finishReason: 'STOP', groundingMetadata: b.tools ? { groundingChunks: [{ web: { uri: 'https://www.ebay.it/x', title: 'eBay' } }] } : undefined }] }) }); });
+    await U.evaluate(() => { LS.set('rd_gem', { key: 'AIzaTEST', model: 'gemini-3.5-flash' }); openLabel({ onResult: r => openForm(r.fields, { fromLookup: true }) }); });
+    await U.waitForTimeout(300);
+    const v = await U.evaluate(() => { const c = document.createElement('canvas'); c.width = 400; c.height = 200; c.getContext('2d').fillRect(0, 0, 400, 200); return c.toDataURL('image/jpeg').split(',')[1]; });
+    const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.click('[data-lb="gal"]')]); await fc.setFiles({ name: 'etichetta.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(v, 'base64') });
+    await U.waitForSelector('[data-lb="look"]', { timeout: 8000 });
+    eq(await U.evaluate(() => [document.querySelector('[data-lb="look"]').textContent.trim(), /UV0123ABCDE/.test(document.querySelector('#lbo').textContent)]), ['🔎 Cerca la scheda con «PowerBook2,1»', true], 'dati letti, ricerca proposta con il Model ID');
+    ok(seen[0].img && !seen[0].web, 'foto inviata, senza ricerca web');
+    await U.click('[data-lb="only"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => { const f = stack[stack.length - 1].querySelector('form'); return [f.seriale.value, f.modello.value, f.anno.value, /24V/.test(f.note.value)]; }), ['UV0123ABCDE', 'M2453', '2000', true], 'modulo compilato dall\'etichetta');
+    await U.evaluate(async () => { await saveDev({ id: 've', nome: 'iBook G3', tipologia: 'Portatile', acq_prezzo: 50, creato: Date.now() }); goBase(() => openValEst(devices.find(d => d.id === 've'))); });
+    await U.waitForSelector('[data-ve="add"]', { timeout: 8000 });
+    eq(await U.evaluate(() => [document.querySelector('.vest b').textContent, /eBay/.test(document.querySelector('#veo').textContent)]), ['€ 95', true], 'forbice, valore tipico e fonti');
+    await U.click('[data-ve="add"]'); await U.waitForTimeout(600);
+    eq(await U.evaluate(() => { const d = devices.find(d => d.id === 've'); return [d.valore, d.valori.slice(-1)[0].fonte, d.valori.slice(-1)[0].note]; }), [95, 'Stima Gemini', 'forbice € 60–140'], 'aggiunta allo storico del valore');
+    await U.context().close();
+  });
+
+  await test('2.9: Cosa manca — linee Apple con i modelli mancanti, in wishlist con un tocco', async () => {
+    const U = await phone('V4');
+    await U.evaluate(async () => { AWIDX = [['iPod nano (1st generation)', 'A1137', '', 'iPod'], ['iPod nano (2nd generation)', 'A1199', '', 'iPod'], ['iPod nano (3rd generation)', 'A1236', '', 'iPod'], ['iMac G3', 'M4984', 'iMac,1', 'Mac'], ['iMac G3 (Fruit Colors)', 'M4984', 'iMac,1', 'Mac'], ['iMac G3 (Slot Loading)', 'M5521', 'PowerMac2,1', 'Mac'], ['iBook', 'M2453', 'PowerBook2,1', 'Mac'], ['iBook SE', 'M2453', 'PowerBook2,1', 'Mac'], ['iBook Firewire', 'M6411', 'PowerBook2,2', 'Mac']];
+      for (const d of [{ id: 'n1', nome: 'iPod nano Original 1 GB', modello: 'A1137', tipologia: 'Lettore musicale' }, { id: 'n2', nome: 'iMac G3/333 (Fruit Colors)', modello: 'M4984', identifier: 'iMac,1', tipologia: 'All-in-one' }, { id: 'n3', nome: 'iBook G3/366 SE (Original/Clamshell)', modello: 'M2453', identifier: 'PowerBook2,1', tipologia: 'Portatile' }]) await saveDev({ ...d, creato: Date.now() }); render(); });
+    const g = await U.evaluate(() => gapsData(AWIDX).map(x => [x.f, x.n, x.tot, x.rows.filter(r => r.own.length).map(r => r.x[0])]));
+    eq(g.sort(), [['iBook', 1, 3, ['iBook SE']], ['iMac G3', 1, 3, ['iMac G3 (Fruit Colors)']], ['iPod nano', 1, 3, ['iPod nano (1st generation)']]].sort(), 'un modello per oggetto, linee giuste');
+    await U.evaluate(() => openGaps()); await U.waitForSelector('[data-gw]', { state: 'attached' }); await U.evaluate(() => { const b = document.querySelector('[data-gw]'); b.closest('details').open = true; }); await U.click('[data-gw]'); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => devices.some(d => d.wish && d.marca === 'Apple' && d.linea)), 'modello mancante aggiunto alla wishlist');
+    await U.context().close();
+  });
+
+  await test('2.9: tira giù per sincronizzare, finestre chiuse trascinandole, scorciatoie dall\'icona, elenco animato', async () => {
+    const U = await phone('V5', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { for (let i = 0; i < 6; i++) await saveDev({ id: 'f' + i, nome: 'Oggetto ' + i, anno: 1990 + i, tipologia: 'Computer', creato: Date.now() }); render(); window.syncDB = async () => { window._synced = (window._synced || 0) + 1 }; scrollTo(0, 0); });
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await T('touchStart', 200, 330); for (let i = 1; i <= 12; i++) { await T('touchMove', 200, 330 + i * 16); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(900);
+    eq(await U.evaluate(() => window._synced), 1, 'tirando giù dalla cima parte la sincronizzazione');
+    await U.evaluate(() => { window._sh = 'attesa'; sheet('Prova', [{ t: 'Uno' }, { t: 'Due' }]).then(i => window._sh = i); }); await U.waitForSelector('.modal.sheet'); await U.waitForFunction(() => !document.querySelector('.modal.sheet>div').getAnimations().some(a => a.playState === 'running')); await U.waitForTimeout(100);
+    const b = await U.evaluate(() => { const r = document.querySelector('.modal.sheet>div').getBoundingClientRect(); const t = document.querySelector('#toast'); if (t) t.style.display = 'none'; return { x: r.x + r.width / 2, y: r.y + 24 }; });
+    await T('touchStart', b.x, b.y); for (let i = 1; i <= 10; i++) { await T('touchMove', b.x, b.y + i * 22); await U.waitForTimeout(16); } await T('touchEnd'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => [window._sh, !!document.querySelector('.modal')]), [-1, false], 'foglio chiuso trascinandolo in basso (come Annulla)');
+    await U.evaluate(() => { S.sel = {}; S.q = ''; render(); S.sort = S.sort === 'anno_d' ? 'anno_a' : 'anno_d'; LS.set('rd_sort', S.sort); render(); });
+    ok(await U.evaluate(() => [...document.querySelectorAll('#list [data-id]')].some(x => x.getAnimations().length)), 'cambiando l\'ordine le schede si spostano con un\'animazione');
+    ok(await U.evaluate(async () => { const m = await (await fetch('manifest.webmanifest')).json(); return m.shortcuts.map(s => s.url).join() === './index.html?azione=aggiungi,./index.html?azione=manutenzione,./index.html?azione=cerca'; }), 'scorciatoie nel manifest');
+    await U.goto(URL0 + '?azione=aggiungi'); await U.waitForFunction(() => typeof stack !== 'undefined' && stack.length && /Aggiungi/.test(stack[stack.length - 1].querySelector('h2').textContent), null, { timeout: 5000 });
+    eq(await U.evaluate(() => location.search), '', 'scorciatoia «Aggiungi» apre la pagina e pulisce l\'indirizzo');
+    await U.context().close();
+  });
+
+  await test('2.9: nel giro la ✗ chiede cosa non va; batteria esaurita = solo accensione', async () => {
+    const U = await phone('V6');
+    await U.evaluate(async () => { await saveDev({ id: 'bt', nome: 'PowerBook G3 Pismo', tipologia: 'Portatile', luogo: 'Damiano', man_batt: 'Ricaricabile (da tenere carica)', creato: Date.now() }); render(); openMaintenance(); });
+    await U.waitForSelector('[data-mid="bt"] [data-mg="ko"]');
+    ok(await U.evaluate(() => !!document.querySelector('[data-mid="bt"] [data-mg="charge"]')), 'prima: nel giro di ricarica');
+    await U.click('[data-mid="bt"] [data-mg="ko"]'); await U.waitForSelector('.modal.sheet');
+    eq(await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi b')].map(b => b.textContent)), ['La batteria non regge', 'Batteria morta', 'Non si accende'], 'scelte della ✗');
+    await U.click('.modal.sheet [data-c="0"]'); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => { const d = devices.find(x => x.id === 'bt'), t = manTargets(d)[0], st = manState(t); return [d.batt_stato, d.man_on === today(), st.rech, st.dueCh, d.stato || '', d.manutenzioni.slice(-1)[0].tipo]; }), ['Tampona ma non regge', true, false, false, '', 'batt'], 'stato batteria nella scheda, accensione fatta, fuori dal giro di ricarica');
+    ok(await U.evaluate(() => manTargets(devices.find(x => x.id === 'bt')).length === 1), 'resta nel giro di accensione');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
