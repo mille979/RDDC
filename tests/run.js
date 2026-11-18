@@ -813,6 +813,21 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.8.2: foto verticali centrate nelle miniature, il volo atterra sul riquadro, barra in fondo allineata', async () => {
+    const U = await phone('U10');
+    await U.evaluate(async () => { const v = document.createElement('canvas'); v.width = 900; v.height = 1200; v.getContext('2d').fillRect(0, 0, 900, 1200); const img = v.toDataURL('image/jpeg', .8);
+      await saveDev({ id: 'vt', nome: 'iPhone 3G', tipologia: 'Smartphone', foto: [img], thumb: img, creato: Date.now() }); render(); });
+    await U.waitForTimeout(400);
+    const r = await U.evaluate(() => { const th = document.querySelector('#list [data-id="vt"] .th'), im = th.querySelector('img'), a = th.getBoundingClientRect(), b = im.getBoundingClientRect(), t = thumbOf('vt');
+      return [Math.round(b.height) === Math.round(a.height), Math.round(b.top) === Math.round(a.top), Math.round(t.r.height) === Math.round(a.height)]; });
+    eq(r, [true, true, true], 'la foto riempie il riquadro (centrata) e il volo usa il riquadro visibile');
+    await U.waitForTimeout(400);
+    const d = await U.evaluate(() => { const R = e => e.getBoundingClientRect(), dk = R($('#dock')), fb = R($('#fab')), on = R($('#seg button.on')), i = R($('.segi'));
+      return [Math.abs((dk.top + dk.height / 2) - (fb.top + fb.height / 2)) < 1, Math.abs(on.left - i.left) < 1.5, Math.abs(on.width - i.width) < 1.5]; });
+    eq(d, [true, true, true], 'barra e + centrati, goccia sul pulsante attivo');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
