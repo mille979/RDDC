@@ -797,6 +797,22 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.8.1: RAM e memoria anche da iPhone/iPod e Mac vecchi, tagli di memoria con un tocco', async () => {
+    const U = await phone('U9');
+    const r = await U.evaluate(() => { const t = 'iPhone 3G 8, 16 GB Specs\nIntroduction Date:\nJuly 11, 2008\nProcessor Type:\nSamsung ARM 11\nOnboard RAM:\n128 MB\nStorage Capacity:\n8, 16 GB\nApple Model No:\nA1241\n';
+      const c = 'Macintosh Classic II Specs\nIntroduction Date:\nOctober 21, 1991\nProcessor Speed:\n16 MHz\nStandard RAM:\n2 MB\nMaximum RAM:\n10 MB\nStandard Hard Drive:\n40 MB, 80 MB\nApple Model No:\nM4150\n';
+      const a = importEM({ text: t }), b = importEM({ text: c }); return [a.fields.ram, a.fields.storage, a.fields.tagli.map(x => x.opts), b.fields.ram, b.fields.storage, memCuts('32 MB, 64 MB PC66').opts, memCuts('1 GB, 2 GB, 4 GB').opts, memCuts('128 MB')]; });
+    eq(r, ['128 MB', '8, 16 GB', [['8 GB', '16 GB']], '2 MB (max 10 MB)', '40 MB, 80 MB', ['32 MB', '64 MB'], ['1 GB', '2 GB', '4 GB'], null], 'letture e tagli');
+    await U.evaluate(async () => { const a = importEM({ text: 'iPhone 3G 8, 16 GB Specs\nIntroduction Date:\nJuly 11, 2008\nOnboard RAM:\n128 MB\nStorage Capacity:\n8, 16 GB\n' }); openForm(await mergeFetched({}, a, true), { fromLookup: true }); });
+    await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [...document.querySelectorAll('.page .chips.cuts [data-cut]')].map(b => b.textContent)), ['8 GB', '16 GB'], 'scelte sotto Archiviazione');
+    await U.click('.page .chips.cuts [data-cut="16 GB"]');
+    eq(await U.evaluate(() => { const f = stack[stack.length - 1].querySelector('form'); return [f.nome.value, f.storage.value, document.querySelector('.chips.cuts .on').textContent]; }), ['iPhone 3G 16 GB', '16 GB', '16 GB'], 'un tocco aggiorna memoria e nome');
+    await U.click('.page .chips.cuts [data-cut="8 GB"]');
+    eq(await U.evaluate(() => { const f = stack[stack.length - 1].querySelector('form'); return [f.nome.value, f.storage.value]; }), ['iPhone 3G 8 GB', '8 GB'], 'si può cambiare taglio');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');

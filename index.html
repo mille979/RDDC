@@ -638,6 +638,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* filtri salvati sotto la ricerca */
 .smart{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}.smart::-webkit-scrollbar{display:none}.smart .chip{flex:none;padding:6px 12px;font-size:13.5px}
 .chs{display:flex;flex-direction:column;gap:8px}.chs .btn{width:100%}
+.chips.cuts{margin:7px 0 2px;align-items:center;gap:6px}.chips.cuts small{color:var(--mute);font-size:12px;margin-right:2px}
 .btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
 /* 2.7: tasti della scheda più ordinati + foglio di azioni */
 .acts.acts2{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.acts2 .btn{justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:12px;padding-right:12px}.acts2 .btn.more{width:52px;padding:0;font-size:22px;letter-spacing:-.04em;line-height:1}
@@ -793,8 +794,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.8';
+const APP_VER='2.8.1';
 const NOVITA=[
+ ['2.8.1','2026-11-18',['RAM e memoria lette meglio da EveryMac: anche per iPhone, iPod e iPad («Onboard RAM», «Storage Capacity») e per i Mac vecchi (disco «Standard Hard Drive»), con una ricerca di riserva su ogni voce che parli di RAM o memoria','Tagli di memoria: quando EveryMac elenca più versioni (es. 8, 16 GB o 32 MB, 64 MB) nel modulo compaiono come scelte rapide sotto Archiviazione e RAM; un tocco aggiorna il campo e anche il nome (es. «iPhone 3G 16 GB»)']],
  ['2.8','2026-11-18',['Trovati i dati, il tasto di ricerca diventa «✓ Inserisci i dati» e a sinistra compare un piccolo ↻ per ripetere la ricerca (EveryMac, Gemini, Incolla): niente più ricerche ripetute per sbaglio','Ricerca automatica su EveryMac con il tuo worker Cloudflare gratuito: Menu → «🌐 Ricerca automatica su EveryMac», con istruzioni, codice da copiare e prova','I vecchi codici (Mxxxx, es. M5884) ora trovano la scheda: EveryMac dà solo i nomi e l\'app cerca il link nell\'indice della famiglia','Da EveryMac con «Condividi» → RDDC: il testo selezionato della pagina (o il link, con il worker) apre la scheda già compilata']],
  ['2.7.1','2026-11-16',['Animazioni della foto rifatte: aprendo, chiudendo o tirando in basso la scheda vola una sola foto che cambia misura e angoli, con lo stesso ritaglio della miniatura e della foto grande (niente più due immagini sovrapposte con le foto non quadrate)','Tirare in basso la scheda è fluido anche tenendo il dito fermo: durante il gesto la pagina si sposta senza ricalcolare il vetro','Corretto: chiudendo tirando in basso a volte si tornava indietro di due pagine']],
  ['2.7','2026-11-16',['Scheda: si chiude tirandola in basso, come nella galleria del telefono (la foto torna sulla sua miniatura); l\'animazione di apertura tiene la foto arrotondata per tutto il viaggio','Scorrere tra le schede molto più rapido: la scheda segue il dito e la successiva entra subito','Tasti in fondo alla scheda più ordinati: Modifica, Aggiorna e «⋯» con le altre azioni raggruppate (Elimina in rosso)','Modifica: tasto Salva anche in alto, accanto a «Dati online»','Corretti registro interventi e storico del valore: la data sta sopra al testo, che non va più a capo lettera per lettera','Manutenzione: accensione e ricarica ogni 6 mesi già impostate nel modulo; caricabatterie e altri accessori fuori dal giro','Laboratorio: un pezzo senza prezzo te lo chiede quando lo segni «Ordinato»','Menu più semplice: «Collegamento IA» (Gemini, OpenRouter, registro errori), «Database su GitHub» in una pagina, un solo «Esporta…» che chiede come; tolto il proxy personale','Vetro liquido simulato su iPhone e iPad, dove Safari e Chrome non permettono quello vero']],
@@ -2944,6 +2946,18 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     drawPh();
     const applyKind=()=>{const k=kindOf(fm.tipologia.value);el.querySelectorAll('[data-when]').forEach(x=>{const w=x.dataset.when.split(' '),kinds=w.filter(v=>['pc','tv','part','acc'].includes(v));x.hidden=(w.includes('wish')&&!d.wish)||(w.includes('own')&&!!d.wish)||(w.includes('nopart')&&k==='part')||(w.includes('noacc')&&k==='acc')||(kinds.length>0&&!kinds.includes(k))})};
     applyKind();fm.tipologia.addEventListener('input',applyKind);
+    /* 2.8.1: tagli di memoria trovati online, da scegliere con un tocco (aggiornano anche il nome se li contiene) */
+    (d.tagli||[]).forEach(t=>{const inp=fm[t.k];if(!inp||!t.opts||t.opts.length<2)return;
+      const box=document.createElement('div');box.className='chips cuts';box.dataset.cuts=t.k;
+      box.innerHTML=`<small>${t.k==='ram'?'RAM disponibili':'Tagli di memoria'}</small>`+t.opts.map(o=>`<button type="button" class="chip" data-cut="${esc(o)}">${esc(o)}</button>`).join('');
+      inp.after(box);
+      const pick=(v,list)=>v.includes(list)?null:t.opts.find(x=>v===x||v.startsWith(x+' '));
+      const mark=()=>{const c=pick(inp.value.trim(),t.list);box.querySelectorAll('[data-cut]').forEach(b=>b.classList.toggle('on',b.dataset.cut===c))};
+      box.onclick=e=>{const b=e.target.closest('[data-cut]');if(!b)return;const o=b.dataset.cut,cur=inp.value.trim(),pv=pick(cur,t.list);
+        inp.value=cur.includes(t.list)?cur.replace(t.list,o):pv?o+cur.slice(pv.length):(o+(cur?' '+cur:''));
+        if(t.k==='storage'&&fm.nome){const n=fm.nome.value;if(n.includes(t.list))fm.nome.value=n.replace(t.list,o);else{const q=t.opts.find(x=>n.endsWith(' '+x));if(q)fm.nome.value=n.slice(0,-q.length)+o}}
+        inp.dispatchEvent(new Event('input',{bubbles:true}));mark()};
+      inp.addEventListener('input',mark);mark()});
     /* compatibilità multipla dei ricambi */
     const lb=$('#lnkbox',el);if(lb){lb.addEventListener('change',()=>{fm.compat.value=JSON.stringify([...lb.querySelectorAll('input:checked')].map(x=>x.value))});
       $('#lnkq',el).oninput=e=>{const q=e.target.value.trim().toLowerCase();lb.querySelectorAll('.lnk').forEach(x=>x.hidden=!!q&&!x.textContent.toLowerCase().includes(q))}}
@@ -3162,7 +3176,7 @@ function emKeyword(q){
 const clean=t=>(t||'').replace(/ /g,' ').replace(/\s+/g,' ').trim();
 const cleanTitle=t=>clean(t).replace(/\s*Specs\s*$/i,'').replace(/^Apple\s+/i,'').replace(/[“”]/g,'"');
 /* etichette note delle tabelle EveryMac (Tech Specs + Ports): servono per separare le coppie quando il testo incollato è tutto su una riga */
-const EM_KNOWN=['Introduction Date','Discontinued Date','Processors','Architecture','Processor Speed','Processor Type','Turbo Boost','Custom Speeds','Processor Upgrade','FPU','System Bus Speed','Cache Bus Speed','ROM/Firmware Type','EFI Architecture','L1 Cache','L2 Cache','L2/L3 Cache','L3 Cache','RAM Type','Min. RAM Speed','Standard RAM','Maximum RAM','Motherboard RAM','RAM Slots','Video Card','VRAM Type','Standard VRAM','Maximum VRAM','Built-in Display','Native Resolution','2nd Display Support','2nd Max. Resolution','Standard Storage','Std. Storage Speed','Storage Dimensions','Storage Interface','Standard Optical','Standard Disk','Standard Modem','Standard Ethernet','Standard AirPort','Standard Wi-Fi','Standard Bluetooth','USB Ports','Firewire Ports','Thunderbolt Ports','Expansion Slots','Expansion Bays','Incl. Keyboard','Incl. Input','Case Type','Form Factor','Apple Order No','Apple Subfamily','Apple Model No','Model ID','Battery Type','Battery Life','Pre-Installed MacOS','Pre-Installed System','Maximum MacOS','Maximum System','Minimum Windows','Maximum Windows','MacOS 9 Support','Windows Support','Dimensions','Avg. Weight','Original Price (US)','Est. Current Retail',
+const EM_KNOWN=['Standard Hard Drive','Standard Hard Disk','Installed RAM','Flash Storage','Standard SSD','Introduction Date','Discontinued Date','Processors','Architecture','Processor Speed','Processor Type','Turbo Boost','Custom Speeds','Processor Upgrade','FPU','System Bus Speed','Cache Bus Speed','ROM/Firmware Type','EFI Architecture','L1 Cache','L2 Cache','L2/L3 Cache','L3 Cache','RAM Type','Min. RAM Speed','Standard RAM','Maximum RAM','Motherboard RAM','RAM Slots','Video Card','VRAM Type','Standard VRAM','Maximum VRAM','Built-in Display','Native Resolution','2nd Display Support','2nd Max. Resolution','Standard Storage','Std. Storage Speed','Storage Dimensions','Storage Interface','Standard Optical','Standard Disk','Standard Modem','Standard Ethernet','Standard AirPort','Standard Wi-Fi','Standard Bluetooth','USB Ports','Firewire Ports','Thunderbolt Ports','Expansion Slots','Expansion Bays','Incl. Keyboard','Incl. Input','Case Type','Form Factor','Apple Order No','Apple Subfamily','Apple Model No','Model ID','Battery Type','Battery Life','Pre-Installed MacOS','Pre-Installed System','Maximum MacOS','Maximum System','Minimum Windows','Maximum Windows','MacOS 9 Support','Windows Support','Dimensions','Avg. Weight','Original Price (US)','Est. Current Retail',
  'Video (Monitor)','Floppy (Ext.)','ADB','SCSI','Serial (Standard)','Serial (Geoport)','USB','Firewire','Modem','Ethernet','S-Video Input','S-Video Output','Microphone','Sound In','Sound Out','Headphone','Security (Lock)','Joystick (PC)','Power','Power Adapter','Thunderbolt','HDMI'];
 const EM_KSET=new Set(EM_KNOWN.map(x=>x.toLowerCase()));
 const reEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -3237,6 +3251,10 @@ function parseEMDoc(html,url){
   if(im){try{p.img=new URL(im.getAttribute('src'),/^https?:/.test(p.url)?p.url:EM+'/').href}catch(e){}}
   return p;
 }
+function memCuts(v){v=String(v||'').trim();const m=v.match(/^((?:\d+(?:\.\d+)?\s*(?:[KMGT]B)?\s*(?:,|\bor\b|\/)\s*)+\d+(?:\.\d+)?\s*[KMGT]B)\b/i);if(!m)return null;
+  const list=m[1],u=list.match(/([KMGT]B)\s*$/i)[1].toUpperCase();
+  const opts=[...new Set(list.split(/\s*(?:,|\bor\b|\/)\s*/).map(x=>x.trim()).filter(Boolean).map(x=>/[KMGT]B$/i.test(x)?x.replace(/\s*([KMGT]B)$/i,(a,b)=>' '+b.toUpperCase()):x+' '+u))];
+  return opts.length>1?{list,opts}:null}
 function mapEM(p,url){
   const P=new Map();p.pairs.forEach(([l,v])=>{const k=l.toLowerCase();if(!P.has(k))P.set(k,v)});
   const find=re=>{for(const [k,v] of P)if(re.test(k))return v;return ''};
@@ -3261,9 +3279,17 @@ function mapEM(p,url){
   const my=(f.intro.match(/\b(19|20)\d\d\b/)||[''])[0];f.anno=my?+my:'';
   f.cpu=[nz(find(/^processor type/)),nz(find(/^processor speed/))].filter(Boolean).join(' @ ');
   const nc=nz(find(/^processors$/));if(nc&&/core/i.test(nc)&&!/^1 \(1 core\)$/i.test(nc))f.cpu+=` – ${nc}`;
+  /* 2.8.1: RAM e memoria anche con le etichette di iPod/iPhone/iPad («Onboard RAM», «Storage Capacity») e dei Mac vecchi («Standard Hard Drive») */
+  const first=(...res)=>{for(const re of res){const v=nz(find(re));if(v)return v}return ''};
   const mx=nz(find(/^maximum ram/));
-  f.ram=[nz(find(/^standard ram/)),nz(find(/^ram type/)),mx?`(max ${mx})`:''].filter(Boolean).join(' ');
-  f.storage=[nz(find(/^standard storage$/)),nz(find(/^std\. storage speed/))].filter(Boolean).join(' ');
+  const memV=v=>/\d\s*(?:[KMGT]B)\b/i.test(v);
+  const anyP=(inc,exc)=>{for(const [k,v] of P){const w=nz(v);if(w&&inc.test(k)&&!exc.test(k)&&memV(w))return w}return ''};
+  const ramStd=first(/^standard ram/,/^onboard ram/,/^installed ram/,/^standard memory/,/^ram$/,/^memory$/,/^motherboard ram/)||anyP(/\bram\b|memory/,/vram|video|type|speed|slot|max|upgrade|cache|rom|storage|flash/);
+  f.ram=[ramStd,nz(find(/^ram type/)),mx?`(max ${mx})`:''].filter(Boolean).join(' ');
+  const stoStd=first(/^standard storage$/,/^storage capacity/,/^standard hard (drive|disk)/,/^standard ssd/,/^flash storage/,/^hard (drive|disk)$/,/^storage$/,/^capacity$/)||anyP(/storage|hard (drive|disk)|ssd|flash|capacity/,/dimension|interface|speed|photo|song|video|battery|max|optical|custom|cache/);
+  f.storage=[stoStd,nz(find(/^std\. storage speed/))].filter(Boolean).join(' ');
+  /* tagli di memoria: «1 GB, 2 GB, 4 GB», «8, 16 GB», «32 MB, 64 MB» → scelta rapida nel modulo */
+  f.tagli=[['storage',stoStd],['ram',ramStd]].map(([k,v])=>{const c=memCuts(v);return c&&{k,...c}}).filter(Boolean);
   const opt=nz(find(/^standard optical/));if(opt)f.storage+=(f.storage?' · ':'')+opt;
   f.gpu=[nz(find(/^video card|^graphics/)),nz(find(/^standard vram/))].filter(Boolean).join(' – ');
   f.display=[nz(find(/^built-in display/)),nz(find(/^native resolution/))].filter(Boolean).join(' – ');
@@ -3391,7 +3417,7 @@ function diagnose(txt,html){
 }
 function previewHTML(r){
   const f=r.fields;
-  const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo],['Tipologia',f.tipologia],['Connettore',f.acc_connettore],['Uscita',f.acc_uscita],['Compatibile con',f.acc_compat],['Codice prodotto',f.ordine]].filter(x=>x[1]);
+  const rows=[['Nome',f.nome],['Anno',f.anno],['Modello',f.modello],['EMC',f.emc],['Model ID',f.identifier],['Colore',f.colore],['CPU',f.cpu],['RAM',f.ram],['Storage',f.storage],['Display',f.display],['Prezzo',f.prezzo],['Tipologia',f.tipologia],['Connettore',f.acc_connettore],['Uscita',f.acc_uscita],['Compatibile con',f.acc_compat],['Codice prodotto',f.ordine],['Tagli',(f.tagli||[]).map(t=>(t.k==='ram'?'RAM ':'')+t.opts.join(' / ')).join(' · ')]].filter(x=>x[1]);
   const img=r.imageBlob?URL.createObjectURL(r.imageBlob):r.imageUrl;
   return `${img?`<figure style="margin:0 0 10px"><img src="${esc(img)}" alt="" style="max-height:170px;max-width:100%;border-radius:12px;display:block" onerror="this.parentNode.remove()"><figcaption style="font-size:12px;color:var(--mute);margin-top:4px">Solo anteprima: la foto non viene salvata, la aggiungi tu.</figcaption></figure>`:''}<div class="kv">${rows.map(([a,b])=>`<div>${a}</div><div>${a==='Colore'?`<i class="sw" style="--c:${esc(nameHex(b))};margin-right:6px"></i>`:''}${esc(b)}</div>`).join('')}</div>${r.fonteNome?`<p class="note" style="margin:8px 0 0">Fonte: ${esc(r.fonteNome)}</p>`:''}<p class="note">${r.gemini?Object.keys(f).length+' campi compilati, ':''}${r.specs.length} ${r.specs.length===1?'specifica':'specifiche'} ${r.gemini?'in più':(r.specs.length===1?'trovata':'trovate')}${f.descrizione?' + descrizione':''}${f.porte?' + porte':''}. Potrai controllarle e correggerle prima di salvare.</p><button class="btn" data-use style="width:100%">Usa questi dati</button>`;
 }
@@ -3911,6 +3937,7 @@ async function mergeFetched(base,r,overwrite){
     m.specs=[...have];
   }
   if(r.fonte)m.fonte=r.fonte;
+  if(!(m.tagli&&m.tagli.length)){const t=[['storage',m.storage],['ram',m.ram]].map(([k,v])=>{const c=memCuts(v);return c&&{k,...c}}).filter(Boolean);if(t.length)m.tagli=t}
   /* la traduzione avviene in sottofondo dopo il salvataggio (autoTranslate); le foto le aggiunge l'utente: niente download dalle fonti */
   return m;
 }
