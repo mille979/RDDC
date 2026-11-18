@@ -203,6 +203,16 @@ Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in 
 ## Backup
 I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup completo» ogni tanto (include le foto). Dallo stesso tasto: tabella CSV per Excel/Fogli, CSV del laboratorio e `collezione.json` per GitHub.
 
+## Novità della 2.9
+- **Oggi, voci rimandabili**: scorri una voce verso sinistra → «⏰ Domani» o «Rimanda…» (3 giorni, una settimana, due settimane, un mese, una data). Scorrendo fino in fondo va a domani, con ANNULLA. Le voci nascoste si ritrovano con «N voci rimandate · mostra» e tornano da sole alla data scelta (il rimando vale su questo telefono).
+- **📷 Dalla foto dell'etichetta** (Aggiungi): Gemini legge marca, modello, EMC, Model ID, numero di serie, part number e alimentazione; poi «Cerca la scheda» (EveryMac col codice letto), «Compila con Gemini» o «Solo questi dati». Il numero di serie letto resta in ogni caso. Nel modulo, sotto il numero di serie, «📷 Leggi dall'etichetta» riempie solo i campi vuoti.
+- **✨ Stima con Gemini** nella sezione Valore della scheda: forbice, prezzo tipico, su cosa si basa e fonti; «＋ Nello storico» la aggiunge come valutazione «Stima Gemini».
+- **🧩 Cosa manca** (Menu → Collezione): per ogni linea Apple che possiedi, quanti modelli hai sul totale e quali mancano (elenco dei modelli di The Apple Wiki, abbinati per Model ID, codice e nome; un oggetto vale un solo modello). «＋ Wishlist» crea il desiderio con nome, codice e Model ID.
+- **Pressione lunga** su un oggetto: oltre ad Apri, Modifica, Seleziona, Piedistallo ed Elimina, anche ⚡ Acceso oggi, 🔋 Caricato oggi, 📍 Sposta e 🔧 Aggiungi intervento.
+- **Tira giù** dalla cima dell'elenco per sincronizzare; **scorciatoie** tenendo premuta l'icona dell'app (Aggiungi, Manutenzione, Cerca); **ultime ricerche** suggerite nel campo di ricerca (che già cerca anche nelle specifiche); **codici a barre** con la fotocamera nella ricerca dati online (EAN degli accessori, part number «1P» delle scatole Apple).
+- **Giro di manutenzione**: la ✗ chiede cosa non va: «La batteria non regge» o «Batteria morta» aggiornano lo stato della batteria nella scheda (e contano come accensione fatta), «Non si accende» segna «Da riparare». Con batteria «Tampona ma non regge», «Morta» o «Assente» l'oggetto esce dal giro di ricarica e resta in quello di accensione.
+- **Animazioni**: finestre, fogli e anteprima si chiudono trascinandoli in basso; l'elenco si riordina con movimento quando cambi filtri, ordine, gruppi o sezione; Salva diventa «✓ Salvato»; nelle statistiche i numeri contano e i grafici si disegnano; vibrazioni leggere uniformi, spegnibili in Impostazioni.
+
 ## Menu e scheda (2.7)
 - **Menu**: «🤖 Collegamento IA» raccoglie Gemini, OpenRouter e il registro errori; «☁️ Database su GitHub» ha stato, sincronizzazione, token, versioni precedenti e (in «Avanzate») indirizzo di lettura e metodo manuale; «💾 Esporta…» chiede come esportare.
 - **Scheda**: in fondo Modifica, Aggiorna e «⋯», che apre un foglio con le altre azioni raggruppate (Incolla da EveryMac, accessori, scontorno, prestito, confronto, duplica; Elimina in rosso).
