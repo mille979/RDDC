@@ -1,6 +1,6 @@
-const V='rddc-2.9.1',SHELL=['./','index.html','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
+const V='rddc-2.10',SHELL=['./','index.html','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&x!=='rddc-share'&&x!=='rddc-meta').map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&!['rddc-share','rddc-meta','rddc-lib','rddc-modelli'].includes(x)).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 /* prima la rete, saltando la cache HTTP (così un aggiornamento arriva subito); offline usa la copia salvata */
 self.addEventListener('fetch',e=>{
   const u=new URL(e.request.url);
@@ -15,6 +15,9 @@ self.addEventListener('fetch',e=>{
     })());
     return;
   }
+  /* librerie del visualizzatore 3D (three.js, Spark): indirizzi con la versione, quindi si tengono in cache e funzionano offline */
+  if(e.request.method==='GET'&&u.hostname==='cdn.jsdelivr.net'&&/^\/npm\/(three@|@sparkjsdev\/spark@)\d/.test(u.pathname)){
+    e.respondWith(caches.open('rddc-lib').then(async c=>{const hit=await c.match(e.request);if(hit)return hit;const r=await fetch(e.request);if(r.ok)c.put(e.request,r.clone());return r}));return}
   if(e.request.method!=='GET'||u.origin!==location.origin)return;
   e.respondWith(fetch(e.request,{cache:'no-cache'}).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('index.html'))));
 });

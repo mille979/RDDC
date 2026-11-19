@@ -203,6 +203,13 @@ Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in 
 ## Backup
 I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup completo» ogni tanto (include le foto). Dallo stesso tasto: tabella CSV per Excel/Fogli, CSV del laboratorio e `collezione.json` per GitHub.
 
+## Modelli 3D (Gaussian splat)
+- **Scansione**: Scaniverse (gratuita, anche su Android) con il **ritaglio fatto dentro Scaniverse**, così i riflessi delle superfici lucide restano dentro l'oggetto; esporta in **SPZ** (compresso). Pulizia facoltativa in SuperSplat (export SPZ o SOG). Meglio sotto i 25 MB, massimo 60 MB.
+- **Nella scheda**: ⋯ → «🧊 Aggiungi un modello 3D» (.spz, .sog, .ply, .splat, .ksplat). Compare la sezione «Modello 3D» (Guarda in 3D, Sul piedistallo, Sostituisci, Togli) e il pulsante «3D» sulla foto.
+- **Visualizzatore**: [Spark](https://github.com/sparkjsdev/spark) su three.js, caricato solo quando apri un modello e poi tenuto in cache. L'oggetto poggia sulla base; si gira trascinando, due dita per lo zoom, doppio tocco per ricominciare, da fermo ruota piano. L'inclinazione resta **sopra l'orizzonte** (singola scansione: la parte appoggiata non si vede). ⟲ in alto corregge l'orientamento (capovolgi, ruota di 90°) e lo ricorda.
+- **Museo**: sul piedistallo il modello prende il posto della foto scontornata (che resta finché il 3D non è pronto); un solo modello attivo alla volta.
+- **Sincronizzazione**: il file va su GitHub in `modelli/` (nome = impronta, una volta sola); sugli altri telefoni si scarica alla prima apertura e resta disponibile offline.
+
 ## Novità della 2.9
 - **Oggi, voci rimandabili**: scorri una voce verso sinistra → «⏰ Domani» o «Rimanda…» (3 giorni, una settimana, due settimane, un mese, una data). Scorrendo fino in fondo va a domani, con ANNULLA. Le voci nascoste si ritrovano con «N voci rimandate · mostra» e tornano da sole alla data scelta (il rimando vale su questo telefono).
 - **📷 Dalla foto dell'etichetta** (Aggiungi): Gemini legge marca, modello, EMC, Model ID, numero di serie, part number e alimentazione; poi «Cerca la scheda» (EveryMac col codice letto), «Compila con Gemini» o «Solo questi dati». Il numero di serie letto resta in ogni caso. Nel modulo, sotto il numero di serie, «📷 Leggi dall'etichetta» riempie solo i campi vuoti.
