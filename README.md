@@ -147,7 +147,7 @@ Con il worker collegato l'app usa solo quello (i proxy pubblici restano per chi 
 - Trovati i dati, il tasto di ricerca diventa **«✓ Inserisci i dati»** e a sinistra compare un piccolo **↻** per ripetere la ricerca.
 
 ## Grafica (2.0): Liquid Glass
-- **Icona**: schermo, palmare e ghiera come tre lastre di vetro sovrapposte su fondo nero-grigio (`icon.svg`, PNG da 192 e 512). C'è la versione «maskable», ritagliabile tonda da Android senza perdere niente, e quella monocromatica per le icone a tema (Android le colora con i colori dello sfondo).
+- **Icona**: schermo, palmare e ghiera come tre lastre di vetro sovrapposte su fondo grigio scuro neutro (dalla 2.9.1 più scuro, in linea con le icone di sistema) (`icon.svg`, PNG da 192 e 512). C'è la versione «maskable», ritagliabile tonda da Android senza perdere niente, e quella monocromatica per le icone a tema (Android le colora con i colori dello sfondo).
 Dalla versione 2.0 l'interfaccia è ridisegnata da capo attorno al vetro liquido, con le stesse funzioni di prima:
 - sfondo con macchie di colore morbide (ambra, terracotta, verde), diverse in chiaro e in scuro;
 - tutte le superfici (schede della lista, griglia, tabelle, liste, note, campi, pulsanti, finestre) sono di vetro: traslucide, con il bordo luminoso e angoli più tondi;
