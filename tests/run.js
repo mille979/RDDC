@@ -931,6 +931,30 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.10: modello 3D — caricamento nella scheda, sincronizzazione in modelli/, orientamento, piedistallo', async () => {
+    const U = await phone('M3');
+    await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await saveDev({ id: 'm3', nome: 'iPod classic', tipologia: 'Lettore musicale', creato: Date.now() }); render(); openDetail('m3'); });
+    await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [m3dType('a.SPZ'), m3dType('b.sog'), m3dType('c.ply'), m3dType('d.ksplat'), m3dType('e.glb')]), ['spz', 'pcsogszip', 'ply', 'ksplat', ''], 'formati riconosciuti');
+    await U.click('.page.det [data-moreacts]'); await U.waitForSelector('.modal.sheet');
+    const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /modello 3D/.test(b.textContent)).click())]);
+    await fc.setFiles({ name: 'ipod.spz', mimeType: 'application/octet-stream', buffer: Buffer.from('finto modello splat '.repeat(50)) });
+    await U.waitForFunction(() => stack.length && stack[stack.length - 1].classList.contains('m3root'), null, { timeout: 5000 });
+    eq(await U.evaluate(() => { const m = devices.find(d => d.id === 'm3').m3d; return [m.nome, m.tipo, /^data:/.test(m.data), m.rot]; }), ['ipod.spz', 'spz', true, [0, 0, 0]], 'modello salvato nella scheda e pagina 3D aperta');
+    await U.waitForSelector('.m3err', { timeout: 15000 });
+    ok(await U.evaluate(() => /visualizzatore 3D/.test(document.querySelector('.m3err').textContent)), 'senza rete per la libreria: messaggio chiaro');
+    await U.click('[data-m3set]'); await U.waitForSelector('.modal.sheet'); await U.click('.modal.sheet [data-c="0"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => devices.find(d => d.id === 'm3').m3d.rot), [180, 0, 0], 'Capovolgi salva l\'orientamento');
+    await U.evaluate(() => goBase(() => openDetail('m3'))); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => [!!document.querySelector('.page.det .hb3d'), /ipod\.spz/.test(document.querySelector('.page.det .m3sec').textContent)]), [true, true], 'pulsante 3D sulla foto e sezione Modello 3D');
+    await U.evaluate(async () => { await ghSync(true); });
+    const f = ghFiles(), j = JSON.parse(f.get('collezione.json').toString()), m = j.devices.find(d => d.id === 'm3').m3d;
+    ok(/^modelli\/[0-9a-f]{40}\.spz$/.test(m.data) && f.has(m.data) && /finto modello/.test(f.get(m.data).toString()), 'il file del modello va su GitHub in modelli/ (una volta sola): ' + m.data);
+    await U.evaluate(() => goBase(() => openPlinth([devices.find(d => d.id === 'm3')], 0, false))); await U.waitForTimeout(800);
+    ok(await U.evaluate(() => !!document.querySelector('.pl [data-m3w="m3"]') && /3D/.test(document.querySelector('.pl .m3tag').textContent)), 'sul piedistallo c\'è il posto del modello 3D');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');

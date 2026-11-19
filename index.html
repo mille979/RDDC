@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/","@sparkjsdev/spark":"https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.4.0/dist/spark.module.js"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -660,6 +661,17 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .gapf{margin:0 0 14px}.gaph{display:flex;align-items:baseline;gap:8px;padding:0 4px}.gaph b{font-size:16px}.gaph small{margin-left:auto;color:var(--mute)}
 .gbar{height:6px;border-radius:3px;background:var(--chip);margin:6px 4px 2px;overflow:hidden}.gbar i{display:block;height:100%;border-radius:3px;background:var(--acc);animation:bar-grow .7s cubic-bezier(.2,.8,.2,1) both}
 .gapr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.gapr:first-child{border-top:0}.gapr .lb{flex:1}.gapr.own b{color:var(--acc-ink)}.gapw{font-size:12.5px;color:var(--mute);white-space:nowrap}
+.m3h{position:relative}.m3c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;opacity:0;transition:opacity .6s ease}.m3h.ready .m3c{opacity:1}
+.m3l{position:absolute;inset:0;display:grid;place-items:center;color:#e9dcc7}.m3l .ldr svg{width:min(120px,30vw)}.m3err{color:#e2d4bf;text-align:center;font-size:13px;line-height:1.4;padding:0 22px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.pl .m3w{position:absolute;left:0;right:0;top:-6%;bottom:22px;z-index:3}.pl .stage .o3{transition:opacity .6s ease}.pl .stage.m3on .o3{opacity:0}
+.m3tag{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:4;font:600 11.5px system-ui,sans-serif;color:rgba(255,236,200,.8);background:rgba(0,0,0,.32);padding:3px 10px;border-radius:999px;pointer-events:none;white-space:nowrap}
+.m3page{position:absolute;inset:0;display:flex;flex-direction:column;color:#f3e9da;background:radial-gradient(70% 45% at 50% 60%,#2a231c 0%,#0b0907 72%)}
+.m3top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 6px;z-index:3}.m3top b{flex:1;text-align:center;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m3stage{position:relative;flex:1;min-height:0}.m3v{position:absolute;inset:0;z-index:2}
+.m3glow{position:absolute;left:50%;bottom:18%;width:min(84vw,440px);height:78%;transform:translateX(-50%);background:radial-gradient(50% 62% at 50% 100%,rgba(255,226,170,.24),transparent 72%);pointer-events:none}
+.m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
+.m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
+.m3sec{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}.m3ic{flex:none;width:52px;height:52px;border-radius:14px;border:0;background:radial-gradient(circle at 50% 70%,#3a2e22,#0b0907);font-size:26px;box-shadow:var(--rim)}.m3sec .lb{flex:1;min-width:0}.m3sec .lb b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
 .chips.cuts{margin:7px 0 2px;align-items:center;gap:6px}.chips.cuts small{color:var(--mute);font-size:12px;margin-right:2px}
 .btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
@@ -817,8 +829,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.9.1';
+const APP_VER='2.10';
 const NOVITA=[
+ ['2.10','2026-11-19',['🧊 Modelli 3D: nella scheda (⋯ → Aggiungi un modello 3D) carichi un Gaussian splat esportato da Scaniverse o SuperSplat (.spz, .sog, .ply); si guarda a schermo intero e sul piedistallo del museo, appoggiato alla base','Trascina per girarlo, due dita per avvicinarti, doppio tocco per tornare all\'inizio; da fermo ruota piano. Si vede solo dalla parte alta, come è stato scansionato','⟲ Orientamento: capovolgi o ruota di 90° se il modello arriva storto; il file va su GitHub in modelli/ e sugli altri telefoni si scarica alla prima apertura, poi resta anche offline']],
  ['2.9.1','2026-11-19',['Icona con il fondo più scuro, grigio neutro come le icone di sistema: le lastre di vetro risaltano di più (su iPhone si vede dopo aver tolto e rimesso l\'app nella Home)']],
  ['2.9','2026-11-18',['Oggi: scorri una voce verso sinistra per rimandarla a domani o a un intervallo a scelta (3 giorni, una settimana, due settimane, un mese, una data); scorrendo fino in fondo va a domani','📷 Dalla foto dell\'etichetta: Gemini legge modello, EMC e numero di serie e cerca la scheda; nel modulo «Leggi dall\'etichetta» riempie i campi vuoti','✨ Stima del valore con Gemini nella sezione Valore: forbice, prezzo tipico e fonti, poi con un tocco nello storico','🧩 Cosa manca (Menu): per ogni linea Apple che hai, i modelli che mancano, da mettere in wishlist con un tocco','Pressione lunga su un oggetto: anche Acceso oggi, Caricato oggi, Sposta e Aggiungi intervento','Tira giù dalla cima dell\'elenco per sincronizzare; scorciatoie tenendo premuta l\'icona (Aggiungi, Manutenzione, Cerca); ultime ricerche suggerite; codici a barre con la fotocamera nella ricerca','Giro di manutenzione: la ✗ chiede cosa non va (batteria che non regge, batteria morta, non si accende); le batterie esaurite escono dal giro di ricarica e resta l\'accensione','Animazioni: finestre e fogli si chiudono trascinandoli in basso, l\'elenco si riordina con movimento, Salva diventa una spunta, statistiche che contano e grafici che si disegnano, vibrazioni leggere uniformi (spegnibili)']],
  ['2.8.2','2026-11-18',['Miniature: le foto verticali sono centrate (prima si vedeva solo la parte alta)','Chiudendo una scheda la foto atterra esattamente sulla miniatura, senza lo scatto finale','Barra in fondo: Collezione/Wishlist e il tasto + centrati alla stessa altezza, e la goccia copre esattamente la voce scelta']],
@@ -1281,7 +1294,7 @@ function openDetail(id,replace,morph,quiet,dir){
   let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
     <button class="hb l" data-back aria-label="Indietro">${IC.back}</button>${(()=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&L.length>1?`<span class="hpos">${i+1} / ${L.length}</span>`:''})()}
-    <div class="hbr">${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
+    <div class="hbr">${d.m3d?'<button class="hb hb3d" data-m3open aria-label="Modello 3D">3D</button>':''}${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
     <div class="cap">${sub?`<small>${esc(sub)}</small>`:''}<h1>${esc(d.nome)}</h1>${hchips?`<div class="hchips">${hchips}</div>`:''}</div>
   </div>`;
   if(d.foto&&d.foto.length>1)h+=`<div class="thumbs">${d.foto.map((f,i)=>`<img src="${f}" alt="" data-view="${i}">`).join('')}</div>`;
@@ -1309,6 +1322,7 @@ function openDetail(id,replace,morph,quiet,dir){
     const spesa=ints.reduce((s,i)=>s+(parseFloat(i.costo)||0),0);
     h+=`<div class="sec-t">Registro interventi${ints.length?` (${ints.length}${spesa?' · € '+spesa.toLocaleString('it'):''})`:''}</div>`+(ints.length?`<div class="log">${ints.map(i=>`<button class="li" data-int="${i.id}"><span class="ld">${fmtD(i.data)||'—'}</span><span class="lb"><b>${esc(i.tipo||'Intervento')}</b>${i.desc?`<span>${esc(i.desc)}</span>`:''}${i.costo||i.prossimo?`<small>${[i.costo?'€ '+esc(i.costo):'',i.prossimo?(i.fatto?'✔︎ promemoria fatto':(i.prossimo<today()?'⚠️ scaduto ':'⏰ prossimo ')+fmtD(i.prossimo)):''].filter(Boolean).join(' · ')}</small>`:''}</span></button>`).join('')}</div>`:'')+`<button class="btn sm sec" data-addint style="margin-top:8px">＋ Aggiungi intervento</button>`;
   }
+  h+=m3dHTML(d);
   h+=attHTML(d);
   if(['pc','tv'].includes(kindOf(d.tipologia))&&!d.wish){const {sure,maybe}=partsFor(d);
     if(sure.length||maybe.length)h+=`<div class="sec-t">Ricambi in magazzino per questo oggetto (${sure.length+maybe.length})</div>`+sure.map(card).join('')+(maybe.length?`<p class="note" style="margin-bottom:4px">Forse compatibili (per modello o specifiche):</p>`+maybe.map(card).join(''):'');}
@@ -1332,6 +1346,7 @@ function openDetail(id,replace,morph,quiet,dir){
     h+=actsHTML([['data-edit','Modifica','',1],['data-upd','🔎 Aggiorna']],[
       {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
+      {a:'data-m3add',ic:'🧊',t:d.m3d?'Sostituisci il modello 3D':'Aggiungi un modello 3D',sub:'Gaussian splat da Scaniverse o SuperSplat (.spz, .sog, .ply)',g:'Oggetto'},
       !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
       {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>'}
   return openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(morph?' fly-in':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
@@ -1368,6 +1383,10 @@ function openDetail(id,replace,morph,quiet,dir){
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
       const t=e.target;
+      if(t.closest('[data-m3open]'))return openModel3D(d);
+      if(t.closest('[data-m3add]'))return m3dAdd(d);
+      if(t.closest('[data-m3pl]'))return vt('vt-pl',()=>openPlinth([d],0,false));
+      if(t.closest('[data-m3del]')){if(await ask('Togliere il modello 3D da questa scheda? Il file resta nelle versioni precedenti su GitHub.','Togli',true)){delete d.m3d;await saveDev(d);render();toast('Modello 3D tolto');openDetail(d.id,true,false,true)}return}
       {const mb=t.closest('[data-moreacts]');if(mb)return moreActs(el,mb)}
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
@@ -2579,7 +2598,7 @@ function detailStep(id,dir){const L=render.items||[],i=L.indexOf(id);if(i<0)retu
   openDetail(n,true,false,true,dir>0?'next':'prev')}
 addEventListener('keydown',e=>{if(!/Arrow(Left|Right)/.test(e.key)||e.target.closest('input,textarea,select'))return;const top=stack[stack.length-1];if(!top||!top.classList.contains('det')||!top.dataset.did)return;detailStep(top.dataset.did,e.key==='ArrowRight'?1:-1)});
 /* ===== versioni precedenti: ogni sincronizzazione è un commit di collezione.json su GitHub ===== */
-const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti'].includes(k))));
+const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti','m3d'].includes(k))));
 function openVersions(){
   if(!ghOn())return openPage('Versioni precedenti','<p class="note" style="margin-top:0">Le versioni precedenti sono le sincronizzazioni salvate su GitHub: serve il <b>salvataggio automatico su GitHub</b> (Menu → Database su GitHub → token).</p>');
   openPage('Versioni precedenti',`<p class="note" style="margin-top:0">Ogni sincronizzazione con GitHub conserva la collezione com'era in quel momento. Scegli una data per vedere cosa è cambiato da allora e recuperare oggetti eliminati o modificati per errore.</p><div id="vl">${loader('web','Leggo la cronologia…')}</div>`,{mount(el){
@@ -2930,6 +2949,95 @@ const ATT_MAX=15*1024*1024;
 const fmtSize=n=>!n?'':n<1024*1024?Math.max(1,Math.round(n/1024))+' kB':(n/1048576).toLocaleString('it',{maximumFractionDigits:1})+' MB';
 const attIcon=a=>/pdf/.test(a.mime)?'📄':/^image/.test(a.mime)?'🖼️':/^video/.test(a.mime)?'🎬':/^audio/.test(a.mime)?'🎵':/zip|compress/.test(a.mime)?'🗜️':'📎';
 const attKind=a=>/pdf/.test(a.mime)?'PDF':/^image/.test(a.mime)?'Immagine':/^video/.test(a.mime)?'Video':/^audio/.test(a.mime)?'Audio':((a.nome.match(/\.(\w{1,5})$/)||[])[1]||'File').toUpperCase();
+/* ===== 2.10: modelli 3D (Gaussian splat da Scaniverse, SuperSplat…) — visti solo dalla parte alta ===== */
+const M3D_MAX=60*1024*1024,M3D_EXT={spz:'spz',ply:'ply',splat:'splat',ksplat:'ksplat',sog:'pcsogszip'};
+const m3dType=n=>M3D_EXT[((String(n).match(/\.(\w+)$/)||[])[1]||'').toLowerCase()]||'';
+const fmtMB=b=>(b/1048576).toLocaleString('it',{maximumFractionDigits:1})+' MB';
+let SPARK=null;
+function loadSpark(){return SPARK||(SPARK=Promise.all([import('three'),import('@sparkjsdev/spark')]).then(([T,S])=>({THREE:T,SplatMesh:S.SplatMesh,SparkRenderer:S.SparkRenderer})).catch(e=>{SPARK=null;throw new AppErr('rete','non riesco a scaricare il visualizzatore 3D ('+(e.message||e)+')')}))}
+async function m3dBytes(m,onProg){
+  if(/^data:/.test(m.data))return b64bytes(m.data.split(',')[1]);
+  const url=remoteURL(m.data);let c=null;try{c=await caches.open('rddc-modelli');const hit=await c.match(url);if(hit)return new Uint8Array(await hit.arrayBuffer())}catch(e){}
+  let r;try{r=await fetch(url)}catch(e){throw new AppErr('rete','modello non disponibile offline: collegati a internet la prima volta')}
+  if(!r.ok)throw new AppErr('rete','modello non scaricabile (HTTP '+r.status+')');
+  const tot=+r.headers.get('content-length')||m.size||0,rd=r.body.getReader(),parts=[];let got=0;
+  for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;onProg&&onProg(tot?Math.min(1,got/tot):0)}
+  const u=new Uint8Array(got);let o=0;for(const p of parts){u.set(p,o);o+=p.length}
+  try{c&&await c.put(url,new Response(u,{headers:{'content-type':'application/octet-stream'}}))}catch(e){}
+  return u}
+/* visualizzatore: si gira trascinando, due dita per avvicinarsi, doppio tocco per tornare all'inizio; da fermo ruota piano.
+   L'inclinazione resta sopra l'orizzonte: la parte appoggiata (mai scansionata) non si vede */
+const M3_PH=[7*Math.PI/180,78*Math.PI/180],M3_DIST=[.55,1.7];
+async function mount3D(host,d,o={}){
+  const m=d.m3d;let dead=false,raf=0,R=null,mesh=null,ro=null,io=null,vis=true;
+  const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false};
+  host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',m.size?fmtMB(m.size):'')}</div>`;
+  const cv=host.querySelector('canvas'),lab=host.querySelector('.m3l');
+  const api={dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();try{mesh&&mesh.dispose&&mesh.dispose()}catch(e){}try{R&&R.dispose()}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;if(typeof kick==='function')kick()}};
+  let S,bytes;
+  try{[S,bytes]=await Promise.all([loadSpark(),m3dBytes(m,p=>{const x=lab.querySelector('small');if(x)x.textContent=Math.round(p*100)+'% di '+fmtMB(m.size||0)})])}
+  catch(e){if(!dead)lab.innerHTML=`<p class="m3err">🧊 ${esc(toAppErr(e).message||String(e))}</p>`;return api}
+  if(dead)return api;
+  try{const {THREE,SplatMesh,SparkRenderer}=S;
+    R=new THREE.WebGLRenderer({canvas:cv,antialias:false,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,2));R.setClearColor(0,0);
+    const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.005,500);scene.add(new SparkRenderer({renderer:R}));
+    mesh=new SplatMesh({fileBytes:bytes,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;if(dead){api.dispose();return api}
+    const rot=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(rot[0],rot[1],rot[2]);mesh.updateMatrixWorld(true);
+    const bb=mesh.getBoundingBox(true).clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3()),sz=bb.getSize(new THREE.Vector3());
+    mesh.position.set(-c.x,-bb.min.y,-c.z);scene.add(mesh);
+    const rad=Math.max(sz.length()/2,1e-3),tg=new THREE.Vector3(0,sz.y*.46,0);let fit=1;
+    /* distanza che fa stare tutto l'oggetto nel lato più stretto dello schermo (in verticale su un telefono è la larghezza) */
+    let by=o.baseY||.82;
+    /* l'oggetto deve stare tra il bordo alto e la base: la distanza tiene conto dello spazio libero sopra la base */
+    const refit=()=>{if(o.baseAt){const x=o.baseAt();if(x>.3&&x<1)by=x}const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*cam.aspect);fit=rad/Math.sin(Math.min(v,h)/2)*(o.margin||.92)/Math.max(.35,by-.04)};
+    /* la base dell'oggetto resta appoggiata al piedistallo (a una quota fissa dello schermo) a qualunque inclinazione */
+    const O=new THREE.Vector3();
+    const place=()=>{const r=fit*st.k;cam.position.set(tg.x+r*Math.cos(st.ph)*Math.sin(st.th),tg.y+r*Math.sin(st.ph),tg.z+r*Math.cos(st.ph)*Math.cos(st.th));cam.lookAt(tg);
+      const w=host.clientWidth||1,h=host.clientHeight||1;cam.clearViewOffset();cam.updateMatrixWorld();const y=O.set(0,0,0).project(cam).y,dy=(y-(1-2*by))/2*h;cam.setViewOffset(w,h,0,-dy,w,h)};
+    const size=()=>{const w=host.clientWidth||1,h=host.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();refit();kick()};
+    var frame=now=>{raf=0;if(dead)return;const dt=Math.min(.05,(now-(st.last||now))/1000);st.last=now;
+      if(!st.drag&&st.pts.size<2){st.th+=st.vth*dt;st.ph+=st.vph*dt;const f=Math.pow(.04,dt);st.vth*=f;st.vph*=f;if(Math.abs(st.vth)<.02)st.vth=0;if(Math.abs(st.vph)<.02)st.vph=0;
+        if(st.auto&&now-st.idle>3500&&!st.vth)st.th+=.22*dt}
+      st.ph=Math.min(M3_PH[1],Math.max(M3_PH[0],st.ph));place();R.render(scene,cam);
+      if(vis&&!document.hidden)raf=requestAnimationFrame(frame)};
+    var kick=()=>{if(!raf&&!dead){st.last=0;raf=requestAnimationFrame(frame)}};
+    ro=new ResizeObserver(size);ro.observe(host);io=new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()});io.observe(host);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()});
+    const stop=e=>{e.stopPropagation()};['touchstart','touchmove','touchend'].forEach(t=>cv.addEventListener(t,stop,{passive:true}));
+    cv.addEventListener('pointerdown',e=>{e.stopPropagation();cv.setPointerCapture(e.pointerId);st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();st.vth=st.vph=0;
+      if(st.pts.size===1)st.drag={x:e.clientX,y:e.clientY,t:performance.now()};else{const p=[...st.pts.values()];st.pinch={d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),k:st.k};st.drag=null}kick()});
+    cv.addEventListener('pointermove',e=>{if(!st.pts.has(e.pointerId))return;e.stopPropagation();st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();
+      if(st.pts.size>=2&&st.pinch){const p=[...st.pts.values()],dd=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.pinch.k*st.pinch.d/Math.max(dd,1)));kick();return}
+      if(!st.drag)return;const now=performance.now(),dx=e.clientX-st.drag.x,dy=e.clientY-st.drag.y,dt=Math.max(1,now-st.drag.t)/1000;
+      const a=-dx*.009,b=dy*.006;st.th+=a;st.ph+=b;st.vth=a/dt*.6;st.vph=b/dt*.6;st.drag={x:e.clientX,y:e.clientY,t:now};kick()});
+    const up=e=>{if(!st.pts.has(e.pointerId))return;st.pts.delete(e.pointerId);if(st.pts.size<2)st.pinch=null;if(!st.pts.size){if(st.drag&&performance.now()-st.drag.t>90)st.vth=st.vph=0;st.drag=null}st.idle=performance.now();kick()};
+    cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('dblclick',e=>{e.stopPropagation();api.reset()});
+    cv.addEventListener('wheel',e=>{e.preventDefault();st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.k*(1+e.deltaY*.001)));kick()},{passive:false});
+    size();lab.remove();host.classList.add('ready');kick();api.cam=cam;api.st=st;api.bb=bb}
+  catch(e){logErr('Modello 3D',e);if(!dead)lab.innerHTML=`<p class="m3err">🧊 Non riesco a mostrare il modello: ${esc(e.message||String(e))}</p>`}
+  return api}
+async function m3dAdd(d){const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;const tipo=m3dType(f.name);
+  if(!tipo){toast('Formato non riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat',5000);return}
+  if(f.size>M3D_MAX){toast(`Il modello è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_MAX)}): esportalo in SPZ o SOG da Scaniverse o SuperSplat`,6000);return}
+  toast('Preparo il modello…');const data=await blobToDataURL(f);
+  d.m3d={id:uid(),nome:f.name,size:f.size,tipo,data,t:today(),rot:[0,0,0]};await saveDev(d);render();buzz('ok');
+  toast(f.size>25*1048576?`Modello aggiunto (${fmtMB(f.size)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:'Modello 3D aggiunto',4500);openModel3D(d,true)}
+function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.onchange=()=>res(i.files[0]||null);i.oncancel=()=>res(null);i.click()})}
+function m3dHTML(d){const m=d.m3d;if(!m)return '';
+  return `<div class="sec-t">Modello 3D</div><div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${esc(m.nome)}</b><small>${[m.size?fmtMB(m.size):'',m.t?'aggiunto il '+fmtD(m.t):''].filter(Boolean).join(' · ')}</small></span></div>
+  <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button><button class="btn sm sec" data-m3add>Sostituisci</button><button class="btn sm sec" data-m3del>Togli</button></div>`}
+/* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
+function openModel3D(d,adjust){let v=null;
+  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
+    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div><div class="m3base"></div></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
+    const host=$('.m3v',el);const go=async()=>{v&&v.dispose();v=await mount3D(host,d)};go();
+    el._close=()=>{v&&v.dispose()};
+    const setOri=async()=>{const r=d.m3d.rot||[0,0,0];const i=await sheet('Orientamento del modello',[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);
+      if(i<0)return;const n=[...r];if(i===0)n[0]=(n[0]+180)%360;if(i===1)n[0]=(n[0]+90)%360;if(i===2)n[2]=(n[2]+90)%360;if(i===3)n.splice(0,3,0,0,0);
+      d.m3d.rot=n;await saveDev(d);buzz('tick');go()};
+    el.addEventListener('click',e=>{if(e.target.closest('[data-m3set]'))setOri()});
+    if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, usa ⟲ in alto a destra',5000),1200)}});
+}
 function attHTML(d){const as=d.allegati||[];
   return `<div class="sec-t">Allegati${as.length?` (${as.length})`:''}</div>${as.length?`<div class="log">${as.map(a=>`<div class="att"><span class="ai">${attIcon(a)}</span><button class="an" data-att="${a.id}"><b>${esc(a.nome)}</b><small>${[attKind(a),fmtSize(a.size),fmtD(a.t)].filter(Boolean).join(' · ')}</small></button><button class="ab" data-attdl="${a.id}" aria-label="Scarica">⬇︎</button><button class="ab" data-attdel="${a.id}" aria-label="Elimina">✕</button></div>`).join('')}</div>`:''}<button class="btn sm sec" data-addatt style="margin-top:8px">📎 Aggiungi allegato</button><input type="file" id="attf" multiple hidden>`}
 async function addAttachments(d,files){
@@ -4322,14 +4430,18 @@ async function openPlinth(list,start,auto,hero){
   if(!list.length)return;
   const r0=await museumImg(list[start]);
   const slide=(d,j)=>{const f=keyTiles(d).slice(0,3).map(([a,b])=>b).join(' · ');const desc=(d.descrizione||'').split(/\n\s*\n/)[0];
-    return `<section class="pl" data-pl="${d.id}"><div class="stage"><div class="beam"></div>${j===start?o3HTML(d,r0,{layers:3,uplit:true}):`<span class="emo">${icon(d)}</span>`}<div class="base"></div></div>
+    return `<section class="pl" data-pl="${d.id}"><div class="stage"><div class="beam"></div>${d.m3d?`<div class="m3w" data-m3w="${d.id}"></div><span class="m3tag">3D · trascina per girare</span>`:''}${j===start?o3HTML(d,r0,{layers:3,uplit:true}):`<span class="emo">${icon(d)}</span>`}<div class="base"></div></div>
     <div class="label"><small>${esc([d.marca,d.anno,d.luogo?'Collezione '+d.luogo:''].filter(Boolean).join(' · '))}</small><h3>${esc(d.nome)}</h3>${desc?`<p>${esc(desc.length>320?desc.slice(0,320)+'…':desc)}</p>`:''}${f?`<div class="facts">${esc(f)}</div>`:''}</div></section>`};
   const body=`<div class="pl-prog" id="plp"></div><div class="pl-bar"><button class="hb" data-back aria-label="Indietro">←</button><span class="cnt" id="plc"></span><button class="hb" id="plplay" aria-label="Visita guidata">${auto?'⏸':'▶︎'}</button><button class="hb" id="plinfo" aria-label="Scheda">ⓘ</button></div><div class="pl-wrap" id="plw">${list.map(slide).join('')}</div>`;
   openPage('Piedistallo',body,{bare:true,cls:'museum pl-root',mount(el){
     const w=$('#plw',el),bar=$('#plp',el),SEC=8000;let i=start,timer=null,lock=null;const done=new Set([list[start].id]);
     if(hero){const h0=w.querySelector(`[data-pl="${list[start].id}"] .o3`);if(h0)h0.style.viewTransitionName='mu-hero'}
     const fill=async k=>{for(const j of [k,k+1,k-1,k+2]){const d=list[j];if(!d||done.has(d.id))continue;done.add(d.id);const r=await museumImg(d);if(!r)continue;const s=w.querySelector(`[data-pl="${d.id}"] .emo`);if(s)s.outerHTML=o3HTML(d,r,{layers:3,uplit:true})}};
-    const upd=()=>{$('#plc',el).textContent=`${i+1} / ${list.length}`;fill(i)};
+    /* 2.10: modello 3D dell'oggetto mostrato (uno alla volta: un solo contesto grafico) */
+    let v3=null,v3id='';const m3=async()=>{const d=list[i];if(v3id===d.id)return;v3&&v3.dispose();v3=null;v3id=d.id;if(!d.m3d)return;const host=w.querySelector(`[data-m3w="${d.id}"]`);if(!host)return;
+      const base=host.closest('.stage').querySelector('.base');
+      const v=await mount3D(host,d,{baseAt:()=>{const b=base.getBoundingClientRect(),h=host.getBoundingClientRect();return (b.top+2-h.top)/(h.height||1)},margin:.9});if(v3id!==d.id){v.dispose();return}v3=v;host.closest('.stage').classList.toggle('m3on',host.classList.contains('ready'))};
+    const upd=()=>{$('#plc',el).textContent=`${i+1} / ${list.length}`;fill(i);clearTimeout(upd.t);upd.t=setTimeout(m3,350)};
     const go=k=>{i=(k+list.length)%list.length;w.scrollTo({left:i*w.clientWidth,behavior:'smooth'});upd()};
     const prog=()=>{bar.classList.remove('run');bar.style.width='0';void bar.offsetWidth;bar.style.transitionDuration=SEC+'ms';bar.classList.add('run');bar.style.width='100%'};
     const play=async on=>{clearInterval(timer);timer=null;$('#plplay',el).textContent=on?'⏸':'▶︎';bar.style.width='0';bar.classList.remove('run');
@@ -4340,7 +4452,7 @@ async function openPlinth(list,start,auto,hero){
     $('#plplay',el).onclick=()=>play(!timer);
     $('#plinfo',el).onclick=()=>{play(false);openDetail(list[i].id)};
     if(auto)play(true);
-    el._close=()=>play(false);
+    el._close=()=>{play(false);v3&&v3.dispose();v3=null};
     /* tornando agli scaffali l'oggetto «vola» al suo posto */
     el._out={cls:'vt-pl',before(){clearHero();const c=el.querySelector(`[data-pl="${list[i].id}"] .o3`);if(c)c.style.viewTransitionName='mu-hero'},
       after(){const sh=document.querySelector(`.mu-root [data-mu="${list[i].id}"] .o3`);if(sh)sh.style.viewTransitionName='mu-hero'},done:clearHero};
@@ -4612,18 +4724,18 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map();
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(o.m3d&&o.m3d.data)o.m3d=Object.assign({},o.m3d,{data:await conv(o.m3d.data,'modelli',o.m3d.nome)});if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
         const remElim=[...tombsOf(remote)].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         n=out.length;
         /* file in foto/ e allegati/ (e nelle vecchie cartelle numerate) che nessun oggetto usa più */
-        const FILE_RE=/(?:^|\/)((?:foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5})$/,refs=new Set();
+        const FILE_RE=/(?:^|\/)((?:foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7})$/,refs=new Set();
         const ref=u=>{if(typeof u==='string'){const m=u.match(FILE_RE);if(m)refs.add(m[1])}};
-        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);(o.allegati||[]).forEach(a=>ref(a.data));(o.progetti||[]).forEach(p=>[...(p.prima||[]),...(p.dopo||[])].forEach(ref))}
+        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);o.m3d&&ref(o.m3d.data);(o.allegati||[]).forEach(a=>ref(a.data));(o.progetti||[]).forEach(p=>[...(p.prima||[]),...(p.dopo||[])].forEach(ref))}
         for(const p of files.keys())refs.add(p);
-        const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|\d+)\/[0-9a-f]{40}\.\w{1,5}$/.test(p)&&!refs.has(p));
+        const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7}$/.test(p)&&!refs.has(p));
         const ics=buildICS(out),calNew=tmap.get('calendario.ics')!==await gitBlobSha(ics);
         if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
         const entries=[];
