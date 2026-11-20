@@ -991,6 +991,25 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.11.1: invio dei modelli 3D visibile — stato nella scheda, copia locale in cache, errore chiaro se GitHub rifiuta', async () => {
+    const U = await phone('M6');
+    await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await saveDev({ id: 'up', nome: 'iPod mini', tipologia: 'Lettore musicale', creato: Date.now(), m3d: { id: 'a', nome: 'mini.spz', size: 20, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('modello mini '.repeat(30)), rot: [0, 0, 0] } }); render(); openDetail('up'); });
+    await U.waitForTimeout(400);
+    ok(await U.evaluate(() => /Non ancora su GitHub/.test(document.querySelector('.page.det .m3st').textContent)), 'prima dell\'invio: «non ancora su GitHub»');
+    let rifiuta = true;
+    await U.context().route('https://api.github.com/repos/test/RDDC/git/blobs', r => { const b = r.request().postData() || ''; if (rifiuta && b.length > 400) return r.fulfill({ status: 422, headers: { 'access-control-allow-origin': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'too large' }) }); return r.fallback(); });
+    await U.evaluate(async () => { await ghSync(false); });
+    ok(await U.evaluate(() => /modello 3D.*non riuscito.*troppo grande/.test(document.querySelector('#toast').textContent) && /^data:/.test(devices.find(d => d.id === 'up').m3d.data)), 'errore mostrato anche nella sincronizzazione automatica, il modello resta sul telefono');
+    rifiuta = false;
+    await U.evaluate(async () => { await ghSync(false); }); await U.waitForTimeout(300);
+    const r = await U.evaluate(async () => { const m = devices.find(d => d.id === 'up').m3d, c = await caches.open('rddc-modelli'), hit = await c.match(remoteURL(m.data)); return [/^modelli\/[0-9a-f]{40}\.spz$/.test(m.data), !!hit, hit ? (await hit.text()).slice(0, 12) : '', new TextDecoder().decode(await m3dBytes(m)).slice(0, 12)]; });
+    eq(r, [true, true, 'modello mini', 'modello mini'], 'dopo l\'invio: percorso su GitHub nella scheda, file nella cache, il modello si apre ancora');
+    await U.evaluate(() => openDetail('up', true)); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => /Su GitHub/.test(document.querySelector('.page.det .m3st').textContent)), 'stato «Su GitHub»');
+    const n0 = gh.n; await U.evaluate(async () => { await ghSync(false); }); eq(gh.n, n0, 'la sincronizzazione successiva non crea commit inutili');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
