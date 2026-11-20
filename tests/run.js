@@ -955,6 +955,42 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.11: seconda modalità 3D (convertibili), nomi, sincronizzazione e pulsante sul piedistallo', async () => {
+    const U = await phone('M4');
+    await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await saveDev({ id: 'cv', nome: 'ThinkPad X41 Tablet', tipologia: 'Portatile', creato: Date.now(), m3d: { id: 'a', nome: 'aperto.spz', size: 10, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('modello aperto'), rot: [0, 0, 0] } }); render(); openDetail('cv'); });
+    await U.waitForTimeout(400);
+    await U.click('.page.det [data-m3add2]'); await U.waitForSelector('#ml1');
+    eq(await U.evaluate(() => [document.querySelector('#ml1').value, document.querySelector('#ml2').value]), ['Portatile', 'Tablet'], 'nomi proposti');
+    await U.fill('#ml2', 'Modalità tablet');
+    const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.click('.modal [data-y]')]);
+    await fc.setFiles({ name: 'tablet.spz', mimeType: 'application/octet-stream', buffer: Buffer.from('modello tablet '.repeat(20)) });
+    await U.waitForFunction(() => stack.length && stack[stack.length - 1].classList.contains('m3root'), null, { timeout: 5000 });
+    eq(await U.evaluate(() => { const d = devices.find(x => x.id === 'cv'); return [d.m3d.label, d.m3d2.label, d.m3d2.nome, !!document.querySelector('.m3root .m3sw')]; }), ['Portatile', 'Modalità tablet', 'tablet.spz', true], 'seconda modalità salvata, pulsante di cambio nella vista 3D');
+    await U.evaluate(() => goBase(() => openDetail('cv'))); await U.waitForTimeout(500);
+    ok(await U.evaluate(() => document.querySelectorAll('.page.det .m3sec').length === 2 && /Modalità tablet/.test(document.querySelector('.page.det').textContent)), 'la scheda mostra le due modalità');
+    await U.evaluate(async () => { await ghSync(true); });
+    const f = ghFiles(), d = JSON.parse(f.get('collezione.json').toString()).devices.find(x => x.id === 'cv');
+    ok(/^modelli\//.test(d.m3d.data) && /^modelli\//.test(d.m3d2.data) && f.has(d.m3d2.data) && d.m3d2.label === 'Modalità tablet', 'entrambi i file in modelli/');
+    await U.evaluate(() => goBase(() => openPlinth([devices.find(x => x.id === 'cv')], 0, false))); await U.waitForTimeout(700);
+    eq(await U.evaluate(() => { const b = document.querySelector('.pl [data-m3sw="cv"]'); return b && [b.textContent.trim(), b.classList.contains('wait')]; }), ['⇄ Modalità tablet', true], 'sul piedistallo il pulsante aspetta che la seconda modalità sia pronta');
+    await U.context().close();
+  });
+
+  await test('2.11: grafico del valore — arco di tempo e data di acquisto (con il mese) per una sola quotazione', async () => {
+    const U = await phone('M5');
+    const r = await U.evaluate(async () => { const d = { id: 'va', nome: 'Apple IIc', acq_anno: 2019, acq_mese: 'maggio', acq_prezzo: 100, valore: 300, valori: [{ id: 'v', data: '2026-11-01', valore: 300, fonte: 'Stima iniziale' }], creato: Date.now() };
+      const p = valSeries(d, false); const c = clipSeries([{ t: 1, v: 10 }, { t: 5, v: 20 }, { t: 9, v: 30 }], 6);
+      return [new Date(p[0].t).toISOString().slice(0, 7), acqLabel(d), c.map(x => [x.t, x.v]), valSeries({ ...d, valori: [...d.valori, { id: 'w', data: '2026-11-10', valore: 320 }] }, false).length]; });
+    eq(r, ['2019-05', 'maggio 2019', [[6, 20], [9, 30]], 2], 'una sola quotazione vale dal mese di acquisto; il taglio parte dal valore in vigore');
+    await U.evaluate(async () => { await saveDev({ id: 'v1', nome: 'iMac G3', acq_anno: 2020, acq_prezzo: 80, valore: 150, creato: Date.now() }); await saveDev({ id: 'v2', nome: 'iBook', acq_anno: 2023, acq_mese: 'marzo', acq_prezzo: 60, valore: 90, creato: Date.now() }); render(); openStats(); });
+    await U.waitForSelector('[data-vr]');
+    eq(await U.evaluate(() => [[...document.querySelectorAll('[data-vr]')].map(b => b.textContent), document.querySelector('[data-vr].on').textContent]), [['1 anno', '2 anni', '5 anni', 'Tutto'], '2 anni'], 'scelta dell\'arco, due anni di partenza');
+    await U.click('[data-vr="0"]'); eq(await U.evaluate(() => LS.get('rd_vrange')), 0, '«Tutto» ricordato');
+    await U.evaluate(() => goBase(() => openForm({ nome: 'Prova' }))); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [...stack[stack.length - 1].querySelector('[name="acq_mese"]').options].map(o => o.value).slice(0, 3)), ['', 'gennaio', 'febbraio'], 'mese di acquisto nel modulo (facoltativo)');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');

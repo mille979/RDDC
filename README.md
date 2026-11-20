@@ -200,6 +200,9 @@ Il numero di versione è accanto al logo **RDDC** (toccalo per le novità) e in 
 ## Prove automatiche
 `npm test` avvia l'app in Chromium (Playwright) e controlla le funzioni principali, compresa la sincronizzazione con una finta API GitHub. Le prove partono da sole su ogni pull request (GitHub Actions, `.github/workflows/test.yml`).
 
+## Grafico del valore della collezione
+In Statistiche si sceglie l'arco di tempo (1 anno, **2 anni** di partenza, 5 anni, tutto). Se un oggetto ha una sola quotazione, il suo valore conta dalla **data di acquisto** (anno e, se indicato, mese: campo «Mese acquisto») e non dal giorno in cui è stato scritto. Anche lo «Speso» usa il mese di acquisto quando c'è.
+
 ## Backup
 I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup completo» ogni tanto (include le foto). Dallo stesso tasto: tabella CSV per Excel/Fogli, CSV del laboratorio e `collezione.json` per GitHub.
 
@@ -207,6 +210,8 @@ I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup co
 - **Scansione**: Scaniverse (gratuita, anche su Android) con il **ritaglio fatto dentro Scaniverse**, così i riflessi delle superfici lucide restano dentro l'oggetto; esporta in **SPZ** (compresso). Pulizia facoltativa in SuperSplat (export SPZ o SOG). Meglio sotto i 25 MB, massimo 60 MB.
 - **Nella scheda**: ⋯ → «🧊 Aggiungi un modello 3D» (.spz, .sog, .ply, .splat, .ksplat). Compare la sezione «Modello 3D» (Guarda in 3D, Sul piedistallo, Sostituisci, Togli) e il pulsante «3D» sulla foto.
 - **Visualizzatore**: [Spark](https://github.com/sparkjsdev/spark) su three.js, caricato solo quando apri un modello e poi tenuto in cache. L'oggetto poggia sulla base; si gira trascinando, due dita per lo zoom, doppio tocco per ricominciare, da fermo ruota piano. L'inclinazione resta **sopra l'orizzonte** (singola scansione: la parte appoggiata non si vede). ⟲ in alto corregge l'orientamento (capovolgi, ruota di 90°) e lo ricorda.
+- **Due modalità (convertibili)**: nella sezione «Modello 3D» → «＋ Seconda modalità» (prima i nomi, es. Portatile / Tablet, poi il file). Nella vista 3D e sul piedistallo il tasto «⇄» trasforma l'oggetto: due giri in 0,5 s con accelerazione e frenata, il cambio di modello avviene al massimo della velocità. La seconda modalità si carica in sottofondo quando la prima è già visibile; finché non è pronta il tasto resta in attesa.
+- **Piedistallo 3D**: un cilindro scuro con il piano chiaro e il bordo luminoso, unito sotto il modello e inquadrato insieme a lui (non copre più la scheda con i dati).
 - **Museo**: sul piedistallo il modello prende il posto della foto scontornata (che resta finché il 3D non è pronto); un solo modello attivo alla volta.
 - **Sincronizzazione**: il file va su GitHub in `modelli/` (nome = impronta, una volta sola); sugli altri telefoni si scarica alla prima apertura e resta disponibile offline.
 
