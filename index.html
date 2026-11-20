@@ -673,6 +673,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage.m3on .base{opacity:0}
 .m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
+.m3st{margin:0 2px 8px;font-size:12.5px;color:var(--mute)}.m3st.pend{color:var(--acc-ink)}.m3st .linkb{font-size:12.5px;padding:0 4px}
 .m3sec{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}.m3ic{flex:none;width:52px;height:52px;border-radius:14px;border:0;background:radial-gradient(circle at 50% 70%,#3a2e22,#0b0907);font-size:26px;box-shadow:var(--rim)}.m3sec .lb{flex:1;min-width:0}.m3sec .lb b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
 .chips.vrsel{margin:8px 0 16px;position:relative;z-index:1}
@@ -832,8 +833,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.11';
+const APP_VER='2.11.1';
 const NOVITA=[
+ ['2.11.1','2026-11-20',['Modelli 3D e sincronizzazione: l\'invio a GitHub mostra l\'avanzamento e, se non riesce, spiega perché anche quando parte da solo','Nella scheda lo stato del modello: «☁️ Su GitHub» oppure «⏳ Non ancora su GitHub» con «Invia ora»','Dopo l\'invio la copia sul telefono passa nella cache dei modelli: la collezione occupa meno spazio']],
  ['2.11','2026-11-20',['⇄ Seconda modalità 3D per i convertibili (es. portatile e tablet): un tasto in alto la trasforma con due giri vorticosi in mezzo secondo, il cambio avviene al massimo della velocità; la seconda si carica in sottofondo appena la prima è pronta','Piedistallo 3D: un cilindro con il bordo luminoso sotto il modello, che non va più sopra la scheda con i dati','Grafico del valore della collezione: scegli l\'arco di tempo (1 anno, 2 anni, 5 anni, tutto; due anni di partenza); una sola quotazione vale dalla data di acquisto','Nuovo campo «Mese acquisto» accanto all\'anno, se lo ricordi']],
  ['2.10','2026-11-19',['🧊 Modelli 3D: nella scheda (⋯ → Aggiungi un modello 3D) carichi un Gaussian splat esportato da Scaniverse o SuperSplat (.spz, .sog, .ply); si guarda a schermo intero e sul piedistallo del museo, appoggiato alla base','Trascina per girarlo, due dita per avvicinarti, doppio tocco per tornare all\'inizio; da fermo ruota piano. Si vede solo dalla parte alta, come è stato scansionato','⟲ Orientamento: capovolgi o ruota di 90° se il modello arriva storto; il file va su GitHub in modelli/ e sugli altri telefoni si scarica alla prima apertura, poi resta anche offline']],
  ['2.9.1','2026-11-19',['Icona con il fondo più scuro, grigio neutro come le icone di sistema: le lastre di vetro risaltano di più (su iPhone si vede dopo aver tolto e rimesso l\'app nella Home)']],
@@ -1388,6 +1390,7 @@ function openDetail(id,replace,morph,quiet,dir){
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
       const t=e.target;
+      if(t.closest('[data-m3sync]')){await ghSync(true);return openDetail(d.id,true,false,true)}
       if(t.closest('[data-m3open2]'))return openModel3D(d,false,true);
       if(t.closest('[data-m3open]'))return openModel3D(d);
       if(t.closest('[data-m3add2]'))return m3dAdd(d,2);
@@ -3074,8 +3077,14 @@ function askLabels(d){return new Promise(res=>{const m=document.createElement('d
   m.innerHTML=`<div><p>Come si chiamano le due modalità?</p><label class="f">Modello principale</label><input class="in" id="ml1" value="${esc(a)}"><label class="f">Seconda modalità</label><input class="in" id="ml2" value="${esc(b)}"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Annulla</button><button class="btn" data-y>OK</button></div></div>`;
   m.onclick=e=>{if(e.target.matches('[data-y]')){const x=[m.querySelector('#ml1').value.trim()||'Normale',m.querySelector('#ml2').value.trim()||'Seconda modalità'];m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
 function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.onchange=()=>res(i.files[0]||null);i.oncancel=()=>res(null);i.click()})}
+/* dopo l'invio: il modello sul telefono passa dalla scheda (database) alla cache dei modelli; nella scheda resta il percorso su GitHub */
+async function m3Localize(list){let c=null;try{c=await caches.open('rddc-modelli')}catch(e){}
+  for(const x of list){const d=devices.find(y=>y.id===x.id),m=d&&d[x.k];if(!m||!/^data:/.test(m.data))continue;
+    try{if(c)await c.put(remoteURL(x.path),new Response(b64bytes(m.data.split(',')[1]),{headers:{'content-type':'application/octet-stream'}}))}catch(e){continue}
+    m.data=x.path;SIG.set(d.id,fieldSig(d));await DB.put(d)}}
 function m3dHTML(d){const m=d.m3d;if(!m)return '';const m2=d.m3d2,info=x=>[x.size?fmtMB(x.size):'',x.t?'aggiunto il '+fmtD(x.t):''].filter(Boolean).join(' · ');
-  return `<div class="sec-t">Modello 3D${m2?' · due modalità':''}</div><div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${m2?esc(m3Label(m,0))+' · ':''}${esc(m.nome)}</b><small>${info(m)}</small></span></div>
+  const pend=[m,m2].some(x=>x&&/^data:/.test(x.data)),gh=ghOn();
+  return `<div class="sec-t">Modello 3D${m2?' · due modalità':''}</div>${gh?`<p class="m3st ${pend?'pend':''}">${pend?'⏳ Non ancora su GitHub: gli altri telefoni non lo vedono <button class="linkb" data-m3sync>Invia ora</button>':'☁️ Su GitHub: visibile anche sugli altri telefoni'}</p>`:''}<div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${m2?esc(m3Label(m,0))+' · ':''}${esc(m.nome)}</b><small>${info(m)}</small></span></div>
   ${m2?`<div class="m3sec" style="margin-top:6px"><button class="m3ic" data-m3open2 aria-label="Guarda la seconda modalità">⇄</button><span class="lb"><b>${esc(m3Label(m2,1))} · ${esc(m2.nome)}</b><small>${info(m2)}</small></span><button class="btn sm sec" data-m3lab>Nomi</button></div>`:''}
   <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button>${m2?'':'<button class="btn sm sec" data-m3add2>＋ Seconda modalità</button>'}<button class="btn sm sec" data-m3add>Sostituisci</button>${m2?'<button class="btn sm sec" data-m3add2>Sostituisci la seconda</button><button class="btn sm sec" data-m3del2>Togli la seconda</button>':''}<button class="btn sm sec" data-m3del>Togli</button></div>`}
 /* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
@@ -4768,7 +4777,7 @@ function ghSync(manual){
   syncing=(async()=>{
     const t0=Date.now(),c=ghCfg();updSync('run');
     try{
-      let res={nuovi:0,agg:0,canc:0},inviati=0,nfoto=0,n=0;
+      let res={nuovi:0,agg:0,canc:0},inviati=0,nfoto=0,n=0,m3sent=[];
       for(let attempt=0;;attempt++){
         const head=(await gh(`git/ref/heads/${c.branch}`)).object.sha;
         const treeSha=(await gh(`git/commits/${head}`)).tree.sha;
@@ -4780,9 +4789,9 @@ function ghSync(manual){
         const r=await mergeRemote(arr.map(x=>JSON.parse(JSON.stringify(x))),tombsOf(remote),fetchPhoto);res.nuovi+=r.nuovi;res.agg+=r.agg;res.canc+=r.canc;
         if(r.nuovi||r.agg||r.canc)render();
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
-        const files=new Map();
+        const files=new Map(),m3up=[];
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(o.m3d&&o.m3d.data)o.m3d=Object.assign({},o.m3d,{data:await conv(o.m3d.data,'modelli',o.m3d.nome)});if(o.m3d2&&o.m3d2.data)o.m3d2=Object.assign({},o.m3d2,{data:await conv(o.m3d2.data,'modelli',o.m3d2.nome)});if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);for(const k of ['m3d','m3d2'])if(o[k]&&o[k].data){const p=await conv(o[k].data,'modelli',o[k].nome);if(/^data:/.test(o[k].data))m3up.push({id:d.id,k,path:p});o[k]=Object.assign({},o[k],{data:p})}if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
@@ -4795,9 +4804,13 @@ function ghSync(manual){
         for(const p of files.keys())refs.add(p);
         const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7}$/.test(p)&&!refs.has(p));
         const ics=buildICS(out),calNew=tmap.get('calendario.ics')!==await gitBlobSha(ics);
-        if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim))break;
+        if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim)){m3sent=m3up.filter(x=>tmap.has(x.path));break}
         const entries=[];
-        for(const [path,b64] of files)entries.push({path,mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha});
+        for(const [path,b64] of files){const big=/^modelli\//.test(path),mb=fmtMB(b64.length*.75);
+          if(big)toast(`☁️ Invio del modello 3D a GitHub (${mb})… lascia l'app aperta`,60000);
+          let sha;try{sha=(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha}
+          catch(e){const er=new Error(`invio di ${big?'un modello 3D':'un file'} (${mb}) non riuscito: ${e.status===413||e.status===422?'GitHub lo rifiuta, forse è troppo grande: esportalo più leggero (SPZ)':e.status?e.message:'connessione interrotta o app chiusa durante l\'invio'}`);er.status=e.status;er.m3d=big;throw er}
+          entries.push({path,mode:'100644',type:'blob',sha})}
         const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
         for(const p of orphans)entries.push({path:p,mode:'100644',type:'blob',sha:null});
@@ -4806,14 +4819,15 @@ function ghSync(manual){
         const nc=await gh('git/commits',{method:'POST',body:{message:`RDDC: sincronizzazione (${out.length} oggetti${files.size?`, ${files.size} file nuovi`:''}${orphans.length?`, ${orphans.length} file non usati rimossi`:''})`,tree:nt.sha,parents:[head]}});
         try{await gh(`git/refs/heads/${c.branch}`,{method:'PATCH',body:{sha:nc.sha,force:false}})}
         catch(e){if((e.status===422||e.status===409)&&attempt<3)continue;throw e}
-        inviati=out.length;nfoto=files.size;break;
+        inviati=out.length;nfoto=files.size;m3sent=m3up;break;
       }
       if(LS.get('rd_dirty',0)<=t0)LS.set('rd_dirty',0);
+      if(m3sent.length){await m3Localize(m3sent);if(nfoto)toast(`☁️ ${m3sent.length===1?'Modello 3D inviato':m3sent.length+' modelli 3D inviati'} a GitHub ✔︎`,3500)}
       LS.set('rd_db_last',{t:Date.now(),n,...res,inviati,foto:nfoto});LS.set('rd_db_sig','');
       updSync();
       if(res.nuovi||res.agg||res.canc)toast(`GitHub: ricevuti ${res.nuovi} nuovi, ${res.agg} aggiornati${res.canc?', '+res.canc+' eliminati':''}`,3500);
       else if(manual)toast(inviati?`Inviato a GitHub ✔︎${nfoto?' ('+nfoto+(nfoto===1?' file':' file')+')':''}`:'Già tutto sincronizzato ✔︎');
-    }catch(e){updSync('err');logErr('Sincronizzazione GitHub',e);if(manual){const i=errInfo(e);toast(`${i.ic} Sincronizzazione non riuscita: ${e.message}`,6000,{label:'DETTAGLI',fn:openErrLog})}else console.warn('sync',e)}
+    }catch(e){updSync('err');logErr('Sincronizzazione GitHub',e);if(manual||e.m3d){const i=errInfo(e);toast(`${i.ic} Sincronizzazione non riuscita: ${e.message}`,6000,{label:'DETTAGLI',fn:openErrLog})}else console.warn('sync',e)}
     finally{syncing=null}
   })();
   return syncing;
