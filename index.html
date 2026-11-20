@@ -663,16 +663,19 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .gapr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.gapr:first-child{border-top:0}.gapr .lb{flex:1}.gapr.own b{color:var(--acc-ink)}.gapw{font-size:12.5px;color:var(--mute);white-space:nowrap}
 .m3h{position:relative}.m3c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;opacity:0;transition:opacity .6s ease}.m3h.ready .m3c{opacity:1}
 .m3l{position:absolute;inset:0;display:grid;place-items:center;color:#e9dcc7}.m3l .ldr svg{width:min(120px,30vw)}.m3err{color:#e2d4bf;text-align:center;font-size:13px;line-height:1.4;padding:0 22px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.pl .m3w{position:absolute;left:0;right:0;top:-6%;bottom:22px;z-index:3}.pl .stage .o3{transition:opacity .6s ease}.pl .stage.m3on .o3{opacity:0}
+.pl .m3w{position:absolute;left:0;right:0;top:-6%;bottom:0;z-index:3}.pl .stage .o3{transition:opacity .6s ease}.pl .stage.m3on .o3{opacity:0}
 .m3tag{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:4;font:600 11.5px system-ui,sans-serif;color:rgba(255,236,200,.8);background:rgba(0,0,0,.32);padding:3px 10px;border-radius:999px;pointer-events:none;white-space:nowrap}
 .m3page{position:absolute;inset:0;display:flex;flex-direction:column;color:#f3e9da;background:radial-gradient(70% 45% at 50% 60%,#2a231c 0%,#0b0907 72%)}
 .m3top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 6px;z-index:3}.m3top b{flex:1;text-align:center;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .m3stage{position:relative;flex:1;min-height:0}.m3v{position:absolute;inset:0;z-index:2}
-.m3glow{position:absolute;left:50%;bottom:18%;width:min(84vw,440px);height:78%;transform:translateX(-50%);background:radial-gradient(50% 62% at 50% 100%,rgba(255,226,170,.24),transparent 72%);pointer-events:none}
+.m3glow{position:absolute;left:50%;top:0;width:min(78vw,380px);height:64%;transform:translateX(-50%);background:linear-gradient(to bottom,rgba(255,226,170,.16),rgba(255,226,170,.07) 62%,transparent);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);pointer-events:none}
+.m3sw{border:0;border-radius:999px;padding:9px 14px;font:650 13.5px/1 system-ui,sans-serif;color:#2a1a08;background:linear-gradient(180deg,#ffe2ad,#f0b65c);box-shadow:0 4px 16px rgba(255,190,90,.35),inset 0 1px 0 rgba(255,255,255,.6);white-space:nowrap;transition:opacity .25s,transform .15s}.m3sw.wait{opacity:.45}.m3sw:active{transform:scale(.95)}
+.pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage.m3on .base{opacity:0}
 .m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
 .m3sec{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}.m3ic{flex:none;width:52px;height:52px;border-radius:14px;border:0;background:radial-gradient(circle at 50% 70%,#3a2e22,#0b0907);font-size:26px;box-shadow:var(--rim)}.m3sec .lb{flex:1;min-width:0}.m3sec .lb b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
+.chips.vrsel{margin:8px 0 16px;position:relative;z-index:1}
 .chips.cuts{margin:7px 0 2px;align-items:center;gap:6px}.chips.cuts small{color:var(--mute);font-size:12px;margin-right:2px}
 .btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
 /* 2.7: tasti della scheda più ordinati + foglio di azioni */
@@ -829,8 +832,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.10';
+const APP_VER='2.11';
 const NOVITA=[
+ ['2.11','2026-11-20',['⇄ Seconda modalità 3D per i convertibili (es. portatile e tablet): un tasto in alto la trasforma con due giri vorticosi in mezzo secondo, il cambio avviene al massimo della velocità; la seconda si carica in sottofondo appena la prima è pronta','Piedistallo 3D: un cilindro con il bordo luminoso sotto il modello, che non va più sopra la scheda con i dati','Grafico del valore della collezione: scegli l\'arco di tempo (1 anno, 2 anni, 5 anni, tutto; due anni di partenza); una sola quotazione vale dalla data di acquisto','Nuovo campo «Mese acquisto» accanto all\'anno, se lo ricordi']],
  ['2.10','2026-11-19',['🧊 Modelli 3D: nella scheda (⋯ → Aggiungi un modello 3D) carichi un Gaussian splat esportato da Scaniverse o SuperSplat (.spz, .sog, .ply); si guarda a schermo intero e sul piedistallo del museo, appoggiato alla base','Trascina per girarlo, due dita per avvicinarti, doppio tocco per tornare all\'inizio; da fermo ruota piano. Si vede solo dalla parte alta, come è stato scansionato','⟲ Orientamento: capovolgi o ruota di 90° se il modello arriva storto; il file va su GitHub in modelli/ e sugli altri telefoni si scarica alla prima apertura, poi resta anche offline']],
  ['2.9.1','2026-11-19',['Icona con il fondo più scuro, grigio neutro come le icone di sistema: le lastre di vetro risaltano di più (su iPhone si vede dopo aver tolto e rimesso l\'app nella Home)']],
  ['2.9','2026-11-18',['Oggi: scorri una voce verso sinistra per rimandarla a domani o a un intervallo a scelta (3 giorni, una settimana, due settimane, un mese, una data); scorrendo fino in fondo va a domani','📷 Dalla foto dell\'etichetta: Gemini legge modello, EMC e numero di serie e cerca la scheda; nel modulo «Leggi dall\'etichetta» riempie i campi vuoti','✨ Stima del valore con Gemini nella sezione Valore: forbice, prezzo tipico e fonti, poi con un tocco nello storico','🧩 Cosa manca (Menu): per ogni linea Apple che hai, i modelli che mancano, da mettere in wishlist con un tocco','Pressione lunga su un oggetto: anche Acceso oggi, Caricato oggi, Sposta e Aggiungi intervento','Tira giù dalla cima dell\'elenco per sincronizzare; scorciatoie tenendo premuta l\'icona (Aggiungi, Manutenzione, Cerca); ultime ricerche suggerite; codici a barre con la fotocamera nella ricerca','Giro di manutenzione: la ✗ chiede cosa non va (batteria che non regge, batteria morta, non si accende); le batterie esaurite escono dal giro di ricarica e resta l\'accensione','Animazioni: finestre e fogli si chiudono trascinandoli in basso, l\'elenco si riordina con movimento, Salva diventa una spunta, statistiche che contano e grafici che si disegnano, vibrazioni leggere uniformi (spegnibili)']],
@@ -978,7 +982,7 @@ const SECTIONS=[
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
  ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione e ricarica ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart noacc'],
- ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
+ ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_mese','Mese acquisto (se lo ricordi)','select:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
 const FACETS=[['lab','Laboratorio'],['manut','Manutenzione'],['raccolta','Raccolta'],['ruolo','Ruolo'],['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
@@ -1347,6 +1351,7 @@ function openDetail(id,replace,morph,quiet,dir){
       {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
       {a:'data-m3add',ic:'🧊',t:d.m3d?'Sostituisci il modello 3D':'Aggiungi un modello 3D',sub:'Gaussian splat da Scaniverse o SuperSplat (.spz, .sog, .ply)',g:'Oggetto'},
+      d.m3d&&!d.m3d2&&{a:'data-m3add2',ic:'⇄',t:'Aggiungi una seconda modalità 3D',sub:'Per i convertibili: es. portatile e tablet, con la trasformazione',g:'Oggetto'},
       !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
       {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>'}
   return openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(morph?' fly-in':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
@@ -1383,10 +1388,14 @@ function openDetail(id,replace,morph,quiet,dir){
     if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
       const t=e.target;
+      if(t.closest('[data-m3open2]'))return openModel3D(d,false,true);
       if(t.closest('[data-m3open]'))return openModel3D(d);
+      if(t.closest('[data-m3add2]'))return m3dAdd(d,2);
       if(t.closest('[data-m3add]'))return m3dAdd(d);
+      if(t.closest('[data-m3lab]')){const l=await askLabels(d);if(l){d.m3d.label=l[0];d.m3d2.label=l[1];await saveDev(d);openDetail(d.id,true,false,true)}return}
+      if(t.closest('[data-m3del2]')){if(await ask('Togliere la seconda modalità 3D?','Togli',true)){delete d.m3d2;await saveDev(d);render();toast('Seconda modalità tolta');openDetail(d.id,true,false,true)}return}
       if(t.closest('[data-m3pl]'))return vt('vt-pl',()=>openPlinth([d],0,false));
-      if(t.closest('[data-m3del]')){if(await ask('Togliere il modello 3D da questa scheda? Il file resta nelle versioni precedenti su GitHub.','Togli',true)){delete d.m3d;await saveDev(d);render();toast('Modello 3D tolto');openDetail(d.id,true,false,true)}return}
+      if(t.closest('[data-m3del]')){if(await ask(`Togliere il modello 3D da questa scheda${d.m3d2?' (anche la seconda modalità)':''}? I file restano nelle versioni precedenti su GitHub.`,'Togli',true)){delete d.m3d;delete d.m3d2;await saveDev(d);render();toast('Modello 3D tolto');openDetail(d.id,true,false,true)}return}
       {const mb=t.closest('[data-moreacts]');if(mb)return moreActs(el,mb)}
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
@@ -2317,7 +2326,7 @@ function gemPick(list){return list.slice().sort((a,b)=>gemScore(b)-gemScore(a)||
 function gemOrder(list){const c=gemCfg(),L=list&&list.length?list:GEM_PRESET,o=L.slice().sort((a,b)=>gemScore(b)-gemScore(a)||a.length-b.length);return [...new Set([c.model,L.includes(c.ok)?c.ok:'',...o].filter(Boolean))]}
 async function gemModel(force){const c=gemCfg();if(c.model&&!force)return c.model;const m=gemPick(await gemModels(force));if(!m)throw new AppErr('modello','nessun modello Gemini disponibile per questa chiave');return m}
 /* campi che Gemini può compilare: tutti quelli tecnici e descrittivi; niente dati personali (luogo, stato, prezzo pagato…) */
-const GEM_SKIP=new Set(['seriale','compat','collegato','tv_telecomando','batt_stato','man_freq','man_on','man_charge','raccolta','ruolo','garanzia','tags','luogo','quantita','stato','scatola','condizione','acq_anno','acq_prezzo','valore','note','w_priorita','w_budget','w_link','w_note']);
+const GEM_SKIP=new Set(['seriale','compat','collegato','tv_telecomando','batt_stato','man_freq','man_on','man_charge','raccolta','ruolo','garanzia','tags','luogo','quantita','stato','scatola','condizione','acq_anno','acq_mese','acq_prezzo','valore','note','w_priorita','w_budget','w_link','w_note']);
 function gemFields(){const out=[];
   for(const [k,l,t] of [...TOP,...SECTIONS.flatMap(s=>s[1])]){if(GEM_SKIP.has(k)||out.some(x=>x.k===k))continue;
     const opts=/^select:/.test(t||'')?t.slice(7).split('|'):k==='tipologia'?TIPI:null;out.push({k,l:l.replace(/\s*\*$/,''),opts,num:t==='number'})}
@@ -2598,7 +2607,7 @@ function detailStep(id,dir){const L=render.items||[],i=L.indexOf(id);if(i<0)retu
   openDetail(n,true,false,true,dir>0?'next':'prev')}
 addEventListener('keydown',e=>{if(!/Arrow(Left|Right)/.test(e.key)||e.target.closest('input,textarea,select'))return;const top=stack[stack.length-1];if(!top||!top.classList.contains('det')||!top.dataset.did)return;detailStep(top.dataset.did,e.key==='ArrowRight'?1:-1)});
 /* ===== versioni precedenti: ogni sincronizzazione è un commit di collezione.json su GitHub ===== */
-const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti','m3d'].includes(k))));
+const verKey=o=>stable(Object.fromEntries(Object.entries(o||{}).filter(([k])=>k[0]!=='_'&&!['fts','modificato','foto','thumb','scontorno','allegati','progetti','m3d','m3d2'].includes(k))));
 function openVersions(){
   if(!ghOn())return openPage('Versioni precedenti','<p class="note" style="margin-top:0">Le versioni precedenti sono le sincronizzazioni salvate su GitHub: serve il <b>salvataggio automatico su GitHub</b> (Menu → Database su GitHub → token).</p>');
   openPage('Versioni precedenti',`<p class="note" style="margin-top:0">Ogni sincronizzazione con GitHub conserva la collezione com'era in quel momento. Scegli una data per vedere cosa è cambiato da allora e recuperare oggetti eliminati o modificati per errore.</p><div id="vl">${loader('web','Leggo la cronologia…')}</div>`,{mount(el){
@@ -2831,9 +2840,15 @@ const trErr=e=>/quota/.test(e.message)?'Limite giornaliero del servizio di tradu
 
 /* ===== valore nel tempo ===== */
 function seedVal(o,old){o.valori=(o.valori||[]).slice();if(!o.valori.length&&old&&+old.valore)o.valori.push({id:uid(),data:new Date(old.modificato||old.creato||Date.now()).toISOString().slice(0,10),valore:+old.valore,fonte:'Stima iniziale'})}
+/* 2.11: data di acquisto (anno, e mese se indicato) */
+const MESI_ACQ='gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre'.split('|');
+function acqTime(d){const y=+d.acq_anno;if(!y||y<1900)return null;const m=MESI_ACQ.indexOf(String(d.acq_mese||'').toLowerCase());return new Date(y,m<0?0:m,m<0?1:15,12).getTime()}
+const acqLabel=d=>d.acq_anno?[d.acq_mese,d.acq_anno].filter(Boolean).join(' '):'';
 function valSeries(d,extend=true){
   let pts=(d.valori||[]).map(v=>({t:new Date(v.data+'T12:00').getTime(),v:+v.valore})).filter(p=>!isNaN(p.t)&&!isNaN(p.v)).sort((a,b)=>a.t-b.t);
   if(!pts.length&&+d.valore)pts=[{t:d.modificato||d.creato||Date.now(),v:+d.valore}];
+  /* una sola quotazione: vale dalla data di acquisto, non dal giorno in cui è stata scritta */
+  {const at=acqTime(d);if(pts.length===1&&at&&at<pts[0].t)pts[0]={t:at,v:pts[0].v}}
   if(extend&&pts.length&&pts[pts.length-1].t<Date.now()-864e5)pts.push({t:Date.now(),v:pts[pts.length-1].v,virt:true});
   return pts;
 }
@@ -2842,11 +2857,13 @@ function collSeries(){
   own.forEach(d=>valSeries(d,false).forEach(p=>ev.push({t:p.t,id:d.id,v:p.v})));
   const ts=[...new Set(ev.map(e=>e.t))].sort((a,b)=>a-b),last=new Map(),val=[];
   for(const t of ts){ev.filter(e=>e.t===t).forEach(e=>last.set(e.id,e.v));val.push({t,v:[...last.values()].reduce((s,x)=>s+x,0)})}
-  const buy=own.filter(d=>+d.acq_prezzo).map(d=>({t:d.acq_anno?new Date(+d.acq_anno,0,1).getTime():(d.creato||Date.now()),v:+d.acq_prezzo})).sort((a,b)=>a.t-b.t);
+  const buy=own.filter(d=>+d.acq_prezzo).map(d=>({t:acqTime(d)||d.creato||Date.now(),v:+d.acq_prezzo})).sort((a,b)=>a.t-b.t);
   let c=0;const spent=buy.map(b=>({t:b.t,v:c+=b.v}));
   const now=Date.now();if(val.length)val.push({t:now,v:val[val.length-1].v,virt:true});if(spent.length)spent.push({t:now,v:spent[spent.length-1].v,virt:true});
   return {val,spent,ok:new Set([...val,...spent].map(p=>p.t)).size>=2&&val.length>0};
 }
+/* serie a gradini tagliata all'arco scelto: il valore all'inizio dell'arco è quello dell'ultimo punto precedente */
+function clipSeries(pts,from){if(!from||!pts.length)return pts;const before=pts.filter(p=>p.t<from),after=pts.filter(p=>p.t>=from);return before.length?[{t:from,v:before[before.length-1].v},...after]:after}
 const eurS=v=>v>=10000?'€ '+Math.round(v/1000)+'k':'€ '+Math.round(v).toLocaleString('it');
 /* grafico a gradini (il valore resta quello fino alla valutazione successiva), un solo asse in euro */
 function lineChart(el,series,{ref=null,H=180}={}){
@@ -2967,44 +2984,67 @@ async function m3dBytes(m,onProg){
   return u}
 /* visualizzatore: si gira trascinando, due dita per avvicinarsi, doppio tocco per tornare all'inizio; da fermo ruota piano.
    L'inclinazione resta sopra l'orizzonte: la parte appoggiata (mai scansionata) non si vede */
-const M3_PH=[7*Math.PI/180,78*Math.PI/180],M3_DIST=[.55,1.7];
+const M3_PH=[7*Math.PI/180,78*Math.PI/180],M3_DIST=[.55,1.7],M3_SPIN=500,M3_TURNS=2;
+/* modelli dell'oggetto: il principale e, per i convertibili, la seconda modalità (es. tablet) */
+const m3List=d=>[d.m3d,d.m3d2].filter(Boolean);
+const m3Label=(m,i)=>m.label||(i?'Seconda modalità':'Normale');
 async function mount3D(host,d,o={}){
-  const m=d.m3d;let dead=false,raf=0,R=null,mesh=null,ro=null,io=null,vis=true;
-  const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false};
-  host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',m.size?fmtMB(m.size):'')}</div>`;
+  const L=m3List(d);let dead=false,raf=0,R=null,ro=null,io=null,vis=true;const meshes=[];
+  const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false,cur:0,spin:null,want:null,fitNow:0,fitTo:0};
+  host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',L[0].size?fmtMB(L[0].size):'')}</div>`;
   const cv=host.querySelector('canvas'),lab=host.querySelector('.m3l');
-  const api={dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();try{mesh&&mesh.dispose&&mesh.dispose()}catch(e){}try{R&&R.dispose()}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;if(typeof kick==='function')kick()}};
+  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{R&&R.dispose()}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
+    reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;typeof kick==='function'&&kick()},
+    /* trasformazione «alla Superman»: due giri in mezzo secondo, accelera e frena, cambio di modello al massimo della velocità */
+    toggle(){if(L.length<2||st.spin)return;const to=1-st.cur;if(!meshes[to]){st.want=to;o.onWait&&o.onWait(m3Label(L[to],to));return}st.want=null;st.spin={t0:performance.now(),to,done:false};buzz('tick');kick()}};
   let S,bytes;
-  try{[S,bytes]=await Promise.all([loadSpark(),m3dBytes(m,p=>{const x=lab.querySelector('small');if(x)x.textContent=Math.round(p*100)+'% di '+fmtMB(m.size||0)})])}
+  try{[S,bytes]=await Promise.all([loadSpark(),m3dBytes(L[0],p=>{const x=lab.querySelector('small');if(x)x.textContent=Math.round(p*100)+'% di '+fmtMB(L[0].size||0)})])}
   catch(e){if(!dead)lab.innerHTML=`<p class="m3err">🧊 ${esc(toAppErr(e).message||String(e))}</p>`;return api}
   if(dead)return api;
   try{const {THREE,SplatMesh,SparkRenderer}=S;
     R=new THREE.WebGLRenderer({canvas:cv,antialias:false,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,2));R.setClearColor(0,0);
     const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.005,500);scene.add(new SparkRenderer({renderer:R}));
-    mesh=new SplatMesh({fileBytes:bytes,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;if(dead){api.dispose();return api}
-    const rot=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(rot[0],rot[1],rot[2]);mesh.updateMatrixWorld(true);
-    const bb=mesh.getBoundingBox(true).clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3()),sz=bb.getSize(new THREE.Vector3());
-    mesh.position.set(-c.x,-bb.min.y,-c.z);scene.add(mesh);
-    const rad=Math.max(sz.length()/2,1e-3),tg=new THREE.Vector3(0,sz.y*.46,0);let fit=1;
-    /* distanza che fa stare tutto l'oggetto nel lato più stretto dello schermo (in verticale su un telefono è la larghezza) */
-    let by=o.baseY||.82;
-    /* l'oggetto deve stare tra il bordo alto e la base: la distanza tiene conto dello spazio libero sopra la base */
-    const refit=()=>{if(o.baseAt){const x=o.baseAt();if(x>.3&&x<1)by=x}const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*cam.aspect);fit=rad/Math.sin(Math.min(v,h)/2)*(o.margin||.92)/Math.max(.35,by-.04)};
-    /* la base dell'oggetto resta appoggiata al piedistallo (a una quota fissa dello schermo) a qualunque inclinazione */
-    const O=new THREE.Vector3();
-    const place=()=>{const r=fit*st.k;cam.position.set(tg.x+r*Math.cos(st.ph)*Math.sin(st.th),tg.y+r*Math.sin(st.ph),tg.z+r*Math.cos(st.ph)*Math.cos(st.th));cam.lookAt(tg);
-      const w=host.clientWidth||1,h=host.clientHeight||1;cam.clearViewOffset();cam.updateMatrixWorld();const y=O.set(0,0,0).project(cam).y,dy=(y-(1-2*by))/2*h;cam.setViewOffset(w,h,0,-dy,w,h)};
-    const size=()=>{const w=host.clientWidth||1,h=host.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();refit();kick()};
-    var frame=now=>{raf=0;if(dead)return;const dt=Math.min(.05,(now-(st.last||now))/1000);st.last=now;
-      if(!st.drag&&st.pts.size<2){st.th+=st.vth*dt;st.ph+=st.vph*dt;const f=Math.pow(.04,dt);st.vth*=f;st.vph*=f;if(Math.abs(st.vth)<.02)st.vth=0;if(Math.abs(st.vph)<.02)st.vph=0;
+    scene.add(new THREE.HemisphereLight(0xfff0dc,0x14100c,2.4));const sun=new THREE.DirectionalLight(0xffe2b8,3.2);sun.position.set(.8,2.2,1.4);scene.add(sun);
+    const spinG=new THREE.Group();scene.add(spinG);
+    /* ogni modello: orientato, centrato e appoggiato a quota 0 (il piano del piedistallo) */
+    const build=async(m,b)=>{const mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;
+      const r=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(r[0],r[1],r[2]);mesh.updateMatrixWorld(true);
+      const bb=mesh.getBoundingBox(true).clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
+      return {mesh,size:bb.getSize(new THREE.Vector3())}};
+    const first=await build(L[0],bytes);if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
+    meshes[0]=first.mesh;spinG.add(first.mesh);const sizes=[first.size];
+    /* piedistallo: cilindro scuro con il bordo alto luminoso, unito sotto il modello */
+    const ped=new THREE.Group();scene.add(ped);let pr=0,ph=0;
+    const pedestal=()=>{const sx=Math.max(...sizes.map(z=>Math.max(z.x,z.z))),sy=Math.max(...sizes.map(z=>z.y));pr=Math.max(sx*.6,sy*.26);ph=pr*.42;
+      ped.children.slice().forEach(c=>{ped.remove(c);c.geometry&&c.geometry.dispose()});
+      /* un solo cilindro con materiali diversi per fianco, piano e fondo (niente superfici sovrapposte) */
+      const body=new THREE.Mesh(new THREE.CylinderGeometry(pr,pr*1.04,ph,96,1),[new THREE.MeshStandardMaterial({color:0x3b3027,roughness:.62,metalness:.12}),new THREE.MeshStandardMaterial({color:0x6a5845,roughness:.4,metalness:.2,emissive:0x24180b}),new THREE.MeshStandardMaterial({color:0x120e0b,roughness:.9})]);body.position.y=-ph/2;ped.add(body);
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(pr*1.016,Math.max(pr*.012,.0015),8,120),new THREE.MeshBasicMaterial({color:0xffd9a0}));ring.rotation.x=Math.PI/2;ring.position.y=-.0005;ped.add(ring);
+      const cvs=document.createElement('canvas');cvs.width=cvs.height=128;const g=cvs.getContext('2d'),gr=g.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(255,228,180,.55)');gr.addColorStop(1,'rgba(255,228,180,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);
+      const pool=new THREE.Mesh(new THREE.CircleGeometry(pr*.98,64),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cvs),transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));pool.rotation.x=-Math.PI/2;pool.position.y=pr*.002;ped.add(pool)};
+    pedestal();
+    /* inquadratura: oggetto + piedistallo; la base del piedistallo resta a una quota fissa dello schermo */
+    let cy=o.centerY||.5,tg=new THREE.Vector3(),rad=1;
+    const geo=()=>{const sy=Math.max(...sizes.map(z=>z.y)),w=Math.max(pr*2.1,...sizes.map(z=>Math.max(z.x,z.z)));const H=sy+ph;tg.set(0,(sy-ph)/2,0);rad=Math.sqrt(H*H+w*w)/2};geo();
+    const fitFor=()=>{const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*cam.aspect);return rad/Math.sin(Math.min(v,h)/2)*(o.margin||.98)/(1-2*Math.abs(cy-.5))};
+    const place=()=>{const r=st.fitNow*st.k;cam.position.set(tg.x+r*Math.cos(st.ph)*Math.sin(st.th),tg.y+r*Math.sin(st.ph),tg.z+r*Math.cos(st.ph)*Math.cos(st.th));cam.lookAt(tg);
+      const w=host.clientWidth||1,h=host.clientHeight||1,dy=((1-2*cy)-0)/2*h;cam.clearViewOffset();if(Math.abs(dy)>.5)cam.setViewOffset(w,h,0,dy,w,h)};
+    const size=()=>{const w=host.clientWidth||1,h=host.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();st.fitTo=fitFor();if(!st.fitNow)st.fitNow=st.fitTo;kick()};
+    const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    var frame=now=>{raf=0;if(dead)return;const dt=Math.min(.05,(now-(st.last||now))/1000);st.last=now;let busy=false;
+      if(st.spin){const p=Math.min(1,(now-st.spin.t0)/M3_SPIN);spinG.rotation.y=ease(p)*M3_TURNS*Math.PI*2;const sq=Math.sin(p*Math.PI);spinG.scale.set(1-.05*sq,1+.05*sq,1-.05*sq);
+        if(p>=.5&&!st.spin.done){st.spin.done=true;meshes[st.cur].visible=false;st.cur=st.spin.to;meshes[st.cur].visible=true;o.onSwitch&&o.onSwitch(st.cur)}
+        if(p>=1){spinG.rotation.y=0;spinG.scale.set(1,1,1);st.spin=null;buzz('ok')}busy=true}
+      else if(!st.drag&&st.pts.size<2){st.th+=st.vth*dt;st.ph+=st.vph*dt;const f=Math.pow(.04,dt);st.vth*=f;st.vph*=f;if(Math.abs(st.vth)<.02)st.vth=0;if(Math.abs(st.vph)<.02)st.vph=0;
         if(st.auto&&now-st.idle>3500&&!st.vth)st.th+=.22*dt}
+      if(Math.abs(st.fitTo-st.fitNow)>1e-4){st.fitNow+=(st.fitTo-st.fitNow)*Math.min(1,dt*6);busy=true}
       st.ph=Math.min(M3_PH[1],Math.max(M3_PH[0],st.ph));place();R.render(scene,cam);
-      if(vis&&!document.hidden)raf=requestAnimationFrame(frame)};
+      if((vis&&!document.hidden)||busy)raf=requestAnimationFrame(frame)};
     var kick=()=>{if(!raf&&!dead){st.last=0;raf=requestAnimationFrame(frame)}};
     ro=new ResizeObserver(size);ro.observe(host);io=new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()});io.observe(host);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()});
     const stop=e=>{e.stopPropagation()};['touchstart','touchmove','touchend'].forEach(t=>cv.addEventListener(t,stop,{passive:true}));
-    cv.addEventListener('pointerdown',e=>{e.stopPropagation();cv.setPointerCapture(e.pointerId);st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();st.vth=st.vph=0;
+    cv.addEventListener('pointerdown',e=>{e.stopPropagation();if(st.spin)return;cv.setPointerCapture(e.pointerId);st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();st.vth=st.vph=0;
       if(st.pts.size===1)st.drag={x:e.clientX,y:e.clientY,t:performance.now()};else{const p=[...st.pts.values()];st.pinch={d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),k:st.k};st.drag=null}kick()});
     cv.addEventListener('pointermove',e=>{if(!st.pts.has(e.pointerId))return;e.stopPropagation();st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();
       if(st.pts.size>=2&&st.pinch){const p=[...st.pts.values()],dd=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.pinch.k*st.pinch.d/Math.max(dd,1)));kick();return}
@@ -3013,29 +3053,44 @@ async function mount3D(host,d,o={}){
     const up=e=>{if(!st.pts.has(e.pointerId))return;st.pts.delete(e.pointerId);if(st.pts.size<2)st.pinch=null;if(!st.pts.size){if(st.drag&&performance.now()-st.drag.t>90)st.vth=st.vph=0;st.drag=null}st.idle=performance.now();kick()};
     cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('dblclick',e=>{e.stopPropagation();api.reset()});
     cv.addEventListener('wheel',e=>{e.preventDefault();st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.k*(1+e.deltaY*.001)));kick()},{passive:false});
-    size();lab.remove();host.classList.add('ready');kick();api.cam=cam;api.st=st;api.bb=bb}
+    size();lab.remove();host.classList.add('ready');kick();api.cam=cam;api.st=st;
+    /* seconda modalità: si prepara in sottofondo quando la prima è già visibile, così il cambio non ha vuoti */
+    if(L[1]){(async()=>{try{const b2=await m3dBytes(L[1]);if(dead)return;const sec=await build(L[1],b2);if(dead){sec.mesh.dispose&&sec.mesh.dispose();return}
+      sec.mesh.visible=false;meshes[1]=sec.mesh;spinG.add(sec.mesh);sizes.push(sec.size);pedestal();geo();st.fitTo=fitFor();o.onAlt&&o.onAlt();if(o.startAlt){meshes[0].visible=false;sec.mesh.visible=true;st.cur=1;o.onSwitch&&o.onSwitch(1)}else if(st.want===1)api.toggle();kick()}
+      catch(e){logErr('Modello 3D · seconda modalità',e);o.onAltErr&&o.onAltErr(e)}})()}}
   catch(e){logErr('Modello 3D',e);if(!dead)lab.innerHTML=`<p class="m3err">🧊 Non riesco a mostrare il modello: ${esc(e.message||String(e))}</p>`}
   return api}
-async function m3dAdd(d){const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;const tipo=m3dType(f.name);
+async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLabels(d);if(!labels)return}
+  const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;const tipo=m3dType(f.name);
   if(!tipo){toast('Formato non riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat',5000);return}
   if(f.size>M3D_MAX){toast(`Il modello è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_MAX)}): esportalo in SPZ o SOG da Scaniverse o SuperSplat`,6000);return}
-  toast('Preparo il modello…');const data=await blobToDataURL(f);
-  d.m3d={id:uid(),nome:f.name,size:f.size,tipo,data,t:today(),rot:[0,0,0]};await saveDev(d);render();buzz('ok');
-  toast(f.size>25*1048576?`Modello aggiunto (${fmtMB(f.size)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:'Modello 3D aggiunto',4500);openModel3D(d,true)}
+  toast('Preparo il modello…');const data=await blobToDataURL(f),k=slot===2?'m3d2':'m3d',old=d[k];
+  d[k]={id:uid(),nome:f.name,size:f.size,tipo,data,t:today(),rot:[0,0,0],label:old&&old.label||''};
+  if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
+  await saveDev(d);render();buzz('ok');
+  toast(f.size>25*1048576?`Modello aggiunto (${fmtMB(f.size)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',4500);openModel3D(d,true,slot===2)}
+/* nomi delle due modalità (es. Portatile / Tablet) */
+function askLabels(d){return new Promise(res=>{const m=document.createElement('div');m.className='modal';const a=(d.m3d&&d.m3d.label)||'Portatile',b=(d.m3d2&&d.m3d2.label)||'Tablet';
+  m.innerHTML=`<div><p>Come si chiamano le due modalità?</p><label class="f">Modello principale</label><input class="in" id="ml1" value="${esc(a)}"><label class="f">Seconda modalità</label><input class="in" id="ml2" value="${esc(b)}"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Annulla</button><button class="btn" data-y>OK</button></div></div>`;
+  m.onclick=e=>{if(e.target.matches('[data-y]')){const x=[m.querySelector('#ml1').value.trim()||'Normale',m.querySelector('#ml2').value.trim()||'Seconda modalità'];m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
 function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.onchange=()=>res(i.files[0]||null);i.oncancel=()=>res(null);i.click()})}
-function m3dHTML(d){const m=d.m3d;if(!m)return '';
-  return `<div class="sec-t">Modello 3D</div><div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${esc(m.nome)}</b><small>${[m.size?fmtMB(m.size):'',m.t?'aggiunto il '+fmtD(m.t):''].filter(Boolean).join(' · ')}</small></span></div>
-  <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button><button class="btn sm sec" data-m3add>Sostituisci</button><button class="btn sm sec" data-m3del>Togli</button></div>`}
+function m3dHTML(d){const m=d.m3d;if(!m)return '';const m2=d.m3d2,info=x=>[x.size?fmtMB(x.size):'',x.t?'aggiunto il '+fmtD(x.t):''].filter(Boolean).join(' · ');
+  return `<div class="sec-t">Modello 3D${m2?' · due modalità':''}</div><div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${m2?esc(m3Label(m,0))+' · ':''}${esc(m.nome)}</b><small>${info(m)}</small></span></div>
+  ${m2?`<div class="m3sec" style="margin-top:6px"><button class="m3ic" data-m3open2 aria-label="Guarda la seconda modalità">⇄</button><span class="lb"><b>${esc(m3Label(m2,1))} · ${esc(m2.nome)}</b><small>${info(m2)}</small></span><button class="btn sm sec" data-m3lab>Nomi</button></div>`:''}
+  <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button>${m2?'':'<button class="btn sm sec" data-m3add2>＋ Seconda modalità</button>'}<button class="btn sm sec" data-m3add>Sostituisci</button>${m2?'<button class="btn sm sec" data-m3add2>Sostituisci la seconda</button><button class="btn sm sec" data-m3del2>Togli la seconda</button>':''}<button class="btn sm sec" data-m3del>Togli</button></div>`}
 /* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
-function openModel3D(d,adjust){let v=null;
-  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
-    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div><div class="m3base"></div></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
-    const host=$('.m3v',el);const go=async()=>{v&&v.dispose();v=await mount3D(host,d)};go();
-    el._close=()=>{v&&v.dispose()};
-    const setOri=async()=>{const r=d.m3d.rot||[0,0,0];const i=await sheet('Orientamento del modello',[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);
+function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
+  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
+    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
+    const host=$('.m3v',el),sw=$('[data-m3sw]',el);
+    const go=async alt=>{v&&v.dispose();if(sw){sw.classList.add('wait');sw.querySelector('span').textContent=m3Label(L[1],1)}
+      v=await mount3D(host,d,{startAlt:alt,onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
+    go(startAlt);el._close=()=>{v&&v.dispose()};
+    const setOri=async()=>{const k=v&&v.cur()===1?'m3d2':'m3d',m=d[k],r=m.rot||[0,0,0];
+      const i=await sheet(`Orientamento${L[1]?' · '+m3Label(m,k==='m3d2'?1:0):''}`,[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);
       if(i<0)return;const n=[...r];if(i===0)n[0]=(n[0]+180)%360;if(i===1)n[0]=(n[0]+90)%360;if(i===2)n[2]=(n[2]+90)%360;if(i===3)n.splice(0,3,0,0,0);
-      d.m3d.rot=n;await saveDev(d);buzz('tick');go()};
-    el.addEventListener('click',e=>{if(e.target.closest('[data-m3set]'))setOri()});
+      m.rot=n;await saveDev(d);buzz('tick');go(k==='m3d2')};
+    el.addEventListener('click',e=>{if(e.target.closest('[data-m3set]'))setOri();if(e.target.closest('[data-m3sw]')&&v)v.toggle()});
     if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, usa ⟲ in alto a destra',5000),1200)}});
 }
 function attHTML(d){const as=d.allegati||[];
@@ -4290,7 +4345,8 @@ function statsPage(devices,wl){
   const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>Spese per interventi</div><div>€ ${devices.reduce((s,d)=>s+(d.interventi||[]).reduce((t,i)=>t+(parseFloat(i.costo)||0),0),0).toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+(devices.some(d=>d.raccolta)?bars('Per raccolta','raccolta'):'')+(devices.some(d=>d.ruolo&&d.ruolo!=='Collezione')?bars('Per ruolo','ruolo'):'')+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
   const tops=devices.filter(d=>+d.valore&&+d.acq_prezzo).map(d=>({d,g:+d.valore-+d.acq_prezzo})).sort((a,b)=>b.g-a.g).slice(0,5);
   const cs=collSeries();
-  const h2=`<div class="sec-t">Valore della collezione nel tempo</div>`+(cs.ok?`<div class="chart" id="cvch"></div><details class="more" style="margin-top:4px"><summary>Tabella</summary><div class="kv">${cs.val.filter(p=>!p.virt).map(p=>`<div>${fmtD(new Date(p.t).toISOString())}</div><div>€ ${p.v.toLocaleString('it')}</div>`).join('')}</div></details>`:`<p class="note">Il grafico appare quando ci sono almeno due valutazioni (o un valore e un prezzo pagato). Aggiungile dalla sezione «Valore» delle schede.</p>`)
+  const VR=[[1,'1 anno'],[2,'2 anni'],[5,'5 anni'],[0,'Tutto']],vr=LS.get('rd_vrange',2);
+  const h2=`<div class="sec-t">Valore della collezione nel tempo</div>`+(cs.ok?`<div class="chips vrsel">${VR.map(([n,l])=>`<button class="chip ${vr===n?'on':''}" data-vr="${n}">${l}</button>`).join('')}</div><div class="chart" id="cvch"></div><details class="more" style="margin-top:4px"><summary>Tabella</summary><div class="kv">${cs.val.filter(p=>!p.virt).map(p=>`<div>${fmtD(new Date(p.t).toISOString())}</div><div>€ ${p.v.toLocaleString('it')}</div>`).join('')}</div></details>`:`<p class="note">Il grafico appare quando ci sono almeno due valutazioni (o un valore e un prezzo pagato). Aggiungile dalla sezione «Valore» delle schede.</p>`)
     +(tops.length?`<div class="sec-t">Rispetto al prezzo pagato</div><div class="log">${tops.map(({d,g})=>`<button class="li" data-go="${d.id}"><span class="lb"><b>${esc(d.nome)}</b><small>pagato € ${(+d.acq_prezzo).toLocaleString('it')} · ora € ${(+d.valore).toLocaleString('it')}</small></span><span class="ld" style="text-align:right;margin-left:auto">${g>=0?'▲':'▼'} € ${Math.abs(g).toLocaleString('it')}</span></button>`).join('')}</div>`:'');
   const sb=(title,key,valf,fmt)=>{const c=new Map();devices.forEach(d=>{const k=key(d);if(k==null||k==='')return;c.set(k,(c.get(k)||0)+valf(d))});
     const a=[...c].filter(x=>x[1]).sort((x,y)=>String(x[0]).localeCompare(String(y[0]),'it',{numeric:true}));if(!a.length)return '';const mx=Math.max(...a.map(x=>x[1]),1);
@@ -4304,8 +4360,9 @@ function statsPage(devices,wl){
     +(()=>{const ps=devices.flatMap(d=>d.progetti||[]),cs=devices.flatMap(d=>d.collaudi||[]);if(!ps.length&&!cs.length)return '';const fin=ps.filter(p=>p.stato==='Finito'),mins=ps.reduce((s,p)=>s+(p.min||0),0),eu=ps.reduce((s,p)=>s+pzTot(p),0);
       return `<div class="sec-t">Laboratorio</div><div class="kv"><div>Progetti finiti</div><div>${fin.length} di ${ps.length}</div><div>Tempo di lavoro</div><div>${hm(mins)}${fin.length&&mins?` (in media ${hm(fin.reduce((s,p)=>s+(p.min||0),0)/fin.length)} a progetto)`:''}</div><div>Spesa in pezzi</div><div>${eur2(eu)}</div><div>Collaudi fatti</div><div>${cs.length}${cs.length?` · ${Math.round(cs.filter(c=>c.esito==='ok').length/cs.length*100)}% tutto ok`:''}</div></div><button class="btn sm sec" data-labst style="margin-top:8px">📊 Tutte le statistiche del laboratorio</button>`})()
     +`<div class="sec-t">Inventario</div><div class="kv"><div>Verificati nell'ultimo anno</div><div>${ver}</div><div>Mai verificati</div><div>${never}</div></div>`;
-  openPage('Statistiche',h2+h+h3,{mount(el){countUp(el);const c=$('#cvch',el);if(c)lineChart(c,[{name:'Valore stimato',cls:'s1',pts:cs.val},{name:'Speso',cls:'s2',pts:cs.spent}]);
-    el.addEventListener('click',e=>{if(e.target.closest('[data-labst]'))return openLab('stat');const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
+  openPage('Statistiche',h2+h+h3,{mount(el){countUp(el);const c=$('#cvch',el);
+    const draw=()=>{if(!c)return;const y=LS.get('rd_vrange',2),from=y?Date.now()-y*365.25*864e5:0;c.innerHTML='';lineChart(c,[{name:'Valore stimato',cls:'s1',pts:clipSeries(cs.val,from)},{name:'Speso',cls:'s2',pts:clipSeries(cs.spent,from)}])};draw();
+    el.addEventListener('click',e=>{const vb=e.target.closest('[data-vr]');if(vb){LS.set('rd_vrange',+vb.dataset.vr);el.querySelectorAll('[data-vr]').forEach(b=>b.classList.toggle('on',b===vb));draw();return}if(e.target.closest('[data-labst]'))return openLab('stat');const g=e.target.closest('[data-go]');if(g)openDetail(g.dataset.go)})}});
 }
 
 /* ============ scontorno ============ */
@@ -4430,7 +4487,7 @@ async function openPlinth(list,start,auto,hero){
   if(!list.length)return;
   const r0=await museumImg(list[start]);
   const slide=(d,j)=>{const f=keyTiles(d).slice(0,3).map(([a,b])=>b).join(' · ');const desc=(d.descrizione||'').split(/\n\s*\n/)[0];
-    return `<section class="pl" data-pl="${d.id}"><div class="stage"><div class="beam"></div>${d.m3d?`<div class="m3w" data-m3w="${d.id}"></div><span class="m3tag">3D · trascina per girare</span>`:''}${j===start?o3HTML(d,r0,{layers:3,uplit:true}):`<span class="emo">${icon(d)}</span>`}<div class="base"></div></div>
+    return `<section class="pl" data-pl="${d.id}"><div class="stage"><div class="beam"></div>${d.m3d?`<div class="m3w" data-m3w="${d.id}"></div><span class="m3tag">3D · trascina per girare</span>${d.m3d2?`<button class="m3sw pl-sw wait" data-m3sw="${d.id}">⇄ <span>${esc(m3Label(d.m3d2,1))}</span></button>`:''}`:''}${j===start?o3HTML(d,r0,{layers:3,uplit:true}):`<span class="emo">${icon(d)}</span>`}<div class="base"></div></div>
     <div class="label"><small>${esc([d.marca,d.anno,d.luogo?'Collezione '+d.luogo:''].filter(Boolean).join(' · '))}</small><h3>${esc(d.nome)}</h3>${desc?`<p>${esc(desc.length>320?desc.slice(0,320)+'…':desc)}</p>`:''}${f?`<div class="facts">${esc(f)}</div>`:''}</div></section>`};
   const body=`<div class="pl-prog" id="plp"></div><div class="pl-bar"><button class="hb" data-back aria-label="Indietro">←</button><span class="cnt" id="plc"></span><button class="hb" id="plplay" aria-label="Visita guidata">${auto?'⏸':'▶︎'}</button><button class="hb" id="plinfo" aria-label="Scheda">ⓘ</button></div><div class="pl-wrap" id="plw">${list.map(slide).join('')}</div>`;
   openPage('Piedistallo',body,{bare:true,cls:'museum pl-root',mount(el){
@@ -4439,8 +4496,8 @@ async function openPlinth(list,start,auto,hero){
     const fill=async k=>{for(const j of [k,k+1,k-1,k+2]){const d=list[j];if(!d||done.has(d.id))continue;done.add(d.id);const r=await museumImg(d);if(!r)continue;const s=w.querySelector(`[data-pl="${d.id}"] .emo`);if(s)s.outerHTML=o3HTML(d,r,{layers:3,uplit:true})}};
     /* 2.10: modello 3D dell'oggetto mostrato (uno alla volta: un solo contesto grafico) */
     let v3=null,v3id='';const m3=async()=>{const d=list[i];if(v3id===d.id)return;v3&&v3.dispose();v3=null;v3id=d.id;if(!d.m3d)return;const host=w.querySelector(`[data-m3w="${d.id}"]`);if(!host)return;
-      const base=host.closest('.stage').querySelector('.base');
-      const v=await mount3D(host,d,{baseAt:()=>{const b=base.getBoundingClientRect(),h=host.getBoundingClientRect();return (b.top+2-h.top)/(h.height||1)},margin:.9});if(v3id!==d.id){v.dispose();return}v3=v;host.closest('.stage').classList.toggle('m3on',host.classList.contains('ready'))};
+      const sw=w.querySelector(`[data-m3sw="${d.id}"]`),L2=m3List(d);
+      const v=await mount3D(host,d,{centerY:.54,margin:.92,onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:k=>{if(sw)sw.querySelector('span').textContent=m3Label(L2[1-k],1-k)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true}});if(v3id!==d.id){v.dispose();return}v3=v;host.closest('.stage').classList.toggle('m3on',host.classList.contains('ready'))};
     const upd=()=>{$('#plc',el).textContent=`${i+1} / ${list.length}`;fill(i);clearTimeout(upd.t);upd.t=setTimeout(m3,350)};
     const go=k=>{i=(k+list.length)%list.length;w.scrollTo({left:i*w.clientWidth,behavior:'smooth'});upd()};
     const prog=()=>{bar.classList.remove('run');bar.style.width='0';void bar.offsetWidth;bar.style.transitionDuration=SEC+'ms';bar.classList.add('run');bar.style.width='100%'};
@@ -4450,6 +4507,7 @@ async function openPlinth(list,start,auto,hero){
     let st;w.addEventListener('scroll',()=>{clearTimeout(st);st=setTimeout(()=>{const k=Math.round(w.scrollLeft/w.clientWidth);if(k!==i){i=k;upd()}},80)});
     w.addEventListener('pointerdown',()=>{if(timer)play(false)});
     $('#plplay',el).onclick=()=>play(!timer);
+    w.addEventListener('click',e=>{const b=e.target.closest('[data-m3sw]');if(b&&v3&&v3id===b.dataset.m3sw){e.stopPropagation();play(false);v3.toggle()}});
     $('#plinfo',el).onclick=()=>{play(false);openDetail(list[i].id)};
     if(auto)play(true);
     el._close=()=>{play(false);v3&&v3.dispose();v3=null};
@@ -4494,7 +4552,7 @@ function catalogHTML(list,o){
     const s=secOf(d);if(s&&s!==cur){cur=s;h+=`<div class="sec">${esc(s)}</div>`}
     const ph=(d.foto&&d.foto[0])||d.thumb;
     const rows=[['Tipologia',d.tipologia],['Modello',[d.modello,d.emc&&'EMC '+d.emc,d.identifier].filter(Boolean).join(' · ')],...(o.dati?keyTiles(d):[]),['Colore',d.colore],['Quantità',+d.quantita>1?d.quantita:''],
-      ...(d.wish?[['Priorità',d.w_priorita],['Budget',o.eur&&d.w_budget?'€ '+d.w_budget:''],['Note ricerca',d.w_note]]:[['Luogo',d.luogo],['Stato',d.stato],['Scatola',d.scatola],['Condizione',d.condizione],['Acquistato',[d.acq_anno,o.eur&&d.acq_prezzo?'€ '+d.acq_prezzo:''].filter(Boolean).join(' · ')],['Valore stimato',o.eur&&d.valore?'€ '+d.valore:'']]),
+      ...(d.wish?[['Priorità',d.w_priorita],['Budget',o.eur&&d.w_budget?'€ '+d.w_budget:''],['Note ricerca',d.w_note]]:[['Luogo',d.luogo],['Stato',d.stato],['Scatola',d.scatola],['Condizione',d.condizione],['Acquistato',[acqLabel(d),o.eur&&d.acq_prezzo?'€ '+d.acq_prezzo:''].filter(Boolean).join(' · ')],['Valore stimato',o.eur&&d.valore?'€ '+d.valore:'']]),
       ...(o.int&&(d.interventi||[]).length?[['Interventi',d.interventi.slice().sort((a,b)=>String(a.data).localeCompare(b.data)).map(i=>`${fmtD(i.data)}: ${i.tipo||''}${i.desc?' – '+i.desc:''}`).join('; ')]]:[])].filter(r=>r[1]);
     const desc=o.desc&&d.descrizione?d.descrizione.split(/\n\s*\n/)[0].slice(0,650):'';
     h+=`<article class="pe">${o.foto?(ph?`<img src="${ph}" alt="">`:`<div class="noimg">${icon(d)}</div>`):''}<div style="${o.foto?'':'grid-column:1/-1'}"><div class="ps">${esc([d.marca,d.linea&&d.linea!==d.marca?d.linea:'',d.anno].filter(Boolean).join(' · '))}</div><h3>${esc(d.nome)}</h3><dl>${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl>${desc?`<div class="pd">${esc(desc)}${d.descrizione.length>desc.length?'…':''}</div>`:''}</div></article>`;
@@ -4724,7 +4782,7 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map();
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(o.m3d&&o.m3d.data)o.m3d=Object.assign({},o.m3d,{data:await conv(o.m3d.data,'modelli',o.m3d.nome)});if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);if(o.m3d&&o.m3d.data)o.m3d=Object.assign({},o.m3d,{data:await conv(o.m3d.data,'modelli',o.m3d.nome)});if(o.m3d2&&o.m3d2.data)o.m3d2=Object.assign({},o.m3d2,{data:await conv(o.m3d2.data,'modelli',o.m3d2.nome)});if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
@@ -4733,7 +4791,7 @@ function ghSync(manual){
         /* file in foto/ e allegati/ (e nelle vecchie cartelle numerate) che nessun oggetto usa più */
         const FILE_RE=/(?:^|\/)((?:foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7})$/,refs=new Set();
         const ref=u=>{if(typeof u==='string'){const m=u.match(FILE_RE);if(m)refs.add(m[1])}};
-        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);o.m3d&&ref(o.m3d.data);(o.allegati||[]).forEach(a=>ref(a.data));(o.progetti||[]).forEach(p=>[...(p.prima||[]),...(p.dopo||[])].forEach(ref))}
+        for(const o of out){(o.foto||[]).forEach(ref);ref(o.thumb);ref(o.scontorno);o.m3d&&ref(o.m3d.data);o.m3d2&&ref(o.m3d2.data);(o.allegati||[]).forEach(a=>ref(a.data));(o.progetti||[]).forEach(p=>[...(p.prima||[]),...(p.dopo||[])].forEach(ref))}
         for(const p of files.keys())refs.add(p);
         const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7}$/.test(p)&&!refs.has(p));
         const ics=buildICS(out),calNew=tmap.get('calendario.ics')!==await gitBlobSha(ics);
