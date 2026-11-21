@@ -673,6 +673,12 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage.m3on .base{opacity:0}
 .m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
+.isle{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:90;display:none;align-items:center;gap:8px;max-width:min(92vw,360px);padding:8px 14px 8px 10px;border-radius:999px;background:#000;color:#fff;font:600 13px/1.1 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.12);transform:translateX(-50%);pointer-events:none;overflow:hidden}
+.isle.on{display:flex;animation:isle-in .42s cubic-bezier(.2,1.25,.35,1) both}.isle.out{animation:isle-out .3s ease both}
+@keyframes isle-in{from{transform:translateX(-50%) scale(.45,.7);opacity:0}}@keyframes isle-out{to{transform:translateX(-50%) scale(.5,.7);opacity:0}}
+.isl-ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:12px}.isle.ok .isl-ic{background:#34c759;color:#fff}.isle.err .isl-ic{background:#ff453a;color:#fff}
+.isl-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.isl-p{flex:none;font-variant-numeric:tabular-nums;color:#ffd38a}
+.isl-bar{position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:1px;background:rgba(255,255,255,.14);display:none}.isle.prog .isl-bar{display:block}.isl-bar b{display:block;height:100%;border-radius:1px;background:#ffd38a;transition:width .25s}
 .m3st{margin:0 2px 8px;font-size:12.5px;color:var(--mute)}.m3st.pend{color:var(--acc-ink)}.m3st .linkb{font-size:12.5px;padding:0 4px}
 .m3sec{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}.m3ic{flex:none;width:52px;height:52px;border-radius:14px;border:0;background:radial-gradient(circle at 50% 70%,#3a2e22,#0b0907);font-size:26px;box-shadow:var(--rim)}.m3sec .lb{flex:1;min-width:0}.m3sec .lb b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
@@ -2981,7 +2987,8 @@ async function m3dBytes(m,onProg){
   let r;try{r=await fetch(url)}catch(e){throw new AppErr('rete','modello non disponibile offline: collegati a internet la prima volta')}
   if(!r.ok)throw new AppErr('rete','modello non scaricabile (HTTP '+r.status+')');
   const tot=+r.headers.get('content-length')||m.size||0,rd=r.body.getReader(),parts=[];let got=0;
-  for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;onProg&&onProg(tot?Math.min(1,got/tot):0)}
+  for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;const p=tot?Math.min(1,got/tot):0;onProg&&onProg(p);if(tot>2e6)isle('m3down',{ic:'⬇️',t:`Scarico il modello 3D · ${fmtMB(tot)}`,p})}
+  if(tot>2e6)isleEnd('m3down','Modello 3D scaricato');
   const u=new Uint8Array(got);let o=0;for(const p of parts){u.set(p,o);o+=p.length}
   try{c&&await c.put(url,new Response(u,{headers:{'content-type':'application/octet-stream'}}))}catch(e){}
   return u}
@@ -3063,20 +3070,53 @@ async function mount3D(host,d,o={}){
       catch(e){logErr('Modello 3D · seconda modalità',e);o.onAltErr&&o.onAltErr(e)}})()}}
   catch(e){logErr('Modello 3D',e);if(!dead)lab.innerHTML=`<p class="m3err">🧊 Non riesco a mostrare il modello: ${esc(e.message||String(e))}</p>`}
   return api}
+/* 2.12: «isola» di avanzamento in alto (come la Dynamic Island) + notifica di sistema con la percentuale, se le notifiche sono permesse */
+const ISLE={};
+function isle(k,{ic='☁️',t='',p=null}={}){let e=document.getElementById('isle');
+  if(!e){e=document.createElement('div');e.id='isle';e.className='isle';e.setAttribute('role','status');e.innerHTML='<span class="isl-ic"></span><span class="isl-t"></span><span class="isl-p"></span><i class="isl-bar"><b></b></i>';document.body.append(e)}
+  clearTimeout(ISLE.hide);ISLE.k=k;e.classList.remove('ok','err','out');e.classList.add('on');
+  e.querySelector('.isl-ic').textContent=ic;e.querySelector('.isl-t').textContent=t;e.querySelector('.isl-p').textContent=p==null?'':Math.round(p*100)+'%';
+  e.classList.toggle('prog',p!=null);e.querySelector('.isl-bar b').style.width=p==null?'0':Math.round(p*100)+'%';
+  const step=p==null?-1:Math.floor(p*10);if(ISLE.n!==k+'|'+t+'|'+step){ISLE.n=k+'|'+t+'|'+step;sysNote(k,t+(p==null?'':' · '+Math.round(p*100)+'%'))}}
+function isleEnd(k,t,ok=true){const e=document.getElementById('isle');if(!e||ISLE.k!==k)return;e.classList.add(ok?'ok':'err');e.classList.remove('prog');
+  e.querySelector('.isl-ic').textContent=ok?'✓':'!';e.querySelector('.isl-t').textContent=t;e.querySelector('.isl-p').textContent='';
+  sysNote(k,t,true);ISLE.hide=setTimeout(()=>{e.classList.add('out');setTimeout(()=>{if(e.classList.contains('out'))e.classList.remove('on','out')},320)},ok?1800:4500)}
+async function sysNote(k,body,end){try{if(!('Notification' in window)||Notification.permission!=='granted'||!navigator.serviceWorker)return;const r=await navigator.serviceWorker.ready,tag='rddc-'+k;
+  await r.showNotification('RDDC',{body,tag,silent:true,renotify:false,icon:'icon-192.png',badge:'icon-mono-512.png'});
+  if(end)setTimeout(async()=>{(await r.getNotifications({tag})).forEach(n=>n.close())},4000)}catch(e){}}
+/* invio di un file a GitHub con l'avanzamento (fetch non dice quanto è stato inviato) */
+function ghBlobUp(b64,onProg){const c=ghCfg();return new Promise((res,rej)=>{const x=new XMLHttpRequest();x.open('POST',`https://api.github.com/repos/${c.repo}/git/blobs`);
+  x.setRequestHeader('Authorization','Bearer '+c.token);x.setRequestHeader('Accept','application/vnd.github+json');x.setRequestHeader('X-GitHub-Api-Version','2022-11-28');x.setRequestHeader('Content-Type','application/json');
+  x.upload.onprogress=e=>{if(e.lengthComputable&&onProg)onProg(e.loaded/e.total)};
+  x.onload=()=>{if(x.status>=200&&x.status<300){try{res(JSON.parse(x.responseText).sha)}catch(e){rej(e)}return}let m='';try{m=JSON.parse(x.responseText).message}catch(e){}const er=new Error(`GitHub ${x.status}${m?': '+m:''}`);er.status=x.status;rej(er)};
+  x.onerror=()=>rej(new Error('rete'));x.onabort=()=>rej(new Error('interrotto'));x.send(JSON.stringify({content:b64,encoding:'base64'}))})}
+/* 2.12: caricamento robusto. PLY/SPLAT/KSPLAT (es. da KIRI Engine) vengono convertiti in SPZ, circa 10 volte più leggero */
+const M3D_RAW_MAX=400*1024*1024;
 async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLabels(d);if(!labels)return}
-  const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;const tipo=m3dType(f.name);
-  if(!tipo){toast('Formato non riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat',5000);return}
-  if(f.size>M3D_MAX){toast(`Il modello è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_MAX)}): esportalo in SPZ o SOG da Scaniverse o SuperSplat`,6000);return}
-  toast('Preparo il modello…');const data=await blobToDataURL(f),k=slot===2?'m3d2':'m3d',old=d[k];
-  d[k]={id:uid(),nome:f.name,size:f.size,tipo,data,t:today(),rot:[0,0,0],label:old&&old.label||''};
-  if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
-  await saveDev(d);render();buzz('ok');
-  toast(f.size>25*1048576?`Modello aggiunto (${fmtMB(f.size)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',4500);openModel3D(d,true,slot===2)}
+  const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;
+  try{let tipo=m3dType(f.name),nome=f.name;
+    if(!tipo){toast(`«${f.name}» non è un modello riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat (da KIRI esporta «3DGS» in PLY)`,6500);return}
+    if(f.size>M3D_RAW_MAX){toast(`«${f.name}» è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_RAW_MAX)})`,6000);return}
+    isle('m3add',{ic:'🧊',t:`Leggo il modello · ${fmtMB(f.size)}`});
+    let bytes=new Uint8Array(await f.arrayBuffer());
+    if(['ply','splat','ksplat'].includes(tipo)){isle('m3add',{ic:'🗜️',t:`Comprimo in SPZ · ${fmtMB(f.size)}`});
+      try{const S=await import('@sparkjsdev/spark'),r=await S.transcodeSpz({inputs:[{fileBytes:bytes,fileType:tipo}],maxSh:3});
+        if(r&&r.fileBytes&&r.fileBytes.length){bytes=r.fileBytes;tipo='spz';nome=f.name.replace(/\.\w+$/,'')+'.spz'}}
+      catch(e){logErr('Modello 3D · conversione in SPZ',e);if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Non riesco a comprimere il modello (${e.message||e}) ed è troppo grande per salvarlo così (${fmtMB(bytes.length)})`,7000);return}}}
+    if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Anche compresso il modello pesa ${fmtMB(bytes.length)} (massimo ${fmtMB(M3D_MAX)}): riduci la scansione o ritagliala`,7000);return}
+    const data=await blobToDataURL(new Blob([bytes],{type:'application/octet-stream'})),k=slot===2?'m3d2':'m3d',old=d[k];
+    d[k]={id:uid(),nome,size:bytes.length,tipo,data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==f.name?{orig:{nome:f.name,size:f.size}}:{})};
+    if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
+    await saveDev(d);render();buzz('ok');isleEnd('m3add',nome!==f.name?`Compresso: ${fmtMB(f.size)} → ${fmtMB(bytes.length)}`:'Modello aggiunto');
+    toast(nome!==f.name?`Modello compresso: da ${fmtMB(f.size)} a ${fmtMB(bytes.length)} ✔︎`:bytes.length>25*1048576?`Modello aggiunto (${fmtMB(bytes.length)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',5000);
+    openModel3D(d,true,slot===2)}
+  catch(e){logErr('Modello 3D · caricamento',e);isleEnd('m3add','Caricamento non riuscito',false);toast(`Non riesco a caricare «${f.name}» (${fmtMB(f.size)}): ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
 /* nomi delle due modalità (es. Portatile / Tablet) */
 function askLabels(d){return new Promise(res=>{const m=document.createElement('div');m.className='modal';const a=(d.m3d&&d.m3d.label)||'Portatile',b=(d.m3d2&&d.m3d2.label)||'Tablet';
   m.innerHTML=`<div><p>Come si chiamano le due modalità?</p><label class="f">Modello principale</label><input class="in" id="ml1" value="${esc(a)}"><label class="f">Seconda modalità</label><input class="in" id="ml2" value="${esc(b)}"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Annulla</button><button class="btn" data-y>OK</button></div></div>`;
   m.onclick=e=>{if(e.target.matches('[data-y]')){const x=[m.querySelector('#ml1').value.trim()||'Normale',m.querySelector('#ml2').value.trim()||'Seconda modalità'];m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
-function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.onchange=()=>res(i.files[0]||null);i.oncancel=()=>res(null);i.click()})}
+function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.append(i);
+  const done=v=>{i.remove();res(v)};i.onchange=()=>done(i.files[0]||null);i.oncancel=()=>done(null);i.click()})}
 /* dopo l'invio: il modello sul telefono passa dalla scheda (database) alla cache dei modelli; nella scheda resta il percorso su GitHub */
 async function m3Localize(list){let c=null;try{c=await caches.open('rddc-modelli')}catch(e){}
   for(const x of list){const d=devices.find(y=>y.id===x.id),m=d&&d[x.k];if(!m||!/^data:/.test(m.data))continue;
@@ -4807,9 +4847,9 @@ function ghSync(manual){
         if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim)){m3sent=m3up.filter(x=>tmap.has(x.path));break}
         const entries=[];
         for(const [path,b64] of files){const big=/^modelli\//.test(path),mb=fmtMB(b64.length*.75);
-          if(big)toast(`☁️ Invio del modello 3D a GitHub (${mb})… lascia l'app aperta`,60000);
-          let sha;try{sha=(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha}
-          catch(e){const er=new Error(`invio di ${big?'un modello 3D':'un file'} (${mb}) non riuscito: ${e.status===413||e.status===422?'GitHub lo rifiuta, forse è troppo grande: esportalo più leggero (SPZ)':e.status?e.message:'connessione interrotta o app chiusa durante l\'invio'}`);er.status=e.status;er.m3d=big;throw er}
+          if(big)isle('m3up',{ic:'☁️',t:`Invio modello 3D · ${mb}`,p:0});
+          let sha;try{sha=big?await ghBlobUp(b64,p=>isle('m3up',{ic:'☁️',t:`Invio modello 3D · ${mb}`,p})):(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha}
+          catch(e){if(big)isleEnd('m3up','Invio non riuscito',false);const er=new Error(`invio di ${big?'un modello 3D':'un file'} (${mb}) non riuscito: ${e.status===413||e.status===422?'GitHub lo rifiuta, forse è troppo grande: esportalo più leggero (SPZ)':e.status?e.message:'connessione interrotta o app chiusa durante l\'invio'}`);er.status=e.status;er.m3d=big;throw er}
           entries.push({path,mode:'100644',type:'blob',sha})}
         const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
@@ -4822,7 +4862,7 @@ function ghSync(manual){
         inviati=out.length;nfoto=files.size;m3sent=m3up;break;
       }
       if(LS.get('rd_dirty',0)<=t0)LS.set('rd_dirty',0);
-      if(m3sent.length){await m3Localize(m3sent);if(nfoto)toast(`☁️ ${m3sent.length===1?'Modello 3D inviato':m3sent.length+' modelli 3D inviati'} a GitHub ✔︎`,3500)}
+      if(m3sent.length){await m3Localize(m3sent);if(nfoto)isleEnd('m3up',m3sent.length===1?'Modello 3D su GitHub':m3sent.length+' modelli 3D su GitHub')}
       LS.set('rd_db_last',{t:Date.now(),n,...res,inviati,foto:nfoto});LS.set('rd_db_sig','');
       updSync();
       if(res.nuovi||res.agg||res.canc)toast(`GitHub: ricevuti ${res.nuovi} nuovi, ${res.agg} aggiornati${res.canc?', '+res.canc+' eliminati':''}`,3500);
