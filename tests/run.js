@@ -940,7 +940,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /modello 3D/.test(b.textContent)).click())]);
     await fc.setFiles({ name: 'ipod.spz', mimeType: 'application/octet-stream', buffer: Buffer.from('finto modello splat '.repeat(50)) });
     await U.waitForFunction(() => stack.length && stack[stack.length - 1].classList.contains('m3root'), null, { timeout: 5000 });
-    eq(await U.evaluate(() => { const m = devices.find(d => d.id === 'm3').m3d; return [m.nome, m.tipo, /^data:/.test(m.data), m.rot]; }), ['ipod.spz', 'spz', true, [0, 0, 0]], 'modello salvato nella scheda e pagina 3D aperta');
+    eq(await U.evaluate(() => { const m = devices.find(d => d.id === 'm3').m3d; return [m.nome, m.tipo, /^local:/.test(m.data), m.rot]; }), ['ipod.spz', 'spz', true, [0, 0, 0]], 'nella scheda solo il riferimento al file (nella cache), pagina 3D aperta');
     await U.waitForSelector('.m3err', { timeout: 15000 });
     ok(await U.evaluate(() => /visualizzatore 3D/.test(document.querySelector('.m3err').textContent)), 'senza rete per la libreria: messaggio chiaro');
     await U.click('[data-m3set]'); await U.waitForSelector('.modal.sheet'); await U.click('.modal.sheet [data-c="0"]'); await U.waitForTimeout(400);
@@ -999,7 +999,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     let rifiuta = true;
     await U.context().route('https://api.github.com/repos/test/RDDC/git/blobs', r => { const b = r.request().postData() || ''; if (rifiuta && b.length > 400) return r.fulfill({ status: 422, headers: { 'access-control-allow-origin': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'too large' }) }); return r.fallback(); });
     await U.evaluate(async () => { await ghSync(false); });
-    ok(await U.evaluate(() => /modello 3D.*non riuscito.*troppo grande/.test(document.querySelector('#toast').textContent) && /^data:/.test(devices.find(d => d.id === 'up').m3d.data)), 'errore mostrato anche nella sincronizzazione automatica, il modello resta sul telefono');
+    ok(await U.evaluate(() => /modello 3D.*non riuscito.*troppo grande/.test(document.querySelector('#toast').textContent) && /^(data|local):/.test(devices.find(d => d.id === 'up').m3d.data)), 'errore mostrato anche nella sincronizzazione automatica, il modello resta sul telefono');
     rifiuta = false;
     await U.evaluate(async () => { await ghSync(false); }); await U.waitForTimeout(300);
     const r = await U.evaluate(async () => { const m = devices.find(d => d.id === 'up').m3d, c = await caches.open('rddc-modelli'), hit = await c.match(remoteURL(m.data)); return [/^modelli\/[0-9a-f]{40}\.spz$/.test(m.data), !!hit, hit ? (await hit.text()).slice(0, 12) : '', new TextDecoder().decode(await m3dBytes(m)).slice(0, 12)]; });
@@ -1036,6 +1036,14 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
       const a = mk([0.97, 0.5], 0.025), fa = plyFix(a.u), b = mk([4.2, -1.3], -4.6), fb = plyFix(b.u);
       return [fa.op, fa.sc, +read(fa.bytes, a.off, 0, 3).toFixed(3), +read(fa.bytes, a.off, 1, 3).toFixed(3), +read(fa.bytes, a.off, 0, 4).toFixed(3), !!fb.op, !!fb.sc, fb.bytes === b.u]; });
     eq(r, [true, true, 3.476, 0, -3.689, false, false, true], 'opacità → logit e dimensioni → logaritmo solo quando servono');
+    await U.context().close();
+  });
+
+  await test('2.12.2: i file dei modelli non stanno nelle schede (memoria): le schede vecchie vengono spostate nella cache', async () => {
+    const U = await phone('M9');
+    await U.evaluate(async () => { await saveDev({ id: 'mg', nome: 'Game Boy', tipologia: 'Console', creato: Date.now(), m3d: { id: 'a', nome: 'gb.spz', size: 9, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('modello GB'), rot: [0, 0, 0] } }); await m3Migrate(); });
+    const r = await U.evaluate(async () => { const d = devices.find(x => x.id === 'mg'), rec = (await DB.all()).find(x => x.id === 'mg'); return [/^local:/.test(d.m3d.data), /^local:/.test(rec.m3d.data), new TextDecoder().decode(await m3dBytes(d.m3d)), JSON.stringify(d).length < 2000]; });
+    eq(r, [true, true, 'modello GB', true], 'file nella cache, nella scheda (e nel database) solo il riferimento');
     await U.context().close();
   });
 
