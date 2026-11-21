@@ -672,6 +672,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .m3sw{border:0;border-radius:999px;padding:9px 14px;font:650 13.5px/1 system-ui,sans-serif;color:#2a1a08;background:linear-gradient(180deg,#ffe2ad,#f0b65c);box-shadow:0 4px 16px rgba(255,190,90,.35),inset 0 1px 0 rgba(255,255,255,.6);white-space:nowrap;transition:opacity .25s,transform .15s}.m3sw.wait{opacity:.45}.m3sw:active{transform:scale(.95)}
 .pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage.m3on .base{opacity:0}
 .m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
+.m3size{display:flex;align-items:center;gap:10px;margin:0 16px 8px;padding:8px 12px;border-radius:16px;background:rgba(255,240,220,.08);color:rgba(243,233,218,.8);font-size:12.5px;z-index:3}.m3size[hidden]{display:none}.m3size input{flex:1;min-width:60px;accent-color:#ffc36b}.m3size b{min-width:58px;text-align:right;font-weight:700;color:#f3e9da;white-space:nowrap}.m3size .btn{padding:5px 10px}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
 .isle{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:90;display:none;align-items:center;gap:8px;max-width:min(92vw,360px);padding:8px 14px 8px 10px;border-radius:999px;background:#000;color:#fff;font:600 13px/1.1 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.12);transform:translateX(-50%);pointer-events:none;overflow:hidden}
 .isle.on{display:flex;animation:isle-in .42s cubic-bezier(.2,1.25,.35,1) both}.isle.out{animation:isle-out .3s ease both}
@@ -839,8 +840,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.13';
+const APP_VER='2.14';
 const NOVITA=[
+ ['2.14','2026-11-21',['📏 Grandezza reale dei modelli 3D: il piedistallo è uguale per tutti e l\'oggetto si rimpicciolisce in proporzione, così un iPod shuffle non occupa quanto un portatile. Parte da una stima in base al tipo (shuffle 4 cm, telefono 12 cm, portatile 33 cm); nella vista 3D il tasto 📏 apre il cursore per il lato lungo in centimetri (2–60 cm), «Auto» torna alla stima. Vale anche nel museo']],
  ['2.13','2026-11-21',['🧩 Cosa manca «Per scocca»: le varianti dello stesso computer contano come un pezzo solo (es. MacBook Pro in alluminio 2006–2008, MacBook Pro unibody e Retina 2008–2015, iBook G3 Clamshell, iBook G3 bianco, iBook G4); misure, processori e schermi diversi non fanno più una voce a parte. «Tutti i modelli» mostra ancora l\'elenco completo','Piedistallo 3D più pulito: il chiarore del piano non passa più sopra il modello e spariscono i puntini sparsi della scansione sotto la base (il tavolo su cui era appoggiato l\'oggetto)']],
  ['2.12.2','2026-11-21',['Corrette le chiusure improvvise con i modelli 3D: i file dei modelli non stanno più dentro le schede (tutta la collezione restava in memoria con file da decine di MB) ma nella cache dei modelli; quelli già caricati vengono spostati da soli','Chiudendo la vista 3D la memoria grafica viene liberata subito']],
  ['2.12.1','2026-11-21',['Modelli da KIRI piccoli e semitrasparenti: KIRI salva nel PLY opacità e dimensioni dei punti in modo non standard. Ora all\'importazione vengono corrette esattamente; i modelli già importati vengono sistemati all\'apertura (per la qualità piena ricaricali dal PLY originale)','L\'inquadratura ignora i puntini isolati lontani dall\'oggetto (che prima lo facevano sembrare minuscolo) e li nasconde']],
@@ -3022,12 +3024,18 @@ const M3_PH=[7*Math.PI/180,78*Math.PI/180],M3_DIST=[.55,1.7],M3_SPIN=500,M3_TURN
 /* modelli dell'oggetto: il principale e, per i convertibili, la seconda modalità (es. tablet) */
 const m3List=d=>[d.m3d,d.m3d2].filter(Boolean);
 const m3Label=(m,i)=>m.label||(i?'Seconda modalità':'Normale');
+/* 2.14: grandezza reale sul piedistallo — il piedistallo è uguale per tutti, l'oggetto si rimpicciolisce (lato lungo in cm) */
+const M3_CM={'Portatile':33,'Computer desktop':45,'All-in-one':45,'Server':48,'Televisore CRT':50,'Monitor CRT':40,'Monitor':45,'Smartphone':12,'Tablet':24,'Lettore musicale':9,'Console':20,'Fotocamera':12,'Stampante':45,'Periferica':20,'Rete':25};
+const M3_CM_MIN=2,M3_CM_MAX=60;
+const m3CmAuto=d=>{const n=String(d.nome||'');if(/shuffle/i.test(n))return 4;if(/\bnano\b/i.test(n))return 8;if(/\bmini\b/i.test(n)&&/ipod/i.test(n))return 9;if(/game ?boy|walkman|gameboy/i.test(n))return 9;return M3_CM[d.tipologia]||30};
+const m3Cm=d=>+d.m3cm>0?+d.m3cm:m3CmAuto(d);
+const m3Scale=cm=>Math.min(1,Math.max(.2,Math.pow(cm/34,.6)));
 async function mount3D(host,d,o={}){
   const L=m3List(d);let dead=false,raf=0,R=null,ro=null,io=null,vis=true;const meshes=[];
-  const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false,cur:0,spin:null,want:null,fitNow:0,fitTo:0};
+  const st={sc:o.scale??m3Scale(m3Cm(d)),scTo:o.scale??m3Scale(m3Cm(d)),th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false,cur:0,spin:null,want:null,fitNow:0,fitTo:0};
   host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',L[0].size?fmtMB(L[0].size):'')}</div>`;
   const cv=host.querySelector('canvas'),lab=host.querySelector('.m3l');
-  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{if(R){const r=R;r.dispose();setTimeout(()=>{M3_LOST=Date.now();try{r.forceContextLoss()}catch(e){}},900)}}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
+  let reScale=null;const api={setScale(x){st.scTo=x;reScale&&reScale()},cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{if(R){const r=R;r.dispose();setTimeout(()=>{M3_LOST=Date.now();try{r.forceContextLoss()}catch(e){}},900)}}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
     reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;typeof kick==='function'&&kick()},
     /* trasformazione «alla Superman»: due giri in mezzo secondo, accelera e frena, cambio di modello al massimo della velocità */
     toggle(){if(L.length<2||st.spin)return;const to=1-st.cur;if(!meshes[to]){st.want=to;o.onWait&&o.onWait(m3Label(L[to],to));return}st.want=null;st.spin={t0:performance.now(),to,done:false};buzz('tick');kick()}};
@@ -3061,18 +3069,20 @@ async function mount3D(host,d,o={}){
     pedestal();
     /* inquadratura: oggetto + piedistallo; la base del piedistallo resta a una quota fissa dello schermo */
     let cy=o.centerY||.5,tg=new THREE.Vector3(),rad=1;
-    const geo=()=>{const sy=Math.max(...sizes.map(z=>z.y)),w=Math.max(pr*2.1,...sizes.map(z=>Math.max(z.x,z.z)));const H=sy+ph;tg.set(0,(sy-ph)/2,0);rad=Math.sqrt(H*H+w*w)/2};geo();
+    const geo=()=>{const sy=Math.max(...sizes.map(z=>z.y))*st.scTo,w=Math.max(pr*2.1,...sizes.map(z=>Math.max(z.x,z.z)*st.scTo));const H=sy+ph;tg.set(0,(sy-ph)/2,0);rad=Math.sqrt(H*H+w*w)/2};geo();
     const fitFor=()=>{const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*cam.aspect);return rad/Math.sin(Math.min(v,h)/2)*(o.margin||.98)/(1-2*Math.abs(cy-.5))};
+    spinG.scale.setScalar(st.sc);reScale=()=>{geo();st.fitTo=fitFor();kick()};
     const place=()=>{const r=st.fitNow*st.k;cam.position.set(tg.x+r*Math.cos(st.ph)*Math.sin(st.th),tg.y+r*Math.sin(st.ph),tg.z+r*Math.cos(st.ph)*Math.cos(st.th));cam.lookAt(tg);
       const w=host.clientWidth||1,h=host.clientHeight||1,dy=((1-2*cy)-0)/2*h;cam.clearViewOffset();if(Math.abs(dy)>.5)cam.setViewOffset(w,h,0,dy,w,h)};
     const size=()=>{const w=host.clientWidth||1,h=host.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();st.fitTo=fitFor();if(!st.fitNow)st.fitNow=st.fitTo;kick()};
     const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
     var frame=now=>{raf=0;if(dead)return;const dt=Math.min(.05,(now-(st.last||now))/1000);st.last=now;let busy=false;
-      if(st.spin){const p=Math.min(1,(now-st.spin.t0)/M3_SPIN);spinG.rotation.y=ease(p)*M3_TURNS*Math.PI*2;const sq=Math.sin(p*Math.PI);spinG.scale.set(1-.05*sq,1+.05*sq,1-.05*sq);
+      if(st.spin){const p=Math.min(1,(now-st.spin.t0)/M3_SPIN);spinG.rotation.y=ease(p)*M3_TURNS*Math.PI*2;const sq=Math.sin(p*Math.PI);spinG.scale.set(st.sc*(1-.05*sq),st.sc*(1+.05*sq),st.sc*(1-.05*sq));
         if(p>=.5&&!st.spin.done){st.spin.done=true;meshes[st.cur].visible=false;st.cur=st.spin.to;meshes[st.cur].visible=true;o.onSwitch&&o.onSwitch(st.cur)}
-        if(p>=1){spinG.rotation.y=0;spinG.scale.set(1,1,1);st.spin=null;buzz('ok')}busy=true}
+        if(p>=1){spinG.rotation.y=0;spinG.scale.setScalar(st.sc);st.spin=null;buzz('ok')}busy=true}
       else if(!st.drag&&st.pts.size<2){st.th+=st.vth*dt;st.ph+=st.vph*dt;const f=Math.pow(.04,dt);st.vth*=f;st.vph*=f;if(Math.abs(st.vth)<.02)st.vth=0;if(Math.abs(st.vph)<.02)st.vph=0;
         if(st.auto&&now-st.idle>3500&&!st.vth)st.th+=.22*dt}
+      if(Math.abs(st.scTo-st.sc)>1e-4){st.sc+=(st.scTo-st.sc)*Math.min(1,dt*10);if(Math.abs(st.scTo-st.sc)<1e-3)st.sc=st.scTo;if(!st.spin)spinG.scale.setScalar(st.sc);busy=true}
       if(Math.abs(st.fitTo-st.fitNow)>1e-4){st.fitNow+=(st.fitTo-st.fitNow)*Math.min(1,dt*6);busy=true}
       st.ph=Math.min(M3_PH[1],Math.max(M3_PH[0],st.ph));place();R.render(scene,cam);
       if((vis&&!document.hidden)||busy)raf=requestAnimationFrame(frame)};
@@ -3181,8 +3191,8 @@ function m3dHTML(d){const m=d.m3d;if(!m)return '';const m2=d.m3d2,info=x=>[x.siz
   <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button>${m2?'':'<button class="btn sm sec" data-m3add2>＋ Seconda modalità</button>'}<button class="btn sm sec" data-m3add>Sostituisci</button>${m2?'<button class="btn sm sec" data-m3add2>Sostituisci la seconda</button><button class="btn sm sec" data-m3del2>Togli la seconda</button>':''}<button class="btn sm sec" data-m3del>Togli</button></div>`}
 /* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
 function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
-  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
-    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
+  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3cm aria-label="Grandezza">📏</button><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
+    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div></div><div class="m3size" hidden><span>Grandezza reale</span><input type="range" min="0" max="1000" step="1" aria-label="Grandezza reale (lato lungo)"><b></b><button class="btn sm sec" data-m3auto>Auto</button></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
     const host=$('.m3v',el),sw=$('[data-m3sw]',el);
     const go=async alt=>{v&&v.dispose();if(sw){sw.classList.add('wait');sw.querySelector('span').textContent=m3Label(L[1],1)}
       v=await mount3D(host,d,{startAlt:alt,onFix:fx=>toast(`Questo modello ha ${[fx.op&&'opacità',fx.sc&&'dimensioni dei punti'].filter(Boolean).join(' e ')} salvate in modo non standard (KIRI): l'ho corretto alla meglio. Per la qualità piena ricaricalo dal file PLY originale`,7000),onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
@@ -3191,7 +3201,14 @@ function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
       const i=await sheet(`Orientamento${L[1]?' · '+m3Label(m,k==='m3d2'?1:0):''}`,[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);
       if(i<0)return;const n=[...r];if(i===0)n[0]=(n[0]+180)%360;if(i===1)n[0]=(n[0]+90)%360;if(i===2)n[2]=(n[2]+90)%360;if(i===3)n.splice(0,3,0,0,0);
       m.rot=n;await saveDev(d);buzz('tick');go(k==='m3d2')};
-    el.addEventListener('click',e=>{if(e.target.closest('[data-m3set]'))setOri();if(e.target.closest('[data-m3sw]')&&v)v.toggle()});
+    /* grandezza reale: cursore logaritmico 2–60 cm; il piedistallo resta uguale, l'oggetto cambia */
+    const zb=$('.m3size',el),zr=$('input',zb),zl=$('b',zb),c2t=c=>Math.round(Math.log(c/M3_CM_MIN)/Math.log(M3_CM_MAX/M3_CM_MIN)*1000),t2c=t=>{const c=M3_CM_MIN*Math.pow(M3_CM_MAX/M3_CM_MIN,t/1000);return c<10?Math.round(c*2)/2:Math.round(c)};
+    const zset=c=>{zr.value=c2t(c);zl.textContent=String(c).replace('.',',')+' cm'+(+d.m3cm>0?'':' · auto')};zset(m3Cm(d));
+    zr.addEventListener('input',()=>{const c=t2c(+zr.value);zl.textContent=String(c).replace('.',',')+' cm';v&&v.setScale(m3Scale(c))});
+    zr.addEventListener('change',async()=>{d.m3cm=t2c(+zr.value);zset(d.m3cm);await saveDev(d);buzz('tick')});
+    el.addEventListener('click',async e=>{if(e.target.closest('[data-m3set]'))setOri();if(e.target.closest('[data-m3sw]')&&v)v.toggle();
+      if(e.target.closest('[data-m3cm]')){zb.hidden=!zb.hidden;buzz('tick')}
+      if(e.target.closest('[data-m3auto]')){delete d.m3cm;d.m3cm=null;zset(m3Cm(d));v&&v.setScale(m3Scale(m3Cm(d)));await saveDev(d);buzz('tick')}});
     if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, usa ⟲ in alto a destra',5000),1200)}});
 }
 function attHTML(d){const as=d.allegati||[];
