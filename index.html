@@ -839,8 +839,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.12.1';
+const APP_VER='2.12.2';
 const NOVITA=[
+ ['2.12.2','2026-11-21',['Corrette le chiusure improvvise con i modelli 3D: i file dei modelli non stanno più dentro le schede (tutta la collezione restava in memoria con file da decine di MB) ma nella cache dei modelli; quelli già caricati vengono spostati da soli','Chiudendo la vista 3D la memoria grafica viene liberata subito']],
  ['2.12.1','2026-11-21',['Modelli da KIRI piccoli e semitrasparenti: KIRI salva nel PLY opacità e dimensioni dei punti in modo non standard. Ora all\'importazione vengono corrette esattamente; i modelli già importati vengono sistemati all\'apertura (per la qualità piena ricaricali dal PLY originale)','L\'inquadratura ignora i puntini isolati lontani dall\'oggetto (che prima lo facevano sembrare minuscolo) e li nasconde']],
  ['2.12','2026-11-21',['Modelli da KIRI Engine e altri PLY: vengono compressi automaticamente in SPZ (circa 10 volte più leggeri), anche file grandi fino a 400 MB; se qualcosa non va, l\'app lo dice invece di restare muta','«Isola» di avanzamento in alto, sotto la Dynamic Island: percentuale e barra mentre un modello si legge, si comprime, si invia a GitHub o si scarica','Se l\'app ha il permesso delle notifiche, l\'avanzamento compare anche nella tendina']],
  ['2.11.1','2026-11-20',['Modelli 3D e sincronizzazione: l\'invio a GitHub mostra l\'avanzamento e, se non riesce, spiega perché anche quando parte da solo','Nella scheda lo stato del modello: «☁️ Su GitHub» oppure «⏳ Non ancora su GitHub» con «Invia ora»','Dopo l\'invio la copia sul telefono passa nella cache dei modelli: la collezione occupa meno spazio']],
@@ -2271,7 +2272,9 @@ function errBox(out,e,where,retry,settings){logErr(where,e);out.innerHTML=errCar
 document.addEventListener('click',async ev=>{const c=ev.target.closest('[data-ecopy]');if(c){const pre=c.closest('.errc').querySelector('pre');try{await navigator.clipboard.writeText(pre.textContent);toast('Dettagli copiati')}catch(_){pre.closest('details').open=true;toast('Seleziona il testo e copialo')}return}
   const s=ev.target.closest('[data-eset]');if(s&&s.dataset.eset==='gem')openGemSettings({});if(s&&s.dataset.eset==='or')openORSettings({})});
 addEventListener('error',ev=>{if(ev.message)logErr('app',new AppErr('altro',ev.message+(ev.filename?` (${String(ev.filename).split('/').pop()}:${ev.lineno})`:'')))});
-addEventListener('unhandledrejection',ev=>logErr('app',ev.reason||'promessa rifiutata'));
+/* chiudendo un modello 3D si libera la memoria grafica: la libreria lascia una promessa rifiutata senza motivo, innocua */
+let M3_LOST=0;
+addEventListener('unhandledrejection',ev=>{if(ev.reason==null&&Date.now()-M3_LOST<3000){ev.preventDefault();return}logErr('app',ev.reason||'promessa rifiutata')});
 function openErrLog(){const a=LS.get('rd_errlog',[]);
   openPage('Registro errori',`<p class="note" style="margin-top:0">Gli ultimi errori di questo telefono, con i dettagli tecnici. Se qualcosa non va, copia il registro e mandamelo.</p>
     ${a.length?a.map(x=>`<details class="errl"><summary><b>${esc((ERR_INFO[x.kind]||ERR_INFO.altro)[0])} ${esc(x.title)}</b><small>${new Date(x.t).toLocaleString('it')} · ${esc(x.where)}</small></summary><pre>${esc(x.d)}</pre></details>`).join(''):'<p class="note">Nessun errore registrato ✓</p>'}
@@ -2985,6 +2988,7 @@ let SPARK=null;
 function loadSpark(){return SPARK||(SPARK=Promise.all([import('three'),import('@sparkjsdev/spark')]).then(([T,S])=>({THREE:T,SplatMesh:S.SplatMesh,SparkRenderer:S.SparkRenderer})).catch(e=>{SPARK=null;throw new AppErr('rete','non riesco a scaricare il visualizzatore 3D ('+(e.message||e)+')')}))}
 async function m3dBytes(m,onProg){
   if(/^data:/.test(m.data))return b64bytes(m.data.split(',')[1]);
+  if(/^local:/.test(m.data)){const b=await m3Local(m.data);if(!b)throw new AppErr('altro','il file del modello non è più sul telefono (il sistema ha liberato spazio): ricaricalo');return b}
   const url=remoteURL(m.data);let c=null;try{c=await caches.open('rddc-modelli');const hit=await c.match(url);if(hit)return new Uint8Array(await hit.arrayBuffer())}catch(e){}
   let r;try{r=await fetch(url)}catch(e){throw new AppErr('rete','modello non disponibile offline: collegati a internet la prima volta')}
   if(!r.ok)throw new AppErr('rete','modello non scaricabile (HTTP '+r.status+')');
@@ -3020,7 +3024,7 @@ async function mount3D(host,d,o={}){
   const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false,cur:0,spin:null,want:null,fitNow:0,fitTo:0};
   host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',L[0].size?fmtMB(L[0].size):'')}</div>`;
   const cv=host.querySelector('canvas'),lab=host.querySelector('.m3l');
-  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{R&&R.dispose()}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
+  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{if(R){const r=R;r.dispose();setTimeout(()=>{M3_LOST=Date.now();try{r.forceContextLoss()}catch(e){}},900)}}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
     reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;typeof kick==='function'&&kick()},
     /* trasformazione «alla Superman»: due giri in mezzo secondo, accelera e frena, cambio di modello al massimo della velocità */
     toggle(){if(L.length<2||st.spin)return;const to=1-st.cur;if(!meshes[to]){st.want=to;o.onWait&&o.onWait(m3Label(L[to],to));return}st.want=null;st.spin={t0:performance.now(),to,done:false};buzz('tick');kick()}};
@@ -3040,7 +3044,7 @@ async function mount3D(host,d,o={}){
       const bb=box.clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
       if((fx.op||fx.sc)&&!m.fix&&o.onFix)o.onFix(fx);
       return {mesh,size:bb.getSize(new THREE.Vector3())}};
-    const first=await build(L[0],bytes);if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
+    const first=await build(L[0],bytes);bytes=null;if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
     meshes[0]=first.mesh;spinG.add(first.mesh);const sizes=[first.size];
     /* piedistallo: cilindro scuro con il bordo alto luminoso, unito sotto il modello */
     const ped=new THREE.Group();scene.add(ped);let pr=0,ph=0;
@@ -3140,7 +3144,7 @@ async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLab
         if(r&&r.fileBytes&&r.fileBytes.length){bytes=r.fileBytes;tipo='spz';nome=f.name.replace(/\.\w+$/,'')+'.spz'}}
       catch(e){logErr('Modello 3D · conversione in SPZ',e);if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Non riesco a comprimere il modello (${e.message||e}) ed è troppo grande per salvarlo così (${fmtMB(bytes.length)})`,7000);return}}}
     if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Anche compresso il modello pesa ${fmtMB(bytes.length)} (massimo ${fmtMB(M3D_MAX)}): riduci la scansione o ritagliala`,7000);return}
-    const data=await blobToDataURL(new Blob([bytes],{type:'application/octet-stream'})),k=slot===2?'m3d2':'m3d',old=d[k];
+    const data=await m3Store(bytes),k=slot===2?'m3d2':'m3d',old=d[k];
     d[k]={id:uid(),nome,size:bytes.length,tipo,data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==f.name?{orig:{nome:f.name,size:f.size}}:{})};
     if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
     if(fixed)d[k].fix=fixed;
@@ -3154,13 +3158,21 @@ function askLabels(d){return new Promise(res=>{const m=document.createElement('d
   m.onclick=e=>{if(e.target.matches('[data-y]')){const x=[m.querySelector('#ml1').value.trim()||'Normale',m.querySelector('#ml2').value.trim()||'Seconda modalità'];m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
 function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.append(i);
   const done=v=>{i.remove();res(v)};i.onchange=()=>done(i.files[0]||null);i.oncancel=()=>done(null);i.click()})}
-/* dopo l'invio: il modello sul telefono passa dalla scheda (database) alla cache dei modelli; nella scheda resta il percorso su GitHub */
+/* 2.12.2: i file dei modelli non stanno più nelle schede (tutta la collezione è in memoria: con più modelli il telefono chiudeva l'app).
+   Sul telefono stanno nella cache «rddc-modelli»: «local:<id>» finché non sono su GitHub, poi sotto il loro indirizzo su GitHub */
+const m3Key=ref=>new URL('./m3local/'+String(ref).replace(/^local:/,''),location.href).href;
+async function m3Local(ref){try{const c=await caches.open('rddc-modelli'),r=await c.match(m3Key(ref));return r?new Uint8Array(await r.arrayBuffer()):null}catch(e){return null}}
+async function m3Store(bytes){const id=uid(),c=await caches.open('rddc-modelli');await c.put(m3Key(id),new Response(bytes,{headers:{'content-type':'application/octet-stream'}}));return 'local:'+id}
+/* schede vecchie con il file dentro (data:…): il file passa nella cache, una volta sola */
+async function m3Migrate(){for(const d of devices)for(const k of ['m3d','m3d2']){const m=d[k];if(!m||!/^data:/.test(m.data))continue;
+  try{m.data=await m3Store(b64bytes(m.data.split(',')[1]));SIG.set(d.id,fieldSig(d));await DB.put(d)}catch(e){logErr('Modello 3D · spostamento nella cache',e)}}}
+/* dopo l'invio: il file passa sotto il suo indirizzo su GitHub; nella scheda resta il percorso */
 async function m3Localize(list){let c=null;try{c=await caches.open('rddc-modelli')}catch(e){}
-  for(const x of list){const d=devices.find(y=>y.id===x.id),m=d&&d[x.k];if(!m||!/^data:/.test(m.data))continue;
-    try{if(c)await c.put(remoteURL(x.path),new Response(b64bytes(m.data.split(',')[1]),{headers:{'content-type':'application/octet-stream'}}))}catch(e){continue}
+  for(const x of list){const d=devices.find(y=>y.id===x.id),m=d&&d[x.k];if(!m||!/^(data|local):/.test(m.data))continue;
+    try{const b=/^local:/.test(m.data)?await m3Local(m.data):b64bytes(m.data.split(',')[1]);if(!b)continue;if(c){await c.put(remoteURL(x.path),new Response(b,{headers:{'content-type':'application/octet-stream'}}));if(/^local:/.test(m.data))await c.delete(m3Key(m.data))}}catch(e){continue}
     m.data=x.path;SIG.set(d.id,fieldSig(d));await DB.put(d)}}
 function m3dHTML(d){const m=d.m3d;if(!m)return '';const m2=d.m3d2,info=x=>[x.size?fmtMB(x.size):'',x.t?'aggiunto il '+fmtD(x.t):''].filter(Boolean).join(' · ');
-  const pend=[m,m2].some(x=>x&&/^data:/.test(x.data)),gh=ghOn();
+  const pend=[m,m2].some(x=>x&&/^(data|local):/.test(x.data)),gh=ghOn();
   return `<div class="sec-t">Modello 3D${m2?' · due modalità':''}</div>${gh?`<p class="m3st ${pend?'pend':''}">${pend?'⏳ Non ancora su GitHub: gli altri telefoni non lo vedono <button class="linkb" data-m3sync>Invia ora</button>':'☁️ Su GitHub: visibile anche sugli altri telefoni'}</p>`:''}<div class="m3sec"><button class="m3ic" data-m3open aria-label="Guarda in 3D">🧊</button><span class="lb"><b>${m2?esc(m3Label(m,0))+' · ':''}${esc(m.nome)}</b><small>${info(m)}</small></span></div>
   ${m2?`<div class="m3sec" style="margin-top:6px"><button class="m3ic" data-m3open2 aria-label="Guarda la seconda modalità">⇄</button><span class="lb"><b>${esc(m3Label(m2,1))} · ${esc(m2.nome)}</b><small>${info(m2)}</small></span><button class="btn sm sec" data-m3lab>Nomi</button></div>`:''}
   <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button>${m2?'':'<button class="btn sm sec" data-m3add2>＋ Seconda modalità</button>'}<button class="btn sm sec" data-m3add>Sostituisci</button>${m2?'<button class="btn sm sec" data-m3add2>Sostituisci la seconda</button><button class="btn sm sec" data-m3del2>Togli la seconda</button>':''}<button class="btn sm sec" data-m3del>Togli</button></div>`}
@@ -4868,7 +4880,8 @@ function ghSync(manual){
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map(),m3up=[];
         const conv=async(u,dir='foto',nm='')=>{if(typeof u!=='string'||!u.startsWith('data:'))return u;const [meta,b64]=u.split(',');const ext=/image\/png/.test(meta)?'png':/image\/webp/.test(meta)?'webp':/image\/jpe?g/.test(meta)?'jpg':((nm.match(/\.(\w{1,5})$/)||[])[1]||'bin').toLowerCase();const path=`${dir}/${await sha1hex(b64bytes(b64))}.${ext}`;if(!tmap.has(path))files.set(path,b64);return path};
-        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);for(const k of ['m3d','m3d2'])if(o[k]&&o[k].data){const p=await conv(o[k].data,'modelli',o[k].nome);if(/^data:/.test(o[k].data))m3up.push({id:d.id,k,path:p});o[k]=Object.assign({},o[k],{data:p})}if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
+        const out=[];for(const d of devices){const o=Object.fromEntries(Object.entries(d).filter(([k])=>k[0]!=='_'));if(Array.isArray(o.foto))o.foto=await Promise.all(o.foto.map(u=>conv(u)));if(o.thumb)o.thumb=await conv(o.thumb);if(o.scontorno)o.scontorno=await conv(o.scontorno);for(const k of ['m3d','m3d2'])if(o[k]&&o[k].data){let src=o[k].data;if(/^local:/.test(src)){const b=await m3Local(src);if(!b)continue;src=await blobToDataURL(new Blob([b],{type:'application/octet-stream'}))}
+          const p=await conv(src,'modelli',o[k].nome);if(/^(data|local):/.test(o[k].data))m3up.push({id:d.id,k,path:p});o[k]=Object.assign({},o[k],{data:p})}if(Array.isArray(o.allegati))o.allegati=await Promise.all(o.allegati.map(async a=>Object.assign({},a,{data:await conv(a.data,'allegati',a.nome)})));if(Array.isArray(o.progetti))o.progetti=await Promise.all(o.progetti.map(async p=>{const c=Object.assign({},p);for(const k of ['prima','dopo'])if(Array.isArray(c[k]))c[k]=await Promise.all(c[k].map(u=>conv(u)));return c}));out.push(o)}
         out.sort((a,b)=>String(a.id).localeCompare(b.id));
         const elim=[...deletedMap()].map(([id,t])=>({id,t})).sort((a,b)=>a.id.localeCompare(b.id));
         const remSorted=arr.slice().sort((a,b)=>String(a.id).localeCompare(b.id));
@@ -5126,6 +5139,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   await DB.open();
   devices=await DB.all();devices.forEach(d=>{idx(d);SIG.set(d.id,fieldSig(d))});
   writeManCache();
+  setTimeout(()=>m3Migrate().catch(()=>{}),1200);
   lgSet(LS.get('rd_glass','lite'));{const sc=()=>document.body.classList.toggle('scrolled',scrollY>($('#hdr').offsetHeight||90)-6);addEventListener('scroll',sc,{passive:true});sc()}addEventListener('resize',()=>{clearTimeout(segDrop.t);segDrop.t=setTimeout(()=>{const i=$('.segi');if(i&&i._s)i._s.init=false;segDrop()},120)});
   if(gemOn()&&navigator.onLine!==false){const cc=LS.get('rd_gem_models',null);if(!cc||Date.now()-cc.t>6*3600e3)setTimeout(()=>gemModels(true).catch(e=>logErr('Gemini · elenco modelli',e)),2500)}
   if(LS.get('rd_ver','')!==APP_VER){LS.set('rd_ver',APP_VER);setTimeout(()=>toast(`RDDC aggiornata alla versione ${APP_VER}`,6000,{label:'NOVITÀ',fn:openNovita}),900)}
