@@ -1067,6 +1067,19 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.14: grandezza reale sul piedistallo — stima dal tipo, cursore in cm salvato nella scheda', async () => {
+    const U = await phone('M10');
+    eq(await U.evaluate(() => [m3Cm({ nome: 'iPod shuffle (2nd gen)', tipologia: 'Lettore musicale' }), m3Cm({ nome: 'iBook G4', tipologia: 'Portatile' }), m3Cm({ nome: 'X', tipologia: 'Portatile', m3cm: 38 }), m3Scale(4) < m3Scale(12) && m3Scale(12) < m3Scale(33), m3Scale(60), m3Scale(1) >= .2]), [4, 33, 38, true, true, true].map((x, i) => i === 4 ? 1 : x), 'stima automatica e scala (lo shuffle più piccolo del portatile, massimo 1)');
+    await U.evaluate(async () => { await saveDev({ id: 'ms', nome: 'iPod shuffle', tipologia: 'Lettore musicale', creato: Date.now(), m3d: { id: 'a', nome: 's.spz', size: 9, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('x'), rot: [0, 0, 0] } }); openModel3D(devices.find(d => d.id === 'ms')); });
+    await U.waitForSelector('[data-m3cm]'); ok(await U.evaluate(() => document.querySelector('.m3size').hidden), 'cursore nascosto finché non tocchi 📏');
+    await U.click('[data-m3cm]'); eq(await U.evaluate(() => document.querySelector('.m3size b').textContent), '4 cm · auto', 'mostra la stima automatica');
+    await U.evaluate(() => { const r = document.querySelector('.m3size input'); r.value = 1000; r.dispatchEvent(new Event('input')); r.dispatchEvent(new Event('change')); }); await U.waitForTimeout(200);
+    eq(await U.evaluate(() => [devices.find(d => d.id === 'ms').m3cm, document.querySelector('.m3size b').textContent]), [60, '60 cm'], 'il cursore salva la grandezza nella scheda');
+    await U.click('[data-m3auto]'); await U.waitForTimeout(200);
+    eq(await U.evaluate(() => [devices.find(d => d.id === 'ms').m3cm, document.querySelector('.m3size b').textContent]), [null, '4 cm · auto'], 'Auto torna alla stima');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
