@@ -1077,6 +1077,9 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await U.evaluate(() => [devices.find(d => d.id === 'ms').m3cm, document.querySelector('.m3size b').textContent]), [60, '60 cm'], 'il cursore salva la grandezza nella scheda');
     await U.click('[data-m3auto]'); await U.waitForTimeout(200);
     eq(await U.evaluate(() => [devices.find(d => d.id === 'ms').m3cm, document.querySelector('.m3size b').textContent]), [null, '4 cm · auto'], 'Auto torna alla stima');
+    await U.evaluate(() => history.back()); await U.waitForTimeout(120);
+    ok(await U.evaluate(() => !!document.querySelector('.page.m3root.m3bye')), 'chiudendo la vista 3D parte la transizione di uscita');
+    await U.waitForTimeout(600); ok(await U.evaluate(() => !document.querySelector('.page.m3root')), 'dopo la transizione la vista è chiusa');
     await U.context().close();
   });
 
