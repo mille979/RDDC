@@ -1010,6 +1010,23 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.12: modelli da KIRI (PLY) e formati sbagliati: sempre un messaggio; isola di avanzamento', async () => {
+    const U = await phone('M7');
+    await U.evaluate(async () => { await saveDev({ id: 'kr', nome: 'Nokia 3310', tipologia: 'Telefono', creato: Date.now() }); render(); });
+    let [fc] = await Promise.all([U.waitForEvent('filechooser'), U.evaluate(() => { m3dAdd(devices.find(d => d.id === 'kr')) })]);
+    await fc.setFiles({ name: 'scansione.zip', mimeType: 'application/zip', buffer: Buffer.from('PK finto') });
+    await U.waitForTimeout(300);
+    ok(await U.evaluate(() => /non è un modello riconosciuto/.test(document.querySelector('#toast').textContent) && !devices.find(d => d.id === 'kr').m3d), 'formato sbagliato: lo dice');
+    [fc] = await Promise.all([U.waitForEvent('filechooser'), U.evaluate(() => { m3dAdd(devices.find(d => d.id === 'kr')) })]);
+    await fc.setFiles({ name: 'kiri.ply', mimeType: 'application/octet-stream', buffer: Buffer.from('ply\nformat binary_little_endian 1.0\nend_header\n' + 'x'.repeat(400)) });
+    await U.waitForFunction(() => devices.find(d => d.id === 'kr').m3d, null, { timeout: 15000 });
+    eq(await U.evaluate(() => { const m = devices.find(d => d.id === 'kr').m3d; return [m.nome, m.tipo, LS.get('rd_errlog', []).some(e => /conversione in SPZ/.test(e.where || e.w || JSON.stringify(e)))]; }), ['kiri.ply', 'ply', true], 'senza la libreria per comprimere, il PLY si salva così com\'è (e l\'errore resta nel registro)');
+    await U.evaluate(() => { isle('t', { t: 'Invio modello 3D · 12 MB', p: .4 }); });
+    eq(await U.evaluate(() => { const e = document.querySelector('#isle'); return [e.classList.contains('on'), e.querySelector('.isl-p').textContent, e.querySelector('.isl-bar b').style.width]; }), [true, '40%', '40%'], 'isola con la percentuale');
+    await U.evaluate(() => isleEnd('t', 'Modello 3D su GitHub')); ok(await U.evaluate(() => document.querySelector('#isle').classList.contains('ok')), 'isola chiusa con la spunta');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
