@@ -20,6 +20,20 @@ TRIGGER:PT9H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:7eac0b21-d760-4764-93de-9030fb50eb4f-int-7b9823cd-dee0-4c61-8586-46f32cb63924@rddc
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:🔧 Nuova scheda video: Power Macintosh G4 500 (AGP)
+DESCRIPTION:Cambiata la scheda video difettosa con una presa dall'America. All'accensione saltata la corrente e probabile esplsione di condensatore sull'alimentatore
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:🔧 Nuova scheda video: Power Macintosh G4 500 (AGP)
+TRIGGER:PT9H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
 UID:daab14fc-2009-4be5-8d59-17628d19bd69-ch@rddc
 DTSTAMP:20260101T000000Z
 DTSTART;VALUE=DATE:20261230
