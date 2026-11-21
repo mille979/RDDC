@@ -839,8 +839,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.12.1';
+const APP_VER='2.12.2';
 const NOVITA=[
+ ['2.12.2','2026-11-21',['Corrette le chiusure improvvise con i modelli 3D: i file dei modelli non stanno più dentro le schede (tutta la collezione restava in memoria con file da decine di MB) ma nella cache dei modelli; quelli già caricati vengono spostati da soli','Chiudendo la vista 3D la memoria grafica viene liberata subito']],
  ['2.12.1','2026-11-21',['Modelli da KIRI piccoli e semitrasparenti: KIRI salva nel PLY opacità e dimensioni dei punti in modo non standard. Ora all\'importazione vengono corrette esattamente; i modelli già importati vengono sistemati all\'apertura (per la qualità piena ricaricali dal PLY originale)','L\'inquadratura ignora i puntini isolati lontani dall\'oggetto (che prima lo facevano sembrare minuscolo) e li nasconde']],
  ['2.12','2026-11-21',['Modelli da KIRI Engine e altri PLY: vengono compressi automaticamente in SPZ (circa 10 volte più leggeri), anche file grandi fino a 400 MB; se qualcosa non va, l\'app lo dice invece di restare muta','«Isola» di avanzamento in alto, sotto la Dynamic Island: percentuale e barra mentre un modello si legge, si comprime, si invia a GitHub o si scarica','Se l\'app ha il permesso delle notifiche, l\'avanzamento compare anche nella tendina']],
  ['2.11.1','2026-11-20',['Modelli 3D e sincronizzazione: l\'invio a GitHub mostra l\'avanzamento e, se non riesce, spiega perché anche quando parte da solo','Nella scheda lo stato del modello: «☁️ Su GitHub» oppure «⏳ Non ancora su GitHub» con «Invia ora»','Dopo l\'invio la copia sul telefono passa nella cache dei modelli: la collezione occupa meno spazio']],
@@ -2271,7 +2272,9 @@ function errBox(out,e,where,retry,settings){logErr(where,e);out.innerHTML=errCar
 document.addEventListener('click',async ev=>{const c=ev.target.closest('[data-ecopy]');if(c){const pre=c.closest('.errc').querySelector('pre');try{await navigator.clipboard.writeText(pre.textContent);toast('Dettagli copiati')}catch(_){pre.closest('details').open=true;toast('Seleziona il testo e copialo')}return}
   const s=ev.target.closest('[data-eset]');if(s&&s.dataset.eset==='gem')openGemSettings({});if(s&&s.dataset.eset==='or')openORSettings({})});
 addEventListener('error',ev=>{if(ev.message)logErr('app',new AppErr('altro',ev.message+(ev.filename?` (${String(ev.filename).split('/').pop()}:${ev.lineno})`:'')))});
-addEventListener('unhandledrejection',ev=>logErr('app',ev.reason||'promessa rifiutata'));
+/* chiudendo un modello 3D si libera la memoria grafica: la libreria lascia una promessa rifiutata senza motivo, innocua */
+let M3_LOST=0;
+addEventListener('unhandledrejection',ev=>{if(ev.reason==null&&Date.now()-M3_LOST<3000){ev.preventDefault();return}logErr('app',ev.reason||'promessa rifiutata')});
 function openErrLog(){const a=LS.get('rd_errlog',[]);
   openPage('Registro errori',`<p class="note" style="margin-top:0">Gli ultimi errori di questo telefono, con i dettagli tecnici. Se qualcosa non va, copia il registro e mandamelo.</p>
     ${a.length?a.map(x=>`<details class="errl"><summary><b>${esc((ERR_INFO[x.kind]||ERR_INFO.altro)[0])} ${esc(x.title)}</b><small>${new Date(x.t).toLocaleString('it')} · ${esc(x.where)}</small></summary><pre>${esc(x.d)}</pre></details>`).join(''):'<p class="note">Nessun errore registrato ✓</p>'}
@@ -3021,7 +3024,7 @@ async function mount3D(host,d,o={}){
   const st={th:o.th??-.55,ph:.36,k:1,vth:0,vph:0,drag:null,pts:new Map(),last:0,idle:performance.now(),auto:o.auto!==false,cur:0,spin:null,want:null,fitNow:0,fitTo:0};
   host.classList.add('m3h');host.innerHTML=`<canvas class="m3c"></canvas><div class="m3l">${loader('scan','Carico il modello 3D…',L[0].size?fmtMB(L[0].size):'')}</div>`;
   const cv=host.querySelector('canvas'),lab=host.querySelector('.m3l');
-  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{R&&R.dispose()}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
+  const api={cur:()=>st.cur,ready:i=>!!meshes[i],dispose(){dead=true;cancelAnimationFrame(raf);ro&&ro.disconnect();io&&io.disconnect();meshes.forEach(m=>{try{m&&m.dispose&&m.dispose()}catch(e){}});try{if(R){const r=R;r.dispose();setTimeout(()=>{M3_LOST=Date.now();try{r.forceContextLoss()}catch(e){}},900)}}catch(e){}host.innerHTML='';host.classList.remove('m3h','ready')},
     reset(){st.th=o.th??-.55;st.ph=.36;st.k=1;st.vth=st.vph=0;typeof kick==='function'&&kick()},
     /* trasformazione «alla Superman»: due giri in mezzo secondo, accelera e frena, cambio di modello al massimo della velocità */
     toggle(){if(L.length<2||st.spin)return;const to=1-st.cur;if(!meshes[to]){st.want=to;o.onWait&&o.onWait(m3Label(L[to],to));return}st.want=null;st.spin={t0:performance.now(),to,done:false};buzz('tick');kick()}};
@@ -3041,7 +3044,7 @@ async function mount3D(host,d,o={}){
       const bb=box.clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
       if((fx.op||fx.sc)&&!m.fix&&o.onFix)o.onFix(fx);
       return {mesh,size:bb.getSize(new THREE.Vector3())}};
-    const first=await build(L[0],bytes);if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
+    const first=await build(L[0],bytes);bytes=null;if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
     meshes[0]=first.mesh;spinG.add(first.mesh);const sizes=[first.size];
     /* piedistallo: cilindro scuro con il bordo alto luminoso, unito sotto il modello */
     const ped=new THREE.Group();scene.add(ped);let pr=0,ph=0;
