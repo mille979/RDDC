@@ -839,8 +839,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.12';
+const APP_VER='2.12.1';
 const NOVITA=[
+ ['2.12.1','2026-11-21',['Modelli da KIRI piccoli e semitrasparenti: KIRI salva nel PLY opacità e dimensioni dei punti in modo non standard. Ora all\'importazione vengono corrette esattamente; i modelli già importati vengono sistemati all\'apertura (per la qualità piena ricaricali dal PLY originale)','L\'inquadratura ignora i puntini isolati lontani dall\'oggetto (che prima lo facevano sembrare minuscolo) e li nasconde']],
  ['2.12','2026-11-21',['Modelli da KIRI Engine e altri PLY: vengono compressi automaticamente in SPZ (circa 10 volte più leggeri), anche file grandi fino a 400 MB; se qualcosa non va, l\'app lo dice invece di restare muta','«Isola» di avanzamento in alto, sotto la Dynamic Island: percentuale e barra mentre un modello si legge, si comprime, si invia a GitHub o si scarica','Se l\'app ha il permesso delle notifiche, l\'avanzamento compare anche nella tendina']],
  ['2.11.1','2026-11-20',['Modelli 3D e sincronizzazione: l\'invio a GitHub mostra l\'avanzamento e, se non riesce, spiega perché anche quando parte da solo','Nella scheda lo stato del modello: «☁️ Su GitHub» oppure «⏳ Non ancora su GitHub» con «Invia ora»','Dopo l\'invio la copia sul telefono passa nella cache dei modelli: la collezione occupa meno spazio']],
  ['2.11','2026-11-20',['⇄ Seconda modalità 3D per i convertibili (es. portatile e tablet): un tasto in alto la trasforma con due giri vorticosi in mezzo secondo, il cambio avviene al massimo della velocità; la seconda si carica in sottofondo appena la prima è pronta','Piedistallo 3D: un cilindro con il bordo luminoso sotto il modello, che non va più sopra la scheda con i dati','Grafico del valore della collezione: scegli l\'arco di tempo (1 anno, 2 anni, 5 anni, tutto; due anni di partenza); una sola quotazione vale dalla data di acquisto','Nuovo campo «Mese acquisto» accanto all\'anno, se lo ricordi']],
@@ -2995,6 +2996,21 @@ async function m3dBytes(m,onProg){
   return u}
 /* visualizzatore: si gira trascinando, due dita per avvicinarsi, doppio tocco per tornare all'inizio; da fermo ruota piano.
    L'inclinazione resta sopra l'orizzonte: la parte appoggiata (mai scansionata) non si vede */
+/* 2.12.1: ingombro «vero» (senza l'1% dei punti più esterni), puntini isolati nascosti, opacità/dimensioni salvate male recuperate */
+function m3Fix(THREE,mesh){const sp=mesh.splats||mesh.packedSplats;if(!sp||!sp.forEachSplat||!sp.setSplat)return {};
+  try{const n=sp.numSplats||0,step=Math.max(1,Math.floor(n/150000)),op=[],sc=[],X=[],Y=[],Z=[];let k=0;
+    sp.forEachSplat((i,c,s,q,o)=>{if(k++%step)return;op.push(o);sc.push(Math.max(s.x,s.y,s.z));if(o>.1){X.push(c.x);Y.push(c.y);Z.push(c.z)}});
+    if(X.length<20)return {};const srt=a=>a.sort((x,y)=>x-y),pc=(a,p)=>a[Math.min(a.length-1,Math.max(0,Math.floor(p*(a.length-1))))];[op,sc,X,Y,Z].forEach(srt);
+    const lo=new THREE.Vector3(pc(X,.01),pc(Y,.01),pc(Z,.01)),hi=new THREE.Vector3(pc(X,.99),pc(Y,.99),pc(Z,.99)),sz=hi.clone().sub(lo),ext=Math.max(sz.x,sz.y,sz.z)||1;
+    const fop=op.length>50&&pc(op,.02)>=.49&&pc(op,.98)<=.735,fsc=pc(sc,.5)>ext*.2;
+    /* dimensione stimata: punti distribuiti sulla superficie del «parallelepipedo» dell'oggetto */
+    const area=2*(sz.x*sz.y+sz.y*sz.z+sz.z*sz.x)||ext*ext,sv=Math.sqrt(area/Math.max(1,n))*.75,m=sz.clone().multiplyScalar(.25),blo=lo.clone().sub(m),bhi=hi.clone().add(m);let hid=0;
+    sp.forEachSplat((i,c,s,q,o,col)=>{let ch=false;
+      if(c.x<blo.x||c.y<blo.y||c.z<blo.z||c.x>bhi.x||c.y>bhi.y||c.z>bhi.z){if(o>0){o=0;hid++;ch=true}}
+      else{if(fop){o=Math.min(1,Math.max(0,Math.log(o/(1-o))));ch=true}if(fsc){s.set(sv,sv,sv);ch=true}}
+      if(ch)sp.setSplat(i,c,s,q,o,col)});
+    if(hid||fop||fsc)sp.needsUpdate=true;
+    return {box:new THREE.Box3(lo,hi),op:fop,sc:fsc,hid}}catch(e){logErr('Modello 3D · controllo dei punti',e);return {}}}
 const M3_PH=[7*Math.PI/180,78*Math.PI/180],M3_DIST=[.55,1.7],M3_SPIN=500,M3_TURNS=2;
 /* modelli dell'oggetto: il principale e, per i convertibili, la seconda modalità (es. tablet) */
 const m3List=d=>[d.m3d,d.m3d2].filter(Boolean);
@@ -3020,7 +3036,9 @@ async function mount3D(host,d,o={}){
     /* ogni modello: orientato, centrato e appoggiato a quota 0 (il piano del piedistallo) */
     const build=async(m,b)=>{const mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;
       const r=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(r[0],r[1],r[2]);mesh.updateMatrixWorld(true);
-      const bb=mesh.getBoundingBox(true).clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
+      const fx=m3Fix(THREE,mesh),box=fx.box||mesh.getBoundingBox(true);
+      const bb=box.clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
+      if((fx.op||fx.sc)&&!m.fix&&o.onFix)o.onFix(fx);
       return {mesh,size:bb.getSize(new THREE.Vector3())}};
     const first=await build(L[0],bytes);if(dead){first.mesh.dispose&&first.mesh.dispose();return api}
     meshes[0]=first.mesh;spinG.add(first.mesh);const sizes=[first.size];
@@ -3091,6 +3109,22 @@ function ghBlobUp(b64,onProg){const c=ghCfg();return new Promise((res,rej)=>{con
   x.upload.onprogress=e=>{if(e.lengthComputable&&onProg)onProg(e.loaded/e.total)};
   x.onload=()=>{if(x.status>=200&&x.status<300){try{res(JSON.parse(x.responseText).sha)}catch(e){rej(e)}return}let m='';try{m=JSON.parse(x.responseText).message}catch(e){}const er=new Error(`GitHub ${x.status}${m?': '+m:''}`);er.status=x.status;rej(er)};
   x.onerror=()=>rej(new Error('rete'));x.onabort=()=>rej(new Error('interrotto'));x.send(JSON.stringify({content:b64,encoding:'base64'}))})}
+/* 2.12.1: alcuni programmi (es. KIRI Engine) salvano nel PLY opacità e dimensioni già «espanse» invece che in logit/logaritmo:
+   il modello esce semitrasparente e nebbioso. Si riconosce (opacità tutte tra 0 e 1, dimensioni tutte positive) e si corregge sul file, dove i dati sono completi */
+function plyFix(u8){try{const head=new TextDecoder().decode(u8.subarray(0,Math.min(u8.length,8192))),end=head.indexOf('end_header');if(end<0||!/format binary_little_endian/.test(head))return {bytes:u8};
+  const lines=head.slice(0,end).split(/\r?\n/),SZ={char:1,uchar:1,int8:1,uint8:1,short:2,ushort:2,int16:2,uint16:2,int:4,uint:4,int32:4,uint32:4,float:4,float32:4,double:8,float64:8};
+  let inV=false,first=true,n=0,stride=0;const props={};
+  for(const l of lines){const t=l.trim().split(/\s+/);if(t[0]==='element'){if(inV)break;inV=t[1]==='vertex'&&first;first=false;if(inV)n=+t[2];continue}
+    if(inV&&t[0]==='property'){if(t[1]==='list')return {bytes:u8};const sz=SZ[t[1]];if(!sz)return {bytes:u8};props[t[2]]={o:stride,t:t[1]};stride+=sz}}
+  const off=head.indexOf('\n',end)+1;if(!n||!stride||!props.opacity||props.opacity.t.indexOf('float')<0&&props.opacity.t!=='float')return {bytes:u8};
+  const out=u8.slice(),dv=new DataView(out.buffer,out.byteOffset,out.byteLength),sc=['scale_0','scale_1','scale_2'].filter(k=>props[k]&&/^float/.test(props[k].t));
+  let omin=1e9,omax=-1e9,smin=1e9;const step=Math.max(1,Math.floor(n/50000));
+  for(let i=0;i<n;i+=step){const b=off+i*stride;if(b+stride>out.length)break;const o=dv.getFloat32(b+props.opacity.o,true);omin=Math.min(omin,o);omax=Math.max(omax,o);for(const k of sc)smin=Math.min(smin,dv.getFloat32(b+props[k].o,true))}
+  const fo=omin>=0&&omax<=1,fs=sc.length===3&&smin>=0;if(!fo&&!fs)return {bytes:u8};
+  for(let i=0;i<n;i++){const b=off+i*stride;if(b+stride>out.length)break;
+    if(fo){const o=Math.min(.9999,Math.max(1e-4,dv.getFloat32(b+props.opacity.o,true)));dv.setFloat32(b+props.opacity.o,Math.log(o/(1-o)),true)}
+    if(fs)for(const k of sc)dv.setFloat32(b+props[k].o,Math.log(Math.max(1e-7,dv.getFloat32(b+props[k].o,true))),true)}
+  return {bytes:out,op:fo,sc:fs}}catch(e){logErr('Modello 3D · controllo del PLY',e);return {bytes:u8}}}
 /* 2.12: caricamento robusto. PLY/SPLAT/KSPLAT (es. da KIRI Engine) vengono convertiti in SPZ, circa 10 volte più leggero */
 const M3D_RAW_MAX=400*1024*1024;
 async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLabels(d);if(!labels)return}
@@ -3099,7 +3133,8 @@ async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLab
     if(!tipo){toast(`«${f.name}» non è un modello riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat (da KIRI esporta «3DGS» in PLY)`,6500);return}
     if(f.size>M3D_RAW_MAX){toast(`«${f.name}» è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_RAW_MAX)})`,6000);return}
     isle('m3add',{ic:'🧊',t:`Leggo il modello · ${fmtMB(f.size)}`});
-    let bytes=new Uint8Array(await f.arrayBuffer());
+    let bytes=new Uint8Array(await f.arrayBuffer()),fixed=null;
+    if(tipo==='ply'){const r=plyFix(bytes);if(r.op||r.sc){bytes=r.bytes;fixed=[r.op&&'opacità',r.sc&&'dimensioni dei punti'].filter(Boolean)}}
     if(['ply','splat','ksplat'].includes(tipo)){isle('m3add',{ic:'🗜️',t:`Comprimo in SPZ · ${fmtMB(f.size)}`});
       try{const S=await import('@sparkjsdev/spark'),r=await S.transcodeSpz({inputs:[{fileBytes:bytes,fileType:tipo}],maxSh:3});
         if(r&&r.fileBytes&&r.fileBytes.length){bytes=r.fileBytes;tipo='spz';nome=f.name.replace(/\.\w+$/,'')+'.spz'}}
@@ -3108,7 +3143,8 @@ async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLab
     const data=await blobToDataURL(new Blob([bytes],{type:'application/octet-stream'})),k=slot===2?'m3d2':'m3d',old=d[k];
     d[k]={id:uid(),nome,size:bytes.length,tipo,data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==f.name?{orig:{nome:f.name,size:f.size}}:{})};
     if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
-    await saveDev(d);render();buzz('ok');isleEnd('m3add',nome!==f.name?`Compresso: ${fmtMB(f.size)} → ${fmtMB(bytes.length)}`:'Modello aggiunto');
+    if(fixed)d[k].fix=fixed;
+    await saveDev(d);render();buzz('ok');if(fixed)setTimeout(()=>toast(`Il file aveva ${fixed.join(' e ')} salvate in modo non standard (succede con KIRI): corretto ✔︎`,5500),2600);isleEnd('m3add',nome!==f.name?`Compresso: ${fmtMB(f.size)} → ${fmtMB(bytes.length)}`:'Modello aggiunto');
     toast(nome!==f.name?`Modello compresso: da ${fmtMB(f.size)} a ${fmtMB(bytes.length)} ✔︎`:bytes.length>25*1048576?`Modello aggiunto (${fmtMB(bytes.length)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',5000);
     openModel3D(d,true,slot===2)}
   catch(e){logErr('Modello 3D · caricamento',e);isleEnd('m3add','Caricamento non riuscito',false);toast(`Non riesco a caricare «${f.name}» (${fmtMB(f.size)}): ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
@@ -3134,7 +3170,7 @@ function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
     <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
     const host=$('.m3v',el),sw=$('[data-m3sw]',el);
     const go=async alt=>{v&&v.dispose();if(sw){sw.classList.add('wait');sw.querySelector('span').textContent=m3Label(L[1],1)}
-      v=await mount3D(host,d,{startAlt:alt,onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
+      v=await mount3D(host,d,{startAlt:alt,onFix:fx=>toast(`Questo modello ha ${[fx.op&&'opacità',fx.sc&&'dimensioni dei punti'].filter(Boolean).join(' e ')} salvate in modo non standard (KIRI): l'ho corretto alla meglio. Per la qualità piena ricaricalo dal file PLY originale`,7000),onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
     go(startAlt);el._close=()=>{v&&v.dispose()};
     const setOri=async()=>{const k=v&&v.cur()===1?'m3d2':'m3d',m=d[k],r=m.rot||[0,0,0];
       const i=await sheet(`Orientamento${L[1]?' · '+m3Label(m,k==='m3d2'?1:0):''}`,[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);

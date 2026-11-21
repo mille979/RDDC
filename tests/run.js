@@ -1027,6 +1027,18 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.12.1: PLY con opacità e dimensioni «espanse» (KIRI) corretti all\'importazione; PLY standard intatti', async () => {
+    const U = await phone('M8');
+    const r = await U.evaluate(() => { const mk = (op, sc) => { const props = ['x', 'y', 'z', 'opacity', 'scale_0', 'scale_1', 'scale_2'], h = 'ply\nformat binary_little_endian 1.0\nelement vertex 2\n' + props.map(p => 'property float ' + p + '\n').join('') + 'end_header\n';
+        const hb = new TextEncoder().encode(h), u = new Uint8Array(hb.length + 2 * 28); u.set(hb); const dv = new DataView(u.buffer);
+        [[0, 0, 0, op[0], sc, sc, sc], [1, 1, 1, op[1], sc, sc, sc]].forEach((v, i) => v.forEach((x, j) => dv.setFloat32(hb.length + i * 28 + j * 4, x, true))); return { u, off: hb.length }; };
+      const read = (u, off, i, j) => new DataView(u.buffer, u.byteOffset).getFloat32(off + i * 28 + j * 4, true);
+      const a = mk([0.97, 0.5], 0.025), fa = plyFix(a.u), b = mk([4.2, -1.3], -4.6), fb = plyFix(b.u);
+      return [fa.op, fa.sc, +read(fa.bytes, a.off, 0, 3).toFixed(3), +read(fa.bytes, a.off, 1, 3).toFixed(3), +read(fa.bytes, a.off, 0, 4).toFixed(3), !!fb.op, !!fb.sc, fb.bytes === b.u]; });
+    eq(r, [true, true, 3.476, 0, -3.689, false, false, true], 'opacità → logit e dimensioni → logaritmo solo quando servono');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
