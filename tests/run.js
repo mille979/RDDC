@@ -900,6 +900,26 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.13: Cosa manca per scocca — varianti dello stesso computer contate una volta', async () => {
+    const U = await phone('V4b');
+    await U.evaluate(async () => { AWIDX = [['MacBook Pro (15-inch, Early 2008)', 'A1260', 'MacBookPro4,1', 'Mac'], ['MacBook Pro (17-inch, Early 2008)', 'A1261', 'MacBookPro4,1', 'Mac'], ['MacBook Pro (15-inch, Late 2006)', 'A1211', 'MacBookPro2,2', 'Mac'], ['MacBook Pro (15-inch, Mid 2009)', 'A1286', 'MacBookPro5,4', 'Mac'], ['MacBook Pro (Retina, 15-inch, Mid 2015)', 'A1398', 'MacBookPro11,4', 'Mac'], ['MacBook Pro (15-inch, 2016)', 'A1707', 'MacBookPro13,3', 'Mac'], ['MacBook (13-inch, Late 2008)', 'A1278', 'MacBook5,1', 'Mac'], ['MacBook (13-inch, Mid 2006)', 'A1181', 'MacBook1,1', 'Mac'],
+        ['iBook', 'M2453', 'PowerBook2,1', 'Mac'], ['iBook Firewire', 'M6411', 'PowerBook2,2', 'Mac'], ['iBook (Dual USB)', 'M6497', 'PowerBook4,1', 'Mac'], ['iBook (12-inch, Mid 2005)', 'A1133', 'PowerBook6,7', 'Mac'], ['iBook (14-inch, Mid 2005)', 'A1134', 'PowerBook6,7', 'Mac'], ['PowerBook 5300', 'M2785', '', 'Mac'], ['PowerBook 5300c', 'M2785', '', 'Mac'], ['PowerBook 190', 'M3047', '', 'Mac'], ['PowerBook 1400c', 'M3571', '', 'Mac']];
+      for (const d of [{ id: 'g1', nome: 'MacBook Pro "Core 2 Duo" 2.6 17" (08)', modello: 'A1261', identifier: 'MacBookPro4,1', tipologia: 'Portatile' }, { id: 'g2', nome: 'iBook G4/1.42 14-Inch (Mid-2005 - Op)', modello: 'A1134', identifier: 'PowerBook6,7', tipologia: 'Portatile' }, { id: 'g3', nome: 'PowerBook 5300c', modello: 'M2785', tipologia: 'Portatile' }]) await saveDev({ ...d, creato: Date.now() }); render(); });
+    const g = await U.evaluate(() => Object.fromEntries(gapsData(AWIDX, 'gen').map(x => [x.f, x.rows.map(r => (r.own.length ? '✓' : '') + r.x[0])])));
+    eq(g['MacBook Pro'], ['✓MacBook Pro in alluminio (2006–2008)', 'MacBook Pro unibody e Retina (2008–2015)', 'MacBook Pro USB-C e Touch Bar (2016–2022)'], 'MacBook Pro: misure e processori nella stessa scocca, unibody e Retina insieme');
+    eq(g.iBook, ['iBook G3 Clamshell (1999–2000)', 'iBook G3 bianco «Dual USB» (2001–2003)', '✓iBook G4 (2003–2005)'], 'iBook per scocca');
+    eq(g.PowerBook, ['PowerBook 190 e 5300 (1995)', 'PowerBook 1400 (1996)'].map((x, i) => i ? x : '✓' + x), 'PowerBook classici per scocca');
+    ok(!g.MacBook, 'il MacBook unibody (stesso codice A1278 del MacBook Pro 13") resta nella sua linea, non posseduta');
+    eq(await U.evaluate(() => gapsData(AWIDX).find(x => x.f === 'MacBook Pro').tot), 6, '«Tutti i modelli» resta disponibile');
+    await U.evaluate(() => { LS.set('rd_gapmode', 'gen'); openGaps(); }); await U.waitForSelector('[data-gw]', { state: 'attached' });
+    ok(await U.evaluate(() => /varianti/.test(document.querySelector('#gpo').textContent) && document.querySelector('[data-gm="gen"]').classList.contains('on')), 'vista per scocca predefinita, con il numero di varianti');
+    await U.evaluate(() => { const b = [...document.querySelectorAll('[data-gw]')].find(b => /unibody e Retina/.test(b.closest('.gapr').textContent)); b.closest('details').open = true; b.click(); }); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => { const w = devices.find(d => d.wish && /unibody e Retina/.test(d.nome)); return w && [w.linea, w.modello]; }), ['MacBook Pro', ''], 'scocca in wishlist con la sua linea');
+    await U.click('[data-gm="models"]'); await U.waitForTimeout(200);
+    ok(await U.evaluate(() => /Late 2006/.test(document.querySelector('#gpo').textContent) && LS.get('rd_gapmode') === 'models'), 'passando a «Tutti i modelli» torna l\'elenco completo');
+    await U.context().close();
+  });
+
   await test('2.9: tira giù per sincronizzare, finestre chiuse trascinandole, scorciatoie dall\'icona, elenco animato', async () => {
     const U = await phone('V5', { hasTouch: true, isMobile: true });
     await U.evaluate(async () => { for (let i = 0; i < 6; i++) await saveDev({ id: 'f' + i, nome: 'Oggetto ' + i, anno: 1990 + i, tipologia: 'Computer', creato: Date.now() }); render(); window.syncDB = async () => { window._synced = (window._synced || 0) + 1 }; scrollTo(0, 0); });

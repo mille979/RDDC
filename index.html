@@ -682,7 +682,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .m3st{margin:0 2px 8px;font-size:12.5px;color:var(--mute)}.m3st.pend{color:var(--acc-ink)}.m3st .linkb{font-size:12.5px;padding:0 4px}
 .m3sec{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}.m3ic{flex:none;width:52px;height:52px;border-radius:14px;border:0;background:radial-gradient(circle at 50% 70%,#3a2e22,#0b0907);font-size:26px;box-shadow:var(--rim)}.m3sec .lb{flex:1;min-width:0}.m3sec .lb b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lbimg{display:block;max-width:100%;max-height:220px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--drop)}.lbbtn{margin-top:6px}
-.chips.vrsel{margin:8px 0 16px;position:relative;z-index:1}
+.chips.vrsel{margin:8px 0 16px;position:relative;z-index:1}.chips.gpsel{margin:0 0 14px}
 .chips.cuts{margin:7px 0 2px;align-items:center;gap:6px}.chips.cuts small{color:var(--mute);font-size:12px;margin-right:2px}
 .btn.again{flex:none;width:52px;padding-left:0;padding-right:0;align-self:stretch;font-size:21px;line-height:1;justify-content:center}.btn.use{animation:use-in .32s cubic-bezier(.2,.9,.3,1.3) both}@keyframes use-in{from{transform:scale(.94)}}
 /* 2.7: tasti della scheda più ordinati + foglio di azioni */
@@ -839,8 +839,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.12.2';
+const APP_VER='2.13';
 const NOVITA=[
+ ['2.13','2026-11-21',['🧩 Cosa manca «Per scocca»: le varianti dello stesso computer contano come un pezzo solo (es. MacBook Pro in alluminio 2006–2008, MacBook Pro unibody e Retina 2008–2015, iBook G3 Clamshell, iBook G3 bianco, iBook G4); misure, processori e schermi diversi non fanno più una voce a parte. «Tutti i modelli» mostra ancora l\'elenco completo','Piedistallo 3D più pulito: il chiarore del piano non passa più sopra il modello e spariscono i puntini sparsi della scansione sotto la base (il tavolo su cui era appoggiato l\'oggetto)']],
  ['2.12.2','2026-11-21',['Corrette le chiusure improvvise con i modelli 3D: i file dei modelli non stanno più dentro le schede (tutta la collezione restava in memoria con file da decine di MB) ma nella cache dei modelli; quelli già caricati vengono spostati da soli','Chiudendo la vista 3D la memoria grafica viene liberata subito']],
  ['2.12.1','2026-11-21',['Modelli da KIRI piccoli e semitrasparenti: KIRI salva nel PLY opacità e dimensioni dei punti in modo non standard. Ora all\'importazione vengono corrette esattamente; i modelli già importati vengono sistemati all\'apertura (per la qualità piena ricaricali dal PLY originale)','L\'inquadratura ignora i puntini isolati lontani dall\'oggetto (che prima lo facevano sembrare minuscolo) e li nasconde']],
  ['2.12','2026-11-21',['Modelli da KIRI Engine e altri PLY: vengono compressi automaticamente in SPZ (circa 10 volte più leggeri), anche file grandi fino a 400 MB; se qualcosa non va, l\'app lo dice invece di restare muta','«Isola» di avanzamento in alto, sotto la Dynamic Island: percentuale e barra mentre un modello si legge, si comprime, si invia a GitHub o si scarica','Se l\'app ha il permesso delle notifiche, l\'avanzamento compare anche nella tendina']],
@@ -3009,8 +3010,10 @@ function m3Fix(THREE,mesh){const sp=mesh.splats||mesh.packedSplats;if(!sp||!sp.f
     const fop=op.length>50&&pc(op,.02)>=.49&&pc(op,.98)<=.735,fsc=pc(sc,.5)>ext*.2;
     /* dimensione stimata: punti distribuiti sulla superficie del «parallelepipedo» dell'oggetto */
     const area=2*(sz.x*sz.y+sz.y*sz.z+sz.z*sz.x)||ext*ext,sv=Math.sqrt(area/Math.max(1,n))*.75,m=sz.clone().multiplyScalar(.25),blo=lo.clone().sub(m),bhi=hi.clone().add(m);let hid=0;
+    /* piano d'appoggio (dopo l'orientamento): i punti sotto il piano sono il tavolo della scansione e bucherebbero il piedistallo */
+    mesh.updateMatrixWorld(true);const e=mesh.matrixWorld.elements,wb=new THREE.Box3(lo.clone(),hi.clone()).applyMatrix4(mesh.matrixWorld),floor=wb.min.y-(wb.max.y-wb.min.y)*.004;
     sp.forEachSplat((i,c,s,q,o,col)=>{let ch=false;
-      if(c.x<blo.x||c.y<blo.y||c.z<blo.z||c.x>bhi.x||c.y>bhi.y||c.z>bhi.z){if(o>0){o=0;hid++;ch=true}}
+      if(c.x<blo.x||c.y<blo.y||c.z<blo.z||c.x>bhi.x||c.y>bhi.y||c.z>bhi.z||e[1]*c.x+e[5]*c.y+e[9]*c.z+e[13]<floor){if(o>0){o=0;hid++;ch=true}}
       else{if(fop){o=Math.min(1,Math.max(0,Math.log(o/(1-o))));ch=true}if(fsc){s.set(sv,sv,sv);ch=true}}
       if(ch)sp.setSplat(i,c,s,q,o,col)});
     if(hid||fop||fsc)sp.needsUpdate=true;
@@ -3054,7 +3057,7 @@ async function mount3D(host,d,o={}){
       const body=new THREE.Mesh(new THREE.CylinderGeometry(pr,pr*1.04,ph,96,1),[new THREE.MeshStandardMaterial({color:0x3b3027,roughness:.62,metalness:.12}),new THREE.MeshStandardMaterial({color:0x6a5845,roughness:.4,metalness:.2,emissive:0x24180b}),new THREE.MeshStandardMaterial({color:0x120e0b,roughness:.9})]);body.position.y=-ph/2;ped.add(body);
       const ring=new THREE.Mesh(new THREE.TorusGeometry(pr*1.016,Math.max(pr*.012,.0015),8,120),new THREE.MeshBasicMaterial({color:0xffd9a0}));ring.rotation.x=Math.PI/2;ring.position.y=-.0005;ped.add(ring);
       const cvs=document.createElement('canvas');cvs.width=cvs.height=128;const g=cvs.getContext('2d'),gr=g.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(255,228,180,.55)');gr.addColorStop(1,'rgba(255,228,180,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);
-      const pool=new THREE.Mesh(new THREE.CircleGeometry(pr*.98,64),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cvs),transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));pool.rotation.x=-Math.PI/2;pool.position.y=pr*.002;ped.add(pool)};
+      const pool=new THREE.Mesh(new THREE.CircleGeometry(pr*.98,64),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cvs),transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));pool.rotation.x=-Math.PI/2;pool.position.y=pr*.002;pool.renderOrder=-1;ped.add(pool)};
     pedestal();
     /* inquadratura: oggetto + piedistallo; la base del piedistallo resta a una quota fissa dello schermo */
     let cy=o.centerY||.5,tg=new THREE.Vector3(),rad=1;
@@ -3488,13 +3491,67 @@ function gapMatch(d,x){const id=gapNorm(d.identifier),mo=gapNorm(d.modello),nm=g
   if(!(xi&&id)&&xn&&mo&&mo===xn&&nm.startsWith(xf))return true;
   const xa=gapNorm(x[0]);if(!nm.startsWith(xa+' '))return false;
   return xa.split(' ').length>=3||/^\s*(\(|\d+(?:[.,]\d+)?\s*[gt]b\b)/.test(nm.slice(xa.length))}
-function gapsData(L){const own=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))),wish=devices.filter(d=>d.wish),grp=new Map(),fams=new Map();
+/* 2.13: scocche — le varianti dello stesso computer (processore, taglio, schermo) contano come un solo pezzo.
+   [linea, scocca (null = escluso), nome, codici modello facoltativi] */
+const GAP_GEN=[
+  ['MacBook Pro','MacBook Pro in alluminio (2006–2008)',/^MacBook Pro \(/,'A1150 A1151 A1211 A1212 A1226 A1229 A1260 A1261'],
+  ['MacBook Pro','MacBook Pro unibody e Retina (2008–2015)',/^MacBook Pro \(/,'A1286 A1278 A1297 A1398 A1425 A1502'],
+  ['MacBook Pro','MacBook Pro USB-C e Touch Bar (2016–2022)',/^MacBook Pro \(/,'A1706 A1707 A1708 A1989 A1990 A2159 A2141 A2289 A2251 A2338'],
+  ['MacBook Pro','MacBook Pro 14" e 16" (dal 2021)',/^MacBook Pro \(1[46]-inch/],
+  ['MacBook','MacBook in policarbonato (2006–2010)',/^MacBook \(/,'A1181 A1342'],
+  ['MacBook','MacBook unibody in alluminio (2008)',/^MacBook \(/,'A1278'],
+  ['MacBook','MacBook Retina 12" (2015–2017)',/^MacBook \(/,'A1534'],
+  ['MacBook','MacBook Neo',/^MacBook Neo/],
+  ['MacBook Air','MacBook Air prima serie (2008–2009)',/^MacBook Air/,'A1237 A1304'],
+  ['MacBook Air','MacBook Air a cuneo (2010–2017)',/^MacBook Air/,'A1369 A1370 A1465 A1466'],
+  ['MacBook Air','MacBook Air Retina a cuneo (2018–2020)',/^MacBook Air/,'A1932 A2179 A2337'],
+  ['MacBook Air','MacBook Air piatto (dal 2022)',/^MacBook Air \((1[35]-inch, )?M[2-9]/],
+  ['iBook','iBook G3 Clamshell (1999–2000)',/^iBook/,'M2453 M6411'],
+  ['iBook','iBook G3 bianco «Dual USB» (2001–2003)',/^iBook/,'M6497 M8413 A1005 A1007'],
+  ['iBook','iBook G4 (2003–2005)',/^iBook/,'A1054 A1055 A1133 A1134'],
+  ['PowerBook G3','PowerBook G3 «Kanga» (1997)',/^PowerBook G3 Kanga/],
+  ['PowerBook G3','PowerBook G3 Wallstreet (1998)',/^PowerBook G3 (Wallstreet|PDQ)/],
+  ['PowerBook G3','PowerBook G3 Bronze Keyboard (Lombard e Pismo, 1999–2000)',/^PowerBook G3 (Lombard|Pismo)/],
+  ['PowerBook G4','PowerBook G4 Titanium (2001–2002)',/^PowerBook G4( DVI| Ti)?$/],
+  ['PowerBook G4','PowerBook G4 in alluminio (2003–2005)',/^PowerBook G4 \(/],
+  ['PowerBook',null,/^PowerBook Duo (Mini)?Dock/],
+  ['PowerBook','PowerBook Duo (1992–1994)',/^PowerBook Duo /],
+  ['PowerBook','PowerBook 100 (1991)',/^PowerBook 100$/],
+  ['PowerBook','PowerBook 150 (1994)',/^PowerBook 150$/],
+  ['PowerBook','PowerBook 140–180 (1991–1994)',/^PowerBook 1[4-8]\d(b|c)?$/],
+  ['PowerBook','PowerBook 190 e 5300 (1995)',/^PowerBook (190|5300)/],
+  ['PowerBook','PowerBook 500 (1994–1995)',/^PowerBook 5[24]0/],
+  ['PowerBook','PowerBook 1400 (1996)',/^PowerBook 1400/],
+  ['PowerBook','PowerBook 3400 (1997)',/^PowerBook 3400/],
+  ['iMac','iMac G3 a cassetto (1998–1999)',/^iMac G3( \(Fruit Colors\))?$/],
+  ['iMac','iMac G3 Slot Loading (1999–2001)',/^iMac G3 \(/],
+  ['iMac','iMac G4 «lampada» (2002–2004)',/^iMac G4/],
+  ['iMac','iMac G5 e Intel in policarbonato (2004–2006)',/^iMac G5|^iMac \((17|20|24)-inch, (Early|Mid|Late) 2006\)/],
+  ['iMac','iMac in alluminio (2007–2009)',/^iMac \(/,'A1224 A1225'],
+  ['iMac','iMac unibody (2009–2011)',/^iMac \(/,'A1311 A1312'],
+  ['iMac','iMac sottile (2012–2020)',/^iMac \(/,'A1418 A1419 A2116 A2115'],
+  ['iMac','iMac 24" a colori (dal 2021)',/^iMac \(24-inch, (M\d|20[2-9]\d)/],
+  ['Mac mini','Mac mini in policarbonato (2005–2009)',/^Mac mini/,'A1103 A1176 A1283'],
+  ['Mac mini','Mac mini unibody (2010–2023)',/^Mac mini/,'A1347 A1993 A2348 A2686'],
+  ['Mac mini','Mac mini piccolo (dal 2024)',/^Mac mini/,'A3238 A3534'],
+  ['Mac Pro','Mac Pro «grattugia» (2006–2012)',/^Mac Pro/,'A1186 A1289'],
+  ['Mac Pro','Mac Pro cilindro (2013)',/^Mac Pro/,'A1481'],
+  ['Mac Pro','Mac Pro torre (2019–2023)',/^Mac Pro/,'A1991 A2304 A2786'],
+  ['Power Mac G4','Power Mac G4 Graphite e Quicksilver (1999–2002)',/^Power Mac G4( DP)? \((PCI|AGP|Gigabit|Digital Audio|Quicksilver)/],
+  ['Power Mac G4','Power Mac G4 Cube (2000)',/^Power Mac G4 \(Cube/],
+  ['Power Mac G4','Power Mac G4 MDD (2002–2004)',/^Power Mac G4( DP)? \((MDD|FW 800)/],
+  ['Power Mac G5','Power Mac G5 (2003–2005)',/^Power Mac G5/]];
+const gapRule=x=>GAP_GEN.find(g=>g[2].test(x[0])&&(!g[3]||g[3].split(' ').includes(x[1])))||null;
+/* senza regola: stesso codice modello (o stesso iPhone in più misure) = stessa scocca */
+const gapGenKey=(x,f)=>{const g=gapRule(x);if(g)return g[1]&&'r:'+g[1];if(/^iPhone \d|^iPhone X/.test(x[0]))return 'n:'+x[0].replace(/ (Plus|Max|mini)$/,'');return x[1]?'c:'+f+'|'+x[1]:'n:'+x[0]};
+function gapsData(L,mode){const G2=mode==='gen';const own=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))),wish=devices.filter(d=>d.wish),grp=new Map(),fams=new Map();
   L.forEach(x=>{const f=gapFam(x[0]);if(!grp.has(f))grp.set(f,[]);const a=grp.get(f);if(!a.some(y=>y[0]===x[0]))a.push(x)});
   /* i modelli senza parentesi rimasti soli («iBook SE», «iBook Firewire») vanno nella linea più specifica che li precede («iBook») */
   const names=[...new Set(L.map(x=>gapNorm(x[0])))],under=k=>{k=gapNorm(k);return names.filter(n=>n===k||n.startsWith(k+' ')).length};
   const real=[...grp.keys()].filter(f=>grp.get(f).length>=2).sort((a,b)=>b.length-a.length),loose=[...grp.keys()].filter(f=>under(f)>=2).sort((a,b)=>a.length-b.length);
   const pre=(n,f)=>{f=gapNorm(f);return n===f||n.startsWith(f+' ')};
-  const famX=x=>{const g=gapFam(x[0]);if(grp.get(g).length>=2)return g;const n=gapNorm(x[0]);return real.find(f=>pre(n,f))||loose.find(f=>pre(n,f))||g};
+  const famX0=x=>{const g=gapFam(x[0]);if(grp.get(g).length>=2)return g;const n=gapNorm(x[0]);return real.find(f=>pre(n,f))||loose.find(f=>pre(n,f))||EM_LINEE_T.find(f=>pre(n,f))||g};
+  const famX=x=>{if(G2){const r=gapRule(x);if(r)return r[0]}return famX0(x)};
   L.forEach(x=>{const f=famX(x);if(!fams.has(f))fams.set(f,[]);const a=fams.get(f);if(!a.some(y=>y[0]===x[0]))a.push(x)});
   const tok=s=>gapNorm(s).split(/[^a-z0-9]+/).filter(Boolean);
   /* ogni oggetto va a un solo modello: quello col nome più simile (alcuni modelli condividono Model ID o codice) */
@@ -3507,23 +3564,28 @@ function gapsData(L){const own=devices.filter(d=>!d.wish&&!['part','acc'].includ
   const out=[];
   for(const [f,xs] of fams){if(xs.length<2)continue;
     const inFam=own.filter(d=>famOf(d)===f);if(!inFam.length)continue;
-    const rows=xs.map(x=>({x,own:inFam.filter(d=>asg.get(d.id)===x),wish:wish.find(d=>wasg.get(d.id)===x)}));
+    let rows=xs.map(x=>({x,own:inFam.filter(d=>asg.get(d.id)===x),wish:wish.find(d=>wasg.get(d.id)===x)}));
+    if(G2){const by=new Map();rows.forEach(r=>{const k=gapGenKey(r.x,f);if(!k)return;if(!by.has(k))by.set(k,[]);by.get(k).push(r)});
+      rows=[...by].map(([k,rs])=>{const ms=rs.map(r=>r.x),fp=gapNorm(f).length,lb=k[0]==='r'?k.slice(2):[...ms].sort((p,q)=>p[0].length-q[0].length).map((x,i)=>i?x[0].slice(x[0].toLowerCase().startsWith(gapNorm(f))?fp:0).trim():x[0]).join(' · ');
+        return {gen:true,models:ms,x:[lb,[...new Set(ms.map(x=>x[1]).filter(Boolean))].join(' '),ms.length===1?ms[0][2]:'',ms[0][3]],own:[...new Set(rs.flatMap(r=>r.own))],wish:rs.map(r=>r.wish).find(Boolean)||wish.find(d=>gapNorm(d.nome)===gapNorm(lb))}});
+      if(rows.length<2&&!xs.some(x=>gapRule(x)))continue}
     out.push({f,rows,n:rows.filter(r=>r.own.length).length,tot:rows.length,loose:inFam.filter(d=>!asg.get(d.id))})}
   return out.sort((a,b)=>b.n/b.tot-a.n/a.tot||b.n-a.n||a.f.localeCompare(b.f))}
 function openGaps(){
-  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quanti modelli hai e quali mancano. Fonte: l'elenco dei modelli di The Apple Wiki; l'abbinamento usa Model ID, codice modello e nome.</p><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
+  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quali pezzi hai e quali mancano. «Per scocca» conta una volta sola le varianti dello stesso computer (processore, taglio, schermo Retina). Fonte: l'elenco dei modelli di The Apple Wiki.</p><div class="chips gpsel">${[['gen','Per scocca'],['models','Tutti i modelli']].map(([n,l])=>`<button class="chip ${LS.get('rd_gapmode','gen')===n?'on':''}" data-gm="${n}">${l}</button>`).join('')}</div><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
     const out=$('#gpo',el);
-    const draw=L=>{const G=gapsData(L);
+    let LL=null;const draw=L=>{LL=L;const md=LS.get('rd_gapmode','gen'),G=gapsData(L,md);
       if(!G.length){out.innerHTML='<p class="note">Nessuna linea Apple riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio.</p>';return}
       out.innerHTML=G.map((g,gi)=>`<div class="gapf"><div class="gaph"><b>${esc(g.f)}</b><small>${g.n} di ${g.tot}</small></div><div class="gbar"><i style="width:${Math.round(g.n/g.tot*100)}%"></i></div>
         <details class="more"${G.length<=2?' open':''}><summary>${g.n===g.tot?'✓ completa':`${g.tot-g.n} ${g.tot-g.n===1?'mancante':'mancanti'}`}${g.loose.length?` · ${g.loose.length} da abbinare`:''}</summary>
-        <div class="log">${g.rows.map((r,ri)=>`<div class="gapr ${r.own.length?'own':''}"><span class="lb"><b>${r.own.length?'✓ ':''}${esc(r.x[0])}</b><small>${esc([r.x[1],r.x[2]].filter(Boolean).join(' · '))}${r.own.length?' · '+esc(r.own.map(d=>d.luogo||'in collezione').join(', ')):''}</small></span>${r.own.length?'':r.wish?'<span class="gapw">💭 in wishlist</span>':`<button class="btn sm sec" data-gw="${gi}|${ri}">＋ Wishlist</button>`}</div>`).join('')}</div>
+        <div class="log">${g.rows.map((r,ri)=>`<div class="gapr ${r.own.length?'own':''}"><span class="lb"><b>${r.own.length?'✓ ':''}${esc(r.x[0])}</b><small>${esc(r.gen&&r.models.length>1?r.models.length+' varianti':[r.x[1],r.x[2]].filter(Boolean).join(' · '))}${r.own.length?' · '+esc(r.own.map(d=>d.luogo||'in collezione').join(', ')):''}</small></span>${r.own.length?'':r.wish?'<span class="gapw">💭 in wishlist</span>':`<button class="btn sm sec" data-gw="${gi}|${ri}">＋ Wishlist</button>`}</div>`).join('')}</div>
         ${g.loose.length?`<p class="note">Della linea ma non abbinati a un modello preciso: ${g.loose.map(d=>`<a href="#" data-go="${d.id}">${esc(d.nome)}</a>`).join(', ')}. Aggiungi il Model ID o il codice modello per abbinarli.</p>`:''}</details></div>`).join('');
       out.onclick=async e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();return openDetail(go.dataset.go)}
-        const b=e.target.closest('[data-gw]');if(!b)return;const [gi,ri]=b.dataset.gw.split('|').map(Number),x=G[gi].rows[ri].x;
+        const b=e.target.closest('[data-gw]');if(!b)return;const [gi,ri]=b.dataset.gw.split('|').map(Number),rw=G[gi].rows[ri],x=rw.gen&&rw.models.length>1?[rw.x[0],'','',rw.x[3]]:rw.gen?rw.models[0]:rw.x;
         const t=x[3]==='Mac'?(/book/i.test(x[0])?'Portatile':/imac|emac|classic|color classic/i.test(x[0])?'All-in-one':/xserve/i.test(x[0])?'Server':'Computer desktop'):/iphone/i.test(x[3])?'Smartphone':/ipad/i.test(x[3])?'Tablet':/ipod/i.test(x[3])?'Lettore musicale':'';
-        const w={id:uid(),nome:x[0],marca:'Apple',modello:x[1]||'',identifier:x[2]||'',tipologia:TIPI.includes(t)?t:'',linea:gapFam(x[0]),wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
+        const w={id:uid(),nome:x[0],marca:'Apple',modello:x[1]||'',identifier:x[2]||'',tipologia:TIPI.includes(t)?t:'',linea:G[gi].f,wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
         await saveDev(w);render();buzz('ok');b.outerHTML='<span class="gapw">💭 in wishlist</span>';toast(`«${x[0]}» in wishlist`,4000,{label:'APRI',fn:()=>openDetail(w.id)})}};
+    el.querySelector('.gpsel').onclick=e=>{const b=e.target.closest('[data-gm]');if(!b||!LL)return;LS.set('rd_gapmode',b.dataset.gm);el.querySelectorAll('[data-gm]').forEach(x=>x.classList.toggle('on',x===b));draw(LL)};
     awIndex().then(draw).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openGaps()))}});
 }
 function openAdd(){
