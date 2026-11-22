@@ -372,6 +372,7 @@ html.vt-pl::view-transition-new(root){animation:vt-fade-in .45s ease both}
 .peek.on .pk-card,.peek.on .pk-acts{transform:none;opacity:1}
 .peek.on .pk-acts{transition-delay:.07s}
 .peek.off .pk-card,.peek.off .pk-acts{transform:scale(.88);opacity:0;transition:transform .22s ease-in,opacity .22s}
+.peek.morph{background:rgba(20,12,4,0);-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0);pointer-events:none;transition:background .3s ease,-webkit-backdrop-filter .3s,backdrop-filter .3s}.peek.morph .pk-card{opacity:0;transition:opacity .22s ease .04s}.peek.morph .pk-acts{opacity:0;transform:translateY(14px) scale(.96);transition:opacity .16s ease,transform .22s ease}
 .pk-card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.45)}
 .pk-hero{position:relative;height:210px;background:#fff;display:grid;place-items:center;overflow:hidden}
 .pk-hero img{width:100%;height:100%;object-fit:contain}
@@ -662,7 +663,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .gbar{height:6px;border-radius:3px;background:var(--chip);margin:6px 4px 2px;overflow:hidden}.gbar i{display:block;height:100%;border-radius:3px;background:var(--acc);animation:bar-grow .7s cubic-bezier(.2,.8,.2,1) both}
 .gapr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.gapr:first-child{border-top:0}.gapr .lb{flex:1}.gapr.own b{color:var(--acc-ink)}.gapw{font-size:12.5px;color:var(--mute);white-space:nowrap}
 .m3h{position:relative}.m3c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;opacity:0;transition:opacity .6s ease}.m3h.ready .m3c{opacity:1}
-.m3l{position:absolute;inset:0;display:grid;place-items:center;color:#e9dcc7}.m3l .ldr svg{width:min(120px,30vw)}.m3err{color:#e2d4bf;text-align:center;font-size:13px;line-height:1.4;padding:0 22px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.m3l{position:absolute;inset:0;display:grid;place-items:center;color:#e9dcc7;transition:opacity .3s ease,transform .3s ease;animation:m3-up .4s ease both}.m3l.out{opacity:0;transform:scale(.92);pointer-events:none}.m3l .ldr svg{width:min(120px,30vw)}.m3err{color:#e2d4bf;text-align:center;font-size:13px;line-height:1.4;padding:0 22px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .pl .m3w{position:absolute;left:0;right:0;top:-6%;bottom:0;z-index:3}.pl .stage .o3{transition:opacity .6s ease}.pl .stage.m3on .o3{opacity:0}
 .m3tag{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:4;font:600 11.5px system-ui,sans-serif;color:rgba(255,236,200,.8);background:rgba(0,0,0,.32);padding:3px 10px;border-radius:999px;pointer-events:none;white-space:nowrap}
 .m3page{position:absolute;inset:0;display:flex;flex-direction:column;color:#f3e9da;background:radial-gradient(70% 45% at 50% 60%,#2a231c 0%,#0b0907 72%)}
@@ -670,7 +671,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .m3stage{position:relative;flex:1;min-height:0}.m3v{position:absolute;inset:0;z-index:2}
 .m3glow{position:absolute;left:50%;top:0;width:min(78vw,380px);height:64%;transform:translateX(-50%);background:linear-gradient(to bottom,rgba(255,226,170,.16),rgba(255,226,170,.07) 62%,transparent);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);pointer-events:none}
 .m3sw{border:0;border-radius:999px;padding:9px 14px;font:650 13.5px/1 system-ui,sans-serif;color:#2a1a08;background:linear-gradient(180deg,#ffe2ad,#f0b65c);box-shadow:0 4px 16px rgba(255,190,90,.35),inset 0 1px 0 rgba(255,255,255,.6);white-space:nowrap;transition:opacity .25s,transform .15s}.m3sw.wait{opacity:.45}.m3sw:active{transform:scale(.95)}
-.pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage.m3on .base{opacity:0}
+.pl .pl-sw{position:absolute;right:14px;top:30px;z-index:5}.pl .stage .base{transition:opacity .5s ease}.pl .stage.m3on .base{opacity:0}
 .m3base{position:absolute;left:50%;top:calc(82% - 22px);width:min(66vw,330px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,224,170,.16),rgba(0,0,0,.5) 70%,transparent);pointer-events:none}
 .m3size{display:flex;align-items:center;gap:10px;margin:0 16px 8px;padding:8px 12px;border-radius:16px;background:rgba(255,240,220,.08);color:rgba(243,233,218,.8);font-size:12.5px;z-index:3}.m3size[hidden]{display:none}.m3size input{flex:1;min-width:60px;accent-color:#ffc36b}.m3size b{min-width:58px;text-align:right;font-weight:700;color:#f3e9da;white-space:nowrap}.m3size .btn{padding:5px 10px}
 .page.m3root{animation:m3-in .32s ease both}.page.m3root.m3bye{animation:m3-out .48s ease-in both;pointer-events:none}
@@ -716,6 +717,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .hfly{position:fixed;left:0;top:0;z-index:45;object-fit:cover;background:center/cover no-repeat;pointer-events:none;will-change:transform,width,height;box-shadow:0 10px 30px rgba(0,0,0,.16)}
 .page.det.no-anim.fly-in{animation:fly-page .3s ease both}.page.det.fly-in .himg,.page.det.fly-in .hbg,.page.det.fly-out .himg,.page.det.fly-out .hbg{visibility:hidden}
 @keyframes fly-page{from{opacity:0}}.page.det .body{overscroll-behavior-y:none}.page.det.pd-drag .body,.page.det.pd-fly .body{overflow:hidden;touch-action:none}
+.page.det .hero>.hb,.page.det .hero>.hbr,.page.det .hero>.hpos{transition:opacity .22s ease}.page.det.pd-drag .hero>.hb,.page.det.pd-drag .hero>.hbr,.page.det.pd-drag .hero>.hpos{opacity:calc(1 - var(--pp,0)*4);transition:opacity .08s linear}
 .page.det.pd-drag{will-change:transform;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.28)}.page.det.pd-fly{pointer-events:none}.page.det.pd-fly .hero>:not(.himg):not(.hbg){opacity:0;transition:opacity .16s}.page.det.pd-fly .body{overflow:hidden}
 .pd-dim{position:fixed;inset:0;z-index:19;background:color-mix(in srgb,var(--bg) 55%,rgba(0,0,0,.35));pointer-events:none}
 .page.det.sw-drag{will-change:transform;box-shadow:0 0 0 1px var(--line),0 0 46px rgba(0,0,0,.22)}.page.det.sw-drag.pg-swapout{animation:none}
@@ -767,6 +769,9 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .page.det:not(.quiet) .cap::before{animation:cap-in .55s ease .2s both}
 .page.det:not(.quiet) .cap>small{animation:tx-in .5s cubic-bezier(.2,.85,.25,1) 0.34s both}
 .page.det:not(.quiet) .cap h1{animation:tx-in .6s cubic-bezier(.2,.85,.25,1) 0.40s both}
+.page.det.from-pk .cap>small,.page.det.from-pk .cap h1{animation:none}.pkfly{position:fixed;z-index:62;margin:0;pointer-events:none;transform-origin:0 0;will-change:transform}
+/* durante il volo della foto i comandi e la didascalia della scheda restano nascosti, poi compaiono in dissolvenza (niente comparse di colpo) */
+.page.det .hero>.cap{transition:opacity .3s ease}.page.det.fly-in .hero>:not(.himg):not(.hbg){opacity:0!important;transition:none!important}
 .page.det:not(.quiet) .hchip{animation:chip-in .45s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:0.52s}
 .page.det:not(.quiet) .hchip:nth-child(2){animation-delay:0.56s}.page.det:not(.quiet) .hchip:nth-child(3){animation-delay:0.60s}.page.det:not(.quiet) .hchip:nth-child(4){animation-delay:0.64s}.page.det:not(.quiet) .hchip:nth-child(5){animation-delay:0.68s}.page.det:not(.quiet) .hchip:nth-child(n+6){animation-delay:0.72s}
 .page.det:not(.quiet) .hb{animation:hb-in .42s cubic-bezier(.2,.9,.3,1.3) 0.30s both}
@@ -845,8 +850,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.14.2';
+const APP_VER='2.15';
 const NOVITA=[
+ ['2.15','2026-11-22',['Transizioni ripulite: dall\'anteprima (pressione lunga) alla scheda la foto e il nome volano al loro posto mentre il resto dell\'anteprima sfuma; aprendo una scheda i pulsanti e la didascalia sulla foto compaiono in dissolvenza invece che di colpo; trascinando la scheda per chiuderla i pulsanti sfumano man mano e la barra di stato cambia colore subito','Vista 3D: la scritta di caricamento sfuma via quando il modello è pronto; sul piedistallo del museo la base sfuma invece di sparire','Fold aperto (schermo largo): toccando l\'elenco, il menu, i filtri o la barra a sinistra, la pagina a destra viene sostituita invece di impilarsi (prima si potevano aprire decine di pagine una sopra l\'altra e, con Modifica, si sovrapponevano); Indietro torna all\'elenco in un passo']],
  ['2.14.2','2026-11-22',['Chiudere la scheda trascinandola in basso è fluido anche quando alzi il dito: il contenuto resta fermo (niente più scorrimento o rimbalzo che partiva insieme alla chiusura e la faceva andare a scatti); lo stesso per fogli e finestre']],
  ['2.14.1','2026-11-22',['Vista 3D: apertura con la luce che si accende, il piedistallo che sale e l\'oggetto che compare girando e si assesta; chiudendo l\'oggetto si ritira, il piedistallo scende e la luce si spegne','⇄ La trasformazione tra le due modalità ora gira nel verso opposto']],
  ['2.14','2026-11-21',['📏 Grandezza reale dei modelli 3D: il piedistallo è uguale per tutti e l\'oggetto si rimpicciolisce in proporzione, così un iPod shuffle non occupa quanto un portatile. Parte da una stima in base al tipo (shuffle 4 cm, telefono 12 cm, portatile 33 cm); nella vista 3D il tasto 📏 apre il cursore per il lato lungo in centimetri (2–60 cm), «Auto» torna alla stima. Vale anche nel museo']],
@@ -889,7 +895,7 @@ const IC=(()=>{const s=d=>`<svg class="ic" viewBox="0 0 24 24">${d}</svg>`;retur
   sun:s('<circle cx="12" cy="12" r="3.8"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/>'),
   back:s('<path d="M14.5 5.5 8 12l6.5 6.5"/>')}})();
 /* colore della barra di stato (Android) uguale a ciò che c'è in cima allo schermo */
-function setBar(){try{const top=typeof stack!=='undefined'&&stack[stack.length-1],dk=isDark();
+function setBar(t){try{const top=t!==undefined?t:typeof stack!=='undefined'&&stack[stack.length-1],dk=isDark();
   const c=!top?(dk?'#22180c':'#f6e6cc'):top.classList.contains('viewer')?'#000000':top.classList.contains('museum')?'#3a2716':top.querySelector('.hero.noph')?'#c97a12':top.querySelector('.hero')?'#1a1208':(dk?'#22180c':'#f6e6cc');
   document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');if(m.content!==c)m.content=c})}catch(e){}}
 function applyTheme(){const t=LS.get('rd_theme','auto'),r=document.documentElement;if(t==='auto')delete r.dataset.theme;else r.dataset.theme=t;
@@ -1161,19 +1167,26 @@ function icon(d){const t=(d.tipologia||'').toLowerCase();return /ricamb/.test(t)
 
 /* ============ pagine sovrapposte ============ */
 const stack=[];
+/* schermo largo (Fold aperto): un tocco nella metà sinistra (elenco, intestazione, barra, anteprima) apre la pagina al posto di quelle a destra, invece di impilarla */
+let LEFTTAP=false;
+addEventListener('pointerdown',e=>{if(!wide())return LEFTTAP=false;const t=e.target;if(!t.closest)return;if(t.closest('.page'))LEFTTAP=false;else if(!t.closest('.modal'))LEFTTAP=true},true);
+function collapsePages(){const old=stack.splice(0);old.forEach(x=>{x._close&&x._close();if(RM())x.remove();else{x.classList.add('pg-swapout');setTimeout(()=>x.remove(),220)}})}
 function openPage(title,body,{actions='',replace=false,mount,bare=false,cls=''}={}){
-  if(replace)swapTop();
+  const fold=!replace&&LEFTTAP&&wide()&&stack.length>0&&!/\b(museum|viewer)\b/.test(cls);LEFTTAP=false;
+  if(fold)collapsePages();else if(replace)swapTop();
   const el=document.createElement('div');el.className='page'+(cls?' '+cls:'')+(replace?' pg-swap':'');
   el.innerHTML=bare?`<div class="body bare">${body}</div>`:`<header><button class="ibtn" data-back aria-label="Indietro">${IC.back}</button><h2>${esc(title)}</h2><div class="row">${actions}</div></header><div class="body">${body}</div>`;
   document.body.append(el);stack.push(el);
   const st={p:stack.length};
-  replace?history.replaceState(st,''):history.pushState(st,'');
+  /* al posto delle pagine chiuse: si torna alla prima voce della cronologia delle pagine (il popstate che arriva trova già una sola pagina) */
+  if(fold){const n=(history.state&&history.state.p)||0;if(n>1)history.go(-(n-1));else history.replaceState(st,'')}
+  else replace||openPage.reuse?history.replaceState(st,''):history.pushState(st,'');openPage.reuse=false;
   el.addEventListener('click',e=>{if(e.target.closest('[data-back]'))history.back()});
   mount&&mount(el);lgScan(el);setBar();return el;
 }
 function swapTop(){const t=stack.pop();if(t){t._close&&t._close();if(RM())t.remove();else{t.classList.add('pg-swapout');setTimeout(()=>t.remove(),220)}}}
 addEventListener('popstate',()=>{const p=(history.state&&history.state.p)||0;if(stack.length<=p)return;
-  const rem=stack.splice(p);rem.forEach(x=>x._close&&x._close());setTimeout(setBar,0);
+  const rem=stack.splice(p);rem.forEach(x=>x._close&&x._close());setTimeout(()=>setBar(),0);
   const top=stack[stack.length-1];if(top&&top._refresh)setTimeout(()=>{if(stack[stack.length-1]===top)top._refresh()},0);
   const out=(rem.find(x=>x.classList.contains('mu-root'))||rem[rem.length-1])._out;
   const run=()=>{rem.forEach(x=>x.remove());out&&out.after&&out.after()};
@@ -1294,6 +1307,7 @@ function sheet(title,items){return new Promise(res=>{const m=document.createElem
 function pullClose(el,id,dim){
   const d=devices.find(x=>x.id===id),T=!wide()&&d&&d.foto&&d.foto.length?thumbOf(id):null,F=T&&heroRect(el),D=380;
   const fin=()=>{el._out=null;el.classList.add('pd-done');dim&&dim.remove();history.back()};
+  setBar(stack[stack.indexOf(el)-1]||null);
   if(dim){dim.style.transition=`opacity ${D}ms ease`;dim.style.opacity='0'}
   if(T&&F){const k=el.getBoundingClientRect().width/(el.offsetWidth||1),pr=(parseFloat(getComputedStyle(el).borderTopLeftRadius)||0)*k;F.rad[0]=Math.max(F.rad[0],pr);F.rad[1]=Math.max(F.rad[1],pr);
     T.el.style.visibility='hidden';el.classList.add('pd-fly','fly-out');el.style.transition='opacity .2s ease';el.style.opacity='0';
@@ -1392,13 +1406,13 @@ function openDetail(id,replace,morph,quiet,dir){
         if(mode===1)dx=can(ddx<0?1:-1)?ddx:ddx*.22;else{dx=ddx;dy=Math.max(0,t.clientY-sy)}
         if(!raf)raf=requestAnimationFrame(paint)},{passive:false});
       const paint=()=>{raf=0;if(mode===1){el.style.transform=`translate3d(${dx}px,0,0)`;return}if(mode!==2)return;
-        const p=Math.min(1,dy/(innerHeight*.6)),sc=1-p*.45;el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sc})`;if(dim)dim.style.opacity=String(1-p*1.15)};
+        const p=Math.min(1,dy/(innerHeight*.6)),sc=1-p*.45;el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sc})`;el.style.setProperty('--pp',p.toFixed(3));if(dim)dim.style.opacity=String(1-p*1.15)};
       const end=()=>{if(raf){cancelAnimationFrame(raf);raf=0;paint()}const m=mode;st=0;mode=0;if(m===2)return pullEnd();if(m!==1)return;const w=el.offsetWidth,k=dx<0?1:-1,fast=Math.abs(vx)>.45&&Math.abs(dx)>30&&Math.sign(vx)===Math.sign(dx);
         if((Math.abs(dx)>w*.22||fast)&&can(k)){el.style.transition='transform .22s cubic-bezier(.3,.7,.3,1)';el.style.transform=`translate3d(${-k*w}px,0,0)`;detailStep(d.id,k)}
         else{el.style.transition='transform .3s cubic-bezier(.2,.9,.3,1.12)';el.style.transform='';setTimeout(()=>{if(!el.style.transform){el.classList.remove('sw-drag');el.style.transition=''}},320);if(Math.abs(dx)>14&&!can(k))detailStep(d.id,k)}};
       const pullEnd=()=>{
         if(!(dy>110||(vy>.5&&dy>36))){el.style.transition='transform .38s cubic-bezier(.2,.9,.3,1.12)';el.style.transform='';if(dim){dim.style.transition='opacity .3s';dim.style.opacity='1';const x=dim;setTimeout(()=>x.remove(),380);dim=null}
-          setTimeout(()=>{if(!el.style.transform){el.classList.remove('pd-drag');el.style.transition='';el.style.transformOrigin=''}},400);return}
+          el.style.setProperty('--pp','0');setTimeout(()=>{if(!el.style.transform){el.classList.remove('pd-drag');el.style.transition='';el.style.transformOrigin=''}},400);return}
         pullClose(el,d.id,dim);dim=null};
       el.addEventListener('touchend',end,{passive:true});el.addEventListener('touchcancel',end,{passive:true})}
     const v0=DV;el._refresh=()=>{if(DV!==v0&&devices.some(x=>x.id===d.id))openDetail(d.id,true,false,true)};
@@ -3114,7 +3128,7 @@ async function mount3D(host,d,o={}){
     const up=e=>{if(!st.pts.has(e.pointerId))return;st.pts.delete(e.pointerId);if(st.pts.size<2)st.pinch=null;if(!st.pts.size){if(st.drag&&performance.now()-st.drag.t>90)st.vth=st.vph=0;st.drag=null}st.idle=performance.now();kick()};
     cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('dblclick',e=>{e.stopPropagation();api.reset()});
     cv.addEventListener('wheel',e=>{e.preventDefault();st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.k*(1+e.deltaY*.001)));kick()},{passive:false});
-    if(o.intro&&!RM())st.intro=performance.now();size();lab.remove();host.classList.add('ready');kick();api.cam=cam;api.st=st;
+    if(o.intro&&!RM())st.intro=performance.now();size();lab.classList.add('out');setTimeout(()=>lab.remove(),360);host.classList.add('ready');kick();api.cam=cam;api.st=st;
     /* seconda modalità: si prepara in sottofondo quando la prima è già visibile, così il cambio non ha vuoti */
     if(L[1]){(async()=>{try{const b2=await m3dBytes(L[1]);if(dead)return;const sec=await build(L[1],b2);if(dead){sec.mesh.dispose&&sec.mesh.dispose();return}
       sec.mesh.visible=false;meshes[1]=sec.mesh;spinG.add(sec.mesh);sizes.push(sec.size);pedestal();geo();st.fitTo=fitFor();o.onAlt&&o.onAlt();if(o.startAlt){meshes[0].visible=false;sec.mesh.visible=true;st.cur=1;o.onSwitch&&o.onSwitch(1)}else if(st.want===1)api.toggle();kick()}
@@ -5203,10 +5217,22 @@ function openPeek(id,src){
   const hide=()=>{closed=true;m.classList.remove('on');m.classList.add('off');setTimeout(()=>m.remove(),260)};
   const onPop=()=>{removeEventListener('popstate',onPop);if(!closed)hide()};addEventListener('popstate',onPop);
   const close=()=>new Promise(res=>{if(closed)return res();hide();const f=()=>{removeEventListener('popstate',f);res()};addEventListener('popstate',f);history.back()});
+  /* apri la scheda: la foto dell'anteprima vola nella scheda, il resto dell'anteprima sfuma e la scheda compare in dissolvenza */
+  const morph=()=>{const im=m.querySelector('.pk-hero img');if(RM()||!im||!ph){return close().then(()=>openDetail(d.id))}
+    closed=true;removeEventListener('popstate',onPop);const r=im.getBoundingClientRect(),x=parseFloat(getComputedStyle(m.querySelector('.pk-card')).borderTopLeftRadius)||0;
+    openPage.reuse=true;const el=openDetail(d.id,false,true);if(!el){m.remove();return}
+    im.style.visibility='hidden';m.classList.add('morph');buzz('tick');el.classList.add('from-pk');
+    /* il nome (e la riga sopra) volano sopra la foto dalla loro posizione nell'anteprima a quella nella scheda */
+    const tx=[['.pk-cap small','.cap>small'],['.pk-cap b','.cap h1']].map(([a,b])=>{const s0=m.querySelector(a),t=el.querySelector(b);if(!s0||!t)return null;const A=s0.getBoundingClientRect(),B=t.getBoundingClientRect(),cs=getComputedStyle(t);if(!B.height)return null;
+      const c=document.createElement('div');c.textContent=t.textContent;c.className='pkfly';['font','color','letterSpacing','textTransform','textShadow','lineHeight','overflowWrap','fontFeatureSettings'].forEach(k=>c.style[k]=cs[k]);
+      Object.assign(c.style,{left:B.left+'px',top:B.top+'px',width:B.width+'px',transform:`translate(${A.left-B.left}px,${A.top-B.top}px) scale(${parseFloat(getComputedStyle(s0).fontSize)/parseFloat(cs.fontSize)})`});
+      document.body.append(c);requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transition='transform .44s cubic-bezier(.2,.85,.25,1)';c.style.transform='none'}));return c}).filter(Boolean);
+    const txEnd=()=>tx.forEach(c=>{c.style.transition='opacity .26s ease';c.style.opacity='0';setTimeout(()=>c.remove(),300)});
+    heroFly(ph,im.currentSrc||im.src,{r:{left:r.left,top:r.top,width:r.width,height:r.height},rad:[x,x,0,0]},()=>el.isConnected?heroRect(el):null,{dur:440,onDone(){el.classList.remove('fly-in');txEnd()}}).style.zIndex='61';
+    setTimeout(()=>m.remove(),340)};
   m.addEventListener('click',async e=>{const b=e.target.closest('[data-pk]');
-    if(!b){if(!e.target.closest('.pk-card'))close();else{await close();openDetail(d.id)}return}
-    const a=b.dataset.pk;await close();
-    if(a==='open')openDetail(d.id);
+    if(!b){if(!e.target.closest('.pk-card'))close();else morph();return}
+    const a=b.dataset.pk;if(a==='open')return morph();await close();
     if(a==='sel')startSel(d.id);
     if(a==='on'||a==='ch'){manLog(d,null,a==='on'?'on':'charge');await saveDev(d);render();buzz('ok');toast(`${a==='on'?'⚡ Acceso':'🔋 Caricato'} oggi: «${d.nome}»`)}
     if(a==='mv'){const ls=[...new Set([...LUOGHI0,...devices.map(x=>x.luogo).filter(Boolean)])].filter(l=>l!==d.luogo);const l=await chooseLuogo(ls);if(l!=null&&setLuogo(d,l)){await saveDev(d);render();buzz('ok');toast(`📍 «${d.nome}» → ${l}`)}}

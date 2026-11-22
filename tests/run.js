@@ -1097,6 +1097,36 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.15: schermo largo (Fold) — i tocchi a sinistra sostituiscono le pagine a destra invece di impilarle', async () => {
+    const U = await phone('W15', { viewport: { width: 900, height: 900 } });
+    await U.evaluate(async () => { for (let i = 0; i < 4; i++) await saveDev({ id: 'w' + i, nome: 'Oggetto largo ' + i, tipologia: 'Portatile', creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); });
+    for (let i = 0; i < 6; i++) { await U.click('#bMenu'); await U.waitForTimeout(150); }
+    eq(await U.evaluate(() => stack.length), 1, 'sei tocchi sul menu: un solo menu aperto');
+    await U.click('#list [data-id="w1"]'); await U.waitForTimeout(350);
+    eq(await U.evaluate(() => [stack.length, stack[0].classList.contains('det'), history.state.p]), [1, true, 1], 'dal menu all\'oggetto: la scheda prende il posto del menu');
+    await U.evaluate(() => stack[0].querySelector('[data-edit]').click()); await U.waitForTimeout(350);
+    eq(await U.evaluate(() => stack.length), 2, 'Modifica dentro la scheda si apre sopra (a destra)');
+    await U.click('#list [data-id="w2"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [stack.length, document.querySelectorAll('.page:not(.pg-swapout)').length, /Oggetto largo 2/.test(stack[0].textContent)]), [1, 1, true], 'un altro oggetto dall\'elenco chiude modifica e scheda vecchie: niente pagine fuse');
+    await U.evaluate(() => history.back()); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [stack.length, history.state.p]), [0, 0], 'Indietro torna all\'elenco in un passo');
+    await U.context().close();
+  });
+
+  await test('2.15: dall\'anteprima (pressione lunga) alla scheda — la foto vola, l\'anteprima sfuma, una sola voce di cronologia', async () => {
+    const U = await phone('P15');
+    const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    await U.evaluate(async png => { await saveDev({ id: 'pk1', nome: 'Mouse in anteprima', marca: 'Apple', anno: 1998, tipologia: 'Periferica', foto: [png], creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); openPeek('pk1', document.querySelector('#list [data-id="pk1"]')); }, png);
+    await U.waitForSelector('.peek.on'); await U.waitForTimeout(350);
+    await U.evaluate(() => document.querySelector('[data-pk="open"]').click()); await U.waitForTimeout(60);
+    eq(await U.evaluate(() => [!!document.querySelector('.peek.morph'), !!document.querySelector('.hfly'), document.querySelectorAll('.pkfly').length, stack.length]), [true, true, 2, 1], 'la foto e il nome volano verso la scheda mentre l\'anteprima sfuma');
+    await U.waitForTimeout(900);
+    eq(await U.evaluate(() => [!!document.querySelector('.peek'), !!document.querySelector('.hfly,.pkfly'), stack[0].classList.contains('fly-in'), history.state.p, !!history.state.pk]), [false, false, false, 1, false], 'a fine volo resta solo la scheda; l\'anteprima non lascia voci nella cronologia');
+    await U.evaluate(() => history.back()); await U.waitForTimeout(450);
+    eq(await U.evaluate(() => [stack.length, history.state.p]), [0, 0], 'un Indietro torna all\'elenco');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
