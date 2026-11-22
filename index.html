@@ -486,7 +486,7 @@ html.vt-det-back::view-transition-new(root){animation:vt-fade-in .3s ease both}
 .btn:active,.res:active,.chip:active,.pill:active,.ibtn:active{transform:scale(.96)}
 .card:active,.gcard:active{transform:scale(.985)}
 .modal{animation:vt-fade-in .18s ease both}
-.modal>div{animation:pop-in .26s cubic-bezier(.2,.9,.3,1.25) both}
+.modal>div{animation:pop-in .26s cubic-bezier(.2,.9,.3,1.25) both}.modal>div,.modal>div *,.peek .pk-card{overscroll-behavior-y:none}
 @keyframes pop-in{from{opacity:0;transform:scale(.9) translateY(10px)}}
 #toast{animation:toast-in .32s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes toast-in{from{opacity:0;transform:translate(-50%,16px) scale(.94)}to{transform:translate(-50%,0)}}
@@ -715,7 +715,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 /* volo della foto tra miniatura e scheda */
 .hfly{position:fixed;left:0;top:0;z-index:45;object-fit:cover;background:center/cover no-repeat;pointer-events:none;will-change:transform,width,height;box-shadow:0 10px 30px rgba(0,0,0,.16)}
 .page.det.no-anim.fly-in{animation:fly-page .3s ease both}.page.det.fly-in .himg,.page.det.fly-in .hbg,.page.det.fly-out .himg,.page.det.fly-out .hbg{visibility:hidden}
-@keyframes fly-page{from{opacity:0}}.page.det .body{overscroll-behavior-y:contain}
+@keyframes fly-page{from{opacity:0}}.page.det .body{overscroll-behavior-y:none}.page.det.pd-drag .body,.page.det.pd-fly .body{overflow:hidden;touch-action:none}
 .page.det.pd-drag{will-change:transform;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.28)}.page.det.pd-fly{pointer-events:none}.page.det.pd-fly .hero>:not(.himg):not(.hbg){opacity:0;transition:opacity .16s}.page.det.pd-fly .body{overflow:hidden}
 .pd-dim{position:fixed;inset:0;z-index:19;background:color-mix(in srgb,var(--bg) 55%,rgba(0,0,0,.35));pointer-events:none}
 .page.det.sw-drag{will-change:transform;box-shadow:0 0 0 1px var(--line),0 0 46px rgba(0,0,0,.22)}.page.det.sw-drag.pg-swapout{animation:none}
@@ -845,8 +845,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.14.1';
+const APP_VER='2.14.2';
 const NOVITA=[
+ ['2.14.2','2026-11-22',['Chiudere la scheda trascinandola in basso è fluido anche quando alzi il dito: il contenuto resta fermo (niente più scorrimento o rimbalzo che partiva insieme alla chiusura e la faceva andare a scatti); lo stesso per fogli e finestre']],
  ['2.14.1','2026-11-22',['Vista 3D: apertura con la luce che si accende, il piedistallo che sale e l\'oggetto che compare girando e si assesta; chiudendo l\'oggetto si ritira, il piedistallo scende e la luce si spegne','⇄ La trasformazione tra le due modalità ora gira nel verso opposto']],
  ['2.14','2026-11-21',['📏 Grandezza reale dei modelli 3D: il piedistallo è uguale per tutti e l\'oggetto si rimpicciolisce in proporzione, così un iPod shuffle non occupa quanto un portatile. Parte da una stima in base al tipo (shuffle 4 cm, telefono 12 cm, portatile 33 cm); nella vista 3D il tasto 📏 apre il cursore per il lato lungo in centimetri (2–60 cm), «Auto» torna alla stima. Vale anche nel museo']],
  ['2.13','2026-11-21',['🧩 Cosa manca «Per scocca»: le varianti dello stesso computer contano come un pezzo solo (es. MacBook Pro in alluminio 2006–2008, MacBook Pro unibody e Retina 2008–2015, iBook G3 Clamshell, iBook G3 bianco, iBook G4); misure, processori e schermi diversi non fanno più una voce a parte. «Tutti i modelli» mostra ancora l\'elenco completo','Piedistallo 3D più pulito: il chiarore del piano non passa più sopra il modello e spariscono i puntini sparsi della scansione sotto la base (il tavolo su cui era appoggiato l\'oggetto)']],
@@ -1380,9 +1381,11 @@ function openDetail(id,replace,morph,quiet,dir){
       const bd=()=>$('.body',el);
       el.addEventListener('touchstart',e=>{st=0;mode=0;dx=dy=0;if(e.touches.length!==1||el.classList.contains('pd-fly')||e.target.closest('.thumbs,.photos,.chips,.chart,.pcmp,input,textarea,select,.hchips,.modal'))return;sx=lx=e.touches[0].clientX;sy=ly=e.touches[0].clientY;if(sx<24||sx>innerWidth-24)return;st=lt=Date.now();vx=vy=0},{passive:true});
       el.addEventListener('touchmove',e=>{if(!st||mode<0)return;const t=e.touches[0],ddx=t.clientX-sx,ddy=t.clientY-sy;
+        /* tirando giù dalla cima: niente scorrimento né rimbalzo nativo fin dal primo movimento, così il dito sposta solo la scheda */
+        if(!mode&&ddy>0&&ddy>=Math.abs(ddx)&&bd().scrollTop<=0&&e.cancelable&&!RM())e.preventDefault();
         if(!mode){if(Math.abs(ddx)<10&&Math.abs(ddy)<10)return;if(RM()){mode=-1;return}
           if(Math.abs(ddx)>Math.abs(ddy)*1.3){mode=1;el.style.transition='none';el.classList.add('sw-drag')}
-          else if(ddy>0&&Math.abs(ddy)>Math.abs(ddx)*1.2&&bd().scrollTop<=0){mode=2;sy=t.clientY;el.style.transition='none';el.style.transformOrigin=`${sx-el.getBoundingClientRect().left}px ${sy}px`;el.classList.add('pd-drag');
+          else if(ddy>0&&Math.abs(ddy)>Math.abs(ddx)*1.2&&bd().scrollTop<=0){mode=2;sy=t.clientY;el.style.transition='none';el.style.transformOrigin=`${sx-el.getBoundingClientRect().left}px ${sy}px`;el.classList.add('pd-drag');bd().scrollTop=0;
             dim=document.createElement('div');dim.className='pd-dim';el.before(dim)}
           else{mode=-1;return}}
         if(e.cancelable)e.preventDefault();const now=Date.now();if(now>lt){vx=(t.clientX-lx)/(now-lt);vy=(t.clientY-ly)/(now-lt)}lx=t.clientX;ly=t.clientY;lt=now;
@@ -5062,7 +5065,7 @@ $('#list').addEventListener('contextmenu',e=>{if(e.target.closest('[data-id]'))e
     for(let el=e.target;el&&el!==card.parentElement;el=el.parentElement)if(el.scrollTop>0)return;
     g={card,host:card.closest('.modal,.peek'),y:e.touches[0].clientY,x:e.touches[0].clientX,dy:0,on:false,t:Date.now()}},{passive:true});
   addEventListener('touchmove',e=>{if(!g)return;const dy=e.touches[0].clientY-g.y,dx=e.touches[0].clientX-g.x;
-    if(!g.on){if(dy<8){if(dy<-6||Math.abs(dx)>12)g=null;return}if(Math.abs(dx)>dy){g=null;return}g.on=true;g.card.style.transition='none';g.card.style.animation='none';g.t=Date.now();g.y0=dy}
+    if(!g.on){if(dy>0&&dy>=Math.abs(dx)&&e.cancelable)e.preventDefault();if(dy<8){if(dy<-6||Math.abs(dx)>12)g=null;return}if(Math.abs(dx)>dy){g=null;return}g.on=true;g.card.style.transition='none';g.card.style.animation='none';g.t=Date.now();g.y0=dy}
     if(e.cancelable)e.preventDefault();g.dy=Math.max(0,dy-g.y0);g.card.style.transform=`translate3d(0,${g.dy}px,0)`},{passive:false});
   addEventListener('touchend',()=>{if(!g||!g.on){g=null;return}const G=g;g=null;const v=G.dy/Math.max(1,Date.now()-G.t);
     if(G.dy>110||(v>.55&&G.dy>36)){G.card.style.transition='transform .2s ease';G.card.style.transform=`translate3d(0,${innerHeight}px,0)`;buzz('tick');setTimeout(()=>{if(G.host.isConnected)G.host.click()},120)}

@@ -1083,6 +1083,20 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.14.2: chiudendo la scheda trascinandola in basso il contenuto non scorre (niente doppio movimento)', async () => {
+    const U = await phone('M11', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { await saveDev({ id: 'pc', nome: 'Scheda lunga', tipologia: 'Portatile', note: 'x\n'.repeat(300), creato: Date.now() }); render(); openDetail('pc'); document.addEventListener('touchmove', e => { (window._pm = window._pm || []).push(e.defaultPrevented) }); });
+    await U.waitForSelector('.page.det'); await U.waitForTimeout(500);
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await T('touchStart', 200, 150); for (let i = 1; i <= 10; i++) { await T('touchMove', 200, 150 + i * 18); await U.waitForTimeout(16); }
+    ok(await U.evaluate(() => window._pm.length && window._pm.every(Boolean)), 'dalla cima ogni movimento verso il basso è della scheda: lo scorrimento nativo non parte');
+    eq(await U.evaluate(() => { const b = document.querySelector('.page.det .body'); return [document.querySelector('.page.det').classList.contains('pd-drag'), getComputedStyle(b).overflowY, b.scrollTop]; }), [true, 'hidden', 0], 'durante il trascinamento il contenuto è bloccato');
+    await T('touchEnd'); await U.waitForTimeout(60);
+    eq(await U.evaluate(() => { const p = document.querySelector('.page.det'); return p ? [getComputedStyle(p.querySelector('.body')).overflowY, p.querySelector('.body').scrollTop] : ['chiusa', 0]; }), ['hidden', 0], 'alzando il dito la scheda si chiude con il contenuto fermo');
+    await U.waitForTimeout(600); ok(await U.evaluate(() => !document.querySelector('.page.det')), 'scheda chiusa');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
