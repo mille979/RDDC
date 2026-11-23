@@ -709,7 +709,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     ok(it.some(x => /Duplica/.test(x[0])) && it[it.length - 1][0].includes('Elimina') && it[it.length - 1][1], 'azioni raggruppate, Elimina in rosso: ' + JSON.stringify(it));
     await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /Duplica/.test(b.textContent)).click()); await U.waitForTimeout(500);
     ok(await U.evaluate(() => devices.some(x => x.nome === 'Macintosh SE (copia)')), 'la voce del foglio esegue l\'azione');
-    await U.evaluate(() => goBase(() => openMenu())); await U.waitForTimeout(400);
+    await U.evaluate(() => goBase(() => openSettings())); await U.waitForTimeout(400);
     eq(await U.evaluate(() => ['ai', 'db', 'exp', 'imp'].map(k => !!document.querySelector(`[data-m="${k}"]`)).concat([!!document.querySelector('#px'), !!document.querySelector('[data-m="gem"]')])), [true, true, true, true, false, false], 'voci raggruppate, proxy personale tolto');
     await U.evaluate(() => { window._dl = []; window.dl = (n, t, c) => window._dl.push(n); });
     await U.click('[data-m="exp"]'); await U.waitForSelector('.modal.sheet');
@@ -772,7 +772,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
       if (/\/systems\/apple\/powerbook_g4\/$/.test(u)) return r.fulfill({ status: 200, headers: H, body: '<a href="/systems/apple/powerbook_g4/specs/powerbook_g4_400.html">PowerBook G4 400 (Original - Ti)</a><a href="/systems/apple/powerbook_g4/specs/powerbook_g4_500.html">PowerBook G4 500 (Original - Ti)</a>' });
       if (/powerbook_g4_400\.html$/.test(u)) return r.fulfill({ status: 200, headers: H, body: SPEC });
       return r.fulfill({ status: 404, headers: H, body: '' }); });
-    await U.evaluate(() => goBase(() => openMenu())); await U.waitForTimeout(300); await U.click('[data-m="emw"]'); await U.waitForTimeout(300);
+    await U.evaluate(() => goBase(() => openSettings())); await U.waitForTimeout(300); await U.click('[data-m="emw"]'); await U.waitForTimeout(300);
     ok(await U.evaluate(() => /export default/.test(stack[stack.length - 1].querySelector('pre').textContent)), 'codice del worker nella pagina');
     await U.fill('#px', 'rddc.prova.workers.dev'); await U.click('[data-w="save"]'); await U.waitForFunction(() => /Funziona|⚠️/.test(document.querySelector('#pxo').textContent));
     eq(await U.evaluate(() => [LS.get('rd_proxy'), /✅ Funziona/.test(document.querySelector('#pxo').textContent), proxies()]), ['https://rddc.prova.workers.dev', true, ['https://rddc.prova.workers.dev']], 'collegato e provato; si usa solo il worker');
@@ -979,7 +979,9 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const U = await phone('M4');
     await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await saveDev({ id: 'cv', nome: 'ThinkPad X41 Tablet', tipologia: 'Portatile', creato: Date.now(), m3d: { id: 'a', nome: 'aperto.spz', size: 10, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('modello aperto'), rot: [0, 0, 0] } }); render(); openDetail('cv'); });
     await U.waitForTimeout(400);
-    await U.click('.page.det [data-m3add2]'); await U.waitForSelector('#ml1');
+    eq(await U.evaluate(() => [...document.querySelectorAll('.page.det .m3sec~.row button')].map(b => b.textContent.trim())), ['🧊 Guarda in 3D', '🏛️ Sul piedistallo', '⋯ Opzioni'], 'nella scheda solo i tasti principali; il resto nelle Opzioni');
+    await U.click('.page.det [data-m3more]'); await U.waitForSelector('.modal.sheet'); await U.waitForTimeout(250);
+    await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /seconda modalità/.test(b.textContent)).click()); await U.waitForSelector('#ml1');
     eq(await U.evaluate(() => [document.querySelector('#ml1').value, document.querySelector('#ml2').value]), ['Portatile', 'Tablet'], 'nomi proposti');
     await U.fill('#ml2', 'Modalità tablet');
     const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.click('.modal [data-y]')]);
@@ -1171,6 +1173,69 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await U.evaluate(() => [document.querySelector('.tm-yr span:not(.out)').textContent, document.querySelector('.tm-era').textContent]), ['1999', 'Epoca: Acqua e caramelle'], 'trascinando il righello si torna indietro di anni e cambia epoca');
     await U.evaluate(() => document.querySelector('.tm-l.here .tm-c').click()); await U.waitForTimeout(400);
     ok(await U.evaluate(() => stack[stack.length - 1].classList.contains('det')), 'tocco su un pezzo dell\'anno: si apre la scheda');
+    await U.context().close();
+  });
+
+  await test('2.17: Menu più corto e Impostazioni a sezioni; scontorno tra i dati da completare; testo non selezionabile con la pressione lunga', async () => {
+    const U = await phone('S17');
+    await U.evaluate(() => openMenu()); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => [!!document.querySelector('[data-m="set"]'), !!document.querySelector('.page [data-m="theme"]'), !!document.querySelector('.page [data-m="db"]'), !!document.querySelector('.page [data-m="tm"]')]), [true, false, false, false], 'nel Menu solo gli strumenti e la voce Impostazioni');
+    await U.click('[data-m="set"]'); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [...stack[stack.length - 1].querySelectorAll('.sec-t')].map(x => x.textContent)), ['Aspetto', 'Dati importati', 'Promemoria', 'Collegamenti', 'Backup', 'Zona pericolosa'], 'impostazioni divise per sezioni');
+    await U.evaluate(() => stack[stack.length - 1].querySelector('[data-m="theme"][data-v="dark"]').click()); await U.waitForTimeout(500);
+    eq(await U.evaluate(() => LS.get('rd_theme')), 'dark', 'le impostazioni funzionano dalla nuova pagina');
+    await U.evaluate(async () => { LS.set('rd_theme', 'auto'); applyTheme(); await saveDev({ id: 'sc1', nome: 'Mac senza scontorno', tipologia: 'Portatile', foto: ['data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='], creato: Date.now() }); await saveDev({ id: 'sc2', nome: 'Cavo', tipologia: 'Cavo', creato: Date.now() }); render(); });
+    eq(await U.evaluate(() => [missing(devices.find(d => d.id === 'sc1')).includes('scontorno'), missing(devices.find(d => d.id === 'sc2')).includes('scontorno')]), [true, false], 'scontorno mancante per gli oggetti, non per accessori e ricambi');
+    await U.evaluate(() => goBase(() => openDetail('sc1'))); await U.waitForTimeout(500);
+    await U.evaluate(() => document.querySelector('.page.det [data-fix="scontorno"]').click()); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => /scontorno/i.test(stack[stack.length - 1].textContent) && !!stack[stack.length - 1].querySelector('#cuse')), 'toccando «Scontorno per il museo» si apre lo strumento di scontorno');
+    eq(await U.evaluate(() => { const c = document.querySelector('#list [data-id]'); return c ? getComputedStyle(c).webkitUserSelect || getComputedStyle(c).userSelect : 'none'; }), 'none', 'le schede dell\'elenco non selezionano il testo');
+    await U.context().close();
+  });
+
+  await test('2.17: museo con due viste — scaffali e linea del tempo, ricorda l\'ultima', async () => {
+    const U = await phone('U17');
+    await U.evaluate(async () => { for (const [i, a] of [[1, '1999'], [2, '2005'], [3, '2010']]) await saveDev({ id: 'mu' + i, nome: 'Pezzo ' + a, marca: 'Apple', anno: a, tipologia: 'Portatile', foto: ['data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='], creato: Date.now() }); render(); LS.set('rd_muview', ''); document.querySelectorAll('.modal').forEach(m => m.remove()); openMuseum(); });
+    await U.waitForSelector('.mu-root [data-muview="tm"]'); await U.click('.mu-root [data-muview="tm"]'); await U.waitForTimeout(800);
+    eq(await U.evaluate(() => [stack.length, stack[0].classList.contains('tmach'), LS.get('rd_muview')]), [1, true, 'tm'], 'il tasto ⏳ porta alla linea del tempo al posto degli scaffali');
+    await U.click('.tmach [data-muview="shelf"]'); await U.waitForTimeout(800);
+    eq(await U.evaluate(() => [stack.length, stack[0].classList.contains('mu-root')]), [1, true], 'il tasto 🏛️ riporta agli scaffali');
+    await U.evaluate(() => { LS.set('rd_muview', 'tm'); goBase(() => openMuseum()); }); await U.waitForTimeout(900);
+    ok(await U.evaluate(() => stack[0] && stack[0].classList.contains('tmach')), 'il museo si riapre nell\'ultima vista usata');
+    await U.context().close();
+  });
+
+  await test('2.17: Mercatino — pulsante sopra il +, riconoscimento, verdetto, prezzo, wishlist', async () => {
+    const U = await phone('K17');
+    await U.evaluate(async () => { await saveDev({ id: 'ib', nome: 'iBook G3 Clamshell', marca: 'Apple', modello: 'M2453', anno: '1999', tipologia: 'Portatile', luogo: 'Damiano', creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove());
+      LS.set('rd_gem', { key: 'finta' }); window.mkIdentify = async () => ({ o: { marca: 'Apple', nome: 'iBook G3 Clamshell', modello: 'M2453', anno: 1999, tipologia: 'Portatile', certezza: 'alta', prezzo_cartellino: 40 }, model: 'finto' });
+      window.valueEstimate = async () => ({ min: 50, max: 120, tipico: 80, base: 'vendite recenti' });
+      window.pickPhoto = async () => { const c = document.createElement('canvas'); c.width = 320; c.height = 240; const g = c.getContext('2d'); g.fillStyle = '#eee'; g.fillRect(0, 0, 320, 240); g.fillStyle = '#28f'; g.fillRect(80, 60, 160, 120); return await new Promise(r => c.toBlob(r, 'image/png')); }; });
+    const lb = await U.evaluate(() => { const l = document.querySelector('#fabLens').getBoundingClientRect(), f = document.querySelector('#fab').getBoundingClientRect(); return [l.bottom <= f.top, Math.abs((l.left + l.width / 2) - (f.left + f.width / 2)) < 3]; });
+    eq(lb, [true, true], 'il pulsante del mercatino sta impilato sopra il +');
+    await U.click('#fabLens'); await U.waitForSelector('.page.market');
+    await U.evaluate(() => document.querySelector('[data-mk="gal"]').click()); await U.waitForSelector('.mk-v', { timeout: 8000 }); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [document.querySelector('.mk-v').classList.contains('mk-has'), /Damiano/.test(document.querySelector('.mk-v').textContent), document.querySelector('.mk-val b').textContent, document.querySelector('.mk-deal').textContent]), [true, true, '€ 50–120', '🟢 Affare'], 'ce l\'hai già (con il luogo), forbice di prezzo, cartellino giudicato');
+    await U.evaluate(() => { window.mkIdentify = async () => ({ o: { marca: 'Apple', nome: 'Power Mac G4 Cube', modello: 'M7886', anno: 2000, tipologia: 'Computer desktop', certezza: 'media' }, model: 'finto' }); document.querySelector('[data-mk="again"]').click(); });
+    await U.waitForTimeout(300); await U.evaluate(() => document.querySelector('[data-mk="gal"]').click()); await U.waitForFunction(() => document.querySelector('.mk-v.mk-miss'), null, { timeout: 8000 });
+    const inp = '.mk-ask input'; await U.fill(inp, '150'); await U.waitForTimeout(200);
+    eq(await U.evaluate(() => document.querySelector('.mk-deal').textContent), '🔴 Caro', 'prezzo chiesto alto: caro');
+    await U.click('[data-mk="wish"]'); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => { const w = devices.find(d => d.wish && /Cube/.test(d.nome)); return w && [w.w_budget, w.foto.length, /mercatino/.test(w.w_note)]; }), ['150', 1, true], 'in wishlist con la foto scattata e il prezzo chiesto come budget');
+    await U.context().close();
+  });
+
+  await test('2.17: carta da collezione — epoca, rarità, retro con l\'etichetta, si gira', async () => {
+    const U = await phone('C17');
+    await U.evaluate(async () => { await saveDev({ id: 'cd1', nome: 'iBook G3', marca: 'Apple', modello: 'M2453', emc: '1859', seriale: 'UV9441234', anno: '1999', tipologia: 'Portatile', stato: 'Funzionante', valore: '200', tags: ['Raro'], cpu: 'PowerPC G3 300 MHz', ram: '64 MB', creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); openCard(devices.find(d => d.id === 'cd1')); });
+    await U.waitForSelector('.cd'); await U.waitForTimeout(1900);
+    eq(await U.evaluate(() => { const c = document.querySelector('.cd'); return [c.dataset.era, c.dataset.rar, document.querySelector('.cd-rar').textContent.trim(), document.querySelectorAll('.cd-stats div').length, !document.querySelector('.cd-scene').classList.contains('printing')]; }), ['2', '4', '★★★★★ Leggendaria', 3, true], 'epoca «acqua e caramelle», rarità calcolata, statistiche, stampa finita');
+    eq(await U.evaluate(() => [...document.querySelectorAll('.cd-kv span')].map(x => x.textContent)), ['Model No.', 'EMC', 'Serial No.'], 'retro: l\'etichetta con i dati veri della scheda');
+    const b = await U.evaluate(() => { const r = document.querySelector('.cd-scene').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    await U.mouse.click(b.x, b.y); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => document.querySelector('.cd').classList.contains('flip')), 'tocco: la carta si gira');
+    await U.evaluate(() => goBase(() => openDetail('cd1'))); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => !!document.querySelector('.page.det .acts-h [data-card]')), 'dalla scheda: ⋯ → Carta da collezione');
     await U.context().close();
   });
 
