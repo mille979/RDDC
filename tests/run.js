@@ -1127,6 +1127,53 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.16: aptica granulare — scatti, crescendo con tonfo, spegnibile; su iPhone l\'interruttore nascosto', async () => {
+    const U = await phone('H16');
+    const r = await U.evaluate(() => { const log = []; navigator.vibrate = p => { log.push(p); return true }; HAP.ios = false; LS.set('rd_buzz', true);
+      hap.tick(.5); hap.ramp(380); const ramp = log[log.length - 1]; hap.cancel(); LS.set('rd_buzz', false); const n = log.length; hap.thud(); buzz('ok'); const off = log.length === n; LS.set('rd_buzz', true);
+      HAP.ios = true; HAP.last = 0; let clicks = 0; const oc = HTMLLabelElement.prototype.click; HTMLLabelElement.prototype.click = function () { clicks++; return oc.call(this) }; let bubbled = 0; const cl = () => bubbled++; document.addEventListener('click', cl); hap.tick(.5); document.removeEventListener('click', cl); HTMLLabelElement.prototype.click = oc; HAP.ios = false;
+      return { first: log[0], ramp, sum: ramp.reduce((a, b) => a + b, 0), last: ramp[ramp.length - 1], off, clicks, bubbled, left: document.querySelectorAll('head label').length }; });
+    ok(typeof r.first === 'number' && r.first > 0 && r.first < 15, 'scatto breve');
+    ok(Array.isArray(r.ramp) && r.ramp.length > 8 && r.sum >= 380 && r.sum < 460 && r.last >= 30, 'crescendo lungo quanto il volo, chiuso da un tonfo');
+    ok(r.off, 'con le vibrazioni spente non vibra niente');
+    eq([r.clicks, r.bubbled, r.left], [1, 0, 0], 'su iPhone: uno scatto con l\'interruttore nascosto, senza clic che arrivano all\'app e senza lasciare elementi');
+    await U.context().close();
+  });
+
+  await test('2.16: RDDC Wrapped — dati dell\'anno, storie animate, carta finale da condividere', async () => {
+    const U = await phone('R16');
+    await U.evaluate(async () => { const mk = (id, o) => saveDev({ id, tipologia: 'Portatile', creato: Date.now(), ...o });
+      await mk('a1', { nome: 'iBook G3', marca: 'Apple', anno: '1999', acq_anno: '2025', acq_prezzo: '40', valore: '120', manutenzioni: [{ data: '2025-03-01', tipo: 'on' }, { data: '2025-03-01', tipo: 'charge' }] });
+      await mk('a2', { nome: 'PowerBook G4', marca: 'Apple', anno: '2003', acq_anno: '2025', acq_prezzo: '70', valore: '500' });
+      await mk('a3', { nome: 'Game Boy', marca: 'Nintendo', anno: '1989', tipologia: 'Console', acq_anno: '2025', acq_prezzo: '30', valore: '25', interventi: [{ data: '2025-05-02', tipo: 'Pulizia' }] });
+      await mk('a4', { nome: 'Cavo', tipologia: 'Cavo', acq_anno: '2025' }); await mk('a5', { nome: 'Vecchio', marca: 'Apple', anno: '1984', acq_anno: '2024' }); await mk('w1', { nome: 'Desiderio', wish: true, acq_anno: '2025' }); render(); });
+    const D = await U.evaluate(() => { const D = wrapData(2025); return [wrapYears().join(), D.yr.length, D.acc, D.spent, D.worth, D.deal.nome, D.oldest.nome, D.brand.join(), D.on, D.ch, D.days, D.inter, wrapSlides(D).map(s => s.k).join()]; });
+    eq(D, ['2025,2024', 4, 1, 140, 645, 'PowerBook G4', 'Game Boy', 'Apple,2', 1, 1, 1, 1, 'intro,mosaic,money,deal,old,dec,brand,man,lab,end'], 'numeri dell\'anno: pezzi, spesa, valore, colpo, il più anziano, marca, giro, laboratorio');
+    await U.evaluate(() => openWrapped(2025)); await U.waitForSelector('.wr-s.s-intro'); await U.waitForTimeout(2600);
+    eq(await U.evaluate(() => document.querySelector('.s-intro .wn').textContent), '4', 'il numero conta fino al totale');
+    await U.evaluate(() => { const r = document.querySelector('.wr-st'), o = { clientX: innerWidth * .8, clientY: 400, bubbles: true, pointerId: 1 }; r.dispatchEvent(new PointerEvent('pointerdown', o)); r.dispatchEvent(new PointerEvent('pointerup', o)); }); await U.waitForTimeout(700);
+    eq(await U.evaluate(() => [!!document.querySelector('.wr-s.s-mosaic:not(.out)'), document.querySelectorAll('.wr-pb .done').length]), [true, 1], 'tocco a destra: storia successiva, barra completata');
+    await U.evaluate(() => { const r = document.querySelector('.wr-st'), o = { clientX: 20, clientY: 400, bubbles: true, pointerId: 1 }; r.dispatchEvent(new PointerEvent('pointerdown', o)); r.dispatchEvent(new PointerEvent('pointerup', o)); }); await U.waitForTimeout(700);
+    ok(await U.evaluate(() => !!document.querySelector('.wr-s.s-intro:not(.out)')), 'tocco a sinistra: storia precedente');
+    const blob = await U.evaluate(async () => { const b = await wrShareImage(wrapData(2025)); return [b.type, b.size > 20000]; });
+    eq(blob, ['image/png', true], 'carta finale 1080×1920 da condividere');
+    await U.context().close();
+  });
+
+  await test('2.16: Macchina del tempo — anni in profondità, righello, epoche', async () => {
+    const U = await phone('T16');
+    await U.evaluate(async () => { const mk = (id, anno, o = {}) => saveDev({ id, nome: 'Pezzo ' + anno + id, marca: 'Apple', anno, tipologia: 'Portatile', creato: Date.now(), ...o });
+      await mk('t1', '1984'); await mk('t2', '1999'); await mk('t3', '1999'); await mk('t4', '2010'); await mk('t5', '2010'); await mk('t6', '2010'); await mk('t7', '2003', { wish: true }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); openTimeMachine(); });
+    await U.waitForSelector('.tm-l', { state: 'attached' }); await U.waitForTimeout(3600);
+    eq(await U.evaluate(() => [document.querySelectorAll('.tm-l').length, document.querySelector('.tm-yr span:not(.out)').textContent, document.querySelector('.tm-era').textContent, document.querySelector('.tm-cap').textContent]), [3, '2010', 'Epoca: Alluminio', '3 pezzi · Apple'], 'entrata: volo fino all\'anno con più pezzi; la wishlist resta fuori');
+    const r = await U.evaluate(() => { const b = document.querySelector('.tm-ru').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + 30 }; });
+    await U.mouse.move(r.x, r.y); await U.mouse.down(); for (let i = 1; i <= 12; i++) { await U.mouse.move(r.x + i * 53, r.y); await U.waitForTimeout(16); } await U.waitForTimeout(180); await U.mouse.up(); await U.waitForTimeout(1500);
+    eq(await U.evaluate(() => [document.querySelector('.tm-yr span:not(.out)').textContent, document.querySelector('.tm-era').textContent]), ['1999', 'Epoca: Acqua e caramelle'], 'trascinando il righello si torna indietro di anni e cambia epoca');
+    await U.evaluate(() => document.querySelector('.tm-l.here .tm-c').click()); await U.waitForTimeout(400);
+    ok(await U.evaluate(() => stack[stack.length - 1].classList.contains('det')), 'tocco su un pezzo dell\'anno: si apre la scheda');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
