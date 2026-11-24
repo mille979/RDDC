@@ -769,6 +769,10 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .mk-h{display:flex;gap:12px;align-items:center}.mk-h img{width:58px;height:58px;border-radius:16px;object-fit:cover;flex:none}.mk-h b{display:block;font-size:19px;line-height:1.2}.mk-h small{display:block;opacity:.72;font-size:13px;margin-top:2px}
 .mk-v{--i:5;margin:12px 0 8px;padding:13px 15px;border-radius:20px;background:rgba(255,255,255,.08);animation:wr-pop .6s cubic-bezier(.2,.9,.3,1.3) both .25s}.mk-v b{display:block;font-size:17px}.mk-v small{display:block;opacity:.88;margin-top:4px;font-size:13.5px;line-height:1.35}
 .mk-has{background:rgba(67,224,140,.2);box-shadow:inset 0 0 0 1px rgba(67,224,140,.4)}.mk-wish{background:rgba(150,110,255,.22);box-shadow:inset 0 0 0 1px rgba(150,110,255,.45)}.mk-same{background:rgba(90,200,255,.18);box-shadow:inset 0 0 0 1px rgba(90,200,255,.4)}.mk-miss{background:rgba(255,170,80,.2);box-shadow:inset 0 0 0 1px rgba(255,170,80,.45)}
+.mk-maybe{background:rgba(255,210,90,.16);box-shadow:inset 0 0 0 1px rgba(255,210,90,.45)}.mk-cands{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.mk-cands button[data-mk=pick]{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:14px;padding:7px 10px 7px 7px;background:rgba(255,255,255,.1);color:#fff;text-align:left;animation:wr-rise .45s ease both}
+.mk-cands img,.mk-cands i{width:40px;height:40px;border-radius:10px;object-fit:cover;flex:none;font-style:normal;font-size:26px;display:grid;place-items:center;background:rgba(255,255,255,.08)}.mk-cands span{flex:1;min-width:0}.mk-cands b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mk-cands small{display:block;opacity:.7;font-size:12px}
+.mk-cands em{font-style:normal;font-weight:700;font-size:12.5px;padding:5px 10px;border-radius:999px;background:#ffd56b;color:#3a2606;flex:none}.mk-cands .linkb{align-self:flex-start;color:rgba(255,255,255,.75);margin-top:2px}
 .mk-det{font-size:13.5px;opacity:.8;margin:4px 2px 8px;line-height:1.4}.mk-pr{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;margin:10px 0 12px}
 .mk-val b{display:block;font-size:22px}.mk-val small{display:block;opacity:.75;font-size:12.5px;line-height:1.35}
 .mk-shim{display:inline-block;font-size:15px;background:linear-gradient(90deg,rgba(255,255,255,.35),#fff,rgba(255,255,255,.35));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mk-shim 1.4s linear infinite}@keyframes mk-shim{to{background-position:-200% 0}}
@@ -1035,8 +1039,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.20';
+const APP_VER='2.21';
 const NOVITA=[
+ ['2.21','2026-11-24',['🔍 Mercatino più attento: Gemini vede anche la tua collezione e dice se l\'oggetto è uno dei tuoi pezzi; il confronto dei nomi capisce i nomi generici o abbreviati («iBook G4» = «iBook G4/1.42 14-Inch», «Titanium» = «Ti») e non confonde G3 con G4; se non è sicuro chiede «Controlla bene: è uno di questi?» con i tuoi pezzi simili, e «È questo» lo segna come già tuo. Gli accessori non contano più come l\'oggetto, e la marca non si ripete nel nome']],
  ['2.20','2026-11-24',['ⓘ Etichette sui modelli 3D: nella vista 3D il tasto ⓘ mostra spilli agganciati al modello, con una linea che porta all\'etichetta (porte, caratteristiche…); seguono il modello mentre lo giri e si nascondono quando il punto finisce sul retro. Con «✎ Modifica» tocchi il modello nel punto esatto e scegli o scrivi l\'etichetta: le porte della scheda sono già proposte (USB 2.0, FireWire 400, Ethernet…); tocca un\'etichetta per cambiarla o toglierla. Ogni modalità 3D ha le sue etichette e si sincronizzano']],
  ['2.19','2026-11-24',['🌳 «Cosa manca» e l\'albero di famiglia sono una pagina sola, «Linee e cosa manca»: linee della metro con stazioni accese per i pezzi che hai e vuote per quelli che mancano (in wishlist con un tocco), per scocca o per modello','✨ Nuove linee con Gemini: descrivi cosa vuoi seguire («portatili convertibili anni 2000», «telefoni Nokia trasparenti») e Gemini elenca i modelli in ordine e riconosce quelli che hai; le linee si sincronizzano tra i telefoni','🔍 Mercatino: si vede chi sta guardando la foto e da quanti secondi; se Gemini non risponde (massimo 40 secondi per modello) o risponde male compare il motivo con «Riprova», invece della luce che pulsa all\'infinito; foto più leggera e risposta più rapida','📅 I compleanni dei pezzi arrivano solo nel giorno esatto (dalla data di presentazione); tolto lo sfondo del giorno (la foto da studio resta nel menu ⋯); album delle carte nascosto per ora']],
  ['2.18','2026-11-24',['🃏 Album delle carte (Menu): tutte le carte in un raccoglitore, serie per scocca come in «Cosa manca» con le buste vuote per i pezzi che mancano e il completamento (es. iBook 2/3); le pagine si girano in 3D','📸 Foto da studio (scheda → ⋯): l\'oggetto su un set fotografico con fondale curvo, ombra e riflesso sul pavimento lucido, chiaro, scuro o nei colori della sua epoca; come sfondo del telefono o quadrata. In Oggi c\'è lo sfondo del giorno, ogni giorno un pezzo diverso','🌳 Albero di famiglia (Menu, o da «Cosa manca»): le linee di prodotto come linee della metro (portatili pro, portatili per tutti, iMac, desktop pro…), stazioni accese per i pezzi che hai e vuote per le scocche che mancano, da mettere in wishlist','🎲 Indovina l\'anno (Menu): dieci pezzi della collezione, trascini il righello sull\'anno o sul valore, punti, coriandoli per il centro perfetto, record sul telefono','📅 Ricordi in Oggi: «un anno fa oggi», il mese in cui è arrivato un pezzo, i compleanni tondi (quest\'anno compie 25 anni)']],
@@ -4012,19 +4017,43 @@ function openTimeMachine({replace=false}={}){
     if(RM()){Y=fav;paint()}else setTimeout(()=>fly(fav,Math.min(2400,900+(fav-y0)*45)),350)}});
   return el}
 /* ===== 2.17: Mercatino — inquadra un oggetto: Gemini lo riconosce, l'app dice se ce l'hai, se ti manca, se è in wishlist e quanto vale ===== */
-const MK_PROMPT=`Nella foto c'è un oggetto di elettronica, spesso vintage (computer, console, telefono, lettore musicale, accessorio…), visto magari a un mercatino; può esserci anche l'etichetta o un cartellino col prezzo.
-Riconosci l'oggetto. Rispondi SOLO con un oggetto JSON (ometti le chiavi che non sai, non inventare):
-{"marca":"","nome":"nome commerciale preciso (es. iBook G3 Clamshell, iMac G3 Slot Loading, Game Boy Advance SP)","modello":"numero di modello se visibile o certo (es. M2453, A1181)","anno":numero,"tipologia":"uno tra TIPI_PLACEHOLDER","colore":"","prezzo_cartellino":numero se c'è un prezzo scritto,"dettagli":"cosa si nota: stato, accessori, difetti, in una frase","certezza":"alta"|"media"|"bassa"}`;
-const mkTok=s=>gapNorm(s).replace(/[()",.]/g,' ').split(/\s+/).filter(t=>t.length>1&&!['the','con','di','da','gb','inch','pollici'].includes(t));
+const MK_PROMPT=`Nella foto c'è un oggetto di elettronica, spesso vintage (computer, console, telefono, lettore musicale, accessorio…), visto magari a un mercatino o nella collezione dell'utente; può esserci anche l'etichetta o un cartellino col prezzo.
+Riconosci l'oggetto con la massima precisione possibile (generazione, modello: guarda forma, cerniere, porte, loghi, colore).
+Poi confrontalo con la collezione e la wishlist dell'utente qui sotto: se è lo stesso modello di un pezzo della collezione (o una sua variante con la stessa scocca: stesso apparecchio con processore, memoria o colore diversi) metti il suo id in "collezione_id" e in "match_certezza" quanto ne sei sicuro. In "simili_ids" metti fino a 3 id di pezzi della collezione che gli somigliano molto. Se corrisponde a un desiderio della wishlist metti il suo id in "wishlist_id".
+COLLEZIONE (id | nome | marca | anno | tipologia):
+COLL_PLACEHOLDER
+WISHLIST (id | nome):
+WISH_PLACEHOLDER
+Rispondi SOLO con un oggetto JSON (ometti le chiavi che non sai, non inventare):
+{"marca":"","nome":"nome commerciale preciso senza ripetere la marca (es. iBook G3 Clamshell, iMac G3 Slot Loading, Game Boy Advance SP, Compaq 2710p)","modello":"numero di modello se visibile o certo (es. M2453, A1181)","anno":numero,"tipologia":"uno tra TIPI_PLACEHOLDER","colore":"","prezzo_cartellino":numero se c'è un prezzo scritto,"dettagli":"cosa si nota: stato, accessori, difetti, in una frase","certezza":"alta"|"media"|"bassa","collezione_id":"","match_certezza":"alta"|"media"|"bassa","simili_ids":[],"wishlist_id":""}`;
+/* 2.21: confronto dei nomi — parole e codici spezzati («G4/1.42», «Mid-2005»), parole generiche ignorate, conflitti (G3 contro G4) penalizzati */
+const MK_STOP=new Set(['the','con','di','da','e','in','inch','pollici','gb','mb','tb','ghz','mhz','pc','computer','notebook','laptop','portatile','tablet','convertible','convertibile','version','edition','model','modello','with','and','op']);
+const MK_SYN={titanium:'ti',titanio:'ti',aluminum:'al',aluminium:'al',alluminio:'al',unibody:'unibody',powerbook:'powerbook',plus:'plus'};
+const mkTok=s=>gapNorm(s).split(/[^a-z0-9.]+/).map(t=>t.replace(/^\.+|\.+$/g,'')).map(t=>MK_SYN[t]||t).filter(t=>t.length>1||/\d/.test(t)).filter(t=>!MK_STOP.has(t));
+const mkModelish=t=>/\d/.test(t)&&/[a-z]/.test(t)||/^\d{3,}$/.test(t);
 const mkSim=(a,b)=>{const A=new Set(mkTok(a)),B=new Set(mkTok(b));if(!A.size||!B.size)return 0;let n=0;A.forEach(t=>{if(B.has(t))n++});return n/Math.min(A.size,B.size)*(n/Math.max(A.size,B.size))**.35};
-function mkMatch(o){const name=[o.marca,o.nome].filter(Boolean).join(' '),code=gapNorm(o.modello),own=devices.filter(d=>!d.wish),wish=devices.filter(d=>d.wish);
-  const sc=d=>Math.max(mkSim(name,[d.marca,d.nome].join(' ')),mkSim(o.nome||'',d.nome||''))+(code&&gapNorm(d.modello)===code?.6:0);
-  const has=own.map(d=>({d,s:sc(d)})).filter(x=>x.s>=.72).sort((a,b)=>b.s-a.s).map(x=>x.d);
-  const wl=wish.map(d=>({d,s:sc(d)})).filter(x=>x.s>=.6).sort((a,b)=>b.s-a.s).map(x=>x.d);
-  /* stessa scocca: dall'elenco dei modelli (se già scaricato) e dalle regole di «Cosa manca» */
-  let gen=null,same=[];const L=AWIDX||[];if(L.length){const x=L.map(x=>({x,s:(code&&gapNorm(x[1])===code?1:0)+mkSim(name,x[0])})).sort((a,b)=>b.s-a.s)[0];
-    if(x&&x.s>=.6){const r=gapRule(x.x);if(r&&r[1]){gen=r[1];same=own.filter(d=>{if(has.includes(d))return false;const b=L.filter(y=>gapMatch(d,y))[0];const rr=b&&gapRule(b);return rr&&rr[1]===gen})}}}
-  return {has,wish:wl,gen,same}}
+/* quanto il nome riconosciuto (corto e generico) è «contenuto» nel nome del pezzo (lungo e dettagliato) */
+function mkScore(o,d){const A=[...new Set(mkTok([o.marca,o.nome].join(' ')))],B=new Set(mkTok([d.marca,d.nome,d.modello,d.linea].join(' ')));if(!A.length)return {s:0,strong:false};
+  const hit=A.filter(t=>B.has(t)),cover=hit.length/A.length,miss=A.filter(t=>!B.has(t)&&mkModelish(t)),Bm=[...B].filter(mkModelish);
+  const conflict=miss.some(t=>Bm.some(u=>!A.includes(u)&&/^\d/.test(u)===/^\d/.test(t)&&Math.abs(u.length-t.length)<=2&&u[0]===t[0]));
+  const code=o.modello&&d.modello&&gapNorm(d.modello).split(/[\s,;/]+/).includes(gapNorm(o.modello));
+  const yd=+o.anno&&parseInt(d.anno)?Math.abs(+o.anno-parseInt(d.anno)):0;let sc=cover-(conflict?.5:0)-(yd>4?.25:0)+(code?.6:0);
+  return {s:sc,strong:code||(cover>=.99&&!conflict&&yd<=1&&(hit.some(mkModelish)||hit.length>=3))}}
+function mkMatch(o){const accOk=['acc','part'].includes(kindOf(o.tipologia||'')),own=devices.filter(d=>!d.wish&&(accOk||!['acc','part'].includes(kindOf(d.tipologia)))),wish=devices.filter(d=>d.wish),byId=id=>devices.find(d=>d.id===id);
+  let has=[],maybe=[],viaGem=false;const g=o.collezione_id&&byId(o.collezione_id);
+  if(g&&!g.wish){if(!/bassa|media/i.test(o.match_certezza||''))has=[g],viaGem=true;else maybe.push(g)}
+  const sc=own.map(d=>({d,...mkScore(o,d)})).sort((a,b)=>b.s-a.s);
+  if(!has.length){const st=sc.filter(x=>x.strong);if(st.length)has=st.slice(0,3).map(x=>x.d)}
+  /* pezzi simili da far controllare: quelli indicati da Gemini, i nomi in parte uguali, stessa marca e tipo con anni vicini */
+  const sameKind=d=>o.marca&&d.marca&&gapNorm(d.marca)===gapNorm(o.marca)&&o.tipologia&&d.tipologia===o.tipologia&&(!+o.anno||!parseInt(d.anno)||Math.abs(+o.anno-parseInt(d.anno))<=3);
+  [...(Array.isArray(o.simili_ids)?o.simili_ids:[]).map(byId).filter(d=>d&&own.includes(d)),...sc.filter(x=>x.s>=.5).map(x=>x.d),...sc.filter(x=>sameKind(x.d)).map(x=>x.d)].forEach(d=>{if(!has.includes(d)&&!maybe.includes(d))maybe.push(d)});
+  maybe=maybe.slice(0,4);
+  const gw=o.wishlist_id&&byId(o.wishlist_id);const wl=gw&&gw.wish?[gw]:wish.map(d=>({d,...mkScore(o,d)})).filter(x=>x.strong||x.s>=.8).sort((a,b)=>b.s-a.s).map(x=>x.d);
+  /* stessa scocca: solo con un abbinamento sicuro all'elenco dei modelli (codice o nome quasi uguale) */
+  let gen=null,same=[];const L=AWIDX||[],code=gapNorm(o.modello);if(L.length){const A=mkTok(o.nome||'');const x=L.map(x=>{const X=mkTok(x[0]);const n=A.filter(t=>X.includes(t)).length;return {x,s:(code&&gapNorm(x[1])===code?1:0)+n/Math.max(A.length,X.length,1)}}).sort((a,b)=>b.s-a.s)[0];
+    if(x&&x.s>=.75){const r=gapRule(x.x);if(r&&r[1]){gen=r[1];same=own.filter(d=>{if(has.includes(d))return false;const b=L.filter(y=>gapMatch(d,y))[0];const rr=b&&gapRule(b);return rr&&rr[1]===gen})}}}
+  return {has,maybe,wish:wl,gen,same,viaGem}}
+const mkName=o=>{const n=String(o.nome||'').trim(),m=String(o.marca||'').trim();return (m&&n&&!gapNorm(n).startsWith(gapNorm(m))?m+' '+n:n||m)||o.modello||'Oggetto'};
 /* effetto «visual intelligence»: onde iridescenti che partono dal centro e accendono i contorni dell'oggetto */
 function mkGlow(host,src){const W=host.clientWidth,H=host.clientHeight,cw=Math.max(60,Math.round(W/4)),ch=Math.max(60,Math.round(H/4));
   const sm=document.createElement('canvas');sm.width=cw;sm.height=ch;const sg=sm.getContext('2d',{willReadFrequently:true});sg.drawImage(src,0,0,cw,ch);const px=sg.getImageData(0,0,cw,ch).data;
@@ -4043,7 +4072,9 @@ function mkGlow(host,src){const W=host.clientWidth,H=host.clientHeight,cw=Math.m
   if(RM()){return {done(){},stop(){fx.remove()}}}raf=requestAnimationFrame(frame);
   return {done(){fin=performance.now();t0=fin-PER*Math.ceil((fin-t0)/PER)+PER*.02;hap.thud(.5)},stop(){dead=true;cancelAnimationFrame(raf);fx.remove()}}}
 /* per il riconoscimento serve rapidità: niente «ragionamento» lungo sui modelli 2.5 Flash e al massimo 40 secondi per modello */
-async function mkIdentify(dataUrl,onStep){const mime=(dataUrl.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',b64=dataUrl.split(',')[1],prompt=MK_PROMPT.replace('TIPI_PLACEHOLDER',TIPI.map(t=>`"${t}"`).join(', '));
+async function mkIdentify(dataUrl,onStep){const mime=(dataUrl.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',b64=dataUrl.split(',')[1],cl=x=>String(x||'').replace(/\|/g,'/').slice(0,80);
+  const coll=devices.filter(d=>!d.wish&&kindOf(d.tipologia)!=='part').slice(0,250).map(d=>[d.id,cl(d.nome),cl(d.marca),cl(d.anno),cl(d.tipologia)].join(' | ')).join('\n')||'(vuota)',wl=devices.filter(d=>d.wish).slice(0,80).map(d=>d.id+' | '+cl(d.nome)).join('\n')||'(vuota)';
+  const prompt=MK_PROMPT.replace('TIPI_PLACEHOLDER',TIPI.map(t=>`"${t}"`).join(', ')).replace('COLL_PLACEHOLDER',coll).replace('WISH_PLACEHOLDER',wl);
   return gemAsk('','',onStep,async m=>{const cfg=/2\.5-flash/.test(m)?{thinkingConfig:{thinkingBudget:0}}:null;let tm;
     const r=await Promise.race([gemCall(m,[{inline_data:{mime_type:mime,data:b64}},{text:prompt}],false,true,cfg),new Promise((_,rej)=>{tm=setTimeout(()=>rej(new AppErr('lento','nessuna risposta in 40 secondi',{model:m})),40000)})]).finally(()=>clearTimeout(tm));
     if(Array.isArray(r.o))r.o=r.o[0]||{};if(r.o&&r.o.oggetto&&typeof r.o.oggetto==='object')r.o=r.o.oggetto;
@@ -4074,14 +4105,19 @@ function openMarket(){
         const r=await mkIdentify(photo,m=>{who=String(m||'Gemini').replace(/^models\//,'').replace(/^gemini-/,'Gemini ').replace(/-/g,' ')});
         clearInterval(tick);glow&&glow.done();tt.textContent='';busy=false;show(r.o)}
       catch(e){fail(e)}};
-    const show=o=>{const M=mkMatch(o),name=[o.marca,o.nome].filter(Boolean).join(' ')||o.modello,sub=[o.modello,o.anno,o.colore].filter(Boolean).join(' · ');
-      const v=M.has.length?{k:'has',t:'Ce l\'hai già',d:M.has.slice(0,3).map(d=>`${esc(d.nome)}${d.luogo?' · 📍 '+esc(d.luogo):''}`).join('<br>')}:M.wish.length?{k:'wish',t:'È nella tua wishlist',d:`${esc(M.wish[0].nome)}${M.wish[0].w_budget?` · budget € ${esc(M.wish[0].w_budget)}`:''}`}
-        :M.same.length?{k:'same',t:'Hai già la stessa scocca',d:`${esc(M.gen)}: ${M.same.slice(0,2).map(d=>esc(d.nome)).join(', ')}`}:{k:'miss',t:'Ti manca',d:M.gen?`Scocca: ${esc(M.gen)}`:'Non c\'è niente di simile nella tua collezione'};
+    const verdict=(M,force)=>{const has=force?[force]:M.has;return has.length?{k:'has',t:'Ce l\'hai già',d:has.slice(0,3).map(d=>`${esc(d.nome)}${d.luogo?' · 📍 '+esc(d.luogo):''}`).join('<br>')+(force?'<br><i>confermato da te</i>':M.viaGem?'<br><i>riconosciuto da Gemini nella tua collezione</i>':'')}
+        :M.wish.length?{k:'wish',t:'È nella tua wishlist',d:`${esc(M.wish[0].nome)}${M.wish[0].w_budget?` · budget € ${esc(M.wish[0].w_budget)}`:''}`}
+        :M.maybe.length?{k:'maybe',t:'Forse ce l\'hai già',d:'Controlla bene: è uno di questi?',c:M.maybe}
+        :M.same.length?{k:'same',t:'Hai già la stessa scocca',d:`${esc(M.gen)}: ${M.same.slice(0,2).map(d=>esc(d.nome)).join(', ')}`}:{k:'miss',t:'Ti manca',d:M.gen?`Scocca: ${esc(M.gen)}`:'Non c\'è niente di simile nella tua collezione'}};
+    const vHTML=v=>`<div class="mk-v mk-${v.k}"><b>${{has:'✓',wish:'💭',same:'≈',miss:'🧩',maybe:'🤔'}[v.k]} ${v.t}</b><small>${v.d}</small>${v.c?`<div class="mk-cands">${v.c.map(d=>{const ph=wrPh(d);return `<button data-mk="pick" data-id="${d.id}">${ph?`<img src="${esc(ph)}" alt="">`:`<i>${icon(d)}</i>`}<span><b>${esc(d.nome)}</b><small>${esc([d.anno,d.luogo&&'📍 '+d.luogo].filter(Boolean).join(' · '))}</small></span><em>È questo</em></button>`}).join('')}<button class="linkb" data-mk="nope">No, nessuno di questi</button></div>`:''}</div>`;
+    const acts=(v,M)=>`${v.k==='has'?`<button class="btn sec" data-mk="open" data-id="${(v.force||M.has[0]).id}">Apri la scheda</button>`:''}${v.k==='has'||v.k==='wish'?'':'<button class="btn" data-mk="wish">💭 In wishlist</button>'}<button class="btn sec" data-mk="add">＋ In collezione</button><button class="btn sec" data-mk="again">↻</button>`;
+    const show=o=>{const M=mkMatch(o),name=mkName(o),sub=[o.modello,o.anno,o.colore].filter(Boolean).join(' · ');
+      const v=verdict(M);res._M=M;
       root.classList.add('done');res.hidden=false;
       res.innerHTML=`<div class="mk-card"><div class="mk-h"><img src="${photo}" alt=""><div><b>${esc(name||'Oggetto')}</b><small>${esc(sub)}${o.certezza?` · certezza ${esc(o.certezza)}`:''}</small></div></div>
-        <div class="mk-v mk-${v.k}"><b>${{has:'✓',wish:'💭',same:'≈',miss:'🧩'}[v.k]} ${v.t}</b><small>${v.d}</small></div>${o.dettagli?`<p class="mk-det">${esc(o.dettagli)}</p>`:''}
+        <div class="mk-vw">${vHTML(v)}</div>${o.dettagli?`<p class="mk-det">${esc(o.dettagli)}</p>`:''}
         <div class="mk-pr"><div class="mk-val"><span class="mk-shim">Cerco i prezzi…</span></div><label class="mk-ask">Prezzo chiesto <span>€</span><input type="number" inputmode="decimal" min="0" value="${+o.prezzo_cartellino>0?+o.prezzo_cartellino:''}" placeholder="—"></label><b class="mk-deal"></b></div>
-        <div class="mk-acts">${M.has.length?`<button class="btn sec" data-mk="open" data-id="${M.has[0].id}">Apri la scheda</button>`:''}${M.has.length||M.wish.length?'':'<button class="btn" data-mk="wish">💭 In wishlist</button>'}<button class="btn sec" data-mk="add">＋ In collezione</button><button class="btn sec" data-mk="again">↻</button></div></div>`;
+        <div class="mk-acts">${acts(v,M)}</div></div>`;
       hap[v.k==='miss'?'thud':'tick'](v.k==='miss'?.6:.7);res._o=o;
       const inp=$('.mk-ask input',res),deal=$('.mk-deal',res);let est=null;
       const judge=()=>{const a=+inp.value;if(!est||!a){deal.textContent='';deal.className='mk-deal';return}const r=a/est.tipico,k=r<=.75?['affare','🟢 Affare']:r<=1.15?['giusto','🟡 Prezzo giusto']:['caro','🔴 Caro'];deal.textContent=k[1];deal.className='mk-deal '+k[0]};
@@ -4091,6 +4127,9 @@ function openMarket(){
       if(a==='shot'){if(!stream||busy)return;freeze(vid);analyse()}
       if(a==='gal'){const f=await pickPhoto(false);if(!f)return;const bm=await createImageBitmap(await (async()=>{const u=await shrink(f,2000,.9);return await (await fetch(u)).blob()})());freeze(bm);analyse()}
       if(a==='again'){busy=false;live()}
+      /* «è questo»: il verdetto diventa «ce l'hai già»; «no»: si passa al verdetto successivo */
+      if(a==='pick'||a==='nope'){const M=res._M;if(!M)return;let v;if(a==='pick'){const d=devices.find(x=>x.id===b.dataset.id);if(!d)return;v=Object.assign(verdict(M,d),{force:d});hap.thud(.6)}else{v=verdict(Object.assign({},M,{maybe:[]}));hap.tick(.4)}
+        const w=$('.mk-vw',res);w.innerHTML=vHTML(v);$('.mk-acts',res).innerHTML=acts(v,M);return}
       if(a==='gem')openGemSettings();
       if(a==='open')openDetail(b.dataset.id);
       const o=res._o;if(!o)return;const ask=+($('.mk-ask input',res)||{}).value||'';
