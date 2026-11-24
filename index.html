@@ -1025,8 +1025,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.18';
+const APP_VER='2.19';
 const NOVITA=[
+ ['2.19','2026-11-24',['🌳 «Cosa manca» e l\'albero di famiglia sono una pagina sola, «Linee e cosa manca»: linee della metro con stazioni accese per i pezzi che hai e vuote per quelli che mancano (in wishlist con un tocco), per scocca o per modello','✨ Nuove linee con Gemini: descrivi cosa vuoi seguire («portatili convertibili anni 2000», «telefoni Nokia trasparenti») e Gemini elenca i modelli in ordine e riconosce quelli che hai; le linee si sincronizzano tra i telefoni','🔍 Mercatino: si vede chi sta guardando la foto e da quanti secondi; se Gemini non risponde (massimo 40 secondi per modello) o risponde male compare il motivo con «Riprova», invece della luce che pulsa all\'infinito; foto più leggera e risposta più rapida','📅 I compleanni dei pezzi arrivano solo nel giorno esatto (dalla data di presentazione); tolto lo sfondo del giorno (la foto da studio resta nel menu ⋯); album delle carte nascosto per ora']],
  ['2.18','2026-11-24',['🃏 Album delle carte (Menu): tutte le carte in un raccoglitore, serie per scocca come in «Cosa manca» con le buste vuote per i pezzi che mancano e il completamento (es. iBook 2/3); le pagine si girano in 3D','📸 Foto da studio (scheda → ⋯): l\'oggetto su un set fotografico con fondale curvo, ombra e riflesso sul pavimento lucido, chiaro, scuro o nei colori della sua epoca; come sfondo del telefono o quadrata. In Oggi c\'è lo sfondo del giorno, ogni giorno un pezzo diverso','🌳 Albero di famiglia (Menu, o da «Cosa manca»): le linee di prodotto come linee della metro (portatili pro, portatili per tutti, iMac, desktop pro…), stazioni accese per i pezzi che hai e vuote per le scocche che mancano, da mettere in wishlist','🎲 Indovina l\'anno (Menu): dieci pezzi della collezione, trascini il righello sull\'anno o sul valore, punti, coriandoli per il centro perfetto, record sul telefono','📅 Ricordi in Oggi: «un anno fa oggi», il mese in cui è arrivato un pezzo, i compleanni tondi (quest\'anno compie 25 anni)']],
  ['2.17','2026-11-23',['🔍 Mercatino: il nuovo tasto sopra il «+» apre la fotocamera; inquadri un oggetto e un\'onda iridescente parte dal centro e accende i suoi contorni mentre Gemini lo riconosce; sotto il verdetto (ce l\'hai già e dove, è in wishlist, hai già la stessa scocca, ti manca), la forbice di prezzo e il giudizio sul prezzo chiesto (affare, giusto, caro), poi in wishlist o in collezione con la foto','🃏 Carte da collezione (scheda → ⋯): fronte con la grafica dell\'epoca, retro con l\'etichetta ricostruita dai dati veri e la carriera del pezzo, rarità da comune a leggendaria, ologramma che segue l\'inclinazione (col modello 3D dentro, se c\'è); la carta esce da una stampante ad aghi','🏛️ Museo con due viste: scaffali e linea del tempo (⏳ / 🏛️ in alto), riapre l\'ultima usata','Da completare: anche lo scontorno per il museo, per ogni oggetto che non è un accessorio o un ricambio (toccandolo si apre lo scontorno)','Menu più corto: le impostazioni sono in una pagina a parte, divise per sezioni; le opzioni del modello 3D sono in un sottomenu («⋯ Opzioni» nella scheda, «Modello 3D…» nel menu ⋯)','La pressione lunga sull\'elenco non seleziona più il testo']],
  ['2.16','2026-11-23',['🎁 RDDC Wrapped (Menu): il tuo anno in collezione a schermate animate come le storie — pezzi arrivati, spesa e valore di oggi, il colpo dell\'anno, il più anziano, il tuo decennio, la marca del cuore, il giro di manutenzione e il laboratorio; tocca a destra o a sinistra, tieni premuto per fermare; alla fine una carta da condividere','⏳ Macchina del tempo (Menu): un tunnel di anni — trascina il righello e i pezzi di ogni anno ti vengono incontro, lo sfondo cambia epoca (beige, platino, acqua e caramelle, policarbonato bianco, alluminio, vetro), uno scatto a ogni anno','Vibrazioni granulari: il piedistallo 3D scatta ogni 15° come una ruota della fortuna e urta ai limiti; la trasformazione ⇄ scatta a ogni quarto di giro; chiudendo la scheda un crescendo e un tonfo quando atterra sulla miniatura; la pressione lunga cresce e scatta quando si apre l\'anteprima; il cursore della grandezza ha le tacche. Su iPhone (iOS 18 o successivo) arriva lo scatto di sistema']],
@@ -1958,9 +1959,8 @@ function oggiHTML(){
   const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;if(out.length)lines.push(`<button class="og ${late?'late':''}" id="loanB"><span>📤 <b>${out.length}</b> ${out.length===1?'oggetto fuori casa':'oggetti fuori casa'}</span><small>${late?`⚠️ ${late} in ritardo sul rientro`:'prestiti ed esposizioni'}</small></button>`);
   const drop=devices.filter(d=>d.wish&&(d.annunci||[]).some(a=>a.prezzo_prima&&+a.prezzo<+a.prezzo_prima));
   if(drop.length)lines.push(`<button class="og" id="annB"><span>🏷️ Prezzo sceso in <b>${drop.length}</b> ${drop.length===1?'desiderio':'desideri'}</span><small>${esc(drop[0].nome)} → apri la wishlist</small></button>`);
-  /* 2.18: un ricordo al giorno e lo sfondo del giorno */
+  /* 2.18: un ricordo al giorno */
   const mem=memToday();if(mem){const ph=wrPh(mem.d);lines.push(`<button class="og og-mem" id="memB" data-go="${mem.d.id}">${ph?`<img src="${esc(ph)}" alt="">`:`<i class="og-ic">${icon(mem.d)}</i>`}<span>📅 <b>${esc(mem.t)}</b></span><small>${esc(mem.s)}</small></button>`)}
-  const wl=wallOfDay();if(wl)lines.push(`<button class="og og-mem" id="wallB" data-go="${wl.id}"><img src="${esc(wl.scontorno)}" alt=""><span>🖼️ <b>Sfondo del giorno</b></span><small>${esc(wl.nome)} · tocca per prepararlo</small></button>`);
   if(!lines.length)return '';
   /* 2.9: ogni voce si può rimandare scorrendola verso sinistra */
   const snz=snoozes(),key=l=>(l.match(/id="(\w+)"/)||[])[1]||'',vis=lines.filter(l=>!snz[key(l)]),hid=lines.length-vis.length;
@@ -2617,8 +2617,9 @@ async function gemTryNative(model,q,ctx,search){
   if(!o)throw new AppErr('risposta',cand.finishReason&&cand.finishReason!=='STOP'?`risposta interrotta (${cand.finishReason})`:'nessun JSON nella risposta',{model,raw:String(txt).slice(0,600)});
   const r=gemResult(o,{model,sources});if(!Object.keys(r.fields).length&&!r.specs.length)throw new AppErr('vuoto','nessuna informazione',{model});return r}
 /* 2.9: lavori di Gemini oltre alla scheda (stessa catena di modelli, limiti e riserve) */
-async function gemCall(model,parts,search,json=true){
+async function gemCall(model,parts,search,json=true,cfg=null){
   const body={contents:[{role:'user',parts}]};if(search)body.tools=[{google_search:{}}];else if(json)body.generationConfig={responseMimeType:'application/json'};
+  if(cfg)body.generationConfig=Object.assign(body.generationConfig||{},cfg);
   const j=await gemFetch(`models/${model}:generateContent`,body,model);
   const cand=(j.candidates||[])[0]||{},gm=cand.groundingMetadata||{};
   if(!cand.content&&(cand.finishReason==='SAFETY'||(j.promptFeedback||{}).blockReason))throw new AppErr('bloccata',`risposta bloccata (${cand.finishReason||j.promptFeedback.blockReason})`,{model});
@@ -3982,8 +3983,12 @@ function mkGlow(host,src){const W=host.clientWidth,H=host.clientHeight,cw=Math.m
     fg.putImageData(img,0,0);if(fin&&now-fin>720){fx.remove();return}raf=requestAnimationFrame(frame)};
   if(RM()){return {done(){},stop(){fx.remove()}}}raf=requestAnimationFrame(frame);
   return {done(){fin=performance.now();t0=fin-PER*Math.ceil((fin-t0)/PER)+PER*.02;hap.thud(.5)},stop(){dead=true;cancelAnimationFrame(raf);fx.remove()}}}
+/* per il riconoscimento serve rapidità: niente «ragionamento» lungo sui modelli 2.5 Flash e al massimo 40 secondi per modello */
 async function mkIdentify(dataUrl,onStep){const mime=(dataUrl.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',b64=dataUrl.split(',')[1],prompt=MK_PROMPT.replace('TIPI_PLACEHOLDER',TIPI.map(t=>`"${t}"`).join(', '));
-  return gemAsk('','',onStep,async m=>{const r=await gemCall(m,[{inline_data:{mime_type:mime,data:b64}},{text:prompt}],false);if(!r.o.nome&&!r.o.modello)throw new AppErr('vuoto','oggetto non riconosciuto',{model:m});return r})}
+  return gemAsk('','',onStep,async m=>{const cfg=/2\.5-flash/.test(m)?{thinkingConfig:{thinkingBudget:0}}:null;let tm;
+    const r=await Promise.race([gemCall(m,[{inline_data:{mime_type:mime,data:b64}},{text:prompt}],false,true,cfg),new Promise((_,rej)=>{tm=setTimeout(()=>rej(new AppErr('lento','nessuna risposta in 40 secondi',{model:m})),40000)})]).finally(()=>clearTimeout(tm));
+    if(Array.isArray(r.o))r.o=r.o[0]||{};if(r.o&&r.o.oggetto&&typeof r.o.oggetto==='object')r.o=r.o.oggetto;
+    if(!r.o.nome&&!r.o.modello)throw new AppErr('vuoto','oggetto non riconosciuto',{model:m});return r})}
 function openMarket(){
   awIndex().catch(()=>{});
   const el=openPage('Mercatino',`<div class="mk"><div class="mk-st"><video playsinline muted autoplay></video><canvas class="mk-ph"></canvas><div class="mk-edge"></div><div class="mk-aim"><i></i><i></i><i></i><i></i></div></div>
@@ -3993,16 +3998,23 @@ function openMarket(){
     const root=$('.mk',el),st=$('.mk-st',el),vid=$('video',el),cv=$('.mk-ph',el),res=$('.mk-res',el),tt=$('.mk-st-t',el);let stream=null,glow=null,busy=false,photo='';
     const stop=()=>{stream&&stream.getTracks().forEach(t=>t.stop());stream=null};
     el._close=()=>{stop();glow&&glow.stop()};
-    const live=async()=>{root.classList.remove('frozen','done');res.hidden=true;res.innerHTML='';glow&&glow.stop();glow=null;
+    const live=async()=>{root.classList.remove('frozen','done');res.hidden=true;res.innerHTML='';glow&&glow.stop();glow=null;photo='';
       try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});vid.srcObject=stream;await vid.play().catch(()=>{});root.classList.add('cam')}
       catch(e){root.classList.remove('cam');tt.textContent='Fotocamera non disponibile: usa 🖼️ o il pulsante per scattare con l\'app Fotocamera'}};
     /* foto congelata: disegnata «a riempimento» nel palco */
-    const freeze=src=>{const W=st.clientWidth,H=st.clientHeight,dpr=Math.min(2,devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;const g=cv.getContext('2d'),sw=src.videoWidth||src.width,sh=src.videoHeight||src.height,k=Math.max(W/sw,H/sh);
+    const freeze=src=>{photo='';const W=st.clientWidth,H=st.clientHeight,dpr=Math.min(2,devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;const g=cv.getContext('2d'),sw=src.videoWidth||src.width,sh=src.videoHeight||src.height,k=Math.max(W/sw,H/sh);
       g.setTransform(dpr,0,0,dpr,0,0);g.drawImage(src,(W-sw*k)/2,(H-sh*k)/2,sw*k,sh*k);root.classList.add('frozen');stop()};
-    const analyse=async()=>{if(busy)return;busy=true;hap.tick(.7);if(!gemOn()){busy=false;res.hidden=false;res.innerHTML=`<p class="mk-msg">Per riconoscere gli oggetti serve la chiave gratuita di Gemini.</p><button class="btn" data-mk="gem" style="width:100%">✨ Collega Gemini</button>`;return}
-      glow=mkGlow(st,cv);const big=cv.toDataURL('image/jpeg',.86);photo=await shrink(big,1280,.84);tt.textContent='Guardo…';
-      let r;try{r=await mkIdentify(photo,s=>{tt.textContent=s||'Guardo…'})}catch(e){glow.stop();glow=null;busy=false;tt.textContent='';res.hidden=false;res.innerHTML='<div class="mk-err"></div><button class="btn sec" data-mk="again" style="width:100%;margin-top:8px">↻ Riprova con un\'altra foto</button>';errBox($('.mk-err',res),e,'Gemini',()=>{res.hidden=true;busy=false;analyse()},'gem');return}
-      glow.done();tt.textContent='';busy=false;show(r.o)};
+    const analyse=async()=>{if(busy)return;busy=true;hap.tick(.7);let tick=0;const t0=Date.now();
+      const fail=e=>{clearInterval(tick);glow&&glow.stop();glow=null;busy=false;tt.textContent='';logErr('Mercatino · riconoscimento',e);res.hidden=false;
+        res.innerHTML='<div class="mk-err"></div><button class="btn sec" data-mk="again" style="width:100%;margin-top:8px">↻ Riprova con un\'altra foto</button>';errBox($('.mk-err',res),e,'Gemini',()=>{res.hidden=true;root.classList.remove('done');analyse()},'gem')};
+      if(!gemOn()){busy=false;res.hidden=false;res.innerHTML=`<p class="mk-msg">Per riconoscere gli oggetti serve la chiave gratuita di Gemini.</p><button class="btn" data-mk="gem" style="width:100%">✨ Collega Gemini</button>`;return}
+      try{
+        try{glow=mkGlow(st,cv)}catch(e){glow=null;logErr('Mercatino · effetto',e)}
+        let who='Gemini';tt.textContent='Guardo…';tick=setInterval(()=>{tt.textContent=`${who} guarda… ${Math.round((Date.now()-t0)/1000)} s`},1000);
+        if(!photo){const big=cv.toDataURL('image/jpeg',.86);photo=await shrink(big,1024,.8)}
+        const r=await mkIdentify(photo,m=>{who=String(m||'Gemini').replace(/^models\//,'').replace(/^gemini-/,'Gemini ').replace(/-/g,' ')});
+        clearInterval(tick);glow&&glow.done();tt.textContent='';busy=false;show(r.o)}
+      catch(e){fail(e)}};
     const show=o=>{const M=mkMatch(o),name=[o.marca,o.nome].filter(Boolean).join(' ')||o.modello,sub=[o.modello,o.anno,o.colore].filter(Boolean).join(' · ');
       const v=M.has.length?{k:'has',t:'Ce l\'hai già',d:M.has.slice(0,3).map(d=>`${esc(d.nome)}${d.luogo?' · 📍 '+esc(d.luogo):''}`).join('<br>')}:M.wish.length?{k:'wish',t:'È nella tua wishlist',d:`${esc(M.wish[0].nome)}${M.wish[0].w_budget?` · budget € ${esc(M.wish[0].w_budget)}`:''}`}
         :M.same.length?{k:'same',t:'Hai già la stessa scocca',d:`${esc(M.gen)}: ${M.same.slice(0,2).map(d=>esc(d.nome)).join(', ')}`}:{k:'miss',t:'Ti manca',d:M.gen?`Scocca: ${esc(M.gen)}`:'Non c\'è niente di simile nella tua collezione'};
@@ -4116,9 +4128,8 @@ async function studioCanvas(d,{fmt='tel',bg='luce'}={}){const W=fmt==='tel'?1290
   const F='-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Roboto,sans-serif',cy=fmt==='tel'?H*.86:H*.86;g.textAlign='center';g.fillStyle=dark?'rgba(255,255,255,.92)':'rgba(30,22,14,.88)';g.font=`700 ${Math.round(W*.045)}px ${F}`;g.fillText(d.nome,W/2,cy,W*.86);
   g.fillStyle=dark?'rgba(255,255,255,.6)':'rgba(30,22,14,.55)';g.font=`500 ${Math.round(W*.028)}px ${F}`;g.fillText([d.marca,isFinite(y)?y:''].filter(Boolean).join(' · '),W/2,cy+W*.05);
   g.font=`600 ${Math.round(W*.018)}px ${F}`;g.fillStyle=dark?'rgba(255,255,255,.3)':'rgba(30,22,14,.3)';g.fillText('RDDC',W/2,H-H*.03);return c}
-function wallOfDay(){const pool=devices.filter(d=>!d.wish&&d.scontorno).sort((a,b)=>a.id<b.id?-1:1);if(!pool.length)return null;const t=today();let h=0;for(const ch of t)h=(h*31+ch.charCodeAt(0))>>>0;return pool[h%pool.length]}
-function openStudio(d,{wall=false}={}){let fmt='tel',bg=LS.get('rd_studio_bg','luce');
-  const el=openPage(wall?'Sfondo del giorno':'Foto da studio',`<div class="st-prev"><div class="st-img">${loader('box','Monto il set…')}</div></div>
+function openStudio(d){let fmt='tel',bg=LS.get('rd_studio_bg','luce');
+  const el=openPage('Foto da studio',`<div class="st-prev"><div class="st-img">${loader('box','Monto il set…')}</div></div>
     <div class="chips st-c" data-g="bg">${[['luce','☀︎ Chiaro'],['scuro','● Scuro'],['epoca','◐ Epoca']].map(([v,l])=>`<button class="chip ${bg===v?'on':''}" data-v="${v}">${l}</button>`).join('')}</div>
     <div class="chips st-c" data-g="fmt">${[['tel','📱 Sfondo del telefono'],['sq','⬜ Quadrata']].map(([v,l])=>`<button class="chip ${fmt===v?'on':''}" data-v="${v}">${l}</button>`).join('')}</div>
     <button class="btn" data-st="share" style="width:100%;margin-top:10px">↗︎ Salva o condividi</button><p class="note">${d.scontorno?'':'Questo pezzo non ha lo scontorno: la foto va in cornice. Con lo scontorno (scheda → Da completare) l\'oggetto poggia sul pavimento del set. '}Su iPhone: salva l'immagine e da Foto scegli «Usa come sfondo».</p>`,{mount(el){
@@ -4129,35 +4140,22 @@ function openStudio(d,{wall=false}={}){let fmt='tel',bg=LS.get('rd_studio_bg','l
         try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:d.nome});else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}hap.thud(.4)}catch(er){if(!er||er.name!=='AbortError')toast('Non sono riuscito a salvare l\'immagine',3000)}}});
     draw()}});
   return el}
-/* ===== Ricordi: un anno fa oggi, il mese d'arrivo, i compleanni tondi ===== */
+/* ===== Ricordi: compleanni (nel giorno esatto), un anno fa oggi, il mese d'arrivo ===== */
+const EN_MESI='january|february|march|april|may|june|july|august|september|october|november|december'.split('|');
+function introDate(d){const t=String(d.intro||'').trim().toLowerCase();let y,m,g,x;
+  if((x=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)))[y,m,g]=[+x[1],+x[2],+x[3]];
+  else if((x=t.match(/^([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})/))&&EN_MESI.indexOf(x[1])>=0)[y,m,g]=[+x[3],EN_MESI.indexOf(x[1])+1,+x[2]];
+  else if((x=t.match(/^(\d{1,2})\s+([a-z]+)\s+(\d{4})/))&&MESI_ACQ.indexOf(x[2])>=0)[y,m,g]=[+x[3],MESI_ACQ.indexOf(x[2])+1,+x[1]];
+  if(!y||!m||!g||m>12||g>31)return null;const p=n=>String(n).padStart(2,'0');return {y,md:`${p(m)}-${p(g)}`,iso:`${y}-${p(m)}-${p(g)}`}}
 function memToday(){const t=today(),md=t.slice(5),Y=+t.slice(0,4),M=MESI_ACQ[+t.slice(5,7)-1],own=devices.filter(d=>!d.wish),out=[];const yrs=n=>n===1?'Un anno fa':`${n} anni fa`;
   for(const d of own){const ds=x=>String(x||'').slice(0,10);
     const cr=d.creato&&new Date(d.creato).toISOString().slice(0,10);if(cr&&cr.slice(5)===md&&+cr.slice(0,4)<Y)out.push({d,k:1,t:`${yrs(Y-+cr.slice(0,4))} oggi`,s:`aggiungevi ${d.nome} a RDDC`});
     for(const i of d.interventi||[]){const x=ds(i.data);if(x.slice(5)===md&&+x.slice(0,4)<Y)out.push({d,k:1,t:`${yrs(Y-+x.slice(0,4))} oggi`,s:`${(i.tipo||'un intervento').toLowerCase()} su ${d.nome}`})}
     for(const m of d.spostamenti||[]){const x=ds(m.data);if(x.slice(5)===md&&+x.slice(0,4)<Y&&m.a)out.push({d,k:1,t:`${yrs(Y-+x.slice(0,4))} oggi`,s:`${d.nome} arrivava da ${m.a}`})}
     if(String(d.acq_mese||'').toLowerCase()===M&&+d.acq_anno&&+d.acq_anno<Y)out.push({d,k:2,t:`${yrs(Y-+d.acq_anno)}, a ${M}`,s:`arrivava ${d.nome}`});
-    const a=parseInt(d.anno),age=Y-a;if(isFinite(a)&&age>=10&&age%5===0&&!['part','acc'].includes(kindOf(d.tipologia)))out.push({d,k:3,t:`Quest'anno compie ${age} anni`,s:d.nome})}
+    /* compleanno solo nel giorno esatto: dalla data di presentazione completa (es. «September 5, 2007», «2007-09-05», «5 settembre 2007») */
+    const b=introDate(d);if(b&&b.md===md&&b.y<Y&&!['part','acc'].includes(kindOf(d.tipologia))){const n=Y-b.y;out.push({d,k:0,t:`Oggi compie ${n} ${n===1?'anno':'anni'}`,s:`${d.nome} · presentato il ${fmtD(b.iso)}`})}}
   if(!out.length)return null;const best=Math.min(...out.map(x=>x.k)),c=out.filter(x=>x.k===best);let h=0;for(const ch of t)h=(h*33+ch.charCodeAt(0))>>>0;return c[h%c.length]}
-/* ===== Albero di famiglia: le linee come linee della metro, stazioni accese per i pezzi che hai ===== */
-const TREE=[['Portatili pro',['PowerBook','PowerBook G3','PowerBook G4','MacBook Pro']],['Portatili per tutti',['iBook','MacBook']],['MacBook Air',['MacBook Air']],['iMac',['iMac']],['Desktop pro',['Power Mac G4','Power Mac G5','Mac Pro']],['Mac mini',['Mac mini']]];
-async function treeData(){const L=await awIndex(),own=devices.filter(d=>!d.wish),wish=devices.filter(d=>d.wish),byGen=new Map(),wGen=new Set();
-  own.forEach(d=>{const g=genOfDev(d,L);if(g){if(!byGen.has(g.gen))byGen.set(g.gen,[]);byGen.get(g.gen).push(d)}});wish.forEach(d=>{const g=genOfDev(d,L);if(g)wGen.add(g.gen)});
-  wish.forEach(d=>{GAP_GEN.forEach(r=>{if(r[1]&&gapNorm(d.nome)===gapNorm(r[1]))wGen.add(r[1])})});
-  const trunks=TREE.map(([n,fams])=>({n,nodes:fams.flatMap(f=>GAP_GEN.filter(r=>r[0]===f&&r[1]).map(r=>({fam:f,label:r[1],own:byGen.get(r[1])||[],wish:wGen.has(r[1])})))}));
-  /* le altre linee che possiedi (iPhone, iPod…), dalle scocche di «Cosa manca» */
-  const covered=new Set(TREE.flatMap(t=>t[1]));gapsData(L,'gen').filter(g=>!covered.has(g.f)).forEach(g=>trunks.push({n:g.f,nodes:g.rows.map(r=>({fam:g.f,label:r.x[0],own:r.own,wish:!!r.wish,x:r.x}))}));
-  trunks.forEach((t,i)=>{t.have=t.nodes.filter(n=>n.own.length).length;t.cur=i<TREE.length});return trunks.filter(t=>t.nodes.length).sort((a,b)=>(b.have>0)-(a.have>0)||(b.cur-a.cur)||b.have/b.nodes.length-a.have/a.nodes.length)}
-function openTree(){
-  const el=openPage('Albero di famiglia',`<p class="note" style="margin-top:0">Le linee di prodotto come linee della metro: le stazioni accese sono i pezzi che hai, quelle vuote le scocche che mancano (tocca per metterle in wishlist).</p><div id="tro">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
-    const out=$('#tro',el);let T=[];
-    const draw=()=>{out.innerHTML=T.map((t,ti)=>{let lf='';return `<section class="tr ${t.have?'':'dim'}"><div class="tr-h"><b>${esc(t.n)}</b><small>${t.have} di ${t.nodes.length}</small></div><div class="tr-l">${t.nodes.map((n,ni)=>{const fh=n.fam!==lf&&t.nodes.some(m=>m.fam!==t.nodes[0].fam);lf=n.fam;const d=n.own[0],ph=d&&wrPh(d);
-        return `${fh?`<div class="tr-f">${esc(n.fam)}</div>`:''}<button class="tr-n ${d?'own':n.wish?'wish':''}" style="--i:${ni}" ${d?`data-trgo="${d.id}"`:`data-trw="${ti}|${ni}"`}><span class="tr-dot">${d?(ph?`<img src="${esc(ph)}" alt="">`:icon(d)):n.wish?'💭':''}</span><span class="tr-t"><b>${esc(n.label)}</b><small>${d?esc(n.own.map(x=>x.nome).join(', ')):n.wish?'in wishlist':'manca · tocca per la wishlist'}</small></span></button>`}).join('')}</div></section>`}).join('');
-      const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12});out.querySelectorAll('.tr').forEach(s=>io.observe(s))};
-    treeData().then(x=>{T=x;draw()}).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openTree()));
-    out.addEventListener('click',async e=>{const g=e.target.closest('[data-trgo]');if(g){hap.tick(.5);return openDetail(g.dataset.trgo)}const w=e.target.closest('[data-trw]');if(!w||w.classList.contains('wish'))return;const [ti,ni]=w.dataset.trw.split('|').map(Number),n=T[ti].nodes[ni];
-      if(!await ask(`Mettere «${n.label}» in wishlist?`,'In wishlist'))return;const x=n.x||[];const it={id:uid(),nome:n.label,marca:'Apple',modello:x[1]&&!/\s/.test(x[1])?x[1]:'',linea:n.fam,tipologia:/book/i.test(n.label)?'Portatile':/imac/i.test(n.label)?'All-in-one':/iphone/i.test(n.label)?'Smartphone':/ipod/i.test(n.label)?'Lettore musicale':/ipad/i.test(n.label)?'Tablet':'Computer desktop',wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
-      await saveDev(it);render();n.wish=true;hap.thud(.4);w.classList.add('wish');w.querySelector('.tr-dot').textContent='💭';w.querySelector('small').textContent='in wishlist';toast(`«${n.label}» in wishlist`,3500,{label:'APRI',fn:()=>openDetail(it.id)})})}});
-  return el}
 /* ===== Indovina l'anno (o il prezzo): un gioco con i pezzi della collezione, da passare agli amici ===== */
 function openGuess(mode){
   const pool0=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))&&wrPh(d));
@@ -4191,24 +4189,73 @@ function openGuess(mode){
     el.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const a=b.dataset.g;if(a==='ok')reveal();else if(a==='next'){r++;if(r>=pool.length)finish();else round()}else if(a==='again'){history.back();setTimeout(()=>openGuess(mode),330)}});
     requestAnimationFrame(round)}});
   return el}
-function openGaps(){
-  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quali pezzi hai e quali mancano. «Per scocca» conta una volta sola le varianti dello stesso computer (processore, taglio, schermo Retina). Fonte: l'elenco dei modelli di The Apple Wiki. <a href="#" data-gtree>🌳 Vedi come albero di famiglia</a></p><div class="chips gpsel">${[['gen','Per scocca'],['models','Tutti i modelli']].map(([n,l])=>`<button class="chip ${LS.get('rd_gapmode','gen')===n?'on':''}" data-gm="${n}">${l}</button>`).join('')}</div><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
-    const out=$('#gpo',el);
-    let LL=null;const draw=L=>{LL=L;const md=LS.get('rd_gapmode','gen'),G=gapsData(L,md);
-      if(!G.length){out.innerHTML='<p class="note">Nessuna linea Apple riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio.</p>';return}
-      out.innerHTML=G.map((g,gi)=>`<div class="gapf"><div class="gaph"><b>${esc(g.f)}</b><small>${g.n} di ${g.tot}</small></div><div class="gbar"><i style="width:${Math.round(g.n/g.tot*100)}%"></i></div>
-        <details class="more"${G.length<=2?' open':''}><summary>${g.n===g.tot?'✓ completa':`${g.tot-g.n} ${g.tot-g.n===1?'mancante':'mancanti'}`}${g.loose.length?` · ${g.loose.length} da abbinare`:''}</summary>
-        <div class="log">${g.rows.map((r,ri)=>`<div class="gapr ${r.own.length?'own':''}"><span class="lb"><b>${r.own.length?'✓ ':''}${esc(r.x[0])}</b><small>${esc(r.gen&&r.models.length>1?r.models.length+' varianti':[r.x[1],r.x[2]].filter(Boolean).join(' · '))}${r.own.length?' · '+esc(r.own.map(d=>d.luogo||'in collezione').join(', ')):''}</small></span>${r.own.length?'':r.wish?'<span class="gapw">💭 in wishlist</span>':`<button class="btn sm sec" data-gw="${gi}|${ri}">＋ Wishlist</button>`}</div>`).join('')}</div>
-        ${g.loose.length?`<p class="note">Della linea ma non abbinati a un modello preciso: ${g.loose.map(d=>`<a href="#" data-go="${d.id}">${esc(d.nome)}</a>`).join(', ')}. Aggiungi il Model ID o il codice modello per abbinarli.</p>`:''}</details></div>`).join('');
-      out.onclick=async e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();return openDetail(go.dataset.go)}
-        const b=e.target.closest('[data-gw]');if(!b)return;const [gi,ri]=b.dataset.gw.split('|').map(Number),rw=G[gi].rows[ri],x=rw.gen&&rw.models.length>1?[rw.x[0],'','',rw.x[3]]:rw.gen?rw.models[0]:rw.x;
-        const t=x[3]==='Mac'?(/book/i.test(x[0])?'Portatile':/imac|emac|classic|color classic/i.test(x[0])?'All-in-one':/xserve/i.test(x[0])?'Server':'Computer desktop'):/iphone/i.test(x[3])?'Smartphone':/ipad/i.test(x[3])?'Tablet':/ipod/i.test(x[3])?'Lettore musicale':'';
-        const w={id:uid(),nome:x[0],marca:'Apple',modello:x[1]||'',identifier:x[2]||'',tipologia:TIPI.includes(t)?t:'',linea:G[gi].f,wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
-        await saveDev(w);render();buzz('ok');b.outerHTML='<span class="gapw">💭 in wishlist</span>';toast(`«${x[0]}» in wishlist`,4000,{label:'APRI',fn:()=>openDetail(w.id)})}};
-    el.querySelector('[data-gtree]').onclick=e=>{e.preventDefault();openTree()};
-    el.querySelector('.gpsel').onclick=e=>{const b=e.target.closest('[data-gm]');if(!b||!LL)return;LS.set('rd_gapmode',b.dataset.gm);el.querySelectorAll('[data-gm]').forEach(x=>x.classList.toggle('on',x===b));draw(LL)};
-    awIndex().then(draw).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openGaps()))}});
+/* ===== 2.19: Linee — «Cosa manca» e l'albero di famiglia in una pagina sola, più le linee tracciate con Gemini ===== */
+const TREE=[['Portatili pro',['PowerBook','PowerBook G3','PowerBook G4','MacBook Pro']],['Portatili per tutti',['iBook','MacBook']],['MacBook Air',['MacBook Air']],['iMac',['iMac']],['Desktop pro',['Power Mac G4','Power Mac G5','Mac Pro']],['Mac mini',['Mac mini']]];
+/* linee personali: salvate sul telefono e sincronizzate con GitHub insieme alla collezione (campo «linee» di collezione.json) */
+const linesAll=()=>LS.get('rd_linee',[]),linesLive=()=>linesAll().filter(l=>!l.del);
+function linesMerge(rem){if(!Array.isArray(rem))return false;const m=new Map(linesAll().map(l=>[l.id,l]));let ch=false;for(const r of rem){if(!r||!r.id)continue;const x=m.get(r.id);if(!x||(r.t||0)>(x.t||0)){m.set(r.id,r);ch=true}}if(ch)LS.set('rd_linee',[...m.values()]);return ch}
+function linesSave(l){l.t=Date.now();LS.set('rd_linee',[...linesAll().filter(x=>x.id!==l.id),l]);dirty()}
+const linesForSync=()=>linesAll().slice().sort((a,b)=>String(a.id).localeCompare(b.id));
+const lineTipo=n=>/book/i.test(n)?'Portatile':/imac/i.test(n)?'All-in-one':/iphone|nokia|telefon|phone/i.test(n)?'Smartphone':/ipod|walkman/i.test(n)?'Lettore musicale':/ipad|tablet/i.test(n)?'Tablet':/game ?boy|console|playstation|nintendo/i.test(n)?'Console':'';
+function customTrunk(l){const own=devices.filter(d=>!d.wish),wish=devices.filter(d=>d.wish);
+  return {n:l.nome,custom:l.id,q:l.q,nodes:(l.nodes||[]).map(v=>{const names=[v.n,...(v.a||[])];const ids=new Set(v.ids||[]),hit=d=>ids.has(d.id)||names.some(x=>mkSim(x,[d.marca,d.nome].join(' '))>=.75||mkSim(x,d.nome||'')>=.75);
+    return {fam:l.nome,label:v.n+(v.y?` (${v.y})`:''),own:own.filter(hit),wish:wish.some(hit),x:[v.n,'','',''],marca:v.marca}})}}
+async function linesData(mode){const L=await awIndex(),G=gapsData(L,mode),byFam=new Map(G.map(g=>[g.f,g])),trunks=[];
+  for(const [n,fams] of TREE){const nodes=[];for(const f of fams){const g=byFam.get(f);
+      if(mode==='gen'){const rows=g?g.rows:[];GAP_GEN.filter(r=>r[0]===f&&r[1]).forEach(r=>{const row=rows.find(x=>x.x[0]===r[1]);nodes.push({fam:f,label:r[1],own:row?row.own:[],wish:!!(row&&row.wish)||devices.some(d=>d.wish&&gapNorm(d.nome)===gapNorm(r[1])),x:row?row.x:[r[1],'','','Mac']})})}
+      else if(g)g.rows.forEach(r=>nodes.push({fam:f,label:r.x[0],own:r.own,wish:!!r.wish,x:r.x}));
+      if(g&&g.loose.length)nodes.loose=(nodes.loose||[]).concat(g.loose)}
+    trunks.push({n,nodes,loose:nodes.loose||[],cur:true})}
+  const covered=new Set(TREE.flatMap(t=>t[1]));G.filter(g=>!covered.has(g.f)).forEach(g=>trunks.push({n:g.f,nodes:g.rows.map(r=>({fam:g.f,label:r.x[0],own:r.own,wish:!!r.wish,x:r.x})),loose:g.loose}));
+  trunks.forEach(t=>t.have=t.nodes.filter(n=>n.own.length).length);
+  return trunks.filter(t=>t.nodes.length).sort((a,b)=>(b.have>0)-(a.have>0)||(!!b.cur-!!a.cur)||b.have/b.nodes.length-a.have/a.nodes.length)}
+/* nuova linea: Gemini elenca i modelli (raggruppando le varianti) e riconosce quali hai già */
+async function lineTrace(q,onStep){const col=devices.filter(d=>!d.wish).map(d=>`${d.id} | ${d.nome} | ${d.marca||''} | ${d.anno||''}`).join('\n');
+  const prompt=`Sei un esperto di elettronica da collezione. L'utente vuole tracciare una «linea» per la sua collezione: «${q}».
+Elenca in ordine cronologico i modelli che fanno parte di questa linea (al massimo 40). Raggruppa le varianti minori dello stesso apparecchio (stessa scocca con processore, memoria o colore diversi = una voce sola).
+Poi indica quali oggetti della collezione dell'utente corrispondono a ogni voce, usando i loro id.
+Collezione dell'utente (id | nome | marca | anno):
+${col||'(vuota)'}
+Rispondi SOLO con un oggetto JSON: {"nome":"titolo breve della linea","voci":[{"nome":"nome del modello","anno":numero,"marca":"","alias":["altri nomi o codici modello"],"ids":["id della collezione"]}]}`;
+  return gemAsk('','',onStep,async(m,search)=>{const r=await gemCall(m,[{text:prompt}],search,!search);const v=Array.isArray(r.o.voci)?r.o.voci.filter(x=>x&&typeof x.nome==='string'&&x.nome.trim()):[];
+    if(v.length<2)throw new AppErr('vuoto','nessun modello trovato',{model:m});const known=new Set(devices.map(d=>d.id));
+    return {nome:String(r.o.nome||q).slice(0,60),nodes:v.slice(0,40).map(x=>({n:x.nome.trim().slice(0,80),y:parseInt(x.anno)||null,marca:typeof x.marca==='string'?x.marca:'',a:(Array.isArray(x.alias)?x.alias:[]).filter(a=>typeof a==='string').slice(0,6),ids:(Array.isArray(x.ids)?x.ids:[]).filter(i=>known.has(i))})),model:m}})}
+function openNewLine(prev){
+  openPage(prev?'Ritraccia la linea':'Nuova linea',`<p class="note" style="margin-top:0">Descrivi la linea che vuoi seguire: Gemini cerca i modelli che ne fanno parte, in ordine, e riconosce quelli che hai già. Per esempio «portatili convertibili anni 2000», «telefoni Nokia trasparenti», «Walkman a cassette Sony».</p>
+    <textarea class="in" id="nlq" rows="3" placeholder="Es. portatili convertibili anni 2000">${esc(prev?prev.q:'')}</textarea><button class="btn" id="nlgo" style="width:100%;margin-top:10px">✨ Traccia con Gemini</button><div id="nlo" style="margin-top:12px"></div>`,{mount(el){
+    const q=$('#nlq',el),out=$('#nlo',el),go=$('#nlgo',el);if(!prev)setTimeout(()=>q.focus(),300);
+    go.onclick=async()=>{const t=q.value.trim();if(!t){q.focus();return}if(!gemOn()){out.innerHTML='<p class="note">Serve la chiave gratuita di Gemini.</p><button class="btn sec" data-gemset>✨ Collega Gemini</button>';out.querySelector('[data-gemset]').onclick=openGemSettings;return}
+      go.disabled=true;out.innerHTML=loader('web','Gemini traccia la linea…');let r;try{r=await lineTrace(t,m=>{const x=out.querySelector('.ldm');if(x)x.textContent='Chiedo a '+m})}catch(e){go.disabled=false;errBox(out,e,'Gemini',()=>go.click(),'gem');return}
+      const l=Object.assign(prev||{id:uid()},{nome:r.nome,q:t,nodes:r.nodes});linesSave(l);hap.thud(.5);toast(`Linea «${l.nome}»: ${r.nodes.length} modelli, ${r.nodes.filter(n=>n.ids.length).length} li hai già`,4000);history.back()}}});
 }
+function openLines(){
+  const el=openPage('Linee e cosa manca',`<p class="note" style="margin-top:0">Le linee come linee della metro: le stazioni accese sono i pezzi che hai, quelle vuote quelli che mancano (tocca per metterli in wishlist). «Per scocca» conta una volta sola le varianti dello stesso computer. Fonte: The Apple Wiki; per le altre marche traccia una linea con Gemini.</p>
+    <div class="chips gpsel">${[['gen','Per scocca'],['models','Tutti i modelli']].map(([n,l])=>`<button class="chip ${LS.get('rd_gapmode','gen')===n?'on':''}" data-gm="${n}">${l}</button>`).join('')}</div>
+    <button class="btn sec" data-nl style="width:100%;margin:0 0 14px">＋ Traccia una nuova linea con Gemini</button><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
+    const out=$('#gpo',el);let T=[];
+    const trunkHTML=(t,ti)=>{let lf='';const multi=t.nodes.some(m=>m.fam!==t.nodes[0].fam);return `<section class="tr ${t.have?'':'dim'}"><div class="tr-h"><b>${esc(t.n)}</b><small>${t.have} di ${t.nodes.length}</small>${t.custom?`<button class="hb tr-m" data-lmenu="${t.custom}" aria-label="Opzioni della linea">⋯</button>`:''}</div>${t.custom&&t.q?`<p class="tr-q">«${esc(t.q)}»</p>`:''}<div class="gbar"><i style="width:${Math.round(t.have/Math.max(1,t.nodes.length)*100)}%"></i></div><div class="tr-l">${t.nodes.map((n,ni)=>{const fh=multi&&n.fam!==lf;lf=n.fam;const d=n.own[0],ph=d&&wrPh(d);
+        return `${fh?`<div class="tr-f">${esc(n.fam)}</div>`:''}<button class="tr-n ${d?'own':n.wish?'wish':''}" style="--i:${ni}" ${d?`data-trgo="${d.id}"`:`data-trw="${ti}|${ni}"`}><span class="tr-dot">${d?(ph?`<img src="${esc(ph)}" alt="">`:icon(d)):n.wish?'💭':''}</span><span class="tr-t"><b>${esc(n.label)}</b><small>${d?esc(n.own.map(x=>x.nome+(x.luogo?' · '+x.luogo:'')).join(', ')):n.wish?'in wishlist':'manca · tocca per la wishlist'}</small></span></button>`}).join('')}</div>
+        ${t.loose&&t.loose.length?`<p class="note">Della linea ma non abbinati a un modello preciso: ${t.loose.map(d=>`<a href="#" data-go="${d.id}">${esc(d.nome)}</a>`).join(', ')}. Aggiungi il Model ID o il codice modello per abbinarli.</p>`:''}</section>`};
+    const draw=async()=>{const md=LS.get('rd_gapmode','gen');let base=[];try{base=await linesData(md)}catch(e){logErr('Linee · elenco dei modelli',e)}
+      const C=linesLive().map(customTrunk);C.forEach(t=>t.have=t.nodes.filter(n=>n.own.length).length);T=[...C,...base];
+      if(!T.length){out.innerHTML='<p class="note">Nessuna linea riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio; per le altre marche traccia una linea con Gemini.</p>';return}
+      out.innerHTML=(C.length?'<div class="sec-t">Le tue linee</div>':'')+T.map((t,i)=>(C.length&&i===C.length&&base.length?'<div class="sec-t">Linee Apple</div>':'')+trunkHTML(t,i)).join('');
+      const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.08});out.querySelectorAll('.tr').forEach(s=>io.observe(s))};
+    el._refresh=draw;draw();
+    el.querySelector('.gpsel').onclick=e=>{const b=e.target.closest('[data-gm]');if(!b)return;LS.set('rd_gapmode',b.dataset.gm);el.querySelectorAll('[data-gm]').forEach(x=>x.classList.toggle('on',x===b));hap.tick(.4);draw()};
+    el.querySelector('[data-nl]').onclick=()=>openNewLine();
+    out.addEventListener('click',async e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();return openDetail(go.dataset.go)}
+      const g=e.target.closest('[data-trgo]');if(g){hap.tick(.5);return openDetail(g.dataset.trgo)}
+      const lm=e.target.closest('[data-lmenu]');if(lm){const l=linesAll().find(x=>x.id===lm.dataset.lmenu);if(!l)return;const i=await sheet(l.nome,[{ic:'✨',t:'Ritraccia con Gemini',sub:'Stessa descrizione, elenco aggiornato',g:1},{ic:'✎',t:'Cambia la descrizione',g:1},{ic:'🗑',t:'Elimina la linea',dng:true,g:2}]);
+        if(i===0||i===1)openNewLine(l);if(i===2&&await ask(`Eliminare la linea «${l.nome}»? I pezzi restano in collezione.`,'Elimina',true)){linesSave({id:l.id,del:true});draw();toast('Linea eliminata')}return}
+      const w=e.target.closest('[data-trw]');if(!w||w.classList.contains('wish'))return;const [ti,ni]=w.dataset.trw.split('|').map(Number),n=T[ti].nodes[ni],t=T[ti],x=n.x||[];
+      const tip=x[3]==='Mac'||!x[3]?(lineTipo(n.label)||(/book/i.test(n.label)?'Portatile':t.custom?'':'Computer desktop')):/iphone/i.test(x[3])?'Smartphone':/ipad/i.test(x[3])?'Tablet':/ipod/i.test(x[3])?'Lettore musicale':'';
+      const it={id:uid(),nome:x[0]||n.label,marca:n.marca||(t.custom?'':'Apple'),modello:x[1]&&!/\s/.test(x[1])?x[1]:'',identifier:x[2]||'',linea:t.custom?t.n:n.fam,tipologia:TIPI.includes(tip)?tip:'',wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
+      await saveDev(it);render();n.wish=true;hap.thud(.4);w.classList.add('wish');w.querySelector('.tr-dot').textContent='💭';w.querySelector('small').textContent='in wishlist';toast(`«${it.nome}» in wishlist`,3500,{label:'APRI',fn:()=>openDetail(it.id)})})}});
+  return el}
+function openGaps(){return openLines()}
+function openTree(){return openLines()}
+
 function openAdd(){
   const W=isWishView()?{wish:true,w_priorita:'Media'}:{};
   const toForm=async r=>openForm(await mergeFetched({...W},r,true),{fromLookup:true});
@@ -5357,10 +5404,8 @@ function openMenu(){
   const h=`<div class="sec-t">Collezione</div>
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="wrap"><b>🎁 Il tuo anno · RDDC Wrapped</b><small>${(y=>y?`${y}: ${devices.filter(d=>!d.wish&&+d.acq_anno===y).length} pezzi nuovi, spesa, il colpo dell'anno, il tuo decennio…`:'Serve l\'anno di acquisto negli oggetti')(wrapYears()[0])}</small></button>
-  <button class="res" data-m="album"><b>🃏 Album delle carte</b><small>Tutte le carte, serie per scocca da completare, pagine da sfogliare</small></button>
-  <button class="res" data-m="tree"><b>🌳 Albero di famiglia</b><small>Le linee di prodotto come linee della metro: cosa hai, cosa manca</small></button>
+  <button class="res" data-m="gaps"><b>🌳 Linee e cosa manca</b><small>Le linee come linee della metro: cosa hai, cosa manca (in wishlist con un tocco); nuove linee con Gemini${linesLive().length?` · ${linesLive().length} ${linesLive().length===1?'linea tua':'linee tue'}`:''}</small></button>
   <button class="res" data-m="guess"><b>🎲 Indovina l'anno</b><small>Un gioco con i tuoi pezzi, da passare agli amici</small></button>
-  <button class="res" data-m="gaps"><b>🧩 Cosa manca</b><small>Per ogni linea Apple che hai: i modelli che mancano, da mettere in wishlist con un tocco</small></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
   <button class="res" data-m="lab"><b>🛠️ Laboratorio</b><small>Progetti di restauro, collaudi, lista della spesa${(()=>{const n=allProjects().filter(x=>x.p.stato!=='Finito').length;return n?` · ${n} ${n===1?'progetto aperto':'progetti aperti'}`:''})()}</small></button>
@@ -5581,7 +5626,7 @@ function ghSync(manual){
         let remote={},arr=[];
         if(tmap.has('collezione.json')){remote=JSON.parse(await (await gh(`git/blobs/${tmap.get('collezione.json')}`,{raw:true})).text());arr=Array.isArray(remote)?remote:(remote.devices||[])}
         const fetchPhoto=async p=>{const sha=tmap.get(p.replace(/^\.\//,''));if(!sha)throw new Error('foto mancante');return (await gh(`git/blobs/${sha}`,{raw:true})).blob()};
-        const r=await mergeRemote(arr.map(x=>JSON.parse(JSON.stringify(x))),tombsOf(remote),fetchPhoto);res.nuovi+=r.nuovi;res.agg+=r.agg;res.canc+=r.canc;
+        const r=await mergeRemote(arr.map(x=>JSON.parse(JSON.stringify(x))),tombsOf(remote),fetchPhoto);res.nuovi+=r.nuovi;res.agg+=r.agg;res.canc+=r.canc;linesMerge(remote.linee);
         if(r.nuovi||r.agg||r.canc)render();
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map(),m3up=[];
@@ -5600,14 +5645,14 @@ function ghSync(manual){
         for(const p of files.keys())refs.add(p);
         const orphans=[...tmap.keys()].filter(p=>/^(foto|allegati|modelli|\d+)\/[0-9a-f]{40}\.\w{1,7}$/.test(p)&&!refs.has(p));
         const ics=buildICS(out),calNew=tmap.get('calendario.ics')!==await gitBlobSha(ics);
-        if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim)){m3sent=m3up.filter(x=>tmap.has(x.path));break}
+        if(!files.size&&!orphans.length&&!calNew&&tmap.has('collezione.json')&&stable(remSorted)===stable(out)&&stable(remElim)===stable(elim)&&stable((remote.linee||[]).slice().sort((a,b)=>String(a.id).localeCompare(b.id)))===stable(linesForSync())){m3sent=m3up.filter(x=>tmap.has(x.path));break}
         const entries=[];
         for(const [path,b64] of files){const big=/^modelli\//.test(path),mb=fmtMB(b64.length*.75);
           if(big)isle('m3up',{ic:'☁️',t:`Invio modello 3D · ${mb}`,p:0});
           let sha;try{sha=big?await ghBlobUp(b64,p=>isle('m3up',{ic:'☁️',t:`Invio modello 3D · ${mb}`,p})):(await gh('git/blobs',{method:'POST',body:{content:b64,encoding:'base64'}})).sha}
           catch(e){if(big)isleEnd('m3up','Invio non riuscito',false);const er=new Error(`invio di ${big?'un modello 3D':'un file'} (${mb}) non riuscito: ${e.status===413||e.status===422?'GitHub lo rifiuta, forse è troppo grande: esportalo più leggero (SPZ)':e.status?e.message:'connessione interrotta o app chiusa durante l\'invio'}`);er.status=e.status;er.m3d=big;throw er}
           entries.push({path,mode:'100644',type:'blob',sha})}
-        const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim};
+        const body={app:'rddc',v:4,esportato:Date.now(),devices:out,eliminati:elim,linee:linesForSync()};
         entries.push({path:'collezione.json',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:JSON.stringify(body),encoding:'utf-8'}})).sha});
         for(const p of orphans)entries.push({path:p,mode:'100644',type:'blob',sha:null});
         if(calNew)entries.push({path:'calendario.ics',mode:'100644',type:'blob',sha:(await gh('git/blobs',{method:'POST',body:{content:ics,encoding:'utf-8'}})).sha});
@@ -5639,10 +5684,10 @@ async function syncDB(manual){
   }catch(e){if(manual)toast('Database non raggiungibile: '+e.message,4000);return}
   const arr=Array.isArray(j)?j:j&&j.devices;
   if(!Array.isArray(arr)){if(manual)toast('Il file del database non è valido');return}
-  const sig=[j.esportato||'',arr.length,arr.reduce((m,d)=>Math.max(m,(d&&(d.modificato||d.creato))||0),0),(j.eliminati||[]).length].join('|');
+  const sig=[j.esportato||'',arr.length,arr.reduce((m,d)=>Math.max(m,(d&&(d.modificato||d.creato))||0),0),(j.eliminati||[]).length,(j.linee||[]).reduce((m,l)=>Math.max(m,l.t||0),0)].join('|');
   if(!manual&&sig===LS.get('rd_db_sig',''))return;
   const base=new URL(dbUrl(),location.href);
-  const {nuovi,agg,canc}=await mergeRemote(arr,tombsOf(j),async p=>{const r=await fetch(new URL(p,base));if(!r.ok)throw new Error('HTTP '+r.status);return r.blob()});
+  const {nuovi,agg,canc}=await mergeRemote(arr,tombsOf(j),async p=>{const r=await fetch(new URL(p,base));if(!r.ok)throw new Error('HTTP '+r.status);return r.blob()});linesMerge(j.linee);
   LS.set('rd_db_sig',sig);LS.set('rd_db_last',{t:Date.now(),n:arr.length,nuovi,agg,canc});
   if(nuovi||agg||canc){render();toast(`Database GitHub: ${nuovi} nuovi, ${agg} aggiornati${canc?', '+canc+' eliminati':''}`,3500)}
   else if(manual)toast('Già tutto aggiornato ✔︎');
@@ -5841,7 +5886,6 @@ $('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;ret
   if(SELM){const c=e.target.closest('[data-id]');if(c){SELM.has(c.dataset.id)?SELM.delete(c.dataset.id):SELM.add(c.dataset.id);render()}return}if(e.target.closest('#dueB'))return openDue();
   if(e.target.closest('#manB'))return openMaintenance();
   if(e.target.closest('#memB'))return openDetail(e.target.closest('#memB').dataset.go);
-  if(e.target.closest('#wallB')){const w=devices.find(d=>d.id===e.target.closest('#wallB').dataset.go);return w&&openStudio(w,{wall:true})}
   if(e.target.closest('#labP'))return openLab('prog');
   if(e.target.closest('#labC'))return openLab('coll');
   if(e.target.closest('#labS'))return openLab('spesa');
