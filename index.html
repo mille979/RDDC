@@ -854,6 +854,16 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .gu-start{text-align:center}.gu-logo{font-size:64px;animation:wr-float 3s ease-in-out infinite alternate}.gu-start .res{text-align:left}
 .gu-end{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}.gu-end h1{font:900 78px/1 system-ui,sans-serif;margin:6px 0;animation:wr-rise .6s ease both}.gu-end h1 small{font-size:24px;opacity:.6}.gu-end h2{margin:4px 0 8px}
 @media (prefers-reduced-motion:reduce){.alb-p,.og-mem img,.tr-n,.tr-l::before,.gu *{animation:none!important;transition:none!important}}
+/* ===== 2.20: etichette 3D ===== */
+.m3tags{position:absolute;inset:0;z-index:3;pointer-events:none}.m3ln{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.m3ln line{stroke:rgba(255,226,170,.9);stroke-width:1.5;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.m3n{position:absolute;left:0;top:0;width:0;height:0}.m3pin{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#ffd58a;box-shadow:0 0 0 3px rgba(255,213,138,.35),0 0 12px #ffb547;animation:m3pin 1.8s ease-in-out infinite}
+@keyframes m3pin{50%{box-shadow:0 0 0 8px rgba(255,213,138,0),0 0 16px #ffb547}}
+.m3pill{position:absolute;left:0;top:0;transform:translate(0,-50%);pointer-events:auto;border:0;border-radius:999px;padding:6px 11px;font:650 12.5px/1.2 system-ui,sans-serif;color:#2a1a08;background:rgba(255,236,205,.94);box-shadow:0 6px 18px rgba(0,0,0,.4);white-space:nowrap}.m3pill.l{transform:translate(-100%,-50%)}
+.m3tags.on .m3pill,.m3tags.on .m3pin{animation:m3tag-in .5s cubic-bezier(.2,.9,.3,1.35) both;animation-delay:calc(var(--i)*.07s)}.m3tags.on .m3pin{animation:m3tag-in .5s cubic-bezier(.2,.9,.3,1.35) both,m3pin 1.8s ease-in-out .6s infinite}
+@keyframes m3tag-in{from{opacity:0;scale:.4}}
+.m3ed{position:absolute;left:0;right:0;margin:0 auto;width:max-content;bottom:14px;z-index:4;display:flex;gap:10px;align-items:center;max-width:calc(100% - 24px);padding:7px 7px 7px 14px;border-radius:999px;background:rgba(20,14,8,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#f3e9da;font-size:12.5px;animation:m3-up .35s ease both}
+.m3ed span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m3ed .btn{flex:none}.m3page.editing .m3c{cursor:crosshair}.m3page.editing .m3ed{box-shadow:0 0 0 2px rgba(255,213,138,.6)}.hb.on{box-shadow:0 0 0 2px #ffd58a}
+.tgm .tgc{margin-top:10px;max-height:34vh;overflow:auto}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
 .isle{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:90;display:none;align-items:center;gap:8px;max-width:min(92vw,360px);padding:8px 14px 8px 10px;border-radius:999px;background:#000;color:#fff;font:600 13px/1.1 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.12);transform:translateX(-50%);pointer-events:none;overflow:hidden}
 .isle.on{display:flex;animation:isle-in .42s cubic-bezier(.2,1.25,.35,1) both}.isle.out{animation:isle-out .3s ease both}
@@ -1025,8 +1035,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.19';
+const APP_VER='2.20';
 const NOVITA=[
+ ['2.20','2026-11-24',['ⓘ Etichette sui modelli 3D: nella vista 3D il tasto ⓘ mostra spilli agganciati al modello, con una linea che porta all\'etichetta (porte, caratteristiche…); seguono il modello mentre lo giri e si nascondono quando il punto finisce sul retro. Con «✎ Modifica» tocchi il modello nel punto esatto e scegli o scrivi l\'etichetta: le porte della scheda sono già proposte (USB 2.0, FireWire 400, Ethernet…); tocca un\'etichetta per cambiarla o toglierla. Ogni modalità 3D ha le sue etichette e si sincronizzano']],
  ['2.19','2026-11-24',['🌳 «Cosa manca» e l\'albero di famiglia sono una pagina sola, «Linee e cosa manca»: linee della metro con stazioni accese per i pezzi che hai e vuote per quelli che mancano (in wishlist con un tocco), per scocca o per modello','✨ Nuove linee con Gemini: descrivi cosa vuoi seguire («portatili convertibili anni 2000», «telefoni Nokia trasparenti») e Gemini elenca i modelli in ordine e riconosce quelli che hai; le linee si sincronizzano tra i telefoni','🔍 Mercatino: si vede chi sta guardando la foto e da quanti secondi; se Gemini non risponde (massimo 40 secondi per modello) o risponde male compare il motivo con «Riprova», invece della luce che pulsa all\'infinito; foto più leggera e risposta più rapida','📅 I compleanni dei pezzi arrivano solo nel giorno esatto (dalla data di presentazione); tolto lo sfondo del giorno (la foto da studio resta nel menu ⋯); album delle carte nascosto per ora']],
  ['2.18','2026-11-24',['🃏 Album delle carte (Menu): tutte le carte in un raccoglitore, serie per scocca come in «Cosa manca» con le buste vuote per i pezzi che mancano e il completamento (es. iBook 2/3); le pagine si girano in 3D','📸 Foto da studio (scheda → ⋯): l\'oggetto su un set fotografico con fondale curvo, ombra e riflesso sul pavimento lucido, chiaro, scuro o nei colori della sua epoca; come sfondo del telefono o quadrata. In Oggi c\'è lo sfondo del giorno, ogni giorno un pezzo diverso','🌳 Albero di famiglia (Menu, o da «Cosa manca»): le linee di prodotto come linee della metro (portatili pro, portatili per tutti, iMac, desktop pro…), stazioni accese per i pezzi che hai e vuote per le scocche che mancano, da mettere in wishlist','🎲 Indovina l\'anno (Menu): dieci pezzi della collezione, trascini il righello sull\'anno o sul valore, punti, coriandoli per il centro perfetto, record sul telefono','📅 Ricordi in Oggi: «un anno fa oggi», il mese in cui è arrivato un pezzo, i compleanni tondi (quest\'anno compie 25 anni)']],
  ['2.17','2026-11-23',['🔍 Mercatino: il nuovo tasto sopra il «+» apre la fotocamera; inquadri un oggetto e un\'onda iridescente parte dal centro e accende i suoi contorni mentre Gemini lo riconosce; sotto il verdetto (ce l\'hai già e dove, è in wishlist, hai già la stessa scocca, ti manca), la forbice di prezzo e il giudizio sul prezzo chiesto (affare, giusto, caro), poi in wishlist o in collezione con la foto','🃏 Carte da collezione (scheda → ⋯): fronte con la grafica dell\'epoca, retro con l\'etichetta ricostruita dai dati veri e la carriera del pezzo, rarità da comune a leggendaria, ologramma che segue l\'inclinazione (col modello 3D dentro, se c\'è); la carta esce da una stampante ad aghi','🏛️ Museo con due viste: scaffali e linea del tempo (⏳ / 🏛️ in alto), riapre l\'ultima usata','Da completare: anche lo scontorno per il museo, per ogni oggetto che non è un accessorio o un ricambio (toccandolo si apre lo scontorno)','Menu più corto: le impostazioni sono in una pagina a parte, divise per sezioni; le opzioni del modello 3D sono in un sottomenu («⋯ Opzioni» nella scheda, «Modello 3D…» nel menu ⋯)','La pressione lunga sull\'elenco non seleziona più il testo']],
@@ -3281,6 +3292,8 @@ async function mount3D(host,d,o={}){
     const build=async(m,b)=>{const mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;
       const r=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(r[0],r[1],r[2]);mesh.updateMatrixWorld(true);
       const fx=m3Fix(THREE,mesh),box=fx.box||mesh.getBoundingBox(true);
+      /* 2.20: un campione dei punti (coordinate del file) per piazzare le etichette toccando il modello */
+      try{const sp=mesh.packedSplats||mesh.splats,n=sp.numSplats||0,step=Math.max(1,Math.floor(n/60000)),a=[];let k=0;sp.forEachSplat((i,c,s,q,op)=>{if(k++%step||op<.15)return;a.push(c.x,c.y,c.z)});const z=box.getSize(new THREE.Vector3());mesh.userData.pts=new Float32Array(a);mesh.userData.r=Math.max(z.x,z.y,z.z)*.018}catch(e){}
       const bb=box.clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
       if((fx.op||fx.sc)&&!m.fix&&o.onFix)o.onFix(fx);
       return {mesh,size:bb.getSize(new THREE.Vector3())}};
@@ -3322,22 +3335,33 @@ async function mount3D(host,d,o={}){
       /* ruota della fortuna: uno scatto secco ogni 15° girando (col dito o per inerzia, non nella rotazione lenta automatica); un urto ai limiti dell'inclinazione */
       {const tk=Math.floor(st.th/(Math.PI/12));if(tk!==st.tk){if(st.tk!=null&&(st.drag||st.vth))hap.tick(Math.min(1,.4+Math.abs(st.vth)*.12));st.tk=tk}
         const lim=st.ph<M3_PH[0]||st.ph>M3_PH[1];if(lim&&!st.lim&&st.drag)hap.bump();st.lim=lim}
-      st.ph=Math.min(M3_PH[1],Math.max(M3_PH[0],st.ph));place();R.render(scene,cam);
+      st.ph=Math.min(M3_PH[1],Math.max(M3_PH[0],st.ph));place();R.render(scene,cam);o.onFrame&&o.onFrame();
       if((vis&&!document.hidden)||busy)raf=requestAnimationFrame(frame)};
     var kick=()=>{if(!raf&&!dead){st.last=0;raf=requestAnimationFrame(frame)}};
     ro=new ResizeObserver(size);ro.observe(host);io=new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()});io.observe(host);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick()});
     const stop=e=>{e.stopPropagation()};['touchstart','touchmove','touchend'].forEach(t=>cv.addEventListener(t,stop,{passive:true}));
-    cv.addEventListener('pointerdown',e=>{e.stopPropagation();if(st.spin)return;cv.setPointerCapture(e.pointerId);st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();st.vth=st.vph=0;
+    cv.addEventListener('pointerdown',e=>{e.stopPropagation();if(st.spin)return;st.tap=st.pts.size?null:{x:e.clientX,y:e.clientY,t:performance.now()};cv.setPointerCapture(e.pointerId);st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();st.vth=st.vph=0;
       if(st.pts.size===1)st.drag={x:e.clientX,y:e.clientY,t:performance.now()};else{const p=[...st.pts.values()];st.pinch={d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),k:st.k};st.drag=null}kick()});
     cv.addEventListener('pointermove',e=>{if(!st.pts.has(e.pointerId))return;e.stopPropagation();st.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.idle=performance.now();
       if(st.pts.size>=2&&st.pinch){const p=[...st.pts.values()],dd=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.pinch.k*st.pinch.d/Math.max(dd,1)));kick();return}
       if(!st.drag)return;const now=performance.now(),dx=e.clientX-st.drag.x,dy=e.clientY-st.drag.y,dt=Math.max(1,now-st.drag.t)/1000;
       const a=-dx*.009,b=dy*.006;st.th+=a;st.ph+=b;st.vth=a/dt*.6;st.vph=b/dt*.6;st.drag={x:e.clientX,y:e.clientY,t:now};kick()});
-    const up=e=>{if(!st.pts.has(e.pointerId))return;st.pts.delete(e.pointerId);if(st.pts.size<2)st.pinch=null;if(!st.pts.size){if(st.drag&&performance.now()-st.drag.t>90)st.vth=st.vph=0;st.drag=null}st.idle=performance.now();kick()};
+    const up=e=>{if(!st.pts.has(e.pointerId))return;if(st.tap&&o.onTap&&e.type==='pointerup'&&st.pts.size===1&&Math.hypot(e.clientX-st.tap.x,e.clientY-st.tap.y)<8&&performance.now()-st.tap.t<380){const T=st.tap;setTimeout(()=>o.onTap(T.x,T.y),0)}st.tap=null;st.pts.delete(e.pointerId);if(st.pts.size<2)st.pinch=null;if(!st.pts.size){if(st.drag&&performance.now()-st.drag.t>90)st.vth=st.vph=0;st.drag=null}st.idle=performance.now();kick()};
     cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('dblclick',e=>{e.stopPropagation();api.reset()});
     cv.addEventListener('wheel',e=>{e.preventDefault();st.k=Math.min(M3_DIST[1],Math.max(M3_DIST[0],st.k*(1+e.deltaY*.001)));kick()},{passive:false});
     if(o.intro&&!RM())st.intro=performance.now();o.onReady&&setTimeout(o.onReady,350);size();lab.classList.add('out');setTimeout(()=>lab.remove(),360);host.classList.add('ready');kick();api.cam=cam;api.st=st;
+    /* 2.20: etichette — dal tocco al punto del modello (il più vicino a chi guarda lungo il raggio) e dal punto allo schermo */
+    const tv=new THREE.Vector3(),rc=new THREE.Raycaster();
+    api.pick=(cx,cy)=>{const m=meshes[st.cur];if(!m||!m.userData.pts)return null;const r=cv.getBoundingClientRect();rc.setFromCamera(new THREE.Vector2((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1),cam);
+      const inv=m.matrixWorld.clone().invert(),O=rc.ray.origin.clone().applyMatrix4(inv),D=rc.ray.direction.clone().transformDirection(inv),P=m.userData.pts;let R=m.userData.r;
+      for(let pass=0;pass<3;pass++){let best=-1,bt=Infinity;const R2=R*R;for(let i=0;i<P.length;i+=3){const wx=P[i]-O.x,wy=P[i+1]-O.y,wz=P[i+2]-O.z,t=wx*D.x+wy*D.y+wz*D.z;if(t<=0||t>=bt)continue;if(wx*wx+wy*wy+wz*wz-t*t<R2){bt=t;best=i}}
+        if(best>=0)return [P[best],P[best+1],P[best+2]].map(x=>Math.round(x*1e4)/1e4);R*=2.2}return null};
+    const ctr=()=>new THREE.Vector3(0,((sizes[st.cur]||sizes[0]).y)*st.sc/2,0);
+    api.project=p=>{const m=meshes[st.cur];if(!m)return null;tv.set(p[0],p[1],p[2]).applyMatrix4(m.matrixWorld);const c=ctr(),f=tv.clone().sub(c).normalize().dot(cam.position.clone().sub(c).normalize());tv.project(cam);
+      return {x:(tv.x+1)/2*host.clientWidth,y:(1-tv.y)/2*host.clientHeight,f}};
+    api.center=()=>{tv.copy(ctr()).project(cam);return {x:(tv.x+1)/2*host.clientWidth,y:(1-tv.y)/2*host.clientHeight}};
+    api.busy=()=>!!(st.spin||st.intro||st.outro);api.setAuto=b=>{st.auto=b;if(!b)st.vth=0};
     /* seconda modalità: si prepara in sottofondo quando la prima è già visibile, così il cambio non ha vuoti */
     if(L[1]){(async()=>{try{const b2=await m3dBytes(L[1]);if(dead)return;const sec=await build(L[1],b2);if(dead){sec.mesh.dispose&&sec.mesh.dispose();return}
       sec.mesh.visible=false;meshes[1]=sec.mesh;spinG.add(sec.mesh);sizes.push(sec.size);pedestal();geo();st.fitTo=fitFor();o.onAlt&&o.onAlt();if(o.startAlt){meshes[0].visible=false;sec.mesh.visible=true;st.cur=1;o.onSwitch&&o.onSwitch(1)}else if(st.want===1)api.toggle();kick()}
@@ -3433,12 +3457,46 @@ async function m3More(el,d){const m2=d.m3d2,items=[!m2&&{a:'data-m3add2',ic:'⇄
     m2&&{a:'data-m3add2',ic:'⇄',t:'Sostituisci «'+m3Label(m2,1)+'»',g:1},m2&&{a:'data-m3lab',ic:'🏷️',t:'Nomi delle modalità',sub:m3Label(d.m3d,0)+' / '+m3Label(m2,1),g:2},m2&&{a:'data-m3del2',ic:'✂️',t:'Togli la seconda modalità',dng:true,g:3},{a:'data-m3del',ic:'🗑',t:m2?'Togli il modello 3D (entrambe le modalità)':'Togli il modello 3D',dng:true,g:3}].filter(Boolean);
   const i=await sheet('Modello 3D',items);if(i<0)return;const b=el.querySelector(`.m3opts [${items[i].a}]`);b&&b.click()}
 /* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
+/* 2.20: etichette 3D — scelte rapide dalle porte della scheda («USB 3 (2.0) · FireWire 1 (400), 1 (800)» → USB 2.0, FireWire 400, FireWire 800) */
+function tagChips(d,used=[]){const out=[],s=String(d.porte||''),parts=s.includes('·')?s.split('·'):s.split(/,(?![^(]*\))/);
+  for(let p of parts){p=p.trim();if(!p)continue;const m=p.match(/^([^\d(]+?)\s*\d*\s*\(([^)]*)\)(.*)$/);
+    if(m){const name=m[1].trim();[m[2],...[...m[3].matchAll(/\(([^)]*)\)/g)].map(x=>x[1])].forEach(sp=>{sp=sp.trim();out.push(/^internal|interno$/i.test(sp)||/\s/.test(sp)&&sp.length>10?name:/^video$/i.test(name)?sp:`${name} ${sp}`)})}
+    else out.push(p.replace(/^\d+\s*x\s*/i,'').replace(/\s+\d+$/,''))}
+  const gen=['Alimentazione','Audio','Cuffie','Lettore ottico','Batteria','Tastiera','Trackpad','Altoparlanti','Webcam','Interruttore','Slot memoria','Kensington'];
+  return [...new Set([...out.map(x=>x.charAt(0).toUpperCase()+x.slice(1)),...gen])].filter(x=>x&&x.length<=40&&!used.includes(x)).slice(0,24)}
+function askTag(chips,init=''){return new Promise(res=>{const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="tgm"><p style="margin-top:0"><b>${init?'Cambia l\'etichetta':'Cosa c\'è qui?'}</b></p><input class="in" id="tgv" value="${esc(init)}" placeholder="Es. USB 2.0, FireWire 400, lettore CD" autocomplete="off"><div class="chips tgc">${chips.map(c=>`<button class="chip" data-tg="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="row" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn sec" data-x>Annulla</button><button class="btn" data-ok>Salva</button></div></div>`;
+  const done=v=>{m.classList.add('out');setTimeout(()=>m.remove(),180);res(v)};
+  m.onclick=e=>{if(e.target===m)return done(null);const c=e.target.closest('[data-tg]');if(c)return done(c.dataset.tg);if(e.target.closest('[data-x]'))return done(null);if(e.target.closest('[data-ok]'))return done(m.querySelector('#tgv').value.trim()||null)};
+  m.querySelector('#tgv').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();done(m.querySelector('#tgv').value.trim()||null)}};document.body.append(m);lgScan(m);setTimeout(()=>{const i=m.querySelector('#tgv');i&&!chips.length&&i.focus()},120)})}
 function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
-  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3cm aria-label="Grandezza">📏</button><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
-    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div></div><div class="m3size" hidden><span>Grandezza reale</span><input type="range" min="0" max="1000" step="1" aria-label="Grandezza reale (lato lungo)"><b></b><button class="btn sm sec" data-m3auto>Auto</button></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
+  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3info aria-label="Etichette">ⓘ</button><button class="hb" data-m3cm aria-label="Grandezza">📏</button><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
+    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div><div class="m3tags" hidden><svg class="m3ln"></svg></div><div class="m3ed" hidden><span></span><button class="btn sm" data-m3ed></button></div></div><div class="m3size" hidden><span>Grandezza reale</span><input type="range" min="0" max="1000" step="1" aria-label="Grandezza reale (lato lungo)"><b></b><button class="btn sm sec" data-m3auto>Auto</button></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
     const host=$('.m3v',el),sw=$('[data-m3sw]',el);
     const go=async alt=>{v&&v.dispose();if(sw){sw.classList.add('wait');sw.querySelector('span').textContent=m3Label(L[1],1)}
-      v=await mount3D(host,d,{intro:!v,startAlt:alt,onFix:fx=>toast(`Questo modello ha ${[fx.op&&'opacità',fx.sc&&'dimensioni dei punti'].filter(Boolean).join(' e ')} salvate in modo non standard (KIRI): l'ho corretto alla meglio. Per la qualità piena ricaricalo dal file PLY originale`,7000),onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i)},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
+      v=await mount3D(host,d,{intro:!v,startAlt:alt,onFrame:()=>tagFrame(),onTap:(x,y)=>tagTap(x,y),onFix:fx=>toast(`Questo modello ha ${[fx.op&&'opacità',fx.sc&&'dimensioni dei punti'].filter(Boolean).join(' e ')} salvate in modo non standard (KIRI): l'ho corretto alla meglio. Per la qualità piena ricaricalo dal file PLY originale`,7000),onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i);if(show){tagsBuild();edUI()}},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
+    /* 2.20: etichette sulle porte e sulle caratteristiche — ⓘ le mostra, «Modifica» permette di piazzarle toccando il modello */
+    const tg=$('.m3tags',el),svg=$('.m3ln',el),ed=$('.m3ed',el),edT=$('span',ed),edB=$('[data-m3ed]',ed);let show=false,edit=false,nodes=[];
+    const curM=()=>d[v&&v.cur()===1?'m3d2':'m3d'];
+    const tagsBuild=()=>{const ns=(curM()&&curM().notes)||[];svg.innerHTML=ns.map(n=>`<line data-l="${n.id}"/>`).join('');tg.querySelectorAll('.m3n').forEach(x=>x.remove());
+      nodes=ns.map((n,i)=>{const w=document.createElement('div');w.className='m3n';w.style.setProperty('--i',i);w.innerHTML=`<i class="m3pin"></i><button class="m3pill" data-nid="${n.id}">${esc(n.t)}</button>`;tg.append(w);return {n,w,pin:w.firstElementChild,pill:w.lastElementChild,ln:svg.querySelector(`[data-l="${n.id}"]`)}})};
+    const edUI=()=>{const has=((curM()&&curM().notes)||[]).length;ed.hidden=!show;el.querySelector('.m3page').classList.toggle('editing',edit);
+      edT.textContent=edit?(has?'Tocca il modello per aggiungere · tocca un\'etichetta per cambiarla':'Tocca il modello dove vuoi un\'etichetta'):`${has} ${has===1?'etichetta':'etichette'}`;edB.textContent=edit?'Fine':'✎ Modifica'};
+    const tagsShow=(on,ed2)=>{show=on;edit=!!(on&&ed2);tg.hidden=!on;tg.classList.toggle('on',on);if(on){tagsBuild();hap.tick(.5)}v&&v.setAuto&&v.setAuto(!on);el.querySelector('[data-m3info]').classList.toggle('on',on);edUI()};
+    var tagFrame=()=>{if(!show||!v||!v.project)return;const c=v.center(),busy=v.busy(),L=[],R=[];
+      for(const o of nodes){const p=v.project(o.n.p);if(!p)continue;let dx=p.x-c.x,dy=p.y-c.y;const k=Math.hypot(dx,dy)||1;dx/=k;dy/=k;if(Math.abs(dx)<.25)dx=dx<0?-.25:.25;
+        const a=busy?0:Math.max(0,Math.min(1,(p.f+.25)/.4));o.p=p;o.a=a;o.lx=p.x+dx*62;o.ly=p.y+dy*40;(dx<0?L:R).push(o);o.side=dx<0}
+      /* le etichette dello stesso lato non si sovrappongono */
+      for(const S of [L,R]){S.sort((a,b)=>a.ly-b.ly);for(let i=1;i<S.length;i++)if(S[i].ly-S[i-1].ly<30)S[i].ly=S[i-1].ly+30}
+      for(const o of nodes){if(!o.p)continue;o.pin.style.translate=`${o.p.x}px ${o.p.y}px`;o.pill.style.translate=`${o.lx}px ${o.ly}px`;o.pill.classList.toggle('l',o.side);o.w.style.opacity=o.a.toFixed(2);
+        if(o.ln){o.ln.setAttribute('x1',o.p.x.toFixed(1));o.ln.setAttribute('y1',o.p.y.toFixed(1));o.ln.setAttribute('x2',o.lx.toFixed(1));o.ln.setAttribute('y2',o.ly.toFixed(1));o.ln.style.opacity=o.a.toFixed(2)}}};
+    var tagTap=async(x,y)=>{if(!edit||!v||!v.pick)return;const p=v.pick(x,y);if(!p){toast('Tocca proprio sul modello',1600);hap.bump();return}hap.tick(.7);
+      const m=curM(),used=(m.notes||[]).map(n=>n.t),t=await askTag(tagChips(d,used));if(!t)return;m.notes=[...(m.notes||[]),{id:uid(),p,t}];await saveDev(d);tagsBuild();edUI();hap.thud(.5)};
+    tg.addEventListener('click',async e=>{const b=e.target.closest('[data-nid]');if(!b)return;const m=curM(),n=(m.notes||[]).find(x=>x.id===b.dataset.nid);if(!n)return;
+      if(!edit){b.animate([{scale:1},{scale:1.12},{scale:1}],{duration:260});hap.tick(.4);return}
+      const i=await sheet(n.t,[{ic:'✎',t:'Cambia il testo',g:1},{ic:'🗑',t:'Togli l\'etichetta',dng:true,g:2}]);
+      if(i===0){const t=await askTag(tagChips(d,[]),n.t);if(t){n.t=t;await saveDev(d);tagsBuild()}}if(i===1){m.notes=m.notes.filter(x=>x!==n);await saveDev(d);tagsBuild();edUI()}});
+    edB.onclick=()=>{if(edit){tagsShow(((curM()&&curM().notes)||[]).length>0,false);hap.tick(.5)}else tagsShow(true,true)};
     go(startAlt);
     /* chiusura: l'oggetto si ritira, la luce si spegne, poi la pagina sfuma */
     el._close=()=>{const w=v;if(!w)return;w.outro();setTimeout(()=>w.dispose(),RM()?0:M3_OUT+120)};
@@ -3453,6 +3511,7 @@ function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
     let zc=0;zr.addEventListener('input',()=>{const c=t2c(+zr.value);if(c!==zc){zc&&hap.tick(.3);zc=c}zl.textContent=String(c).replace('.',',')+' cm';v&&v.setScale(m3Scale(c))});
     zr.addEventListener('change',async()=>{d.m3cm=t2c(+zr.value);zset(d.m3cm);await saveDev(d);buzz('tick')});
     el.addEventListener('click',async e=>{if(e.target.closest('[data-m3set]'))setOri();if(e.target.closest('[data-m3sw]')&&v)v.toggle();
+      if(e.target.closest('[data-m3info]')){if(!v||!v.pick){toast('Aspetta che il modello sia pronto',1500);return}const has=((curM()&&curM().notes)||[]).length;show?tagsShow(false):tagsShow(true,!has)}
       if(e.target.closest('[data-m3cm]')){zb.hidden=!zb.hidden;buzz('tick')}
       if(e.target.closest('[data-m3auto]')){delete d.m3cm;d.m3cm=null;zset(m3Cm(d));v&&v.setScale(m3Scale(m3Cm(d)));await saveDev(d);buzz('tick')}});
     if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, usa ⟲ in alto a destra',5000),1200)}});
