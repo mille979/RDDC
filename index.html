@@ -813,6 +813,47 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .cd-car{display:flex;flex-direction:column;gap:4px;font-size:12.5px;padding:2px 4px}.cd-car b{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
 .cd-hint{margin-top:22px;font-size:13px;opacity:.6}
 @media (prefers-reduced-motion:reduce){.cd,.cd-in,.cd-scene .cd{animation:none!important;transition:none!important}}
+/* ===== 2.18: album delle carte ===== */
+.page.album{background:radial-gradient(100% 70% at 50% 30%,#3a2a1c,#120c08);color:#fff;animation:m3-in .3s ease both}.alb{position:absolute;inset:0;display:flex;flex-direction:column}
+.alb-top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 6px}.alb-ti b{display:block;font-size:16px}.alb-ti small{display:block;font-size:12.5px;opacity:.7}
+.alb-book{position:relative;flex:1;margin:6px 12px;perspective:1700px;min-height:0}.alb-empty{text-align:center;opacity:.7;margin-top:30%}
+.alb-p{position:absolute;inset:0;padding:14px 12px 12px 18px;border-radius:6px 18px 18px 6px;background:linear-gradient(90deg,#16110d,#2b2119 5%,#2a2119 96%,#241c15);box-shadow:0 22px 44px rgba(0,0,0,.55),inset 7px 0 12px rgba(0,0,0,.5);transform-origin:0 50%;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column}
+.alb-p.turn{animation:alb-turn .62s cubic-bezier(.45,.05,.3,1) forwards;z-index:3}.alb-p.unturn{animation:alb-turn .62s cubic-bezier(.45,.05,.3,1) reverse both;z-index:3}
+@keyframes alb-turn{0%{transform:rotateY(0);filter:brightness(1)}55%{filter:brightness(.7)}100%{transform:rotateY(-168deg);filter:brightness(.3)}}
+.alb-ph{display:flex;align-items:baseline;gap:10px}.alb-ph b{flex:1;font-size:17px}.alb-ph span{font:700 13px system-ui,sans-serif;opacity:.85}.alb-ph span.full{color:#ffd56b;text-shadow:0 0 10px rgba(255,200,80,.7);opacity:1}
+.alb-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:8px 0 12px;overflow:hidden}.alb-bar i{display:block;height:100%;background:linear-gradient(90deg,#ffaa50,#ff6ec4)}
+.alb-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:min-content;gap:10px;align-content:start;overflow:auto;padding:2px}
+.alb-slot{position:relative;aspect-ratio:63/88;border:0;padding:0;background:rgba(255,255,255,.05);border-radius:9px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);overflow:hidden;color:inherit}
+.alb-slot .cd{position:absolute;left:0;top:0;width:340px;transform:scale(var(--k,.3));transform-origin:0 0;pointer-events:none;transition:none}.alb-slot .cd-b,.alb-slot .cd-3d{display:none}
+.alb-slot::after{content:'';position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.22),transparent 38%,transparent 70%,rgba(255,255,255,.08));pointer-events:none;border-radius:inherit}
+.alb-slot.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;text-align:center;color:rgba(255,255,255,.5);box-shadow:none;border:1.5px dashed rgba(255,255,255,.2);background:rgba(255,255,255,.03)}.alb-slot.empty span{font-size:22px}.alb-slot.empty small{font-size:10.5px;line-height:1.2}
+.alb-nav{display:flex;align-items:center;justify-content:center;gap:18px;padding:8px 0 calc(14px + env(safe-area-inset-bottom))}.alb-pg{font:600 13px system-ui,sans-serif;opacity:.75;min-width:60px;text-align:center}.alb-nav .hb:disabled{opacity:.3}
+/* ===== foto da studio, ricordi ===== */
+.st-prev{display:grid;place-items:center;margin:0 0 12px}.st-img{width:100%;display:grid;place-items:center;min-height:220px}.st-img img{max-width:100%;max-height:60vh;border-radius:24px;box-shadow:0 18px 44px rgba(0,0,0,.28);animation:wr-rise .5s ease both;transition:opacity .2s,filter .2s}.st-img.busy img{opacity:.5;filter:blur(3px)}.st-c{margin:6px 0}
+.og.og-mem{display:grid;grid-template-columns:46px 1fr;column-gap:12px;align-items:center}.og-mem img,.og-mem .og-ic{grid-row:1/3;width:46px;height:46px;object-fit:contain;border-radius:12px;font-style:normal;font-size:30px;display:grid;place-items:center;animation:og-ken 7s ease-in-out infinite alternate}.og-mem span,.og-mem small{grid-column:2}
+@keyframes og-ken{to{transform:scale(1.09) rotate(-2.5deg)}}
+/* ===== albero di famiglia ===== */
+.tr{margin:0 0 18px;padding:14px 14px 8px;border-radius:24px;background:var(--glass);box-shadow:var(--shadow)}.tr.dim{opacity:.72}.tr-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}.tr-h b{font-size:17px;flex:1}.tr-h small{color:var(--mute)}
+.tr-l{position:relative}.tr-l::before{content:'';position:absolute;left:21px;top:20px;bottom:20px;width:4px;border-radius:2px;background:linear-gradient(var(--acc),color-mix(in srgb,var(--acc) 35%,transparent));transform-origin:top;transform:scaleY(0);transition:transform 1.2s cubic-bezier(.2,.85,.25,1)}.tr.in .tr-l::before{transform:scaleY(1)}
+.tr-f{margin:8px 0 2px 58px;font:700 11.5px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.tr-n{position:relative;display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:6px 0;text-align:left;color:var(--ink);opacity:0;transform:translateX(-12px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.85,.25,1);transition-delay:calc(var(--i)*.06s)}.tr.in .tr-n{opacity:1;transform:none}
+.tr-dot{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:3px dashed color-mix(in srgb,var(--mute) 55%,transparent);font-size:20px;overflow:hidden;position:relative;z-index:1}
+.tr-n.own .tr-dot{border:3px solid var(--acc);background:var(--card);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 22%,transparent),0 4px 14px color-mix(in srgb,var(--acc) 35%,transparent)}.tr-n.own .tr-dot img{width:84%;height:84%;object-fit:contain}.tr-n.wish .tr-dot{border-style:solid;border-color:color-mix(in srgb,#966eff 65%,transparent)}
+.tr-t b{display:block;font-size:14.5px}.tr-t small{display:block;color:var(--mute);font-size:12.5px}.tr-n:not(.own) .tr-t b{opacity:.75}
+/* ===== indovina l'anno ===== */
+.page.guess{background:radial-gradient(100% 70% at 50% 35%,#24324a,#0a0e16);color:#fff;animation:m3-in .3s ease both}.gu{position:absolute;inset:0;display:flex;flex-direction:column}
+.gu-top{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px}.gu-r{flex:1;text-align:center;font-size:15px;opacity:.85}.gu-s{min-width:44px;text-align:right;font:800 20px system-ui,sans-serif}.gu-s.pop{--i:5;animation:wr-pop .5s cubic-bezier(.2,.9,.3,1.5)}
+.gu-st{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;min-height:0}.gu-img{position:relative;height:34vh;width:100%;flex:none}
+.gu-img img{position:absolute;inset:0;margin:auto;max-width:88%;max-height:100%;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}.gu-img img.ph{border-radius:22px;max-height:94%}.gu-img.in img{animation:gu-in .6s cubic-bezier(.2,.9,.3,1.3) both,wr-float 5s ease-in-out .6s infinite alternate}@keyframes gu-in{from{opacity:0;transform:scale(.6) rotate(-6deg)}}
+.gu-h{text-align:center;font-size:15px;opacity:.88;margin:12px 0 0;line-height:1.4;min-height:44px}.gu-h small{opacity:.7}.gu-pts{color:#43e08c;margin-left:6px}
+.gu-v{text-align:center;font:900 clamp(56px,18vw,96px)/1 system-ui,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s}.gu.rev .gu-v{color:#ffd56b;text-shadow:0 0 22px rgba(255,200,80,.5)}
+.gu-ru{position:relative;height:74px;overflow:hidden;touch-action:none;cursor:grab;-webkit-mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+.gu-tr{position:absolute;left:0;top:0;height:100%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.4) 0 2px,transparent 2px 100%) 0 0/24px 12px repeat-x;will-change:transform}
+.gu-tr span{position:absolute;top:30px;transform:translateX(-50%);font:700 12px system-ui,sans-serif;opacity:.85}.gu-tr span::before{content:'';position:absolute;left:50%;top:-30px;width:2px;height:22px;margin-left:-1px;background:#fff}
+.gu-nd{position:absolute;left:50%;top:0;width:3px;height:50px;margin-left:-1.5px;background:#ffd56b;border-radius:2px;box-shadow:0 0 12px #ffd56b}.gu-go{margin:10px 20px calc(20px + env(safe-area-inset-bottom))}.gu-fx{position:fixed;inset:0;pointer-events:none;z-index:9}
+.gu-start{text-align:center}.gu-logo{font-size:64px;animation:wr-float 3s ease-in-out infinite alternate}.gu-start .res{text-align:left}
+.gu-end{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}.gu-end h1{font:900 78px/1 system-ui,sans-serif;margin:6px 0;animation:wr-rise .6s ease both}.gu-end h1 small{font-size:24px;opacity:.6}.gu-end h2{margin:4px 0 8px}
+@media (prefers-reduced-motion:reduce){.alb-p,.og-mem img,.tr-n,.tr-l::before,.gu *{animation:none!important;transition:none!important}}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
 .isle{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:90;display:none;align-items:center;gap:8px;max-width:min(92vw,360px);padding:8px 14px 8px 10px;border-radius:999px;background:#000;color:#fff;font:600 13px/1.1 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.12);transform:translateX(-50%);pointer-events:none;overflow:hidden}
 .isle.on{display:flex;animation:isle-in .42s cubic-bezier(.2,1.25,.35,1) both}.isle.out{animation:isle-out .3s ease both}
@@ -866,7 +907,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
   #toast{left:calc(var(--lw) / 2);max-width:calc(var(--lw) - 24px)}
   #bulk{right:auto;width:calc(var(--lw) - 24px)}
   .page{left:var(--lw);box-shadow:-1px 0 0 var(--line),-18px 0 40px rgba(40,20,0,.12)}
-  .page.museum,.page.viewer,.page.wrapped,.page.tmach,.page.market,.page.cardp{left:0;box-shadow:none}
+  .page.museum,.page.viewer,.page.wrapped,.page.tmach,.page.market,.page.cardp,.page.album,.page.guess{left:0;box-shadow:none}
   #pane0{display:grid;place-items:center;position:fixed;top:0;bottom:0;right:0;left:var(--lw);z-index:1;text-align:center;color:var(--mute);box-shadow:-1px 0 0 var(--line)}
   #pane0>div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 34px;border-radius:30px;background:var(--glass);box-shadow:var(--shadow)}
   #pane0 .ic{width:46px;height:46px;stroke-width:1.4;color:var(--acc-ink);margin-bottom:4px}#pane0 b{color:var(--ink);font-size:17px}
@@ -984,8 +1025,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.17';
+const APP_VER='2.18';
 const NOVITA=[
+ ['2.18','2026-11-24',['🃏 Album delle carte (Menu): tutte le carte in un raccoglitore, serie per scocca come in «Cosa manca» con le buste vuote per i pezzi che mancano e il completamento (es. iBook 2/3); le pagine si girano in 3D','📸 Foto da studio (scheda → ⋯): l\'oggetto su un set fotografico con fondale curvo, ombra e riflesso sul pavimento lucido, chiaro, scuro o nei colori della sua epoca; come sfondo del telefono o quadrata. In Oggi c\'è lo sfondo del giorno, ogni giorno un pezzo diverso','🌳 Albero di famiglia (Menu, o da «Cosa manca»): le linee di prodotto come linee della metro (portatili pro, portatili per tutti, iMac, desktop pro…), stazioni accese per i pezzi che hai e vuote per le scocche che mancano, da mettere in wishlist','🎲 Indovina l\'anno (Menu): dieci pezzi della collezione, trascini il righello sull\'anno o sul valore, punti, coriandoli per il centro perfetto, record sul telefono','📅 Ricordi in Oggi: «un anno fa oggi», il mese in cui è arrivato un pezzo, i compleanni tondi (quest\'anno compie 25 anni)']],
  ['2.17','2026-11-23',['🔍 Mercatino: il nuovo tasto sopra il «+» apre la fotocamera; inquadri un oggetto e un\'onda iridescente parte dal centro e accende i suoi contorni mentre Gemini lo riconosce; sotto il verdetto (ce l\'hai già e dove, è in wishlist, hai già la stessa scocca, ti manca), la forbice di prezzo e il giudizio sul prezzo chiesto (affare, giusto, caro), poi in wishlist o in collezione con la foto','🃏 Carte da collezione (scheda → ⋯): fronte con la grafica dell\'epoca, retro con l\'etichetta ricostruita dai dati veri e la carriera del pezzo, rarità da comune a leggendaria, ologramma che segue l\'inclinazione (col modello 3D dentro, se c\'è); la carta esce da una stampante ad aghi','🏛️ Museo con due viste: scaffali e linea del tempo (⏳ / 🏛️ in alto), riapre l\'ultima usata','Da completare: anche lo scontorno per il museo, per ogni oggetto che non è un accessorio o un ricambio (toccandolo si apre lo scontorno)','Menu più corto: le impostazioni sono in una pagina a parte, divise per sezioni; le opzioni del modello 3D sono in un sottomenu («⋯ Opzioni» nella scheda, «Modello 3D…» nel menu ⋯)','La pressione lunga sull\'elenco non seleziona più il testo']],
  ['2.16','2026-11-23',['🎁 RDDC Wrapped (Menu): il tuo anno in collezione a schermate animate come le storie — pezzi arrivati, spesa e valore di oggi, il colpo dell\'anno, il più anziano, il tuo decennio, la marca del cuore, il giro di manutenzione e il laboratorio; tocca a destra o a sinistra, tieni premuto per fermare; alla fine una carta da condividere','⏳ Macchina del tempo (Menu): un tunnel di anni — trascina il righello e i pezzi di ogni anno ti vengono incontro, lo sfondo cambia epoca (beige, platino, acqua e caramelle, policarbonato bianco, alluminio, vetro), uno scatto a ogni anno','Vibrazioni granulari: il piedistallo 3D scatta ogni 15° come una ruota della fortuna e urta ai limiti; la trasformazione ⇄ scatta a ogni quarto di giro; chiudendo la scheda un crescendo e un tonfo quando atterra sulla miniatura; la pressione lunga cresce e scatta quando si apre l\'anteprima; il cursore della grandezza ha le tacche. Su iPhone (iOS 18 o successivo) arriva lo scatto di sistema']],
  ['2.15','2026-11-22',['Transizioni ripulite: dall\'anteprima (pressione lunga) alla scheda la foto e il nome volano al loro posto mentre il resto dell\'anteprima sfuma; aprendo una scheda i pulsanti e la didascalia sulla foto compaiono in dissolvenza invece che di colpo; trascinando la scheda per chiuderla i pulsanti sfumano man mano e la barra di stato cambia colore subito','Vista 3D: la scritta di caricamento sfuma via quando il modello è pronto; sul piedistallo del museo la base sfuma invece di sparire','Fold aperto (schermo largo): toccando l\'elenco, il menu, i filtri o la barra a sinistra, la pagina a destra viene sostituita invece di impilarsi (prima si potevano aprire decine di pagine una sopra l\'altra e, con Modifica, si sovrapponevano); Indietro torna all\'elenco in un passo']],
@@ -1523,6 +1565,7 @@ function openDetail(id,replace,morph,quiet,dir){
     h+=actsHTML([['data-edit','Modifica','',1],['data-upd','🔎 Aggiorna']],[
       {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
+      (d.scontorno||(d.foto&&d.foto.length))&&{a:'data-studio',ic:'📸',t:'Foto da studio',sub:'Sfondo per il telefono o foto da catalogo, con riflesso e ombra',g:'Oggetto'},
       !d.wish&&kindOf(d.tipologia)!=='part'&&{a:'data-card',ic:'🃏',t:'Carta da collezione',sub:'Fronte d\'epoca, retro con l\'etichetta, rarità e ologramma',g:'Oggetto'},
       {a:d.m3d?'data-m3more':'data-m3add',ic:'🧊',t:d.m3d?'Modello 3D…':'Aggiungi un modello 3D',sub:d.m3d?'Sostituisci, seconda modalità, nomi, togli':'Gaussian splat da Scaniverse o SuperSplat (.spz, .sog, .ply)',g:'Oggetto'},
       !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
@@ -1567,6 +1610,7 @@ function openDetail(id,replace,morph,quiet,dir){
       if(t.closest('[data-m3open2]'))return openModel3D(d,false,true);
       if(t.closest('[data-m3open]'))return openModel3D(d);
       if(t.closest('[data-card]'))return openCard(d);
+      if(t.closest('[data-studio]'))return openStudio(d);
       if(t.closest('[data-m3more]'))return m3More(el,d);
       if(t.closest('[data-m3add2]'))return m3dAdd(d,2);
       if(t.closest('[data-m3add]'))return m3dAdd(d);
@@ -1914,6 +1958,9 @@ function oggiHTML(){
   const out=devices.filter(d=>!d.wish&&d.prestito),late=out.filter(loanOverdue).length;if(out.length)lines.push(`<button class="og ${late?'late':''}" id="loanB"><span>📤 <b>${out.length}</b> ${out.length===1?'oggetto fuori casa':'oggetti fuori casa'}</span><small>${late?`⚠️ ${late} in ritardo sul rientro`:'prestiti ed esposizioni'}</small></button>`);
   const drop=devices.filter(d=>d.wish&&(d.annunci||[]).some(a=>a.prezzo_prima&&+a.prezzo<+a.prezzo_prima));
   if(drop.length)lines.push(`<button class="og" id="annB"><span>🏷️ Prezzo sceso in <b>${drop.length}</b> ${drop.length===1?'desiderio':'desideri'}</span><small>${esc(drop[0].nome)} → apri la wishlist</small></button>`);
+  /* 2.18: un ricordo al giorno e lo sfondo del giorno */
+  const mem=memToday();if(mem){const ph=wrPh(mem.d);lines.push(`<button class="og og-mem" id="memB" data-go="${mem.d.id}">${ph?`<img src="${esc(ph)}" alt="">`:`<i class="og-ic">${icon(mem.d)}</i>`}<span>📅 <b>${esc(mem.t)}</b></span><small>${esc(mem.s)}</small></button>`)}
+  const wl=wallOfDay();if(wl)lines.push(`<button class="og og-mem" id="wallB" data-go="${wl.id}"><img src="${esc(wl.scontorno)}" alt=""><span>🖼️ <b>Sfondo del giorno</b></span><small>${esc(wl.nome)} · tocca per prepararlo</small></button>`);
   if(!lines.length)return '';
   /* 2.9: ogni voce si può rimandare scorrendola verso sinistra */
   const snz=snoozes(),key=l=>(l.match(/id="(\w+)"/)||[])[1]||'',vis=lines.filter(l=>!snz[key(l)]),hid=lines.length-vis.length;
@@ -3988,14 +4035,13 @@ function cardRarity(d){const y=parseInt(d.anno),age=isFinite(y)?new Date().getFu
   if(/funzionante/i.test(d.stato||''))p+=1;if(/complet|originale|sì|si\b/i.test(d.scatola||''))p+=1;const v=wrNum(d.valore);p+=v>=400?3:v>=150?2:v>=60?1:0;
   if((d.tags||[]).some(t=>/rar/i.test(t)))p+=2;if(d.m3d)p+=1;return Math.max(0,Math.min(4,p<3?0:p<5?1:p<7?2:p<9?3:4))}
 const cdBar=s=>{let h=2166136261;const out=[];for(const c of String(s||'RDDC')){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0}for(let i=0;i<46;i++){h=Math.imul(h^(h>>>13),1597334677)>>>0;out.push(1+(h%3))}return out.map((w,i)=>`<i style="flex:${w}" class="${i%2?'g':''}"></i>`).join('')};
-function openCard(d){
+function cardMarkup(d,{mini=false}={}){
   const y=parseInt(d.anno),era=tmEra(isFinite(y)?y:2000),rar=cardRarity(d),own=devices.filter(x=>!x.wish&&!['part','acc'].includes(kindOf(x.tipologia))).sort((a,b)=>(parseInt(a.anno)||9999)-(parseInt(b.anno)||9999)),no=own.indexOf(d)+1;
   const ph=d.scontorno||(d.foto&&d.foto[0])||'',short=v=>{v=String(v||'').replace(/\s+/g,' ').trim();return v.length>18?v.slice(0,17)+'…':v};
   const stats=[['Processore',d.cpu],['RAM',d.ram],['Memoria',d.storage],['Schermo',d.display],['Stato',d.stato],['Colore',d.colore]].filter(([,v])=>v).slice(0,4);
   const lab=[['Model No.',d.modello],['EMC',d.emc],['Model ID',d.identifier],['Serial No.',d.seriale],['Part No.',d.ordine]].filter(([,v])=>v);
   const man=(d.manutenzioni||[]).filter(l=>l.tipo==='on').length,car=[d.acq_anno&&`Arrivata nel ${esc(d.acq_anno)}${wrNum(d.acq_prezzo)?' per '+wrEur(wrNum(d.acq_prezzo)):''}`,wrNum(d.valore)&&`Vale oggi ${wrEur(wrNum(d.valore))}`,man&&`${man} ${man===1?'accensione':'accensioni'} nel giro`,(d.interventi||[]).length&&`${d.interventi.length} ${d.interventi.length===1?'intervento':'interventi'}`,d.luogo&&`📍 ${esc(d.luogo)}`].filter(Boolean);
-  const el=openPage('Carta',`<div class="cdp"><div class="cd-top"><button class="hb" data-back aria-label="Chiudi">✕</button></div><div class="cd-slot"></div>
-    <div class="cd-scene printing"><div class="cd" data-era="${era}" data-rar="${rar}"><div class="cd-in">
+  return `<div class="cd" data-era="${era}" data-rar="${rar}"><div class="cd-in">
       <div class="cd-f"><div class="cd-hd"><b>${esc(d.nome)}</b><span>${esc(isFinite(y)?y:'')}</span></div>
         <div class="cd-win">${ph?`<img src="${esc(ph)}" alt=""${d.scontorno?'':' class="ph"'}>`:`<span class="wr-emo">${icon(d)}</span>`}<div class="cd-3d"></div></div>
         <div class="cd-type">${esc([d.tipologia,d.marca,d.linea&&d.linea!==d.marca?d.linea:''].filter(Boolean).join(' · '))}</div>
@@ -4006,7 +4052,10 @@ function openCard(d){
           ${lab.map(([k,v])=>`<div class="cd-kv"><span>${k}</span><b>${esc(v)}</b></div>`).join('')||'<p class="cd-ln" style="opacity:.6">Nessun dato d\'etichetta in scheda</p>'}
           <div class="cd-sym"><span>CE</span><span>♻︎</span><span>⚠︎</span><span>${esc(d.paese||'')}</span></div><div class="cd-bc">${cdBar(d.seriale||d.modello||d.nome)}</div><small class="cd-sn">${esc(d.seriale||d.id.slice(0,12).toUpperCase())}</small></div>
         ${car.length?`<div class="cd-car"><b>Carriera</b>${car.map(x=>`<span>${x}</span>`).join('')}</div>`:''}<i class="cd-glare"></i></div>
-    </div></div></div><p class="cd-hint">Tocca per girarla · inclinala o trascinala</p></div>`,{bare:true,cls:'cardp',mount(el){
+    </div></div>`}
+function openCard(d){
+  const el=openPage('Carta',`<div class="cdp"><div class="cd-top"><button class="hb" data-back aria-label="Chiudi">✕</button></div><div class="cd-slot"></div>
+    <div class="cd-scene printing">${cardMarkup(d)}</div><p class="cd-hint">Tocca per girarla · inclinala o trascinala</p></div>`,{bare:true,cls:'cardp',mount(el){
     const sc=$('.cd-scene',el),cd=$('.cd',el);let v3=null,rx=0,ry=0,raf=0,flip=false;
     /* stampa ad aghi: la carta esce riga per riga, con gli scatti */
     if(RM())sc.classList.remove('printing');else{let k=0;const it=setInterval(()=>{if(++k>22){clearInterval(it);hap.thud(.6);return}hap.tick(.25)},70);setTimeout(()=>sc.classList.remove('printing'),1700)}
@@ -4023,8 +4072,127 @@ function openCard(d){
     if(d.m3d){const host=$('.cd-3d',el);mount3D(host,d,{ped:false,auto:false,centerY:.5,margin:.86,onReady(){$('.cd-win img',el)&&$('.cd-win img',el).classList.add('gone')}}).then(v=>{if(!el.isConnected){v.dispose();return}v3=v;paint()}).catch(()=>{})}
     el._close=()=>{removeEventListener('deviceorientation',ori);cancelAnimationFrame(raf);v3&&v3.dispose()}}});
   return el}
+/* ===== 2.18: dal dispositivo alla voce dell'elenco dei modelli (The Apple Wiki) e alla sua scocca ===== */
+function awBest(d,L){const c=L.filter(x=>gapMatch(d,x));if(!c.length)return null;const id=gapNorm(d.identifier);
+  return c.map(x=>({x,s:mkSim(d.nome||'',x[0])+(x[2]&&id&&id.includes(gapNorm(x[2]))?1:0)+(d.anno&&x[0].includes(String(d.anno))?.5:0)})).sort((a,b)=>b.s-a.s)[0].x}
+const genOfDev=(d,L)=>{const x=awBest(d,L),r=x&&gapRule(x);return r&&r[1]?{gen:r[1],fam:r[0]}:null};
+/* ===== Album delle carte: serie per scocca (come «Cosa manca»), buste vuote per i pezzi mancanti, pagine che si girano ===== */
+async function albumSets(){const L=await awIndex().catch(()=>[])||[],own=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia)));const sets=[],used=new Set();
+  if(L.length){const G=gapsData(L,'gen');for(const g of G){const slots=g.rows.map(r=>({label:r.x[0],d:r.own[0]||null,wish:!!r.wish}));slots.forEach(s=>s.d&&used.add(s.d.id));g.loose.forEach(d=>{if(!used.has(d.id)){slots.push({label:d.nome,d});used.add(d.id)}});sets.push({n:g.f,slots,own:slots.filter(s=>s.d).length})}}
+  const rest=own.filter(d=>!used.has(d.id)).sort((a,b)=>(parseInt(a.anno)||9999)-(parseInt(b.anno)||9999));
+  for(let i=0;i<rest.length;i+=9)sets.push({n:rest.length>9?`Altri pezzi ${i/9+1}`:'Altri pezzi',slots:rest.slice(i,i+9).map(d=>({label:d.nome,d})),own:Math.min(9,rest.length-i),free:true});
+  return sets.sort((a,b)=>(!!a.free-!!b.free)||(b.own/b.slots.length-a.own/a.slots.length)||b.own-a.own)}
+function openAlbum(){
+  const el=openPage('Album delle carte',`<div class="alb"><div class="alb-top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><div class="alb-ti"><b>Album delle carte</b><small class="alb-sum"></small></div></div>
+    <div class="alb-book">${loader('box','Preparo l\'album…')}</div><div class="alb-nav"><button class="hb" data-al="-1" aria-label="Pagina precedente">‹</button><span class="alb-pg"></span><button class="hb" data-al="1" aria-label="Pagina successiva">›</button></div></div>`,{bare:true,cls:'album',mount(el){
+    const book=$('.alb-book',el),pg=$('.alb-pg',el);let pages=[],cur=0,busy=false;
+    const fit=()=>el.querySelectorAll('.alb-slot').forEach(sl=>{const w=sl.clientWidth;if(w)sl.style.setProperty('--k',(w/340).toFixed(4))});
+    const pageHTML=(s,i)=>`<div class="alb-p" data-p="${i}"><div class="alb-ph"><b>${esc(s.n)}</b>${s.free?'':`<span class="${s.own===s.slots.length?'full':''}">${s.own===s.slots.length?'✦ completa':`${s.own}/${s.slots.length}`}</span>`}</div>${s.free?'':`<div class="alb-bar"><i style="width:${Math.round(s.own/s.slots.length*100)}%"></i></div>`}
+      <div class="alb-grid">${s.slots.map(x=>x.d?`<button class="alb-slot" data-alc="${x.d.id}">${cardMarkup(x.d,{mini:true})}</button>`:`<div class="alb-slot empty"><span>${x.wish?'💭':'＋'}</span><small>${esc(x.label)}</small></div>`).join('')}</div></div>`;
+    const show=(k,dir)=>{if(busy||k<0||k>=pages.length||k===cur&&dir)return;const old=book.querySelector('.alb-p.on');const nw=document.createElement('div');nw.innerHTML=pageHTML(pages[k],k);const np=nw.firstElementChild;
+      if(!old||RM()||!dir){book.innerHTML='';np.classList.add('on');book.append(np);cur=k;fit();upd();return}
+      busy=true;if(dir>0){np.classList.add('on');book.insertBefore(np,old);old.classList.add('turn');}else{np.classList.add('on','unturn');book.append(np)}
+      fit();cur=k;upd();hap.tick(.4);setTimeout(()=>{(dir>0?old:old).remove();np.classList.remove('unturn');busy=false;hap.thud(.35)},620)};
+    const upd=()=>{pg.textContent=`${cur+1} / ${pages.length}`;el.querySelector('[data-al="-1"]').disabled=cur===0;el.querySelector('[data-al="1"]').disabled=cur>=pages.length-1};
+    albumSets().then(S=>{pages=S;if(!S.length){book.innerHTML='<p class="alb-empty">Nessun pezzo in collezione.</p>';return}const done=S.filter(s=>!s.free&&s.own===s.slots.length).length,tot=S.reduce((a,s)=>a+s.own,0);
+      $('.alb-sum',el).textContent=`${tot} carte · ${S.filter(s=>!s.free).length} serie${done?` · ${done} complete`:''}`;show(0)});
+    el.addEventListener('click',e=>{const n=e.target.closest('[data-al]');if(n)return show(cur+ +n.dataset.al,+n.dataset.al);const c=e.target.closest('[data-alc]');if(c){hap.tick(.5);openCard(devices.find(d=>d.id===c.dataset.alc))}});
+    let sx=null;book.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});book.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>50)show(cur+(dx<0?1:-1),dx<0?1:-1)},{passive:true});
+    addEventListener('resize',fit);el._close=()=>removeEventListener('resize',fit)}});
+  return el}
+/* ===== Foto da studio e sfondo del giorno ===== */
+const STUDIO_BG={luce:['#f6f1ea','#d8cfc2','#bfb4a5'],scuro:['#2c2723','#141110','#060505'],epoca:null};
+async function studioCanvas(d,{fmt='tel',bg='luce'}={}){const W=fmt==='tel'?1290:2048,H=fmt==='tel'?2796:2048,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  const y=parseInt(d.anno),E=TM_ERAS[tmEra(isFinite(y)?y:2000)],P=bg==='epoca'?[E.b,E.a,'#000']:STUDIO_BG[bg]||STUDIO_BG.luce,dark=bg!=='luce';
+  const fl=fmt==='tel'?.66:.7;let gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,P[0]);gr.addColorStop(fl,P[1]);gr.addColorStop(1,P[2]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+  gr=g.createRadialGradient(W/2,H*fl*.78,10,W/2,H*fl*.78,Math.max(W,H)*.55);gr.addColorStop(0,dark?'rgba(255,240,215,.22)':'rgba(255,255,255,.75)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const src=d.scontorno||(d.foto&&d.foto[0]);if(!src)throw new AppErr('vuoto','nessuna foto');const im=new Image();im.src=src;await im.decode();
+  const cut=!!d.scontorno,mw=W*.8,mh=H*(fmt==='tel'?.36:.5),k=Math.min(mw/im.width,mh/im.height),w=im.width*k,h=im.height*k,x=(W-w)/2,fy=H*fl,top=fy-h;
+  /* ombra di contatto */g.save();g.filter=`blur(${Math.round(H*.012)}px)`;g.fillStyle=dark?'rgba(0,0,0,.65)':'rgba(40,25,10,.38)';g.beginPath();g.ellipse(W/2,fy,w*.46,h*.045+H*.006,0,0,Math.PI*2);g.fill();g.restore();
+  const draw=(ctx,X,Y)=>{if(cut){ctx.drawImage(im,X,Y,w,h);return}ctx.save();ctx.beginPath();ctx.roundRect(X,Y,w,h,Math.min(w,h)*.05);ctx.clip();ctx.drawImage(im,X,Y,w,h);ctx.restore()};
+  /* riflesso sul pavimento lucido */const rc=document.createElement('canvas');rc.width=Math.ceil(w);rc.height=Math.ceil(h*.6);const r=rc.getContext('2d');r.translate(0,h);r.scale(1,-1);draw(r,0,0);r.setTransform(1,0,0,1,0,0);r.globalCompositeOperation='destination-in';
+  const rg=r.createLinearGradient(0,0,0,rc.height);rg.addColorStop(0,'rgba(0,0,0,.32)');rg.addColorStop(1,'rgba(0,0,0,0)');r.fillStyle=rg;r.fillRect(0,0,rc.width,rc.height);g.drawImage(rc,x,fy+2);
+  g.save();g.shadowColor=dark?'rgba(0,0,0,.55)':'rgba(60,40,20,.28)';g.shadowBlur=H*.03;g.shadowOffsetY=H*.012;draw(g,x,top);g.restore();
+  const F='-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Roboto,sans-serif',cy=fmt==='tel'?H*.86:H*.86;g.textAlign='center';g.fillStyle=dark?'rgba(255,255,255,.92)':'rgba(30,22,14,.88)';g.font=`700 ${Math.round(W*.045)}px ${F}`;g.fillText(d.nome,W/2,cy,W*.86);
+  g.fillStyle=dark?'rgba(255,255,255,.6)':'rgba(30,22,14,.55)';g.font=`500 ${Math.round(W*.028)}px ${F}`;g.fillText([d.marca,isFinite(y)?y:''].filter(Boolean).join(' · '),W/2,cy+W*.05);
+  g.font=`600 ${Math.round(W*.018)}px ${F}`;g.fillStyle=dark?'rgba(255,255,255,.3)':'rgba(30,22,14,.3)';g.fillText('RDDC',W/2,H-H*.03);return c}
+function wallOfDay(){const pool=devices.filter(d=>!d.wish&&d.scontorno).sort((a,b)=>a.id<b.id?-1:1);if(!pool.length)return null;const t=today();let h=0;for(const ch of t)h=(h*31+ch.charCodeAt(0))>>>0;return pool[h%pool.length]}
+function openStudio(d,{wall=false}={}){let fmt='tel',bg=LS.get('rd_studio_bg','luce');
+  const el=openPage(wall?'Sfondo del giorno':'Foto da studio',`<div class="st-prev"><div class="st-img">${loader('box','Monto il set…')}</div></div>
+    <div class="chips st-c" data-g="bg">${[['luce','☀︎ Chiaro'],['scuro','● Scuro'],['epoca','◐ Epoca']].map(([v,l])=>`<button class="chip ${bg===v?'on':''}" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="chips st-c" data-g="fmt">${[['tel','📱 Sfondo del telefono'],['sq','⬜ Quadrata']].map(([v,l])=>`<button class="chip ${fmt===v?'on':''}" data-v="${v}">${l}</button>`).join('')}</div>
+    <button class="btn" data-st="share" style="width:100%;margin-top:10px">↗︎ Salva o condividi</button><p class="note">${d.scontorno?'':'Questo pezzo non ha lo scontorno: la foto va in cornice. Con lo scontorno (scheda → Da completare) l\'oggetto poggia sul pavimento del set. '}Su iPhone: salva l'immagine e da Foto scegli «Usa come sfondo».</p>`,{mount(el){
+    const box=$('.st-img',el);let cur=null;
+    const draw=async()=>{box.classList.add('busy');try{cur=await studioCanvas(d,{fmt,bg});const u=cur.toDataURL('image/jpeg',.9);box.innerHTML=`<img src="${u}" alt="" class="${fmt}">`;box.classList.remove('busy')}catch(e){box.innerHTML=`<p class="note">Non riesco a preparare la foto (${esc(toAppErr(e).message||'')})</p>`}};
+    el.addEventListener('click',async e=>{const c=e.target.closest('.st-c [data-v]');if(c){const gp=c.closest('[data-g]').dataset.g;c.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));if(gp==='bg'){bg=c.dataset.v;LS.set('rd_studio_bg',bg)}else fmt=c.dataset.v;hap.tick(.4);draw();return}
+      if(e.target.closest('[data-st="share"]')&&cur){const bl=await new Promise(r=>cur.toBlob(r,'image/jpeg',.92)),f=new File([bl],`rddc-${(d.nome||'pezzo').replace(/[^\w]+/g,'-').toLowerCase()}.jpg`,{type:'image/jpeg'});
+        try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:d.nome});else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}hap.thud(.4)}catch(er){if(!er||er.name!=='AbortError')toast('Non sono riuscito a salvare l\'immagine',3000)}}});
+    draw()}});
+  return el}
+/* ===== Ricordi: un anno fa oggi, il mese d'arrivo, i compleanni tondi ===== */
+function memToday(){const t=today(),md=t.slice(5),Y=+t.slice(0,4),M=MESI_ACQ[+t.slice(5,7)-1],own=devices.filter(d=>!d.wish),out=[];const yrs=n=>n===1?'Un anno fa':`${n} anni fa`;
+  for(const d of own){const ds=x=>String(x||'').slice(0,10);
+    const cr=d.creato&&new Date(d.creato).toISOString().slice(0,10);if(cr&&cr.slice(5)===md&&+cr.slice(0,4)<Y)out.push({d,k:1,t:`${yrs(Y-+cr.slice(0,4))} oggi`,s:`aggiungevi ${d.nome} a RDDC`});
+    for(const i of d.interventi||[]){const x=ds(i.data);if(x.slice(5)===md&&+x.slice(0,4)<Y)out.push({d,k:1,t:`${yrs(Y-+x.slice(0,4))} oggi`,s:`${(i.tipo||'un intervento').toLowerCase()} su ${d.nome}`})}
+    for(const m of d.spostamenti||[]){const x=ds(m.data);if(x.slice(5)===md&&+x.slice(0,4)<Y&&m.a)out.push({d,k:1,t:`${yrs(Y-+x.slice(0,4))} oggi`,s:`${d.nome} arrivava da ${m.a}`})}
+    if(String(d.acq_mese||'').toLowerCase()===M&&+d.acq_anno&&+d.acq_anno<Y)out.push({d,k:2,t:`${yrs(Y-+d.acq_anno)}, a ${M}`,s:`arrivava ${d.nome}`});
+    const a=parseInt(d.anno),age=Y-a;if(isFinite(a)&&age>=10&&age%5===0&&!['part','acc'].includes(kindOf(d.tipologia)))out.push({d,k:3,t:`Quest'anno compie ${age} anni`,s:d.nome})}
+  if(!out.length)return null;const best=Math.min(...out.map(x=>x.k)),c=out.filter(x=>x.k===best);let h=0;for(const ch of t)h=(h*33+ch.charCodeAt(0))>>>0;return c[h%c.length]}
+/* ===== Albero di famiglia: le linee come linee della metro, stazioni accese per i pezzi che hai ===== */
+const TREE=[['Portatili pro',['PowerBook','PowerBook G3','PowerBook G4','MacBook Pro']],['Portatili per tutti',['iBook','MacBook']],['MacBook Air',['MacBook Air']],['iMac',['iMac']],['Desktop pro',['Power Mac G4','Power Mac G5','Mac Pro']],['Mac mini',['Mac mini']]];
+async function treeData(){const L=await awIndex(),own=devices.filter(d=>!d.wish),wish=devices.filter(d=>d.wish),byGen=new Map(),wGen=new Set();
+  own.forEach(d=>{const g=genOfDev(d,L);if(g){if(!byGen.has(g.gen))byGen.set(g.gen,[]);byGen.get(g.gen).push(d)}});wish.forEach(d=>{const g=genOfDev(d,L);if(g)wGen.add(g.gen)});
+  wish.forEach(d=>{GAP_GEN.forEach(r=>{if(r[1]&&gapNorm(d.nome)===gapNorm(r[1]))wGen.add(r[1])})});
+  const trunks=TREE.map(([n,fams])=>({n,nodes:fams.flatMap(f=>GAP_GEN.filter(r=>r[0]===f&&r[1]).map(r=>({fam:f,label:r[1],own:byGen.get(r[1])||[],wish:wGen.has(r[1])})))}));
+  /* le altre linee che possiedi (iPhone, iPod…), dalle scocche di «Cosa manca» */
+  const covered=new Set(TREE.flatMap(t=>t[1]));gapsData(L,'gen').filter(g=>!covered.has(g.f)).forEach(g=>trunks.push({n:g.f,nodes:g.rows.map(r=>({fam:g.f,label:r.x[0],own:r.own,wish:!!r.wish,x:r.x}))}));
+  trunks.forEach((t,i)=>{t.have=t.nodes.filter(n=>n.own.length).length;t.cur=i<TREE.length});return trunks.filter(t=>t.nodes.length).sort((a,b)=>(b.have>0)-(a.have>0)||(b.cur-a.cur)||b.have/b.nodes.length-a.have/a.nodes.length)}
+function openTree(){
+  const el=openPage('Albero di famiglia',`<p class="note" style="margin-top:0">Le linee di prodotto come linee della metro: le stazioni accese sono i pezzi che hai, quelle vuote le scocche che mancano (tocca per metterle in wishlist).</p><div id="tro">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
+    const out=$('#tro',el);let T=[];
+    const draw=()=>{out.innerHTML=T.map((t,ti)=>{let lf='';return `<section class="tr ${t.have?'':'dim'}"><div class="tr-h"><b>${esc(t.n)}</b><small>${t.have} di ${t.nodes.length}</small></div><div class="tr-l">${t.nodes.map((n,ni)=>{const fh=n.fam!==lf&&t.nodes.some(m=>m.fam!==t.nodes[0].fam);lf=n.fam;const d=n.own[0],ph=d&&wrPh(d);
+        return `${fh?`<div class="tr-f">${esc(n.fam)}</div>`:''}<button class="tr-n ${d?'own':n.wish?'wish':''}" style="--i:${ni}" ${d?`data-trgo="${d.id}"`:`data-trw="${ti}|${ni}"`}><span class="tr-dot">${d?(ph?`<img src="${esc(ph)}" alt="">`:icon(d)):n.wish?'💭':''}</span><span class="tr-t"><b>${esc(n.label)}</b><small>${d?esc(n.own.map(x=>x.nome).join(', ')):n.wish?'in wishlist':'manca · tocca per la wishlist'}</small></span></button>`}).join('')}</div></section>`}).join('');
+      const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12});out.querySelectorAll('.tr').forEach(s=>io.observe(s))};
+    treeData().then(x=>{T=x;draw()}).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openTree()));
+    out.addEventListener('click',async e=>{const g=e.target.closest('[data-trgo]');if(g){hap.tick(.5);return openDetail(g.dataset.trgo)}const w=e.target.closest('[data-trw]');if(!w||w.classList.contains('wish'))return;const [ti,ni]=w.dataset.trw.split('|').map(Number),n=T[ti].nodes[ni];
+      if(!await ask(`Mettere «${n.label}» in wishlist?`,'In wishlist'))return;const x=n.x||[];const it={id:uid(),nome:n.label,marca:'Apple',modello:x[1]&&!/\s/.test(x[1])?x[1]:'',linea:n.fam,tipologia:/book/i.test(n.label)?'Portatile':/imac/i.test(n.label)?'All-in-one':/iphone/i.test(n.label)?'Smartphone':/ipod/i.test(n.label)?'Lettore musicale':/ipad/i.test(n.label)?'Tablet':'Computer desktop',wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
+      await saveDev(it);render();n.wish=true;hap.thud(.4);w.classList.add('wish');w.querySelector('.tr-dot').textContent='💭';w.querySelector('small').textContent='in wishlist';toast(`«${n.label}» in wishlist`,3500,{label:'APRI',fn:()=>openDetail(it.id)})})}});
+  return el}
+/* ===== Indovina l'anno (o il prezzo): un gioco con i pezzi della collezione, da passare agli amici ===== */
+function openGuess(mode){
+  const pool0=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))&&wrPh(d));
+  if(!mode){const ny=pool0.filter(d=>/^\d{4}/.test(String(d.anno||''))).length,np=pool0.filter(d=>wrNum(d.valore)>0).length,best=k=>LS.get('rd_guess_'+k,0);
+    return openPage('Indovina',`<div class="gu-start"><div class="gu-logo">🎲</div><h2>Indovina l'anno</h2><p>Dieci pezzi della collezione, uno alla volta: trascina il righello sull'anno (o sul prezzo) e scopri quanto ci sei andato vicino. Perfetto da passare a un amico.</p>
+      <button class="res" data-gm="anno" ${ny<3?'disabled':''}><b>📅 L'anno</b><small>${ny} pezzi con l'anno${best('anno')?` · record ${best('anno')}`:''}</small></button><button class="res" data-gm="prezzo" ${np<3?'disabled':''}><b>💶 Il valore</b><small>${np} pezzi con il valore${best('prezzo')?` · record ${best('prezzo')}`:''}</small></button></div>`,{mount(el){el.addEventListener('click',e=>{const b=e.target.closest('[data-gm]');if(b&&!b.disabled)openGuess(b.dataset.gm)})}})}
+  const P=mode==='anno';let pool=pool0.filter(d=>P?/^\d{4}/.test(String(d.anno||'')):wrNum(d.valore)>0);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}pool=pool.slice(0,10);
+  const lo=P?1975:5,hi=P?new Date().getFullYear():3000,toV=u=>P?Math.round(lo+(hi-lo)*u):Math.round(Math.exp(Math.log(lo)+(Math.log(hi)-Math.log(lo))*u)/5)*5||5,toU=v=>P?(v-lo)/(hi-lo):(Math.log(v)-Math.log(lo))/(Math.log(hi)-Math.log(lo));
+  let r=0,score=0,u=.5,locked=false;
+  const el=openPage('Indovina',`<div class="gu"><div class="gu-top"><button class="hb" data-back aria-label="Esci">✕</button><b class="gu-r"></b><b class="gu-s">0</b></div><div class="gu-st"><div class="gu-img"></div><p class="gu-h"></p></div>
+    <div class="gu-v"></div><div class="gu-ru"><div class="gu-tr"></div><i class="gu-nd"></i></div><button class="btn gu-go" data-g="ok">È questo!</button><canvas class="gu-fx"></canvas></div>`,{bare:true,cls:'guess',mount(el){
+    const img=$('.gu-img',el),hint=$('.gu-h',el),val=$('.gu-v',el),ru=$('.gu-ru',el),tr=$('.gu-tr',el),go=$('.gu-go',el),sc=$('.gu-s',el),rd=$('.gu-r',el),fx=$('.gu-fx',el);
+    const W=()=>ru.clientWidth*3.2;let last=null;
+    const ticks=()=>{const w=W(),marks=P?Array.from({length:Math.floor((hi-lo)/5)+1},(_,i)=>lo+i*5):[5,10,20,50,100,200,500,1000,2000];tr.style.width=w+'px';tr.style.backgroundSize=P?`${w/(hi-lo)}px 12px`:'0 0';tr.innerHTML=marks.map(v=>`<span style="left:${toU(v)*w}px">${P?v:'€'+v}</span>`).join('')};
+    const paint=()=>{const w=W();tr.style.transform=`translate3d(${ru.clientWidth/2-u*w}px,0,0)`;const v=toV(u);val.textContent=P?v:'€ '+v.toLocaleString('it');if(v!==last){if(last!=null)hap.tick(P&&v%10===0?.7:.3);last=v}};
+    let dr=null,vel=0,raf=0;const inertia=()=>{raf=0;if(dr||Math.abs(vel)<.0002)return;u=Math.max(0,Math.min(1,u+vel));vel*=.9;paint();raf=requestAnimationFrame(inertia)};
+    ru.addEventListener('pointerdown',e=>{if(locked)return;dr={x:e.clientX,t:performance.now()};vel=0;ru.setPointerCapture(e.pointerId)});
+    ru.addEventListener('pointermove',e=>{if(!dr)return;const du=-(e.clientX-dr.x)/W(),now=performance.now();u=Math.max(0,Math.min(1,u+du));vel=du/Math.max(1,now-dr.t)*16;dr={x:e.clientX,t:now};paint()});
+    const up=()=>{if(!dr)return;dr=null;if(!raf)raf=requestAnimationFrame(inertia)};ru.addEventListener('pointerup',up);ru.addEventListener('pointercancel',up);
+    const round=()=>{const d=pool[r];locked=false;u=.5;last=null;rd.textContent=`${r+1} / ${pool.length}`;img.classList.remove('in');void img.offsetWidth;img.innerHTML=`<img src="${esc(wrPh(d))}" alt=""${d.scontorno?'':' class="ph"'}>`;img.classList.add('in');
+      hint.innerHTML=P?esc([d.tipologia,d.marca].filter(Boolean).join(' · ')):esc(d.nome)+(d.stato?` <small>· ${esc(d.stato)}</small>`:'');go.textContent='È questo!';go.dataset.g='ok';el.querySelector('.gu').classList.remove('rev');ticks();paint()};
+    const confetti=()=>{if(RM())return;const c=fx,g=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const ps=Array.from({length:90},()=>({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,r:Math.random()*6+3,c:['#ff6ec4','#ffaa50','#966eff','#5ac8ff','#43e08c'][Math.floor(Math.random()*5)],a:Math.random()*6}));let t=0;
+      const st=()=>{g.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.45;p.a+=.2;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle=p.c;g.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);g.restore()});if(++t<110)requestAnimationFrame(st);else g.clearRect(0,0,c.width,c.height)};st()};
+    const reveal=()=>{locked=true;const d=pool[r],real=P?parseInt(d.anno):wrNum(d.valore),guess=toV(u),pts=P?Math.max(0,100-Math.abs(guess-real)*12):Math.max(0,Math.round(100-Math.abs(Math.log2(guess/real))*60));score+=pts;
+      el.querySelector('.gu').classList.add('rev');hint.innerHTML=`<b>${esc(d.nome)}</b><br>${P?`${real}`:`€ ${Math.round(real).toLocaleString('it')}`} · ${pts===100?'perfetto! ✨':pts>=70?'vicinissimo':pts>=35?'non male':'lontano'} <b class="gu-pts">+${pts}</b>`;
+      const t0=performance.now(),from=u,to=Math.max(0,Math.min(1,toU(real)));const an=now=>{const p=Math.min(1,(now-t0)/700),e=1-Math.pow(1-p,3);u=from+(to-from)*e;paint();if(p<1)requestAnimationFrame(an)};requestAnimationFrame(an);
+      sc.textContent=score;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');if(pts===100){confetti();hap.ramp(260)}else hap.thud(pts>=70?.6:.3);go.textContent=r<pool.length-1?'Avanti →':'Risultato';go.dataset.g='next'};
+    const finish=()=>{const k='rd_guess_'+mode,best=LS.get(k,0),rec=score>best;if(rec)LS.set(k,score);const max=pool.length*100,q=score/max,tit=q>=.85?'Archeologo del silicio':q>=.65?'Collezionista vero':q>=.4?'Appassionato':'Turista del vintage';
+      el.querySelector('.gu').innerHTML=`<div class="gu-end"><div class="gu-logo">${rec?'🏆':'🎲'}</div><p class="wr-k">${mode==='anno'?'Indovina l\'anno':'Indovina il valore'}</p><h1>${score}<small>/${max}</small></h1><h2>${tit}</h2>${rec?'<p>Nuovo record su questo telefono!</p>':best?`<p>Record: ${best}</p>`:''}
+        <div class="row" style="gap:10px;margin-top:16px;width:100%"><button class="btn" data-g="again" style="flex:1">↺ Ancora</button><button class="btn sec" data-back style="flex:1">Esci</button></div></div>`;if(rec)setTimeout(confetti,300);hap.thud(.7)};
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const a=b.dataset.g;if(a==='ok')reveal();else if(a==='next'){r++;if(r>=pool.length)finish();else round()}else if(a==='again'){history.back();setTimeout(()=>openGuess(mode),330)}});
+    requestAnimationFrame(round)}});
+  return el}
 function openGaps(){
-  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quali pezzi hai e quali mancano. «Per scocca» conta una volta sola le varianti dello stesso computer (processore, taglio, schermo Retina). Fonte: l'elenco dei modelli di The Apple Wiki.</p><div class="chips gpsel">${[['gen','Per scocca'],['models','Tutti i modelli']].map(([n,l])=>`<button class="chip ${LS.get('rd_gapmode','gen')===n?'on':''}" data-gm="${n}">${l}</button>`).join('')}</div><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
+  openPage('Cosa manca',`<p class="note" style="margin-top:0">Per ogni linea Apple che possiedi: quali pezzi hai e quali mancano. «Per scocca» conta una volta sola le varianti dello stesso computer (processore, taglio, schermo Retina). Fonte: l'elenco dei modelli di The Apple Wiki. <a href="#" data-gtree>🌳 Vedi come albero di famiglia</a></p><div class="chips gpsel">${[['gen','Per scocca'],['models','Tutti i modelli']].map(([n,l])=>`<button class="chip ${LS.get('rd_gapmode','gen')===n?'on':''}" data-gm="${n}">${l}</button>`).join('')}</div><div id="gpo">${loader('web','Carico l\'elenco dei modelli…')}</div>`,{mount(el){
     const out=$('#gpo',el);
     let LL=null;const draw=L=>{LL=L;const md=LS.get('rd_gapmode','gen'),G=gapsData(L,md);
       if(!G.length){out.innerHTML='<p class="note">Nessuna linea Apple riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio.</p>';return}
@@ -4037,6 +4205,7 @@ function openGaps(){
         const t=x[3]==='Mac'?(/book/i.test(x[0])?'Portatile':/imac|emac|classic|color classic/i.test(x[0])?'All-in-one':/xserve/i.test(x[0])?'Server':'Computer desktop'):/iphone/i.test(x[3])?'Smartphone':/ipad/i.test(x[3])?'Tablet':/ipod/i.test(x[3])?'Lettore musicale':'';
         const w={id:uid(),nome:x[0],marca:'Apple',modello:x[1]||'',identifier:x[2]||'',tipologia:TIPI.includes(t)?t:'',linea:G[gi].f,wish:true,w_priorita:'Media',creato:Date.now(),modificato:Date.now()};
         await saveDev(w);render();buzz('ok');b.outerHTML='<span class="gapw">💭 in wishlist</span>';toast(`«${x[0]}» in wishlist`,4000,{label:'APRI',fn:()=>openDetail(w.id)})}};
+    el.querySelector('[data-gtree]').onclick=e=>{e.preventDefault();openTree()};
     el.querySelector('.gpsel').onclick=e=>{const b=e.target.closest('[data-gm]');if(!b||!LL)return;LS.set('rd_gapmode',b.dataset.gm);el.querySelectorAll('[data-gm]').forEach(x=>x.classList.toggle('on',x===b));draw(LL)};
     awIndex().then(draw).catch(e=>errBox(out,e,'Elenco dei modelli',()=>openGaps()))}});
 }
@@ -5188,6 +5357,9 @@ function openMenu(){
   const h=`<div class="sec-t">Collezione</div>
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="wrap"><b>🎁 Il tuo anno · RDDC Wrapped</b><small>${(y=>y?`${y}: ${devices.filter(d=>!d.wish&&+d.acq_anno===y).length} pezzi nuovi, spesa, il colpo dell'anno, il tuo decennio…`:'Serve l\'anno di acquisto negli oggetti')(wrapYears()[0])}</small></button>
+  <button class="res" data-m="album"><b>🃏 Album delle carte</b><small>Tutte le carte, serie per scocca da completare, pagine da sfogliare</small></button>
+  <button class="res" data-m="tree"><b>🌳 Albero di famiglia</b><small>Le linee di prodotto come linee della metro: cosa hai, cosa manca</small></button>
+  <button class="res" data-m="guess"><b>🎲 Indovina l'anno</b><small>Un gioco con i tuoi pezzi, da passare agli amici</small></button>
   <button class="res" data-m="gaps"><b>🧩 Cosa manca</b><small>Per ogni linea Apple che hai: i modelli che mancano, da mettere in wishlist con un tocco</small></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
@@ -5243,6 +5415,9 @@ function menuWire(el){
       if(a==='wrap')openWrapped();
       if(a==='tm')openTimeMachine();
       if(a==='set')openSettings();
+      if(a==='album')openAlbum();
+      if(a==='tree')openTree();
+      if(a==='guess')openGuess();
       if(a==='cat')openCatalog();
       if(a==='due')openDue();
       if(a==='inv')openInventory();
@@ -5665,6 +5840,8 @@ function openPeek(id,src){
 $('#list').addEventListener('click',e=>{if(Date.now()<lpSwallow){lpSwallow=0;return}
   if(SELM){const c=e.target.closest('[data-id]');if(c){SELM.has(c.dataset.id)?SELM.delete(c.dataset.id):SELM.add(c.dataset.id);render()}return}if(e.target.closest('#dueB'))return openDue();
   if(e.target.closest('#manB'))return openMaintenance();
+  if(e.target.closest('#memB'))return openDetail(e.target.closest('#memB').dataset.go);
+  if(e.target.closest('#wallB')){const w=devices.find(d=>d.id===e.target.closest('#wallB').dataset.go);return w&&openStudio(w,{wall:true})}
   if(e.target.closest('#labP'))return openLab('prog');
   if(e.target.closest('#labC'))return openLab('coll');
   if(e.target.closest('#labS'))return openLab('spesa');

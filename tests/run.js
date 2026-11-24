@@ -1239,6 +1239,36 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.18: album delle carte, foto da studio, ricordi, albero di famiglia, indovina l\'anno', async () => {
+    const U = await phone('A18');
+    const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    await U.evaluate(async png => { const y = new Date().getFullYear(), oggi = today(), lastY = (y - 1) + oggi.slice(4);
+      AWIDX = [['iBook', 'M2453', 'PowerBook2,1', 'Mac'], ['iBook Firewire', 'M6411', 'PowerBook2,2', 'Mac'], ['iBook (Dual USB)', 'M6497', 'PowerBook4,1', 'Mac'], ['iBook (12-inch, Mid 2005)', 'A1133', 'PowerBook6,7', 'Mac'], ['MacBook (13-inch, Mid 2006)', 'A1181', 'MacBook1,1', 'Mac'], ['MacBook (13-inch, Late 2008)', 'A1278', 'MacBook5,1', 'Mac']];
+      const mk = (id, o) => saveDev({ id, tipologia: 'Portatile', marca: 'Apple', foto: [png], creato: Date.now(), ...o });
+      await mk('g1', { nome: 'iBook G3/300 (Original/Clamshell)', modello: 'M2453', identifier: 'PowerBook2,1', anno: '1999', scontorno: png, interventi: [{ data: lastY, tipo: 'Pulizia' }] });
+      await mk('g2', { nome: 'iBook G4/1.42 14-Inch (Mid-2005)', modello: 'A1134', identifier: 'PowerBook6,7', anno: '2005', valore: '90' });
+      await mk('g3', { nome: 'Nokia 3310', marca: 'Nokia', tipologia: 'Smartphone', anno: '2000', valore: '20' }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); }, png);
+    const sets = await U.evaluate(async () => (await albumSets()).map(s => [s.n, s.own, s.slots.length]));
+    eq(sets, [['iBook', 2, 3], ['Altri pezzi', 1, 1]], 'album: serie per scocca con le buste vuote, poi gli altri pezzi');
+    await U.evaluate(() => openAlbum()); await U.waitForSelector('.alb-slot'); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => [document.querySelectorAll('.alb-p.on .alb-slot .cd').length, document.querySelectorAll('.alb-p.on .alb-slot.empty').length, document.querySelector('.alb-ph span').textContent]), [2, 1, '2/3'], 'prima pagina: due carte, una busta vuota, completamento');
+    await U.click('[data-al="1"]'); await U.waitForTimeout(80); ok(await U.evaluate(() => !!document.querySelector('.alb-p.turn')), 'la pagina si gira'); await U.waitForTimeout(700);
+    eq(await U.evaluate(() => [document.querySelectorAll('.alb-p').length, document.querySelector('.alb-ph b').textContent, document.querySelector('.alb-pg').textContent]), [1, 'Altri pezzi', '2 / 2'], 'seconda pagina');
+    const st = await U.evaluate(async () => { const c = await studioCanvas(devices.find(d => d.id === 'g1'), { fmt: 'tel', bg: 'scuro' }), q = await studioCanvas(devices.find(d => d.id === 'g2'), { fmt: 'sq' }); return [c.width, c.height, q.width, q.height]; });
+    eq(st, [1290, 2796, 2048, 2048], 'foto da studio: sfondo per il telefono e quadrata');
+    eq(await U.evaluate(() => { const m = memToday(); return m && [m.d.id, m.t, /pulizia/i.test(m.s)]; }), ['g1', 'Un anno fa oggi', true], 'ricordo: un anno fa oggi, con l\'intervento');
+    await U.evaluate(() => goBase(() => { render(); scrollTo(0, 0); })); await U.waitForTimeout(400);
+    eq(await U.evaluate(() => [!!document.querySelector('#memB'), document.querySelector('#wallB') && document.querySelector('#wallB').dataset.go]), [true, 'g1'], 'in Oggi il ricordo e lo sfondo del giorno (un pezzo con lo scontorno)');
+    const tr = await U.evaluate(async () => { const T = await treeData(), t = T.find(x => x.n === 'Portatili per tutti'); return [T[0].n, t.have, t.nodes.slice(0, 3).map(n => [n.label, n.own.map(d => d.id).join()])]; });
+    eq(tr, ['Portatili per tutti', 2, [['iBook G3 Clamshell (1999–2000)', 'g1'], ['iBook G3 bianco «Dual USB» (2001–2003)', ''], ['iBook G4 (2003–2005)', 'g2']]], 'albero: la linea con i tuoi pezzi in cima, stazioni accese e vuote');
+    await U.evaluate(() => goBase(() => openGuess('anno'))); await U.waitForSelector('.gu-tr span', { state: 'attached' }); await U.waitForTimeout(700);
+    const g = await U.evaluate(() => { document.querySelector('[data-g="ok"]').click(); return [document.querySelector('.gu-r').textContent, document.querySelector('.gu').classList.contains('rev'), +document.querySelector('.gu-s').textContent >= 0, document.querySelector('[data-g]').dataset.g]; });
+    eq(g, ['1 / 3', true, true, 'next'], 'indovina: tre pezzi, rivelazione e punti');
+    await U.evaluate(() => { document.querySelector('[data-g="next"]').click(); document.querySelector('[data-g="ok"]').click(); document.querySelector('[data-g="next"]').click(); document.querySelector('[data-g="ok"]').click(); document.querySelector('[data-g="next"]').click(); }); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => !!document.querySelector('.gu-end h1') && LS.get('rd_guess_anno', -1) >= 0), 'punteggio finale e record salvato');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
