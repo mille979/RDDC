@@ -1293,6 +1293,18 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.20: etichette 3D — porte della scheda come scelte rapide, finestra per scrivere, tasto ⓘ', async () => {
+    const U = await phone('E20');
+    eq(await U.evaluate(() => tagChips({ porte: 'Video 1 (DVI) · USB 3 (2.0) · FireWire 1 (400), 1 (800) · Ethernet 1 (RJ-45) · Cuffie 1 · Microfono 1 (Internal)' }).slice(0, 7)), ['DVI', 'USB 2.0', 'FireWire 400', 'FireWire 800', 'Ethernet RJ-45', 'Cuffie', 'Microfono'], 'porte EveryMac → scelte rapide');
+    eq(await U.evaluate(() => tagChips({ porte: '2 x USB 2.0, VGA, lettore di schede SD' }, ['VGA']).slice(0, 2)), ['USB 2.0', 'Lettore di schede SD'], 'elenchi con le virgole; quelle già usate spariscono');
+    const t = await U.evaluate(async () => { const p = askTag(['USB 2.0', 'Audio']); await new Promise(r => setTimeout(r, 200)); document.querySelector('.tgc [data-tg="Audio"]').click(); const a = await p; const p2 = askTag([], 'Vecchio'); await new Promise(r => setTimeout(r, 200)); document.querySelector('#tgv').value = 'Lettore CD'; document.querySelector('.tgm [data-ok]').click(); return [a, await p2]; });
+    eq(t, ['Audio', 'Lettore CD'], 'si sceglie una porta o si scrive il testo');
+    await U.evaluate(async () => { await saveDev({ id: 'e3', nome: 'PowerBook', tipologia: 'Portatile', creato: Date.now(), m3d: { id: 'a', nome: 'p.spz', size: 9, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('x'), notes: [{ id: 'n1', p: [0, 0, 0], t: 'USB' }] } }); document.querySelectorAll('.modal').forEach(m => m.remove()); openModel3D(devices.find(d => d.id === 'e3')); });
+    await U.waitForSelector('[data-m3info]');
+    ok(await U.evaluate(() => !!document.querySelector('.m3tags') && !!document.querySelector('.m3ed')), 'nella vista 3D ci sono il tasto ⓘ e lo strato delle etichette');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
