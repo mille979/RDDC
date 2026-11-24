@@ -1305,6 +1305,25 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.21: mercatino — Gemini vede la collezione, nomi generici riconosciuti, «controlla bene: è questo?»', async () => {
+    const U = await phone('M21');
+    await U.evaluate(async () => { const mk = (id, o) => saveDev({ id, creato: Date.now(), ...o });
+      await mk('h1', { nome: 'Hp Compaq 2710p', marca: 'HP', linea: 'Compaq', anno: '2007', tipologia: 'Portatile', luogo: 'Damiano' });
+      await mk('i4', { nome: 'iBook G4/1.42 14-Inch (Mid-2005 - Op)', marca: 'Apple', anno: '2005', tipologia: 'Portatile' });
+      await mk('i3', { nome: 'iBook G3 Clamshell', marca: 'Apple', anno: '1999', tipologia: 'Portatile' });
+      await mk('ad', { nome: 'iBook G4 Power Adapter', marca: 'Apple', tipologia: 'Alimentatore' }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); });
+    const r = await U.evaluate(() => { const f = o => { const M = mkMatch(o); return [mkName(o), M.has.map(d => d.id).join(), M.maybe.map(d => d.id)[0] || '']; };
+      return [f({ marca: 'Apple', nome: 'iBook G4', colore: 'bianco' }), f({ marca: 'HP', nome: 'HP Compaq Tablet PC', tipologia: 'Portatile' }), f({ marca: 'Apple', nome: 'iBook G3', anno: 2001 }).slice(1, 2), f({ marca: 'HP', nome: 'Compaq', collezione_id: 'h1', match_certezza: 'alta' }).slice(1, 2)]; });
+    eq(r, [['Apple iBook G4', 'i4', ''], ['HP Compaq Tablet PC', '', 'h1'], [''], ['h1']], 'nome corto ma preciso → ce l\'hai; nome generico → da controllare; G3 non è G4; l\'accessorio non conta; l\'id di Gemini vince');
+    await U.evaluate(() => { LS.set('rd_gem', { key: 'finta' }); window.mkIdentify = async () => ({ o: { marca: 'HP', nome: 'HP Compaq Tablet PC', tipologia: 'Portatile', certezza: 'media' }, model: 'finto' }); window.valueEstimate = async () => ({ min: 30, max: 120, tipico: 60 });
+      window.pickPhoto = async () => { const c = document.createElement('canvas'); c.width = 80; c.height = 60; c.getContext('2d').fillRect(10, 10, 30, 20); return await new Promise(r => c.toBlob(r, 'image/png')); }; openMarket(); });
+    await U.waitForSelector('[data-mk="gal"]'); await U.evaluate(() => document.querySelector('[data-mk="gal"]').click()); await U.waitForSelector('.mk-v.mk-maybe', { timeout: 8000 });
+    eq(await U.evaluate(() => [document.querySelector('.mk-h b').textContent, document.querySelector('.mk-cands [data-mk="pick"]').dataset.id]), ['HP Compaq Tablet PC', 'h1'], 'marca non ripetuta; «Forse ce l\'hai già» con il 2710p da confermare');
+    await U.evaluate(() => document.querySelector('.mk-cands [data-mk="pick"]').click()); await U.waitForTimeout(200);
+    eq(await U.evaluate(() => [document.querySelector('.mk-v').classList.contains('mk-has'), /Damiano/.test(document.querySelector('.mk-v').textContent), document.querySelector('[data-mk="open"]').dataset.id, !document.querySelector('[data-mk="wish"]')]), [true, true, 'h1', true], '«È questo» → ce l\'hai già, con la scheda da aprire');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
