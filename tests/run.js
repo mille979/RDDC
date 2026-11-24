@@ -895,7 +895,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
       for (const d of [{ id: 'n1', nome: 'iPod nano Original 1 GB', modello: 'A1137', tipologia: 'Lettore musicale' }, { id: 'n2', nome: 'iMac G3/333 (Fruit Colors)', modello: 'M4984', identifier: 'iMac,1', tipologia: 'All-in-one' }, { id: 'n3', nome: 'iBook G3/366 SE (Original/Clamshell)', modello: 'M2453', identifier: 'PowerBook2,1', tipologia: 'Portatile' }]) await saveDev({ ...d, creato: Date.now() }); render(); });
     const g = await U.evaluate(() => gapsData(AWIDX).map(x => [x.f, x.n, x.tot, x.rows.filter(r => r.own.length).map(r => r.x[0])]));
     eq(g.sort(), [['iBook', 1, 3, ['iBook SE']], ['iMac G3', 1, 3, ['iMac G3 (Fruit Colors)']], ['iPod nano', 1, 3, ['iPod nano (1st generation)']]].sort(), 'un modello per oggetto, linee giuste');
-    await U.evaluate(() => openGaps()); await U.waitForSelector('[data-gw]', { state: 'attached' }); await U.evaluate(() => { const b = document.querySelector('[data-gw]'); b.closest('details').open = true; }); await U.click('[data-gw]'); await U.waitForTimeout(400);
+    await U.evaluate(() => openGaps()); await U.waitForSelector('[data-trw]', { state: 'attached' }); await U.evaluate(() => document.querySelector('[data-trw]').click()); await U.waitForTimeout(400);
     ok(await U.evaluate(() => devices.some(d => d.wish && d.marca === 'Apple' && d.linea)), 'modello mancante aggiunto alla wishlist');
     await U.context().close();
   });
@@ -911,9 +911,9 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(g.PowerBook, ['PowerBook 190 e 5300 (1995)', 'PowerBook 1400 (1996)'].map((x, i) => i ? x : '✓' + x), 'PowerBook classici per scocca');
     ok(!g.MacBook, 'il MacBook unibody (stesso codice A1278 del MacBook Pro 13") resta nella sua linea, non posseduta');
     eq(await U.evaluate(() => gapsData(AWIDX).find(x => x.f === 'MacBook Pro').tot), 6, '«Tutti i modelli» resta disponibile');
-    await U.evaluate(() => { LS.set('rd_gapmode', 'gen'); openGaps(); }); await U.waitForSelector('[data-gw]', { state: 'attached' });
-    ok(await U.evaluate(() => /varianti/.test(document.querySelector('#gpo').textContent) && document.querySelector('[data-gm="gen"]').classList.contains('on')), 'vista per scocca predefinita, con il numero di varianti');
-    await U.evaluate(() => { const b = [...document.querySelectorAll('[data-gw]')].find(b => /unibody e Retina/.test(b.closest('.gapr').textContent)); b.closest('details').open = true; b.click(); }); await U.waitForTimeout(400);
+    await U.evaluate(() => { LS.set('rd_gapmode', 'gen'); openGaps(); }); await U.waitForSelector('[data-trw]', { state: 'attached' });
+    ok(await U.evaluate(() => /Portatili pro/.test(document.querySelector('#gpo').textContent) && [...document.querySelectorAll('.tr-n.own')].some(n => /MacBook Pro in alluminio/.test(n.textContent)) && document.querySelector('[data-gm="gen"]').classList.contains('on')), 'vista per scocca predefinita, linee della metro con le stazioni accese');
+    await U.evaluate(() => { const b = [...document.querySelectorAll('[data-trw]')].find(b => /unibody e Retina/.test(b.textContent)); b.click(); }); await U.waitForTimeout(400);
     eq(await U.evaluate(() => { const w = devices.find(d => d.wish && /unibody e Retina/.test(d.nome)); return w && [w.linea, w.modello]; }), ['MacBook Pro', ''], 'scocca in wishlist con la sua linea');
     await U.click('[data-gm="models"]'); await U.waitForTimeout(200);
     ok(await U.evaluate(() => /Late 2006/.test(document.querySelector('#gpo').textContent) && LS.get('rd_gapmode') === 'models'), 'passando a «Tutti i modelli» torna l\'elenco completo');
@@ -1258,14 +1258,38 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(st, [1290, 2796, 2048, 2048], 'foto da studio: sfondo per il telefono e quadrata');
     eq(await U.evaluate(() => { const m = memToday(); return m && [m.d.id, m.t, /pulizia/i.test(m.s)]; }), ['g1', 'Un anno fa oggi', true], 'ricordo: un anno fa oggi, con l\'intervento');
     await U.evaluate(() => goBase(() => { render(); scrollTo(0, 0); })); await U.waitForTimeout(400);
-    eq(await U.evaluate(() => [!!document.querySelector('#memB'), document.querySelector('#wallB') && document.querySelector('#wallB').dataset.go]), [true, 'g1'], 'in Oggi il ricordo e lo sfondo del giorno (un pezzo con lo scontorno)');
-    const tr = await U.evaluate(async () => { const T = await treeData(), t = T.find(x => x.n === 'Portatili per tutti'); return [T[0].n, t.have, t.nodes.slice(0, 3).map(n => [n.label, n.own.map(d => d.id).join()])]; });
+    eq(await U.evaluate(() => [!!document.querySelector('#memB'), !!document.querySelector('#wallB')]), [true, false], 'in Oggi il ricordo (lo sfondo del giorno non c\'è più)');
+    const tr = await U.evaluate(async () => { const T = await linesData('gen'), t = T.find(x => x.n === 'Portatili per tutti'); return [T[0].n, t.have, t.nodes.slice(0, 3).map(n => [n.label, n.own.map(d => d.id).join()])]; });
     eq(tr, ['Portatili per tutti', 2, [['iBook G3 Clamshell (1999–2000)', 'g1'], ['iBook G3 bianco «Dual USB» (2001–2003)', ''], ['iBook G4 (2003–2005)', 'g2']]], 'albero: la linea con i tuoi pezzi in cima, stazioni accese e vuote');
     await U.evaluate(() => goBase(() => openGuess('anno'))); await U.waitForSelector('.gu-tr span', { state: 'attached' }); await U.waitForTimeout(700);
     const g = await U.evaluate(() => { document.querySelector('[data-g="ok"]').click(); return [document.querySelector('.gu-r').textContent, document.querySelector('.gu').classList.contains('rev'), +document.querySelector('.gu-s').textContent >= 0, document.querySelector('[data-g]').dataset.g]; });
     eq(g, ['1 / 3', true, true, 'next'], 'indovina: tre pezzi, rivelazione e punti');
     await U.evaluate(() => { document.querySelector('[data-g="next"]').click(); document.querySelector('[data-g="ok"]').click(); document.querySelector('[data-g="next"]').click(); document.querySelector('[data-g="ok"]').click(); document.querySelector('[data-g="next"]').click(); }); await U.waitForTimeout(300);
     ok(await U.evaluate(() => !!document.querySelector('.gu-end h1') && LS.get('rd_guess_anno', -1) >= 0), 'punteggio finale e record salvato');
+    await U.context().close();
+  });
+
+  await test('2.19: linee tracciate con Gemini (sincronizzate), compleanni nel giorno esatto, mercatino che non resta appeso', async () => {
+    const U = await phone('L19');
+    await U.evaluate(async () => { const t = today(), d0 = new Date(), iso = (d0.getFullYear() - 20) + t.slice(4);
+      await saveDev({ id: 'n1', nome: 'Nokia 3210', marca: 'Nokia', tipologia: 'Smartphone', anno: '1999', intro: iso, creato: Date.now() });
+      await saveDev({ id: 'n2', nome: 'Toshiba Portégé M200', marca: 'Toshiba', tipologia: 'Portatile', anno: '2003', intro: 'febbraio 2003', creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); });
+    eq(await U.evaluate(() => { const m = memToday(); return m && [m.d.id, m.t]; }), ['n1', 'Oggi compie 20 anni'], 'compleanno dalla data di presentazione, solo nel giorno esatto');
+    eq(await U.evaluate(() => [introDate({ intro: 'September 5, 2007' }).iso, introDate({ intro: '5 settembre 2007' }).iso, introDate({ intro: '2009-10-20' }).iso, introDate({ intro: 'febbraio 2003' })]), ['2007-09-05', '2007-09-05', '2009-10-20', null], 'date di presentazione riconosciute; senza giorno niente compleanno');
+    await U.evaluate(() => { LS.set('rd_gem', { key: 'finta' }); window.lineTrace = async q => ({ nome: 'Convertibili anni 2000', nodes: [{ n: 'Toshiba Portégé 3500', y: 2002, marca: 'Toshiba', a: [], ids: [] }, { n: 'Toshiba Portégé M200', y: 2003, marca: 'Toshiba', a: ['Portege M200'], ids: ['n2'] }, { n: 'Fujitsu LifeBook P1610', y: 2006, marca: 'Fujitsu', a: ['P1610'], ids: [] }] }); openGaps(); });
+    await U.waitForSelector('[data-nl]'); await U.click('[data-nl]'); await U.waitForSelector('#nlq'); await U.fill('#nlq', 'portatili convertibili anni 2000'); await U.click('#nlgo'); await U.waitForTimeout(700);
+    eq(await U.evaluate(() => { const l = linesLive()[0]; return l && [l.nome, l.q, l.nodes.length]; }), ['Convertibili anni 2000', 'portatili convertibili anni 2000', 3], 'linea salvata con la descrizione');
+    await U.waitForSelector('.tr [data-lmenu]', { state: 'attached' });
+    eq(await U.evaluate(() => { const s = document.querySelector('.tr'); return [s.querySelector('.tr-h b').textContent, s.querySelector('.tr-h small').textContent, s.querySelectorAll('.tr-n.own').length]; }), ['Convertibili anni 2000', '1 di 3', 1], 'la linea compare per prima tra «Le tue linee», con il pezzo che hai acceso');
+    await U.evaluate(() => [...document.querySelectorAll('.tr [data-trw]')].find(b => /Fujitsu/.test(b.textContent)).click()); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => { const w = devices.find(d => d.wish && /Fujitsu/.test(d.nome)); return w && [w.linea, w.tipologia]; }), ['Convertibili anni 2000', 'Portatile'], 'una stazione vuota va in wishlist con la sua linea');
+    await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await ghSync(true); });
+    const rem = JSON.parse(ghFiles().get('collezione.json').toString());
+    eq((rem.linee || []).map(l => l.nome), ['Convertibili anni 2000'], 'le linee viaggiano su GitHub con la collezione');
+    eq(await U.evaluate(() => { LS.set('rd_linee', []); return linesMerge([{ id: 'x', nome: 'Da un altro telefono', t: 5, nodes: [] }]) && linesLive().map(l => l.nome); }), ['Da un altro telefono'], 'e arrivano da un altro telefono');
+    await U.evaluate(() => { window.mkIdentify = async () => { throw new AppErr('lento', 'nessuna risposta in 40 secondi'); }; window.pickPhoto = async () => { const c = document.createElement('canvas'); c.width = 64; c.height = 48; c.getContext('2d').fillRect(10, 10, 20, 20); return await new Promise(r => c.toBlob(r, 'image/png')); }; goBase(() => openMarket()); });
+    await U.waitForSelector('[data-mk="gal"]'); await U.evaluate(() => document.querySelector('[data-mk="gal"]').click()); await U.waitForSelector('.mk-err .errc, .mk-err', { timeout: 6000 }); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => !document.querySelector('.mk').classList.contains('done') && /Riprova/.test(document.querySelector('.mk-res').textContent) && LS.get('rd_errlog', []).some(x => /Mercatino/.test(x.where))), 'se Gemini non risponde: messaggio con «Riprova» e voce nel registro errori');
     await U.context().close();
   });
 
