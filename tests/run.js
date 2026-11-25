@@ -955,7 +955,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const U = await phone('M3');
     await U.evaluate(async () => { LS.set('rd_gh', { repo: 'test/RDDC', token: 'TOKEN', branch: 'main' }); await saveDev({ id: 'm3', nome: 'iPod classic', tipologia: 'Lettore musicale', creato: Date.now() }); render(); openDetail('m3'); });
     await U.waitForTimeout(400);
-    eq(await U.evaluate(() => [m3dType('a.SPZ'), m3dType('b.sog'), m3dType('c.ply'), m3dType('d.ksplat'), m3dType('e.glb')]), ['spz', 'pcsogszip', 'ply', 'ksplat', ''], 'formati riconosciuti');
+    eq(await U.evaluate(() => [m3dType('a.SPZ'), m3dType('b.sog'), m3dType('c.ply'), m3dType('d.ksplat'), m3dType('e.glb'), m3dType('f.fbx')]), ['spz', 'pcsogszip', 'ply', 'ksplat', 'glb', ''], 'formati riconosciuti');
     await U.click('.page.det [data-moreacts]'); await U.waitForSelector('.modal.sheet');
     const [fc] = await Promise.all([U.waitForEvent('filechooser'), U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => /modello 3D/.test(b.textContent)).click())]);
     await fc.setFiles({ name: 'ipod.spz', mimeType: 'application/octet-stream', buffer: Buffer.from('finto modello splat '.repeat(50)) });
@@ -1321,6 +1321,18 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await U.evaluate(() => [document.querySelector('.mk-h b').textContent, document.querySelector('.mk-cands [data-mk="pick"]').dataset.id]), ['HP Compaq Tablet PC', 'h1'], 'marca non ripetuta; «Forse ce l\'hai già» con il 2710p da confermare');
     await U.evaluate(() => document.querySelector('.mk-cands [data-mk="pick"]').click()); await U.waitForTimeout(200);
     eq(await U.evaluate(() => [document.querySelector('.mk-v').classList.contains('mk-has'), /Damiano/.test(document.querySelector('.mk-v').textContent), document.querySelector('[data-mk="open"]').dataset.id, !document.querySelector('[data-mk="wish"]')]), [true, true, 'h1', true], '«È questo» → ce l\'hai già, con la scheda da aprire');
+    await U.context().close();
+  });
+
+  await test('2.22: mercatino — frasi per gli oggetti fuori tema; modelli .obj/.glb accettati', async () => {
+    const U = await phone('O22');
+    eq(await U.evaluate(() => [MK_OFF.length >= 30, mkOffLine({ cosa: 'una forchetta' }).length > 10, /\{cosa\}|\{Cosa\}/.test(mkOffLine({ cosa: 'un divano' }))]), [true, true, false], 'più di trenta frasi, con l\'oggetto inserito');
+    await U.evaluate(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); LS.set('rd_gem', { key: 'finta' }); window.mkIdentify = async () => ({ o: { in_tema: false, cosa: 'un aspirapolvere', nome: 'Aspirapolvere' }, model: 'finto' }); let n = 0; window.valueEstimate = async () => { window._ve = ++n; return { min: 1, max: 2, tipico: 1 }; };
+      window.pickPhoto = async () => { const c = document.createElement('canvas'); c.width = 60; c.height = 40; c.getContext('2d').fillRect(5, 5, 20, 10); return await new Promise(r => c.toBlob(r, 'image/png')); }; openMarket(); });
+    await U.waitForSelector('[data-mk="gal"]'); await U.evaluate(() => document.querySelector('[data-mk="gal"]').click()); await U.waitForSelector('.mk-off', { timeout: 8000 });
+    eq(await U.evaluate(() => [document.querySelector('.mk-off b').textContent.length > 10, /aspirapolvere/i.test(document.querySelector('.mk-off small').textContent), !document.querySelector('.mk-v'), !window._ve]), [true, true, true, true], 'oggetto fuori tema: una frase al posto del verdetto, niente prezzi');
+    const route = await U.evaluate(async () => { const d = { id: 'ox', nome: 'Prova', tipologia: 'Portatile', creato: Date.now() }; await saveDev(d); let got = null; window.m3dAddMesh = async (dd, slot, fs, mf) => { got = [fs.length, mf.name]; }; window.pickFile = async (acc, multi) => [new File(['v 0 0 0'], 'modello.obj'), new File(['newmtl a'], 'modello.mtl'), new File(['x'], 'tex.png')]; await m3dAdd(d); return [got, m3dType('a.glb'), m3IsMesh({ nome: 'x.glb' }), m3IsMesh({ nome: 'x.spz' })]; });
+    eq(route, [[3, 'modello.obj'], 'glb', true, false], 'scegliendo .obj, .mtl e texture insieme parte la conversione del modello a triangoli');
     await U.context().close();
   });
 
