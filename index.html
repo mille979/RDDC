@@ -773,6 +773,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .mk-cands button[data-mk=pick]{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:14px;padding:7px 10px 7px 7px;background:rgba(255,255,255,.1);color:#fff;text-align:left;animation:wr-rise .45s ease both}
 .mk-cands img,.mk-cands i{width:40px;height:40px;border-radius:10px;object-fit:cover;flex:none;font-style:normal;font-size:26px;display:grid;place-items:center;background:rgba(255,255,255,.08)}.mk-cands span{flex:1;min-width:0}.mk-cands b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mk-cands small{display:block;opacity:.7;font-size:12px}
 .mk-cands em{font-style:normal;font-weight:700;font-size:12.5px;padding:5px 10px;border-radius:999px;background:#ffd56b;color:#3a2606;flex:none}.mk-cands .linkb{align-self:flex-start;color:rgba(255,255,255,.75);margin-top:2px}
+.mk-off{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:10px 6px 16px}.mk-off span{font-size:46px;animation:wr-pop .6s cubic-bezier(.2,.9,.3,1.4) both}.mk-off b{font-size:19px;line-height:1.35}.mk-off small{opacity:.65;font-size:13px}
 .mk-det{font-size:13.5px;opacity:.8;margin:4px 2px 8px;line-height:1.4}.mk-pr{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;margin:10px 0 12px}
 .mk-val b{display:block;font-size:22px}.mk-val small{display:block;opacity:.75;font-size:12.5px;line-height:1.35}
 .mk-shim{display:inline-block;font-size:15px;background:linear-gradient(90deg,rgba(255,255,255,.35),#fff,rgba(255,255,255,.35));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mk-shim 1.4s linear infinite}@keyframes mk-shim{to{background-position:-200% 0}}
@@ -1039,8 +1040,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.21';
+const APP_VER='2.22';
 const NOVITA=[
+ ['2.22','2026-11-25',['🔺 Modelli 3D a triangoli: oltre ai Gaussian splat ora si importano .obj (selezionando insieme anche il .mtl e le immagini delle texture), .gltf e .glb; l\'app li converte in un unico .glb compatto che si sincronizza come gli altri e funziona con piedistallo, museo, etichette e seconda modalità','🙃 Mercatino: se inquadri qualcosa che non c\'entra con la collezione (aspirapolvere, posate, mobili, auto, piante, il gatto…) risponde con una frase a caso tra più di trenta, alcune su misura']],
  ['2.21','2026-11-24',['🔍 Mercatino più attento: Gemini vede anche la tua collezione e dice se l\'oggetto è uno dei tuoi pezzi; il confronto dei nomi capisce i nomi generici o abbreviati («iBook G4» = «iBook G4/1.42 14-Inch», «Titanium» = «Ti») e non confonde G3 con G4; se non è sicuro chiede «Controlla bene: è uno di questi?» con i tuoi pezzi simili, e «È questo» lo segna come già tuo. Gli accessori non contano più come l\'oggetto, e la marca non si ripete nel nome']],
  ['2.20','2026-11-24',['ⓘ Etichette sui modelli 3D: nella vista 3D il tasto ⓘ mostra spilli agganciati al modello, con una linea che porta all\'etichetta (porte, caratteristiche…); seguono il modello mentre lo giri e si nascondono quando il punto finisce sul retro. Con «✎ Modifica» tocchi il modello nel punto esatto e scegli o scrivi l\'etichetta: le porte della scheda sono già proposte (USB 2.0, FireWire 400, Ethernet…); tocca un\'etichetta per cambiarla o toglierla. Ogni modalità 3D ha le sue etichette e si sincronizzano']],
  ['2.19','2026-11-24',['🌳 «Cosa manca» e l\'albero di famiglia sono una pagina sola, «Linee e cosa manca»: linee della metro con stazioni accese per i pezzi che hai e vuote per quelli che mancano (in wishlist con un tocco), per scocca o per modello','✨ Nuove linee con Gemini: descrivi cosa vuoi seguire («portatili convertibili anni 2000», «telefoni Nokia trasparenti») e Gemini elenca i modelli in ordine e riconosce quelli che hai; le linee si sincronizzano tra i telefoni','🔍 Mercatino: si vede chi sta guardando la foto e da quanti secondi; se Gemini non risponde (massimo 40 secondi per modello) o risponde male compare il motivo con «Riprova», invece della luce che pulsa all\'infinito; foto più leggera e risposta più rapida','📅 I compleanni dei pezzi arrivano solo nel giorno esatto (dalla data di presentazione); tolto lo sfondo del giorno (la foto da studio resta nel menu ⋯); album delle carte nascosto per ora']],
@@ -1584,7 +1586,7 @@ function openDetail(id,replace,morph,quiet,dir){
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
       (d.scontorno||(d.foto&&d.foto.length))&&{a:'data-studio',ic:'📸',t:'Foto da studio',sub:'Sfondo per il telefono o foto da catalogo, con riflesso e ombra',g:'Oggetto'},
       !d.wish&&kindOf(d.tipologia)!=='part'&&{a:'data-card',ic:'🃏',t:'Carta da collezione',sub:'Fronte d\'epoca, retro con l\'etichetta, rarità e ologramma',g:'Oggetto'},
-      {a:d.m3d?'data-m3more':'data-m3add',ic:'🧊',t:d.m3d?'Modello 3D…':'Aggiungi un modello 3D',sub:d.m3d?'Sostituisci, seconda modalità, nomi, togli':'Gaussian splat da Scaniverse o SuperSplat (.spz, .sog, .ply)',g:'Oggetto'},
+      {a:d.m3d?'data-m3more':'data-m3add',ic:'🧊',t:d.m3d?'Modello 3D…':'Aggiungi un modello 3D',sub:d.m3d?'Sostituisci, seconda modalità, nomi, togli':'Gaussian splat (.spz, .sog, .ply) o modello a triangoli (.obj con .mtl e texture, .glb)',g:'Oggetto'},
       !d.prestito&&{a:'data-loan',ic:'📤',t:'Presta / esponi',g:'Oggetto'},{a:'data-cmp',ic:'⇆',t:'Confronta con…',g:'Oggetto'},{a:'data-dup',ic:'⧉',t:'Duplica',g:'Oggetto'},
       {a:'data-del',ic:'🗑️',t:'Elimina',dng:1,g:'—'}])+'</div>'}
   return openPage(d.nome,h,{replace,bare:true,cls:'det'+(morph||quiet||dir?' no-anim':'')+(morph?' fly-in':'')+(quiet?' quiet':'')+(dir?' sw-'+dir:''),mount(el){
@@ -3228,7 +3230,8 @@ const fmtSize=n=>!n?'':n<1024*1024?Math.max(1,Math.round(n/1024))+' kB':(n/10485
 const attIcon=a=>/pdf/.test(a.mime)?'📄':/^image/.test(a.mime)?'🖼️':/^video/.test(a.mime)?'🎬':/^audio/.test(a.mime)?'🎵':/zip|compress/.test(a.mime)?'🗜️':'📎';
 const attKind=a=>/pdf/.test(a.mime)?'PDF':/^image/.test(a.mime)?'Immagine':/^video/.test(a.mime)?'Video':/^audio/.test(a.mime)?'Audio':((a.nome.match(/\.(\w{1,5})$/)||[])[1]||'File').toUpperCase();
 /* ===== 2.10: modelli 3D (Gaussian splat da Scaniverse, SuperSplat…) — visti solo dalla parte alta ===== */
-const M3D_MAX=60*1024*1024,M3D_EXT={spz:'spz',ply:'ply',splat:'splat',ksplat:'ksplat',sog:'pcsogszip'};
+const M3D_MAX=60*1024*1024,M3D_EXT={spz:'spz',ply:'ply',splat:'splat',ksplat:'ksplat',sog:'pcsogszip',glb:'glb'};
+const m3IsMesh=m=>(m&&(m.tipo||m3dType(m.nome)))==='glb';
 const m3dType=n=>M3D_EXT[((String(n).match(/\.(\w+)$/)||[])[1]||'').toLowerCase()]||'';
 const fmtMB=b=>(b/1048576).toLocaleString('it',{maximumFractionDigits:1})+' MB';
 let SPARK=null;
@@ -3294,9 +3297,14 @@ async function mount3D(host,d,o={}){
     scene.add(new THREE.HemisphereLight(0xfff0dc,0x14100c,2.4));const sun=new THREE.DirectionalLight(0xffe2b8,3.2);sun.position.set(.8,2.2,1.4);scene.add(sun);
     const spinG=new THREE.Group();scene.add(spinG);
     /* ogni modello: orientato, centrato e appoggiato a quota 0 (il piano del piedistallo) */
-    const build=async(m,b)=>{const mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized;
+    const build=async(m,b)=>{let mesh;
+      if(m3IsMesh(m)){/* 2.22: modello a triangoli (.glb): portato a una misura standard e centrato; le etichette usano il suo spazio locale */
+        const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js'),g=await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),''),inner=g.scene;
+        mesh=new THREE.Group();mesh.add(inner);const bx=new THREE.Box3().setFromObject(inner),sz=bx.getSize(new THREE.Vector3()),k=.4/Math.max(sz.x,sz.y,sz.z,1e-6);inner.scale.setScalar(k);inner.position.copy(bx.getCenter(new THREE.Vector3()).multiplyScalar(-k));
+        mesh.updateMatrixWorld(true);mesh.userData.isMesh=true;mesh.userData.box=new THREE.Box3().setFromObject(mesh)}
+      else{mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized}
       const r=(m.rot||[0,0,0]).map(x=>x*Math.PI/180);mesh.rotation.set(r[0],r[1],r[2]);mesh.updateMatrixWorld(true);
-      const fx=m3Fix(THREE,mesh),box=fx.box||mesh.getBoundingBox(true);
+      const fx=mesh.userData.isMesh?{}:m3Fix(THREE,mesh),box=fx.box||mesh.userData.box||mesh.getBoundingBox(true);
       /* 2.20: un campione dei punti (coordinate del file) per piazzare le etichette toccando il modello */
       try{const sp=mesh.packedSplats||mesh.splats,n=sp.numSplats||0,step=Math.max(1,Math.floor(n/60000)),a=[];let k=0;sp.forEachSplat((i,c,s,q,op)=>{if(k++%step||op<.15)return;a.push(c.x,c.y,c.z)});const z=box.getSize(new THREE.Vector3());mesh.userData.pts=new Float32Array(a);mesh.userData.r=Math.max(z.x,z.y,z.z)*.018}catch(e){}
       const bb=box.clone().applyMatrix4(mesh.matrixWorld),c=bb.getCenter(new THREE.Vector3());mesh.position.set(-c.x,-bb.min.y,-c.z);mesh.updateMatrixWorld(true);
@@ -3358,7 +3366,9 @@ async function mount3D(host,d,o={}){
     if(o.intro&&!RM())st.intro=performance.now();o.onReady&&setTimeout(o.onReady,350);size();lab.classList.add('out');setTimeout(()=>lab.remove(),360);host.classList.add('ready');kick();api.cam=cam;api.st=st;
     /* 2.20: etichette — dal tocco al punto del modello (il più vicino a chi guarda lungo il raggio) e dal punto allo schermo */
     const tv=new THREE.Vector3(),rc=new THREE.Raycaster();
-    api.pick=(cx,cy)=>{const m=meshes[st.cur];if(!m||!m.userData.pts)return null;const r=cv.getBoundingClientRect();rc.setFromCamera(new THREE.Vector2((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1),cam);
+    api.pick=(cx,cy)=>{const m=meshes[st.cur];if(!m)return null;const r=cv.getBoundingClientRect();rc.setFromCamera(new THREE.Vector2((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1),cam);
+      if(m.userData.isMesh){const h=rc.intersectObject(m,true)[0];return h?m.worldToLocal(h.point.clone()).toArray().map(x=>Math.round(x*1e4)/1e4):null}
+      if(!m.userData.pts)return null;
       const inv=m.matrixWorld.clone().invert(),O=rc.ray.origin.clone().applyMatrix4(inv),D=rc.ray.direction.clone().transformDirection(inv),P=m.userData.pts;let R=m.userData.r;
       for(let pass=0;pass<3;pass++){let best=-1,bt=Infinity;const R2=R*R;for(let i=0;i<P.length;i+=3){const wx=P[i]-O.x,wy=P[i+1]-O.y,wz=P[i+2]-O.z,t=wx*D.x+wy*D.y+wz*D.z;if(t<=0||t>=bt)continue;if(wx*wx+wy*wy+wz*wz-t*t<R2){bt=t;best=i}}
         if(best>=0)return [P[best],P[best+1],P[best+2]].map(x=>Math.round(x*1e4)/1e4);R*=2.2}return null};
@@ -3412,9 +3422,12 @@ function plyFix(u8){try{const head=new TextDecoder().decode(u8.subarray(0,Math.m
 /* 2.12: caricamento robusto. PLY/SPLAT/KSPLAT (es. da KIRI Engine) vengono convertiti in SPZ, circa 10 volte più leggero */
 const M3D_RAW_MAX=400*1024*1024;
 async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLabels(d);if(!labels)return}
-  const f=await pickFile('.spz,.ply,.splat,.ksplat,.sog');if(!f)return;
+  const fs=await pickFile('.spz,.ply,.splat,.ksplat,.sog,.obj,.mtl,.glb,.gltf,.bin,.png,.jpg,.jpeg,.webp',true);if(!fs||!fs.length)return;
+  /* 2.22: modelli a triangoli (.obj con .mtl e texture, .gltf, .glb): convertiti in un unico .glb */
+  const mf=fs.find(x=>/\.(obj|gltf|glb)$/i.test(x.name));if(mf)return m3dAddMesh(d,slot,fs,mf,labels);
+  const f=fs.find(x=>m3dType(x.name))||fs[0];
   try{let tipo=m3dType(f.name),nome=f.name;
-    if(!tipo){toast(`«${f.name}» non è un modello riconosciuto: servono .spz, .sog, .ply, .splat o .ksplat (da KIRI esporta «3DGS» in PLY)`,6500);return}
+    if(!tipo){toast(`«${f.name}» non è un modello riconosciuto: servono .spz, .sog, .ply, .splat, .ksplat (Gaussian splat) oppure .obj, .glb, .gltf (a triangoli)`,6500);return}
     if(f.size>M3D_RAW_MAX){toast(`«${f.name}» è troppo grande (${fmtMB(f.size)}, massimo ${fmtMB(M3D_RAW_MAX)})`,6000);return}
     isle('m3add',{ic:'🧊',t:`Leggo il modello · ${fmtMB(f.size)}`});
     let bytes=new Uint8Array(await f.arrayBuffer()),fixed=null;
@@ -3432,12 +3445,39 @@ async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLab
     toast(nome!==f.name?`Modello compresso: da ${fmtMB(f.size)} a ${fmtMB(bytes.length)} ✔︎`:bytes.length>25*1048576?`Modello aggiunto (${fmtMB(bytes.length)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',5000);
     openModel3D(d,true,slot===2)}
   catch(e){logErr('Modello 3D · caricamento',e);isleEnd('m3add','Caricamento non riuscito',false);toast(`Non riesco a caricare «${f.name}» (${fmtMB(f.size)}): ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
+/* 2.22: da .obj (+ .mtl e texture), .gltf o .glb a un unico .glb: materiali standard, colori dei vertici, due facce */
+async function meshToGLB(fs,mf){const T=await import('three'),ext=mf.name.split('.').pop().toLowerCase();if(ext==='glb')return new Uint8Array(await mf.arrayBuffer());
+  const urls=new Map(fs.map(f=>[f.name.toLowerCase(),URL.createObjectURL(f)])),man=new T.LoadingManager();let pending=0;
+  man.setURLModifier(u=>{if(/^(blob|data):/.test(u))return u;const n=decodeURIComponent(String(u).split(/[\\/]/).pop()).toLowerCase();return urls.get(n)||u});
+  man.onStart=()=>{pending++};const idle=()=>new Promise(r=>{const t0=Date.now();const chk=()=>{if(!man.isLoading&&Date.now()-t0>150||Date.now()-t0>15000)return r();setTimeout(chk,100)};chk()});
+  try{let root;
+    if(ext==='obj'){const {OBJLoader}=await import('three/addons/loaders/OBJLoader.js'),ol=new OBJLoader(man),txt=await mf.text(),want=((txt.match(/^mtllib\s+(.+)$/m)||[])[1]||'').trim().split(/[\\/]/).pop().toLowerCase();
+      const mtl=fs.find(f=>/\.mtl$/i.test(f.name)&&f.name.toLowerCase()===want)||fs.find(f=>/\.mtl$/i.test(f.name));
+      if(mtl){const {MTLLoader}=await import('three/addons/loaders/MTLLoader.js'),mats=new MTLLoader(man).parse(await mtl.text(),'');mats.preload();ol.setMaterials(mats)}
+      root=ol.parse(txt)}
+    else{const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');root=(await new GLTFLoader(man).parseAsync(await mf.text(),'')).scene}
+    await idle();let tris=0;
+    root.traverse(o=>{if(!o.isMesh)return;const g=o.geometry;if(!g.attributes.normal)g.computeVertexNormals();tris+=(g.index?g.index.count:g.attributes.position.count)/3;const vc=!!g.attributes.color;
+      const conv=m=>{if(m&&m.isMeshStandardMaterial){m.side=T.DoubleSide;if(vc)m.vertexColors=true;return m}const n=new T.MeshStandardMaterial({color:vc?0xffffff:(m&&m.color?m.color.getHex():0xcccccc),map:m&&m.map||null,vertexColors:vc,roughness:.75,metalness:0,side:T.DoubleSide,transparent:!!(m&&m.transparent),opacity:m&&m.opacity!=null?m.opacity:1});if(n.map)n.map.colorSpace=T.SRGBColorSpace;return n};
+      o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)});
+    if(!tris)throw new AppErr('vuoto','nel file non ci sono triangoli');
+    const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');const ab=await new GLTFExporter().parseAsync(root,{binary:true,maxTextureSize:2048});return new Uint8Array(ab)}
+  finally{urls.forEach(u=>URL.revokeObjectURL(u))}}
+async function m3dAddMesh(d,slot,fs,mf,labels){const tot=fs.reduce((a,f)=>a+f.size,0);
+  try{if(tot>M3D_RAW_MAX){toast(`File troppo grandi (${fmtMB(tot)}, massimo ${fmtMB(M3D_RAW_MAX)})`,6000);return}
+    isle('m3add',{ic:'🔺',t:`Converto il modello · ${fmtMB(tot)}`});const bytes=await meshToGLB(fs,mf);
+    if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Il modello convertito pesa ${fmtMB(bytes.length)} (massimo ${fmtMB(M3D_MAX)}): riducine i triangoli o la dimensione delle texture`,7000);return}
+    const nome=mf.name.replace(/\.\w+$/,'')+'.glb',data=await m3Store(bytes),k=slot===2?'m3d2':'m3d',old=d[k],texN=fs.filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).length;
+    d[k]={id:uid(),nome,size:bytes.length,tipo:'glb',data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==mf.name?{orig:{nome:mf.name,size:tot}}:{})};if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
+    await saveDev(d);render();buzz('ok');isleEnd('m3add',`Modello a triangoli · ${fmtMB(bytes.length)}`);
+    toast(/\.obj$/i.test(mf.name)&&!fs.some(f=>/\.mtl$/i.test(f.name))?'Modello aggiunto. Per i colori seleziona insieme al .obj anche il .mtl e le immagini delle texture':`Modello aggiunto (${fmtMB(bytes.length)}${texN?`, ${texN} ${texN===1?'texture':'texture'}`:''}) ✔︎`,5500);openModel3D(d,true,slot===2)}
+  catch(e){logErr('Modello 3D · conversione del modello a triangoli',e);isleEnd('m3add','Conversione non riuscita',false);toast(`Non riesco a leggere «${mf.name}»: ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
 /* nomi delle due modalità (es. Portatile / Tablet) */
 function askLabels(d){return new Promise(res=>{const m=document.createElement('div');m.className='modal';const a=(d.m3d&&d.m3d.label)||'Portatile',b=(d.m3d2&&d.m3d2.label)||'Tablet';
   m.innerHTML=`<div><p>Come si chiamano le due modalità?</p><label class="f">Modello principale</label><input class="in" id="ml1" value="${esc(a)}"><label class="f">Seconda modalità</label><input class="in" id="ml2" value="${esc(b)}"><div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn sec" data-n>Annulla</button><button class="btn" data-y>OK</button></div></div>`;
   m.onclick=e=>{if(e.target.matches('[data-y]')){const x=[m.querySelector('#ml1').value.trim()||'Normale',m.querySelector('#ml2').value.trim()||'Seconda modalità'];m.remove();res(x)}else if(e.target.matches('[data-n]')||e.target===m){m.remove();res(null)}};document.body.append(m);lgScan(m)})}
-function pickFile(accept){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.append(i);
-  const done=v=>{i.remove();res(v)};i.onchange=()=>done(i.files[0]||null);i.oncancel=()=>done(null);i.click()})}
+function pickFile(accept,multi=false){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;i.multiple=multi;i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.append(i);
+  const done=v=>{i.remove();res(v)};i.onchange=()=>done(multi?[...i.files]:i.files[0]||null);i.oncancel=()=>done(null);i.click()})}
 /* 2.12.2: i file dei modelli non stanno più nelle schede (tutta la collezione è in memoria: con più modelli il telefono chiudeva l'app).
    Sul telefono stanno nella cache «rddc-modelli»: «local:<id>» finché non sono su GitHub, poi sotto il loro indirizzo su GitHub */
 const m3Key=ref=>new URL('./m3local/'+String(ref).replace(/^local:/,''),location.href).href;
@@ -3458,7 +3498,7 @@ function m3dHTML(d){const m=d.m3d;if(!m)return '';const m2=d.m3d2,info=x=>[x.siz
   <div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-m3open>🧊 Guarda in 3D</button><button class="btn sm sec" data-m3pl>🏛️ Sul piedistallo</button><button class="btn sm sec" data-m3more aria-label="Opzioni del modello 3D">⋯ Opzioni</button></div>
   <div class="m3opts" hidden>${[[m2?'':'data-m3add2'],['data-m3add'],[m2?'data-m3add2':''],[m2?'data-m3lab':''],[m2?'data-m3del2':''],['data-m3del']].map(([x])=>x?`<button ${x}></button>`:'').join('')}</div>`}
 /* 2.17: le opzioni meno usate del modello 3D in un foglio */
-async function m3More(el,d){const m2=d.m3d2,items=[!m2&&{a:'data-m3add2',ic:'⇄',t:'Aggiungi una seconda modalità',sub:'Per i convertibili: es. portatile e tablet',g:1},{a:'data-m3add',ic:'🧊',t:m2?'Sostituisci «'+m3Label(d.m3d,0)+'»':'Sostituisci il modello',sub:'Nuovo file .spz, .sog o .ply',g:1},
+async function m3More(el,d){const m2=d.m3d2,items=[!m2&&{a:'data-m3add2',ic:'⇄',t:'Aggiungi una seconda modalità',sub:'Per i convertibili: es. portatile e tablet',g:1},{a:'data-m3add',ic:'🧊',t:m2?'Sostituisci «'+m3Label(d.m3d,0)+'»':'Sostituisci il modello',sub:'Nuovo file .spz, .sog, .ply, .obj o .glb',g:1},
     m2&&{a:'data-m3add2',ic:'⇄',t:'Sostituisci «'+m3Label(m2,1)+'»',g:1},m2&&{a:'data-m3lab',ic:'🏷️',t:'Nomi delle modalità',sub:m3Label(d.m3d,0)+' / '+m3Label(m2,1),g:2},m2&&{a:'data-m3del2',ic:'✂️',t:'Togli la seconda modalità',dng:true,g:3},{a:'data-m3del',ic:'🗑',t:m2?'Togli il modello 3D (entrambe le modalità)':'Togli il modello 3D',dng:true,g:3}].filter(Boolean);
   const i=await sheet('Modello 3D',items);if(i<0)return;const b=el.querySelector(`.m3opts [${items[i].a}]`);b&&b.click()}
 /* pagina a schermo intero: il modello sul piedistallo, con i ritocchi di orientamento */
@@ -4025,7 +4065,7 @@ COLL_PLACEHOLDER
 WISHLIST (id | nome):
 WISH_PLACEHOLDER
 Rispondi SOLO con un oggetto JSON (ometti le chiavi che non sai, non inventare):
-{"marca":"","nome":"nome commerciale preciso senza ripetere la marca (es. iBook G3 Clamshell, iMac G3 Slot Loading, Game Boy Advance SP, Compaq 2710p)","modello":"numero di modello se visibile o certo (es. M2453, A1181)","anno":numero,"tipologia":"uno tra TIPI_PLACEHOLDER","colore":"","prezzo_cartellino":numero se c'è un prezzo scritto,"dettagli":"cosa si nota: stato, accessori, difetti, in una frase","certezza":"alta"|"media"|"bassa","collezione_id":"","match_certezza":"alta"|"media"|"bassa","simili_ids":[],"wishlist_id":""}`;
+{"marca":"","nome":"nome commerciale preciso senza ripetere la marca (es. iBook G3 Clamshell, iMac G3 Slot Loading, Game Boy Advance SP, Compaq 2710p)","modello":"numero di modello se visibile o certo (es. M2453, A1181)","anno":numero,"tipologia":"uno tra TIPI_PLACEHOLDER","colore":"","prezzo_cartellino":numero se c'è un prezzo scritto,"dettagli":"cosa si nota: stato, accessori, difetti, in una frase","certezza":"alta"|"media"|"bassa","collezione_id":"","match_certezza":"alta"|"media"|"bassa","simili_ids":[],"wishlist_id":"","in_tema":true se è elettronica, informatica, videogiochi, audio-video, telefonia o un altro oggetto tecnologico da collezione, false per tutto il resto (elettrodomestici comuni, posate, mobili, auto, piante, animali, cibo, persone…),"cosa":"nome comune e breve dell'oggetto, in italiano, con l'articolo (es. un aspirapolvere, una forchetta)"}`;
 /* 2.21: confronto dei nomi — parole e codici spezzati («G4/1.42», «Mid-2005»), parole generiche ignorate, conflitti (G3 contro G4) penalizzati */
 const MK_STOP=new Set(['the','con','di','da','e','in','inch','pollici','gb','mb','tb','ghz','mhz','pc','computer','notebook','laptop','portatile','tablet','convertible','convertibile','version','edition','model','modello','with','and','op']);
 const MK_SYN={titanium:'ti',titanio:'ti',aluminum:'al',aluminium:'al',alluminio:'al',unibody:'unibody',powerbook:'powerbook',plus:'plus'};
@@ -4053,6 +4093,10 @@ function mkMatch(o){const accOk=['acc','part'].includes(kindOf(o.tipologia||''))
   let gen=null,same=[];const L=AWIDX||[],code=gapNorm(o.modello);if(L.length){const A=mkTok(o.nome||'');const x=L.map(x=>{const X=mkTok(x[0]);const n=A.filter(t=>X.includes(t)).length;return {x,s:(code&&gapNorm(x[1])===code?1:0)+n/Math.max(A.length,X.length,1)}}).sort((a,b)=>b.s-a.s)[0];
     if(x&&x.s>=.75){const r=gapRule(x.x);if(r&&r[1]){gen=r[1];same=own.filter(d=>{if(has.includes(d))return false;const b=L.filter(y=>gapMatch(d,y))[0];const rr=b&&gapRule(b);return rr&&rr[1]===gen})}}}
   return {has,maybe,wish:wl,gen,same,viaGem}}
+/* 2.22: oggetti che non c'entrano niente con la collezione — una frase a caso (alcune su misura) */
+const MK_OFF=['Bello, {cosa}. Ma non ha nemmeno una porta USB.','Ho cercato il processore di {cosa}. Niente. Neanche un 486.','{Cosa}: zero bit, zero byte, zero speranze per il museo.','Non mi risulta che {cosa} abbia mai fatto il boot.','Se non ha uno schermo, una tastiera o almeno un LED, non entra.','Il museo è per l\'elettronica. {Cosa} può aspettare fuori.','Interessante. Peccato che {cosa} non giri Mac OS 9.','Non lo trovo né su EveryMac né su The Apple Wiki. Forse perché è {cosa}.','Batteria: assente. Porte: nessuna. Diagnosi: {cosa}.','Se un giorno faranno {cosa} con la FireWire, ne riparliamo.','Non posso metterlo in wishlist: nessuno l\'ha mai presentato a un keynote.','Classificazione: oggetto non informatico. Livello di nostalgia: basso.','Lo vedo bene su uno scaffale… di casa, non del museo.','Ho cercato il numero EMC su {cosa}. Mi sono arreso.','{Cosa}? Qui si accettano solo cose che fanno «bip».','Niente suono d\'avvio, niente collezione.','Valore affettivo: forse. Valore RDDC: zero kilobyte.','Ho fatto una scansione profonda: {cosa}. Nessun virus, nessun valore.','Mettilo pure in collezione, se proprio vuoi. Io non ti giudico. Un po\' sì.','Questo l\'Inventario non lo conta. Neanche se insisti.','Quasi! Mancano solo una CPU, un po\' di RAM e un sistema operativo.','Il giro di manutenzione non prevede {cosa}: non si ricarica.','Errore 404: computer non trovato.','Bel tentativo. Il mercatino dell\'usato tech è dall\'altra parte.','Il piedistallo del museo si è rifiutato: «non sono quel tipo di piedistallo».','Ho controllato due volte: {cosa} non ha nemmeno la presa SCART.','Se lo colleghi a un Mac non succede niente. Ho controllato. (Non l\'ho controllato.)','Kernel panic: oggetto non riconosciuto come collezionabile.','Vintage, forse. Nostro, no. Passo.','Nessun dato da sincronizzare con GitHub. Solo {cosa}.','Sul retro cercavo «Designed in California». C\'è solo {cosa}.','Gemini dice che è {cosa}. Io dico che non entra.'];
+const MK_OFF_SP=[[/aspirapolver|scopa elettr|robot aspir/i,'Al massimo aspira la polvere dalle ventole dei Mac. Ma resta fuori dal museo.'],[/forchett|coltell|cucchia|posat/i,'Con questa al massimo apri il vano batteria di un iBook. Ma non entra comunque.'],[/condizionator|climatizz|ventilator|stufa|termosifon/i,'Raffredda la stanza dei computer, non sta tra i computer.'],[/auto|macchina|moto|bici|scooter/i,'Per questa serve un garage, non RDDC. A meno che non abbia l\'autoradio a cassette: quella sì.'],[/divano|sedia|tavolo|armadio|mobile|scaffal|libreria|letto/i,'Ottimo per appoggiarci sopra la collezione. Non per metterlo dentro.'],[/pianta|fiore|albero|cactus/i,'È verde, ma non è un iMac Lime.'],[/gatt|cane|criceto|coniglio|pesce|uccell/i,'Adorabile. Purtroppo non ha il numero di serie.'],[/persona|uomo|donna|ragazz|bambin|selfie|mano/i,'Bellissimo, ma gli esseri umani non vanno in wishlist.'],[/pizza|pasta|panino|cibo|frutta|caff/i,'Ha l\'aria buona. Mangialo prima che finisca nella scheda.'],[/frigo|lavatrice|lavastovigli|forno|microonde/i,'Elettrodomestico, sì. Da collezione, no: nessuno ha mai scritto un programma per {cosa}.']];
+function mkOffLine(o){const c=String(o.cosa||o.nome||'questa cosa').trim(),C=c.charAt(0).toUpperCase()+c.slice(1),sp=MK_OFF_SP.find(([re])=>re.test(c+' '+(o.nome||'')));const t=sp&&Math.random()<.7?sp[1]:MK_OFF[Math.floor(Math.random()*MK_OFF.length)];return t.replace(/\{cosa\}/g,c).replace(/\{Cosa\}/g,C)}
 const mkName=o=>{const n=String(o.nome||'').trim(),m=String(o.marca||'').trim();return (m&&n&&!gapNorm(n).startsWith(gapNorm(m))?m+' '+n:n||m)||o.modello||'Oggetto'};
 /* effetto «visual intelligence»: onde iridescenti che partono dal centro e accendono i contorni dell'oggetto */
 function mkGlow(host,src){const W=host.clientWidth,H=host.clientHeight,cw=Math.max(60,Math.round(W/4)),ch=Math.max(60,Math.round(H/4));
@@ -4078,7 +4122,7 @@ async function mkIdentify(dataUrl,onStep){const mime=(dataUrl.match(/^data:([^;]
   return gemAsk('','',onStep,async m=>{const cfg=/2\.5-flash/.test(m)?{thinkingConfig:{thinkingBudget:0}}:null;let tm;
     const r=await Promise.race([gemCall(m,[{inline_data:{mime_type:mime,data:b64}},{text:prompt}],false,true,cfg),new Promise((_,rej)=>{tm=setTimeout(()=>rej(new AppErr('lento','nessuna risposta in 40 secondi',{model:m})),40000)})]).finally(()=>clearTimeout(tm));
     if(Array.isArray(r.o))r.o=r.o[0]||{};if(r.o&&r.o.oggetto&&typeof r.o.oggetto==='object')r.o=r.o.oggetto;
-    if(!r.o.nome&&!r.o.modello)throw new AppErr('vuoto','oggetto non riconosciuto',{model:m});return r})}
+    if(!r.o.nome&&!r.o.modello&&r.o.in_tema!==false)throw new AppErr('vuoto','oggetto non riconosciuto',{model:m});return r})}
 function openMarket(){
   awIndex().catch(()=>{});
   const el=openPage('Mercatino',`<div class="mk"><div class="mk-st"><video playsinline muted autoplay></video><canvas class="mk-ph"></canvas><div class="mk-edge"></div><div class="mk-aim"><i></i><i></i><i></i><i></i></div></div>
@@ -4111,7 +4155,9 @@ function openMarket(){
         :M.same.length?{k:'same',t:'Hai già la stessa scocca',d:`${esc(M.gen)}: ${M.same.slice(0,2).map(d=>esc(d.nome)).join(', ')}`}:{k:'miss',t:'Ti manca',d:M.gen?`Scocca: ${esc(M.gen)}`:'Non c\'è niente di simile nella tua collezione'}};
     const vHTML=v=>`<div class="mk-v mk-${v.k}"><b>${{has:'✓',wish:'💭',same:'≈',miss:'🧩',maybe:'🤔'}[v.k]} ${v.t}</b><small>${v.d}</small>${v.c?`<div class="mk-cands">${v.c.map(d=>{const ph=wrPh(d);return `<button data-mk="pick" data-id="${d.id}">${ph?`<img src="${esc(ph)}" alt="">`:`<i>${icon(d)}</i>`}<span><b>${esc(d.nome)}</b><small>${esc([d.anno,d.luogo&&'📍 '+d.luogo].filter(Boolean).join(' · '))}</small></span><em>È questo</em></button>`}).join('')}<button class="linkb" data-mk="nope">No, nessuno di questi</button></div>`:''}</div>`;
     const acts=(v,M)=>`${v.k==='has'?`<button class="btn sec" data-mk="open" data-id="${(v.force||M.has[0]).id}">Apri la scheda</button>`:''}${v.k==='has'||v.k==='wish'?'':'<button class="btn" data-mk="wish">💭 In wishlist</button>'}<button class="btn sec" data-mk="add">＋ In collezione</button><button class="btn sec" data-mk="again">↻</button>`;
-    const show=o=>{const M=mkMatch(o),name=mkName(o),sub=[o.modello,o.anno,o.colore].filter(Boolean).join(' · ');
+    const show=o=>{if(o.in_tema===false){root.classList.add('done');res.hidden=false;res._o=o;res._M=null;hap.bump();
+        res.innerHTML=`<div class="mk-card"><div class="mk-off"><span>🙃</span><b>${esc(mkOffLine(o))}</b><small>${esc(o.cosa?'Sembra '+o.cosa:'Non è un oggetto da collezione tech')}</small></div><div class="mk-acts"><button class="btn" data-mk="again">↻ Un\'altra foto</button><button class="btn sec" data-mk="add">È da collezione, aggiungilo</button></div></div>`;return}
+      const M=mkMatch(o),name=mkName(o),sub=[o.modello,o.anno,o.colore].filter(Boolean).join(' · ');
       const v=verdict(M);res._M=M;
       root.classList.add('done');res.hidden=false;
       res.innerHTML=`<div class="mk-card"><div class="mk-h"><img src="${photo}" alt=""><div><b>${esc(name||'Oggetto')}</b><small>${esc(sub)}${o.certezza?` · certezza ${esc(o.certezza)}`:''}</small></div></div>
