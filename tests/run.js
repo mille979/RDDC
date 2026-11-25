@@ -1336,6 +1336,28 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.23: sfida, collezione che cresce, caccia del weekend, dettatura', async () => {
+    const U = await phone('S23');
+    await U.evaluate(async () => { const mk = (id, o) => saveDev({ id, tipologia: 'Portatile', marca: 'Apple', creato: Date.now(), ...o });
+      await mk('a', { nome: 'iBook G4', anno: '2005', cpu: 'PowerPC G4 1.42 GHz', ram: '512 MB', storage: '60 GB', display: '14.1"', valore: '80', peso: '2.7 kg', acq_anno: '2024', acq_mese: 'marzo', acq_prezzo: '30' });
+      await mk('b', { nome: 'PowerBook G4 Titanium', anno: '2001', cpu: 'PowerPC G4 400 MHz', ram: '1 GB', storage: '10 GB', display: '15.2"', valore: '500', peso: '2.4 kg', acq_anno: '2025', acq_prezzo: '70' });
+      render(); document.querySelectorAll('.modal').forEach(m => m.remove()); openDuel(devices.find(d => d.id === 'a'), devices.find(d => d.id === 'b')); });
+    await U.waitForSelector('.du-c', { state: 'attached' }); await U.waitForTimeout(9500);
+    eq(await U.evaluate(() => [document.querySelectorAll('.du-c').length, [...document.querySelectorAll('.du-sc em')].map(e => e.textContent).join('-'), document.querySelector('.du-s.win b').textContent, getComputedStyle(document.querySelector('.du-c')).backgroundColor]), [7, '2-5', 'PowerBook G4 Titanium', 'rgba(0, 0, 0, 0)'], 'sette categorie, punteggio, corona al vincitore');
+    await U.evaluate(() => goBase(() => openGrowth())); await U.waitForSelector('.gr canvas'); await U.waitForTimeout(600);
+    ok(await U.evaluate(() => { const c = document.querySelector('.gr canvas'); return c.width === 1080 && c.height === 1920 && !!document.querySelector('[data-gr="rec"]'); }), 'replay su canvas 9:16 con «Salva il video»');
+    const ics = await U.evaluate(() => huntICS({ nome: 'Fiera, elettronica', inizio: '2026-11-29', fine: '2026-11-30', luogo: 'Lingotto', citta: 'Torino' }));
+    ok(/DTSTART;VALUE=DATE:20261129/.test(ics) && /DTEND;VALUE=DATE:20261201/.test(ics) && /SUMMARY:Fiera\\, elettronica/.test(ics) && /TRIGGER:-P1D/.test(ics), 'evento nel calendario con promemoria il giorno prima');
+    await U.evaluate(() => { LS.set('rd_gem', { key: 'f' }); window.huntSearch = async () => ({ ev: [{ nome: 'Fiera dell\'Elettronica', inizio: '2026-12-05', fine: '2026-12-06', citta: 'Torino', distanza_km: 4, perche: 'iBook G3 bianco' }], noSearch: false }); goBase(() => openHunt()); });
+    await U.waitForSelector('#hl'); await U.fill('#hl', 'Torino'); await U.click('[data-hu="go"]'); await U.waitForSelector('.hu-c');
+    eq(await U.evaluate(() => [document.querySelector('.hu-d b').textContent, /iBook G3/.test(document.querySelector('.hu-p').textContent), LS.get('rd_hunt_loc')]), ['5', true, 'Torino'], 'eventi con data, motivo legato alla wishlist; zona ricordata');
+    await U.evaluate(() => { window.dictParse = async () => ({ it: [{ device_id: 'b', tipo: 'Batteria', desc: 'Batteria nuova', costo: 25, data: today() }], stt: [{ device_id: 'b', stato: 'Funzionante' }], dubbi: '' }); goBase(() => openDictate(devices.find(d => d.id === 'b'))); });
+    await U.waitForSelector('#dct'); await U.fill('#dct', 'ho cambiato la batteria del powerbook, 25 euro, ora funziona'); await U.click('[data-dc="go"]'); await U.waitForSelector('.dc-r');
+    await U.click('[data-dc="save"]'); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => { const d = devices.find(x => x.id === 'b'), i = (d.interventi || []).slice(-1)[0]; return [i && i.tipo, i && i.costo, i && i.dettato, d.stato]; }), ['Batteria', '25', true, 'Funzionante'], 'dettatura: intervento con costo e stato salvati dopo il controllo');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');
