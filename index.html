@@ -839,9 +839,9 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 @keyframes og-ken{to{transform:scale(1.09) rotate(-2.5deg)}}
 /* ===== albero di famiglia ===== */
 .tr{margin:0 0 18px;padding:14px 14px 8px;border-radius:24px;background:var(--glass);box-shadow:var(--shadow)}.tr.dim{opacity:.72}.tr-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}.tr-h b{font-size:17px;flex:1}.tr-h small{color:var(--mute)}
-.tr-l{position:relative}.tr-l::before{content:'';position:absolute;left:21px;top:20px;bottom:20px;width:4px;border-radius:2px;background:linear-gradient(var(--acc),color-mix(in srgb,var(--acc) 35%,transparent));transform-origin:top;transform:scaleY(0);transition:transform 1.2s cubic-bezier(.2,.85,.25,1)}.tr.in .tr-l::before{transform:scaleY(1)}
+.tr-l{position:relative}.tr-l::before{content:'';position:absolute;left:21px;top:20px;bottom:20px;width:4px;border-radius:2px;background:linear-gradient(var(--acc),color-mix(in srgb,var(--acc) 35%,transparent));transform-origin:top;transform:scaleY(0);transition:transform 1.2s cubic-bezier(.2,.85,.25,1)}.tr.tr-on .tr-l::before{transform:scaleY(1)}
 .tr-f{margin:8px 0 2px 58px;font:700 11.5px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-.tr-n{position:relative;display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:6px 0;text-align:left;color:var(--ink);opacity:0;transform:translateX(-12px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.85,.25,1);transition-delay:calc(var(--i)*.06s)}.tr.in .tr-n{opacity:1;transform:none}
+.tr-n{position:relative;display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:6px 0;text-align:left;color:var(--ink);opacity:0;transform:translateX(-12px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.85,.25,1);transition-delay:calc(var(--i)*.06s)}.tr.tr-on .tr-n{opacity:1;transform:none}
 .tr-dot{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:3px dashed color-mix(in srgb,var(--mute) 55%,transparent);font-size:20px;overflow:hidden;position:relative;z-index:1}
 .tr-n.own .tr-dot{border:3px solid var(--acc);background:var(--card);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 22%,transparent),0 4px 14px color-mix(in srgb,var(--acc) 35%,transparent)}.tr-n.own .tr-dot img{width:84%;height:84%;object-fit:contain}.tr-n.wish .tr-dot{border-style:solid;border-color:color-mix(in srgb,#966eff 65%,transparent)}
 .tr-t b{display:block;font-size:14.5px}.tr-t small{display:block;color:var(--mute);font-size:12.5px}.tr-n:not(.own) .tr-t b{opacity:.75}
@@ -849,7 +849,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .page.guess{background:radial-gradient(100% 70% at 50% 35%,#24324a,#0a0e16);color:#fff;animation:m3-in .3s ease both}.gu{position:absolute;inset:0;display:flex;flex-direction:column}
 .gu-top{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px}.gu-r{flex:1;text-align:center;font-size:15px;opacity:.85}.gu-s{min-width:44px;text-align:right;font:800 20px system-ui,sans-serif}.gu-s.pop{--i:5;animation:wr-pop .5s cubic-bezier(.2,.9,.3,1.5)}
 .gu-st{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;min-height:0}.gu-img{position:relative;height:34vh;width:100%;flex:none}
-.gu-img img{position:absolute;inset:0;margin:auto;max-width:88%;max-height:100%;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}.gu-img img.ph{border-radius:22px;max-height:94%}.gu-img.in img{animation:gu-in .6s cubic-bezier(.2,.9,.3,1.3) both,wr-float 5s ease-in-out .6s infinite alternate}@keyframes gu-in{from{opacity:0;transform:scale(.6) rotate(-6deg)}}
+.gu-img img{position:absolute;inset:0;margin:auto;max-width:88%;max-height:100%;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}.gu-img img.ph{border-radius:22px;max-height:94%}.gu-img.gu-on img{animation:gu-in .6s cubic-bezier(.2,.9,.3,1.3) both,wr-float 5s ease-in-out .6s infinite alternate}@keyframes gu-in{from{opacity:0;transform:scale(.6) rotate(-6deg)}}
 .gu-h{text-align:center;font-size:15px;opacity:.88;margin:12px 0 0;line-height:1.4;min-height:44px}.gu-h small{opacity:.7}.gu-pts{color:#43e08c;margin-left:6px}
 .gu-v{text-align:center;font:900 clamp(56px,18vw,96px)/1 system-ui,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s}.gu.rev .gu-v{color:#ffd56b;text-shadow:0 0 22px rgba(255,200,80,.5)}
 .gu-ru{position:relative;height:74px;overflow:hidden;touch-action:none;cursor:grab;-webkit-mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
@@ -869,6 +869,34 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .m3ed{position:absolute;left:0;right:0;margin:0 auto;width:max-content;bottom:14px;z-index:4;display:flex;gap:10px;align-items:center;max-width:calc(100% - 24px);padding:7px 7px 7px 14px;border-radius:999px;background:rgba(20,14,8,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#f3e9da;font-size:12.5px;animation:m3-up .35s ease both}
 .m3ed span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m3ed .btn{flex:none}.m3page.editing .m3c{cursor:crosshair}.m3page.editing .m3ed{box-shadow:0 0 0 2px rgba(255,213,138,.6)}.hb.on{box-shadow:0 0 0 2px #ffd58a}
 .tgm .tgc{margin-top:10px;max-height:34vh;overflow:auto}
+/* ===== 2.23: sfida ===== */
+.page.duel{background:radial-gradient(90% 60% at 50% 30%,#3a1414,#0a0505);color:#fff;animation:m3-in .3s ease both}.du{position:absolute;inset:0;display:flex;flex-direction:column;overflow:auto}
+.du-top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 4px}.du-top b{flex:1;font-size:16px}.du-sc{font:900 26px system-ui,sans-serif;letter-spacing:.04em}.du-sc em{font-style:normal;display:inline-block}
+.du-ring{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:6px 12px 10px}
+.du-s{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;transition:transform .5s cubic-bezier(.2,.9,.3,1.3),opacity .5s,filter .5s}.du-s b{font-size:13.5px;line-height:1.2}.du-s small{font-size:11.5px;opacity:.7}
+.du-m{height:22vh;width:100%;display:grid;place-items:center}.du-m img{max-width:96%;max-height:100%;object-fit:contain;filter:drop-shadow(0 16px 20px rgba(0,0,0,.6));animation:wr-float 4s ease-in-out infinite alternate}.du-m img.ph{border-radius:16px;max-height:86%}.du-b .du-m img{animation-delay:-2s}
+.du-a{animation:du-in-l .7s cubic-bezier(.2,.9,.3,1.3) both}.du-b{animation:du-in-r .7s cubic-bezier(.2,.9,.3,1.3) both}@keyframes du-in-l{from{opacity:0;transform:translateX(-60%) rotate(-8deg)}}@keyframes du-in-r{from{opacity:0;transform:translateX(60%) rotate(8deg)}}
+.du-vs{font:900 30px system-ui,sans-serif;color:#ffd56b;text-shadow:0 0 18px rgba(255,120,60,.8);animation:wr-pop .6s cubic-bezier(.2,.9,.3,1.5) .35s both;--i:5}
+.du-crown{position:absolute;top:-8px;font-style:normal;font-size:34px;opacity:0;transform:translateY(10px) scale(.4);transition:all .5s cubic-bezier(.2,.9,.3,1.5)}.du-s.win .du-crown{opacity:1;transform:none}.du-s.win{transform:scale(1.06)}.du-s.lose{opacity:.55;filter:grayscale(.6);transform:scale(.94)}
+.du-cats{display:flex;flex-direction:column;gap:8px;padding:6px 12px}.du-c{display:grid;grid-template-columns:1fr 74px 1fr;align-items:center;gap:6px;opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s}.du-c.du-on{opacity:1;transform:none}
+.du-n{text-align:center;font-size:22px;line-height:1}.du-n small{display:block;font:700 10.5px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-top:3px}
+.du-bar{position:relative;height:34px;border-radius:10px;background:rgba(255,255,255,.07);overflow:hidden}.du-bar i{position:absolute;top:0;bottom:0;width:100%;transition:transform .7s cubic-bezier(.2,.85,.25,1);transform:scaleX(0);background:linear-gradient(90deg,#6a6a74,#9a9aa6)}
+.du-bar.l i{right:0;transform-origin:100% 50%}.du-bar.r i{left:0;transform-origin:0 50%}.du-bar span{position:relative;z-index:1;display:block;padding:0 9px;line-height:34px;font:700 12.5px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.du-bar.l span{text-align:right}
+.du-c.wa .du-bar.l i,.du-c.wb .du-bar.r i{background:linear-gradient(90deg,#ff8a3d,#ffd56b);box-shadow:0 0 18px rgba(255,170,60,.6)}.du-c.wa .du-bar.l span,.du-c.wb .du-bar.r span{color:#2a1205}
+.du-end{text-align:center;padding:14px 12px calc(20px + env(safe-area-inset-bottom));animation:wr-rise .5s ease both}.du-end b{display:block;font:900 24px system-ui,sans-serif;margin-bottom:12px;color:#ffd56b}
+.dp-i{display:flex;align-items:center;gap:10px;width:100%;border:0;background:var(--chip);border-radius:14px;padding:7px 10px 7px 7px;margin:0 0 6px;text-align:left;color:var(--ink)}.dp-i img,.dp-i i{width:42px;height:42px;border-radius:10px;object-fit:contain;flex:none;font-style:normal;font-size:26px;display:grid;place-items:center}.dp-i b{display:block;font-size:14px}.dp-i small{color:var(--mute);font-size:12px}
+/* ===== 2.23: la collezione che cresce ===== */
+.page.growth{background:#0c0806;color:#fff;animation:m3-in .3s ease both}.gr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center}.gr-top{align-self:stretch;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 4px}
+.gr canvas{flex:1;min-height:0;max-width:100%;aspect-ratio:9/16;object-fit:contain;border-radius:18px}.gr-bar{display:flex;gap:10px;padding:10px 12px 6px}.gr-n{margin:0 0 calc(10px + env(safe-area-inset-bottom));font-size:12px;opacity:.6}
+/* ===== 2.23: caccia del weekend ===== */
+.hu-c{display:flex;gap:12px;padding:12px;margin:0 0 10px;border-radius:20px;background:var(--glass);box-shadow:var(--shadow);animation:wr-rise .5s ease both;animation-delay:calc(var(--i)*.06s)}
+.hu-d{flex:none;width:54px;height:58px;border-radius:14px;background:linear-gradient(180deg,#ff6b4a,#e0442a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(224,68,42,.35)}.hu-d b{font:900 24px/1 system-ui,sans-serif}.hu-d small{font:700 11px system-ui,sans-serif;text-transform:uppercase}
+.hu-b{flex:1;min-width:0}.hu-b>b{display:block;font-size:15.5px}.hu-b>small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}.hu-b p{margin:6px 0 0;font-size:13.5px;line-height:1.4}.hu-p{color:var(--acc-ink)}.hu-a{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.hu-a .btn{text-decoration:none}
+/* ===== 2.23: dettatura ===== */
+.dc-mic{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 12px}.dc-b{width:84px;height:84px;border-radius:50%;border:0;font-size:36px;background:var(--glass-hi);box-shadow:var(--shadow);position:relative}
+.dc-b.on{background:linear-gradient(180deg,#ff6b4a,#e0442a);box-shadow:0 0 0 0 rgba(224,68,42,.5);animation:dc-pulse 1.4s ease-out infinite}@keyframes dc-pulse{to{box-shadow:0 0 0 22px rgba(224,68,42,0)}}.dc-mic small{color:var(--mute)}
+.dc-r{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:0 0 8px;border-radius:16px;background:var(--chip);animation:wr-rise .4s ease both}.dc-r input{width:20px;height:20px;margin-top:2px;flex:none}.dc-r b{display:block;font-size:14px}.dc-r small{color:var(--mute);font-size:12.5px}
+@media (prefers-reduced-motion:reduce){.du *,.hu-c,.dc-r,.dc-b{animation:none!important;transition:none!important}}
 .m3hint{text-align:center;font-size:12px;color:rgba(243,233,218,.55);margin:0;padding:0 16px calc(14px + env(safe-area-inset-bottom))}.hb3d{font:800 12px/1 system-ui,sans-serif;letter-spacing:.04em}
 .isle{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:90;display:none;align-items:center;gap:8px;max-width:min(92vw,360px);padding:8px 14px 8px 10px;border-radius:999px;background:#000;color:#fff;font:600 13px/1.1 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.12);transform:translateX(-50%);pointer-events:none;overflow:hidden}
 .isle.on{display:flex;animation:isle-in .42s cubic-bezier(.2,1.25,.35,1) both}.isle.out{animation:isle-out .3s ease both}
@@ -922,7 +950,7 @@ details.more>summary{color:var(--mute);padding:10px 4px}
   #toast{left:calc(var(--lw) / 2);max-width:calc(var(--lw) - 24px)}
   #bulk{right:auto;width:calc(var(--lw) - 24px)}
   .page{left:var(--lw);box-shadow:-1px 0 0 var(--line),-18px 0 40px rgba(40,20,0,.12)}
-  .page.museum,.page.viewer,.page.wrapped,.page.tmach,.page.market,.page.cardp,.page.album,.page.guess{left:0;box-shadow:none}
+  .page.museum,.page.viewer,.page.wrapped,.page.tmach,.page.market,.page.cardp,.page.album,.page.guess,.page.duel,.page.growth{left:0;box-shadow:none}
   #pane0{display:grid;place-items:center;position:fixed;top:0;bottom:0;right:0;left:var(--lw);z-index:1;text-align:center;color:var(--mute);box-shadow:-1px 0 0 var(--line)}
   #pane0>div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 34px;border-radius:30px;background:var(--glass);box-shadow:var(--shadow)}
   #pane0 .ic{width:46px;height:46px;stroke-width:1.4;color:var(--acc-ink);margin-bottom:4px}#pane0 b{color:var(--ink);font-size:17px}
@@ -1040,8 +1068,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.22';
+const APP_VER='2.23';
 const NOVITA=[
+ ['2.23','2026-11-25',['🥊 Sfida (Menu, o ⋯ nella scheda): due pezzi faccia a faccia, categoria per categoria (più vintage, processore, RAM, archiviazione, schermo, valore, più leggero) con barre che corrono, punteggio e corona al vincitore','📈 La collezione che cresce (Menu): il replay dei tuoi acquisti mese per mese, con i pezzi che cadono sugli scaffali e il valore che sale; «Salva il video» per condividerlo','🗺️ Caccia del weekend (Menu): Gemini cerca sul web fiere dell\'elettronica, mostre-scambio retrò e mercatini vicino a te nelle prossime settimane, con date, mappa, sito, promemoria nel calendario e perché andarci pensando alla tua wishlist','🎙️ Dettatura in laboratorio (Laboratorio, o ⋯ nella scheda): racconti cosa hai fatto e Gemini scrive gli interventi (tipo, costo, data) e i cambi di stato; li controlli prima di salvarli','Corretti alcuni riquadri chiari fuori posto in Indovina l\'anno e nelle linee']],
  ['2.22','2026-11-25',['🔺 Modelli 3D a triangoli: oltre ai Gaussian splat ora si importano .obj (selezionando insieme anche il .mtl e le immagini delle texture), .gltf e .glb; l\'app li converte in un unico .glb compatto che si sincronizza come gli altri e funziona con piedistallo, museo, etichette e seconda modalità','🙃 Mercatino: se inquadri qualcosa che non c\'entra con la collezione (aspirapolvere, posate, mobili, auto, piante, il gatto…) risponde con una frase a caso tra più di trenta, alcune su misura']],
  ['2.21','2026-11-24',['🔍 Mercatino più attento: Gemini vede anche la tua collezione e dice se l\'oggetto è uno dei tuoi pezzi; il confronto dei nomi capisce i nomi generici o abbreviati («iBook G4» = «iBook G4/1.42 14-Inch», «Titanium» = «Ti») e non confonde G3 con G4; se non è sicuro chiede «Controlla bene: è uno di questi?» con i tuoi pezzi simili, e «È questo» lo segna come già tuo. Gli accessori non contano più come l\'oggetto, e la marca non si ripete nel nome']],
  ['2.20','2026-11-24',['ⓘ Etichette sui modelli 3D: nella vista 3D il tasto ⓘ mostra spilli agganciati al modello, con una linea che porta all\'etichetta (porte, caratteristiche…); seguono il modello mentre lo giri e si nascondono quando il punto finisce sul retro. Con «✎ Modifica» tocchi il modello nel punto esatto e scegli o scrivi l\'etichetta: le porte della scheda sono già proposte (USB 2.0, FireWire 400, Ethernet…); tocca un\'etichetta per cambiarla o toglierla. Ogni modalità 3D ha le sue etichette e si sincronizzano']],
@@ -1584,6 +1613,8 @@ function openDetail(id,replace,morph,quiet,dir){
     h+=actsHTML([['data-edit','Modifica','',1],['data-upd','🔎 Aggiorna']],[
       {a:'data-paste',ic:'📋',t:'Incolla da EveryMac',sub:'Compila la scheda da una pagina copiata',g:'Dati'},
       ...(kd==='part'?[!d.montato_su&&{a:'data-mount',ic:'🔧',t:'Monta su…',g:'Oggetto'},split]:kd==='acc'?[split]:[{a:'data-addacc',ic:'＋',t:'Aggiungi un accessorio',g:'Oggetto'},devices.some(a=>a.collegato&&a.collegato!==d.id&&!a.wish)&&{a:'data-copyacc',ic:'📋',t:'Copia accessori da…',g:'Oggetto'},{a:'data-cut',ic:'🏛️',t:'Scontorno per il museo',g:'Oggetto'}]),
+      !d.wish&&{a:'data-dict',ic:'🎙️',t:'Detta un intervento',sub:'Racconta cosa hai fatto: Gemini lo scrive nel registro',g:'Oggetto'},
+      !d.wish&&!['part','acc'].includes(kindOf(d.tipologia))&&{a:'data-duel',ic:'🥊',t:'Sfida con…',sub:'Faccia a faccia con un altro pezzo, categoria per categoria',g:'Oggetto'},
       (d.scontorno||(d.foto&&d.foto.length))&&{a:'data-studio',ic:'📸',t:'Foto da studio',sub:'Sfondo per il telefono o foto da catalogo, con riflesso e ombra',g:'Oggetto'},
       !d.wish&&kindOf(d.tipologia)!=='part'&&{a:'data-card',ic:'🃏',t:'Carta da collezione',sub:'Fronte d\'epoca, retro con l\'etichetta, rarità e ologramma',g:'Oggetto'},
       {a:d.m3d?'data-m3more':'data-m3add',ic:'🧊',t:d.m3d?'Modello 3D…':'Aggiungi un modello 3D',sub:d.m3d?'Sostituisci, seconda modalità, nomi, togli':'Gaussian splat (.spz, .sog, .ply) o modello a triangoli (.obj con .mtl e texture, .glb)',g:'Oggetto'},
@@ -1630,6 +1661,8 @@ function openDetail(id,replace,morph,quiet,dir){
       if(t.closest('[data-m3open]'))return openModel3D(d);
       if(t.closest('[data-card]'))return openCard(d);
       if(t.closest('[data-studio]'))return openStudio(d);
+      if(t.closest('[data-dict]'))return openDictate(d);
+      if(t.closest('[data-duel]'))return openDuel(d);
       if(t.closest('[data-m3more]'))return m3More(el,d);
       if(t.closest('[data-m3add2]'))return m3dAdd(d,2);
       if(t.closest('[data-m3add]'))return m3dAdd(d);
@@ -2275,7 +2308,8 @@ const shopList=()=>allProjects().filter(({p})=>p.stato!=='Finito').flatMap(({d,p
 function projRow({d,p}){const pr=projProg(p),tm=timerGet(),run=tm&&tm.pid===p.id,tot=pzTot(p);
   return `<button class="pj" data-op="${d.id}|${p.id}"><div class="th">${(p.dopo||[])[0]&&p.stato==='Finito'?`<img src="${p.dopo[0]}" alt="">`:d.thumb?`<img src="${d.thumb}" alt="">`:icon(d)}</div><div class="pi"><b>${run?'⏱ ':''}${esc(p.titolo)}</b><small>${esc([d.nome+(p.es?' · '+esLab(d,p.es):''),pr.t?pr.n+'/'+pr.t+' fasi':'',p.min?hm(p.min):'',tot?eur2(tot):'',projBlocked(p)&&p.stato!=='Finito'?'🛒 pezzi da prendere':''].filter(Boolean).join(' · '))}</small>${pr.t&&p.stato!=='Finito'?`<div class="pbar"><i style="width:${pr.n/pr.t*100}%"></i></div>`:''}</div></button>`}
 function openLab(tab='prog'){
-  openPage('Laboratorio','<div class="chips" id="lt"></div><div id="lb"></div>',{mount(el){
+  openPage('Laboratorio','<button class="btn sec" data-dict style="width:100%;margin:0 0 10px">🎙️ Detta un intervento</button><div class="chips" id="lt"></div><div id="lb"></div>',{mount(el){
+    el.querySelector('[data-dict]').onclick=()=>openDictate();
     const draw=()=>{const ap=allProjects(),open=ap.filter(x=>x.p.stato!=='Finito'),tt=toTest(),sh=shopList();
       const plans=devices.filter(d=>!d.wish).flatMap(d=>(d.interventi||[]).filter(i=>i.coll&&!i.fatto).map(i=>({d,i}))).sort((a,b)=>a.i.prossimo.localeCompare(b.i.prossimo));
       $('#lt',el).innerHTML=[['prog',`🛠️ Progetti${open.length?' · '+open.length:''}`],['coll',`🧪 Da collaudare${tt.length+plans.length?' · '+(tt.length+plans.length):''}`],['spesa',`🛒 Lista della spesa${sh.length?' · '+sh.length:''}`],['stat','📊 Statistiche']].map(([k,l])=>`<button class="chip ${tab===k?'on':''}" data-lt="${k}">${l}</button>`).join('');
@@ -4319,7 +4353,7 @@ function openGuess(mode){
     ru.addEventListener('pointerdown',e=>{if(locked)return;dr={x:e.clientX,t:performance.now()};vel=0;ru.setPointerCapture(e.pointerId)});
     ru.addEventListener('pointermove',e=>{if(!dr)return;const du=-(e.clientX-dr.x)/W(),now=performance.now();u=Math.max(0,Math.min(1,u+du));vel=du/Math.max(1,now-dr.t)*16;dr={x:e.clientX,t:now};paint()});
     const up=()=>{if(!dr)return;dr=null;if(!raf)raf=requestAnimationFrame(inertia)};ru.addEventListener('pointerup',up);ru.addEventListener('pointercancel',up);
-    const round=()=>{const d=pool[r];locked=false;u=.5;last=null;rd.textContent=`${r+1} / ${pool.length}`;img.classList.remove('in');void img.offsetWidth;img.innerHTML=`<img src="${esc(wrPh(d))}" alt=""${d.scontorno?'':' class="ph"'}>`;img.classList.add('in');
+    const round=()=>{const d=pool[r];locked=false;u=.5;last=null;rd.textContent=`${r+1} / ${pool.length}`;img.classList.remove('gu-on');void img.offsetWidth;img.innerHTML=`<img src="${esc(wrPh(d))}" alt=""${d.scontorno?'':' class="ph"'}>`;img.classList.add('gu-on');
       hint.innerHTML=P?esc([d.tipologia,d.marca].filter(Boolean).join(' · ')):esc(d.nome)+(d.stato?` <small>· ${esc(d.stato)}</small>`:'');go.textContent='È questo!';go.dataset.g='ok';el.querySelector('.gu').classList.remove('rev');ticks();paint()};
     const confetti=()=>{if(RM())return;const c=fx,g=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const ps=Array.from({length:90},()=>({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,r:Math.random()*6+3,c:['#ff6ec4','#ffaa50','#966eff','#5ac8ff','#43e08c'][Math.floor(Math.random()*5)],a:Math.random()*6}));let t=0;
       const st=()=>{g.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.45;p.a+=.2;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle=p.c;g.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);g.restore()});if(++t<110)requestAnimationFrame(st);else g.clearRect(0,0,c.width,c.height)};st()};
@@ -4332,6 +4366,134 @@ function openGuess(mode){
         <div class="row" style="gap:10px;margin-top:16px;width:100%"><button class="btn" data-g="again" style="flex:1">↺ Ancora</button><button class="btn sec" data-back style="flex:1">Esci</button></div></div>`;if(rec)setTimeout(confetti,300);hap.thud(.7)};
     el.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const a=b.dataset.g;if(a==='ok')reveal();else if(a==='next'){r++;if(r>=pool.length)finish();else round()}else if(a==='again'){history.back();setTimeout(()=>openGuess(mode),330)}});
     requestAnimationFrame(round)}});
+  return el}
+/* ===== 2.23: Sfida — due pezzi faccia a faccia, categoria per categoria ===== */
+const duNum=(s,re,f=1)=>{const m=String(s||'').replace(',', '.').match(re);return m?parseFloat(m[1])*f:null};
+const DUEL_CAT=[
+  ['📅','Più vintage',d=>{const y=parseInt(d.anno);return isFinite(y)?new Date().getFullYear()-y:null},v=>`${v} anni`],
+  ['⚡','Processore',d=>{const s=String(d.cpu||'');return duNum(s,/(\d+(?:\.\d+)?)\s*ghz/i,1000)??duNum(s,/(\d+(?:\.\d+)?)\s*mhz/i)},v=>v>=1000?`${(v/1000).toFixed(2).replace('.',',')} GHz`:`${Math.round(v)} MHz`],
+  ['🧠','RAM',d=>{const s=String(d.ram||'');return duNum(s,/(\d+(?:\.\d+)?)\s*gb/i,1024)??duNum(s,/(\d+(?:\.\d+)?)\s*mb/i)??duNum(s,/(\d+(?:\.\d+)?)\s*kb/i,1/1024)},v=>v>=1024?`${+(v/1024).toFixed(1)} GB`:v>=1?`${Math.round(v)} MB`:`${Math.round(v*1024)} KB`],
+  ['💾','Archiviazione',d=>{const s=String(d.storage||'');return duNum(s,/(\d+(?:\.\d+)?)\s*tb/i,1000)??duNum(s,/(\d+(?:\.\d+)?)\s*gb/i)??duNum(s,/(\d+(?:\.\d+)?)\s*mb/i,1/1000)},v=>v>=1000?`${+(v/1000).toFixed(1)} TB`:v>=1?`${Math.round(v)} GB`:`${Math.round(v*1000)} MB`],
+  ['🖥️','Schermo',d=>duNum(d.display||d.tv_pollici,/(\d+(?:\.\d+)?)\s*(?:"|”|''|pollici|inch|-inch)/i)??duNum(d.tv_pollici,/(\d+(?:\.\d+)?)/),v=>`${String(v).replace('.',',')}″`],
+  ['💶','Valore',d=>wrNum(d.valore)||null,v=>wrEur(v)],
+  ['🪶','Più leggero',d=>{const s=String(d.peso||'');const kg=duNum(s,/(\d+(?:\.\d+)?)\s*kg/i)??duNum(s,/(\d+(?:\.\d+)?)\s*(?:lb|lbs|pounds)/i,.4536)??duNum(s,/(\d+(?:\.\d+)?)\s*g\b/i,1/1000);return kg?-kg:null},v=>`${String(+(-v).toFixed(2)).replace('.',',')} kg`]];
+function duelPick(title,ex){const L=devices.filter(d=>!d.wish&&!['part','acc'].includes(kindOf(d.tipologia))&&d.id!==ex).sort((a,b)=>(parseInt(a.anno)||9999)-(parseInt(b.anno)||9999));
+  return new Promise(res=>{let done=false;const el=openPage(title,`<input class="in" id="dps" placeholder="Cerca un pezzo…" autocomplete="off"><div class="log" id="dpl" style="margin-top:10px"></div>`,{mount(el){const l=$('#dpl',el),q=$('#dps',el);
+    const draw=()=>{const t=q.value.trim().toLowerCase();l.innerHTML=L.filter(d=>!t||(d.nome+' '+(d.marca||'')).toLowerCase().includes(t)).map(d=>{const ph=wrPh(d);return `<button class="dp-i" data-dp="${d.id}">${ph?`<img src="${esc(ph)}" alt="">`:`<i>${icon(d)}</i>`}<span><b>${esc(d.nome)}</b><small>${esc([d.marca,d.anno].filter(Boolean).join(' · '))}</small></span></button>`}).join('')};
+    q.oninput=draw;draw();l.onclick=e=>{const b=e.target.closest('[data-dp]');if(!b)return;done=true;hap.tick(.5);res(devices.find(d=>d.id===b.dataset.dp));history.back()};el._close=()=>{if(!done)res(null)}}})})}
+async function openDuel(a,b){
+  if(!a){a=await duelPick('Sfida · primo sfidante');if(!a)return;await new Promise(r=>setTimeout(r,350))}
+  if(!b){b=await duelPick(`Sfida · contro ${a.nome}`,a.id);if(!b)return;await new Promise(r=>setTimeout(r,350))}
+  const cats=DUEL_CAT.map(([ic,n,f,fmt])=>({ic,n,fmt,va:f(a),vb:f(b)})).filter(c=>c.va!=null&&c.vb!=null&&isFinite(c.va)&&isFinite(c.vb));let sa=0,sb=0;
+  const side=(d,k)=>{const ph=wrPh(d);return `<div class="du-s du-${k}"><div class="du-m">${ph?`<img src="${esc(ph)}" alt=""${d.scontorno?'':' class="ph"'}>`:`<span class="wr-emo">${icon(d)}</span>`}</div><b>${esc(d.nome)}</b><small>${esc([d.marca,d.anno].filter(Boolean).join(' · '))}</small><i class="du-crown">👑</i></div>`};
+  const el=openPage('Sfida',`<div class="du"><div class="du-top"><button class="hb" data-back aria-label="Chiudi">✕</button><b>Sfida</b><span class="du-sc"><em>0</em> – <em>0</em></span></div>
+    <div class="du-ring">${side(a,'a')}<div class="du-vs">VS</div>${side(b,'b')}</div><div class="du-cats">${cats.length?cats.map((c,i)=>`<div class="du-c" data-i="${i}"><div class="du-bar l"><i></i><span></span></div><div class="du-n">${c.ic}<small>${esc(c.n)}</small></div><div class="du-bar r"><i></i><span></span></div></div>`).join(''):'<p class="note" style="color:#fff">Questi due pezzi non hanno dati da confrontare (anno, processore, RAM, disco, schermo, valore, peso).</p>'}</div>
+    <div class="du-end" hidden><b></b><div class="row" style="gap:10px;justify-content:center"><button class="btn" data-du="again">↺ Rivincita</button><button class="btn sec" data-du="new">Nuova sfida</button></div></div></div>`,{bare:true,cls:'duel',mount(el){
+    const sc=el.querySelectorAll('.du-sc em'),rows=[...el.querySelectorAll('.du-c')],end=$('.du-end',el);let tm=[];
+    const run=()=>{sa=sb=0;sc[0].textContent=sc[1].textContent='0';end.hidden=true;el.querySelectorAll('.du-s').forEach(x=>x.classList.remove('win','lose'));rows.forEach(r=>{r.classList.remove('du-on','wa','wb','tie');r.querySelectorAll('i').forEach(i=>i.style.transform='scaleX(0)');r.querySelectorAll('.du-bar span').forEach(s=>s.textContent='')});
+      tm.forEach(clearTimeout);tm=[];
+      rows.forEach((r,i)=>{tm.push(setTimeout(()=>{const c=cats[i],mx=Math.max(Math.abs(c.va),Math.abs(c.vb))||1,fa=Math.abs(c.va)/mx,fb=Math.abs(c.vb)/mx;r.classList.add('du-on');hap.tick(.4);
+        const [ia,ib]=r.querySelectorAll('i'),[ta,tb]=r.querySelectorAll('.du-bar span');requestAnimationFrame(()=>{ia.style.transform=`scaleX(${.12+.88*fa})`;ib.style.transform=`scaleX(${.12+.88*fb})`});
+        ta.textContent=c.fmt(c.va);tb.textContent=c.fmt(c.vb);
+        setTimeout(()=>{if(c.va===c.vb){r.classList.add('tie');hap.tick(.3)}else{const wa=c.va>c.vb;r.classList.add(wa?'wa':'wb');if(wa)sa++;else sb++;sc[0].textContent=sa;sc[1].textContent=sb;sc[wa?0:1].animate([{scale:1},{scale:1.5},{scale:1}],{duration:380});hap.thud(.45)}},750)},600+i*1100))});
+      tm.push(setTimeout(()=>{const w=sa===sb?null:sa>sb?'a':'b';el.querySelectorAll('.du-s').forEach(x=>x.classList.toggle('win',!!w&&x.classList.contains('du-'+w)));el.querySelectorAll('.du-s').forEach(x=>x.classList.toggle('lose',!!w&&!x.classList.contains('du-'+w)));
+        $('b',end).textContent=w?`Vince ${(w==='a'?a:b).nome}!`:'Pareggio!';end.hidden=false;if(w){hap.ramp(300)}},700+rows.length*1100))};
+    el.addEventListener('click',e=>{const x=e.target.closest('[data-du]');if(!x)return;if(x.dataset.du==='again')run();if(x.dataset.du==='new'){history.back();setTimeout(()=>openDuel(a),350)}});
+    el._close=()=>tm.forEach(clearTimeout);setTimeout(run,450)}});
+  return el}
+/* ===== 2.23: La collezione che cresce — replay su canvas, da salvare come video ===== */
+function openGrowth(){
+  const its=devices.filter(d=>!d.wish&&acqTime(d)).map(d=>({d,t:acqTime(d)})).sort((a,b)=>a.t-b.t),skip=devices.filter(d=>!d.wish).length-its.length;
+  if(its.length<2){toast('Servono almeno due pezzi con l\'anno di acquisto',3500);return}
+  const W=1080,H=1920,t0=new Date(its[0].t),t1=new Date(),months=(t1.getFullYear()-t0.getFullYear())*12+t1.getMonth()-t0.getMonth()+1,DUR=Math.max(8000,Math.min(22000,months*180)),n=its.length;
+  const cols=Math.max(4,Math.ceil(Math.sqrt(n*W/1300))),slot=Math.floor((W-80)/cols),rows=Math.ceil(n/cols),top=H-180-rows*slot*1.02;
+  const el=openPage('La collezione che cresce',`<div class="gr"><div class="gr-top"><button class="hb" data-back aria-label="Chiudi">✕</button><b>La collezione che cresce</b></div><canvas width="${W}" height="${H}"></canvas>
+    <div class="gr-bar"><button class="btn sec" data-gr="play">↺ Rivedi</button><button class="btn" data-gr="rec">🎬 Salva il video</button></div>${skip?`<p class="gr-n">${skip} ${skip===1?'pezzo senza anno di acquisto non compare':'pezzi senza anno di acquisto non compaiono'}</p>`:''}</div>`,{bare:true,cls:'growth',mount(el){
+    const cv=$('canvas',el),g=cv.getContext('2d'),imgs=new Map();let raf=0,start=0,rec=null;
+    its.forEach(x=>{const p=wrPh(x.d);if(p){const im=new Image();im.src=p;imgs.set(x.d.id,im)}});
+    const F='-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Roboto,sans-serif',ease=t=>1-Math.pow(1-t,3),bounce=t=>{const c=1.7;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};
+    const draw=now=>{const T=Math.min(1,(now-start)/DUR),cur=its[0].t+(t1-its[0].t)*T;
+      let bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#2a1a0c');bg.addColorStop(1,'#0c0806');g.fillStyle=bg;g.fillRect(0,0,W,H);
+      const arrived=its.filter(x=>x.t<=cur),val=arrived.reduce((s,x)=>s+wrNum(x.d.valore),0),spent=arrived.reduce((s,x)=>s+wrNum(x.d.acq_prezzo),0),dt=new Date(cur);
+      g.fillStyle='rgba(255,226,180,.75)';g.font=`600 40px ${F}`;g.fillText('LA MIA COLLEZIONE',70,150);g.fillStyle='#fff';g.font=`800 120px ${F}`;g.fillText(dt.toLocaleDateString('it',{month:'long',year:'numeric'}),64,280);
+      g.font=`800 92px ${F}`;g.fillText(String(arrived.length),70,430);g.font=`500 36px ${F}`;g.fillStyle='rgba(255,236,205,.8)';g.fillText(arrived.length===1?'pezzo':'pezzi',70,480);
+      g.fillStyle='#ffd56b';g.font=`800 92px ${F}`;g.fillText(wrEur(val),430,430);g.font=`500 36px ${F}`;g.fillStyle='rgba(255,236,205,.8)';g.fillText(spent?`di valore · spesi ${wrEur(spent)}`:'di valore',430,480);
+      for(let r=0;r<rows;r++){const y=top+(r+1)*slot*1.02-6;g.fillStyle='#5a3d22';g.fillRect(40,y,W-80,14);g.fillStyle='rgba(0,0,0,.35)';g.fillRect(40,y+14,W-80,10)}
+      its.forEach((x,i)=>{if(x.t>cur)return;const age=(cur-x.t)/((t1-its[0].t)/months*2.5||1),p=Math.min(1,age),c=i%cols,r=Math.floor(i/cols),cx=40+slot*c+slot/2,by=top+(r+1)*slot*1.02-6;
+        const s=bounce(Math.min(1,p*1.1)),drop=(1-ease(p))*-160,im=imgs.get(x.d.id),sz=slot*.84*Math.max(0,s);
+        if(p<1){g.save();g.globalAlpha=(1-p)*.8;g.fillStyle='#ffd56b';g.beginPath();g.arc(cx,by-slot*.42,slot*.5*(1+p),0,Math.PI*2);g.fill();g.restore()}
+        if(im&&im.complete&&im.naturalWidth){const k=Math.min(sz/im.naturalWidth,sz/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;g.save();if(!x.d.scontorno){g.beginPath();g.roundRect(cx-w/2,by-h+drop,w,h,10);g.clip()}g.drawImage(im,cx-w/2,by-h+drop,w,h);g.restore()}
+        else{g.font=`${Math.round(sz*.7)}px ${F}`;g.textAlign='center';g.fillText(icon(x.d),cx,by-8+drop);g.textAlign='left'}});
+      g.fillStyle='rgba(255,255,255,.18)';g.fillRect(70,H-110,W-140,8);g.fillStyle='#ffd56b';g.fillRect(70,H-110,(W-140)*T,8);g.fillStyle='rgba(255,255,255,.45)';g.font=`600 30px ${F}`;g.fillText('RDDC',70,H-50);
+      if(T<1)raf=requestAnimationFrame(draw);else if(rec)setTimeout(()=>rec.stop(),900)};
+    let lastN=0;const tick=()=>{};
+    const play=()=>{cancelAnimationFrame(raf);start=performance.now();raf=requestAnimationFrame(draw)};
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-gr]');if(!b)return;if(b.dataset.gr==='play')play();
+      if(b.dataset.gr==='rec'){if(!cv.captureStream||typeof MediaRecorder==='undefined'){toast('Questo browser non sa registrare video',3500);return}
+        const mt=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';const ch=[];
+        rec=new MediaRecorder(cv.captureStream(30),mt?{mimeType:mt,videoBitsPerSecond:6e6}:{});rec.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};b.disabled=true;b.textContent='🔴 Registro…';
+        rec.onstop=async()=>{const type=(mt||'video/webm').split(';')[0],bl=new Blob(ch,{type}),f=new File([bl],`rddc-collezione.${type.includes('mp4')?'mp4':'webm'}`,{type});rec=null;b.disabled=false;b.textContent='🎬 Salva il video';
+          try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'La mia collezione'});else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}hap.thud(.5)}catch(er){if(!er||er.name!=='AbortError')toast('Non sono riuscito a salvare il video',3000)}};
+        rec.start(250);play()}});
+    el._close=()=>{cancelAnimationFrame(raf);if(rec&&rec.state!=='inactive')rec.stop()};setTimeout(play,350)}});
+  return el}
+/* ===== 2.23: Caccia del weekend — mercatini e fiere vicini, cercati da Gemini sul web ===== */
+async function huntSearch(loc,onStep){const today0=today(),wl=devices.filter(d=>d.wish).slice(0,40).map(d=>d.nome).join('; ');
+  const prompt=`Oggi è il ${today0}. Cerca sul web gli eventi delle prossime 6 settimane entro circa 100 km da: ${loc}.
+Interessano: fiere dell'elettronica e del radioamatore, mostre-scambio di computer e videogiochi retrò, fiere del vintage tecnologico, mercatini dell'usato e dell'antiquariato dove si trovano spesso elettronica e computer d'epoca.
+Per ogni evento indica date precise (verificate), luogo e indirizzo, la distanza approssimativa e un link alla pagina ufficiale. Se un evento è ricorrente (es. ogni prima domenica del mese) indica la prossima data.
+${wl?`L'utente cerca questi pezzi: ${wl}. Per ogni evento scrivi in "perche" in una frase perché vale la pena andarci (o cosa è più probabile trovare).`:''}
+Rispondi SOLO con un oggetto JSON: {"eventi":[{"nome":"","inizio":"AAAA-MM-GG","fine":"AAAA-MM-GG","luogo":"","citta":"","distanza_km":numero,"tipo":"fiera|mostra-scambio|mercatino","link":"","descrizione":"una frase","perche":""}]} (al massimo 15, ordinati per data; ometti quelli di cui non trovi la data).`;
+  return gemAsk('','',onStep,async(m,search)=>{const r=await gemCall(m,[{text:prompt}],search,!search);const ev=(Array.isArray(r.o.eventi)?r.o.eventi:[]).filter(e=>e&&e.nome&&/^\d{4}-\d{2}-\d{2}/.test(e.inizio||'')&&String(e.fine||e.inizio)>=today0).map(e=>({...e,fine:/^\d{4}-\d{2}-\d{2}/.test(e.fine||'')?e.fine:e.inizio}));
+    if(!ev.length&&search)throw new AppErr('vuoto','nessun evento trovato',{model:m});return {ev:ev.sort((a,b)=>a.inizio.localeCompare(b.inizio)),noSearch:!search,sources:r.sources||[],model:m}})}
+function huntICS(e){const d=s=>s.replace(/-/g,''),end=d(addDays(e.fine||e.inizio,1)),esc2=s=>String(s||'').replace(/[,;\\]/g,m=>'\\'+m).replace(/\n/g,' ');
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//RDDC//Caccia//IT','BEGIN:VEVENT',`UID:${uid()}@rddc`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').slice(0,15)}Z`,`DTSTART;VALUE=DATE:${d(e.inizio)}`,`DTEND;VALUE=DATE:${end}`,`SUMMARY:${esc2(e.nome)}`,`LOCATION:${esc2([e.luogo,e.citta].filter(Boolean).join(', '))}`,`DESCRIPTION:${esc2([e.descrizione,e.perche,e.link].filter(Boolean).join(' · '))}`,'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY',`DESCRIPTION:${esc2(e.nome)}`,'END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n')}
+function openHunt(){const c=LS.get('rd_hunt',null);
+  const el=openPage('Caccia del weekend',`<p class="note" style="margin-top:0">Fiere dell'elettronica, mostre-scambio retrò e mercatini vicino a te nelle prossime settimane: Gemini li cerca sul web e ti dice perché andarci, pensando alla tua wishlist.</p>
+    <div class="row" style="gap:8px"><input class="in" id="hl" placeholder="Città o zona (es. Torino)" value="${esc(c&&c.loc||LS.get('rd_hunt_loc',''))}" style="flex:1"><button class="btn sec" data-hu="geo" aria-label="Usa la mia posizione">📍</button></div><button class="btn" data-hu="go" style="width:100%;margin-top:8px">🔎 Cerca</button><div id="ho" style="margin-top:14px"></div>`,{mount(el){
+    const out=$('#ho',el),inp=$('#hl',el);let EV=[];
+    const fmt=e=>{const a=new Date(e.inizio+'T12:00'),b=new Date(e.fine+'T12:00'),o={day:'numeric',month:'short'};return e.fine&&e.fine!==e.inizio?`${a.toLocaleDateString('it',o)} – ${b.toLocaleDateString('it',o)}`:a.toLocaleDateString('it',{weekday:'short',...o})};
+    const show=(r,t)=>{EV=r.ev;out.innerHTML=(r.noSearch?'<p class="note">⚠️ Senza ricerca web (limite giornaliero raggiunto): date e luoghi potrebbero essere imprecisi, controlla sul sito.</p>':'')+(EV.length?EV.map((e,i)=>{const dd=new Date(e.inizio+'T12:00');return `<div class="hu-c" style="--i:${i}"><div class="hu-d"><b>${dd.getDate()}</b><small>${dd.toLocaleDateString('it',{month:'short'})}</small></div><div class="hu-b"><b>${esc(e.nome)}</b><small>${esc([fmt(e),e.citta||e.luogo,e.distanza_km?Math.round(e.distanza_km)+' km':''].filter(Boolean).join(' · '))}</small>${e.descrizione?`<p>${esc(e.descrizione)}</p>`:''}${e.perche?`<p class="hu-p">🎯 ${esc(e.perche)}</p>`:''}
+        <div class="hu-a"><button class="btn sm sec" data-hu="cal" data-i="${i}">📅 Calendario</button><a class="btn sm sec" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.luogo,e.citta].filter(Boolean).join(', '))}">🗺️ Mappa</a>${/^https?:\/\//.test(e.link||'')?`<a class="btn sm sec" target="_blank" rel="noopener" href="${esc(e.link)}">🔗 Sito</a>`:''}</div></div></div>`}).join(''):'<p class="note">Nessun evento trovato nelle prossime settimane: prova una zona più ampia.</p>')+(t?`<p class="note">Cercati ${agoShort(t)} · <a href="#" data-hu="go">aggiorna</a></p>`:'')};
+    if(c&&c.ev&&Date.now()-c.t<3*864e5)show(c,c.t);
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-hu]');if(!b)return;e.preventDefault();const a=b.dataset.hu;
+      if(a==='geo'){if(!navigator.geolocation)return toast('Posizione non disponibile');navigator.geolocation.getCurrentPosition(p=>{inp.value=`${p.coords.latitude.toFixed(3)}, ${p.coords.longitude.toFixed(3)}`;hap.tick(.5)},()=>toast('Non riesco a leggere la posizione',2500),{timeout:10000})}
+      if(a==='cal'){const ev=EV[+b.dataset.i];if(!ev)return;const bl=new Blob([huntICS(ev)],{type:'text/calendar'}),f=new File([bl],'evento.ics',{type:'text/calendar'});try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:ev.nome});else{const x=document.createElement('a');x.href=URL.createObjectURL(bl);x.download=f.name;x.click();setTimeout(()=>URL.revokeObjectURL(x.href),4000)}}catch(_){}}
+      if(a==='go'){const loc=inp.value.trim();if(!loc){inp.focus();return}if(!gemOn()){out.innerHTML='<p class="note">Serve la chiave gratuita di Gemini.</p>';return}LS.set('rd_hunt_loc',loc);
+        out.innerHTML=loader('web','Gemini cerca gli eventi…');try{const r=await huntSearch(loc,m=>{const x=out.querySelector('.ldm');if(x)x.textContent='Chiedo a '+m});LS.set('rd_hunt',{t:Date.now(),loc,ev:r.ev,noSearch:r.noSearch});show(r,Date.now());hap.thud(.4)}
+        catch(er){errBox(out,er,'Gemini',()=>b.click(),'gem')}}})}});
+  return el}
+/* ===== 2.23: Dettatura in laboratorio — parli, Gemini scrive l'intervento ===== */
+async function dictParse(txt,pre){const col=devices.filter(d=>!d.wish).map(d=>`${d.id} | ${d.nome} | ${d.marca||''}`).join('\n');
+  const prompt=`Oggi è il ${today()}. L'utente ha dettato una nota di laboratorio sulla sua collezione di elettronica vintage:
+«${txt}»
+${pre?`Si riferisce probabilmente a: ${pre.id} | ${pre.nome}.`:''}
+Collezione (id | nome | marca):
+${col}
+Ricava gli interventi fatti (uno per oggetto e lavoro) e gli eventuali cambi di stato. Tipi di intervento consigliati: ${INT_TIPI.join(', ')} (puoi usarne altri).
+Stati possibili: ${STATI.join(', ')}.
+Rispondi SOLO con JSON: {"interventi":[{"device_id":"","tipo":"","desc":"cosa è stato fatto, in breve, in italiano","costo":numero o null,"data":"AAAA-MM-GG"}],"stato":[{"device_id":"","stato":""}],"dubbi":"cosa non è chiaro, se c'è"}`;
+  return gemAsk('','',null,async m=>{const r=await gemCall(m,[{text:prompt}],false,true,/2\.5-flash/.test(m)?{thinkingConfig:{thinkingBudget:0}}:null);const ok=id=>devices.some(d=>d.id===id&&!d.wish);
+    const it=(Array.isArray(r.o.interventi)?r.o.interventi:[]).map(x=>({...x,device_id:ok(x.device_id)?x.device_id:pre&&pre.id})).filter(x=>x.device_id&&(x.tipo||x.desc));
+    const stt=(Array.isArray(r.o.stato)?r.o.stato:[]).filter(x=>ok(x.device_id)&&STATI.includes(x.stato));
+    if(!it.length&&!stt.length)throw new AppErr('vuoto','non ho capito a quale oggetto o lavoro si riferisce',{model:m});return {it,stt,dubbi:typeof r.o.dubbi==='string'?r.o.dubbi:'',model:m}})}
+function openDictate(pre){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const el=openPage('Detta in laboratorio',`<p class="note" style="margin-top:0">Racconta cosa hai fatto, anche su più pezzi: «ho cambiato la batteria del PowerBook, pagata 25 euro, adesso funziona». Gemini scrive gli interventi; prima di salvare li controlli.</p>${pre?`<p style="margin:0 0 8px;color:var(--mute)">Pezzo: <b>${esc(pre.nome)}</b></p>`:''}
+    <div class="dc-mic"><button class="dc-b" data-dc="mic" aria-label="Detta">🎙️</button><small>${SR?'Tocca e parla':'Usa il microfono della tastiera per dettare'}</small></div>
+    <textarea class="in" id="dct" rows="4" placeholder="Oppure scrivi qui…"></textarea><button class="btn" data-dc="go" style="width:100%;margin-top:8px">✨ Scrivi gli interventi</button><div id="dco" style="margin-top:14px"></div>`,{mount(el){
+    const ta=$('#dct',el),out=$('#dco',el),mic=$('.dc-b',el),lab=$('.dc-mic small',el);let rec=null,base='',R=null;
+    const stop=()=>{if(rec){try{rec.stop()}catch(_){}rec=null}mic.classList.remove('on');lab.textContent=SR?'Tocca e parla':''};el._close=stop;
+    el.addEventListener('click',async e=>{const b=e.target.closest('[data-dc]');if(!b)return;const a=b.dataset.dc;
+      if(a==='mic'){if(!SR){ta.focus();return}if(rec)return stop();rec=new SR();rec.lang='it-IT';rec.interimResults=true;rec.continuous=true;base=ta.value?ta.value.trim()+' ':'';
+        rec.onresult=ev=>{let s='';for(let i=0;i<ev.results.length;i++)s+=ev.results[i][0].transcript;ta.value=base+s};rec.onerror=ev=>{if(ev.error!=='aborted'&&ev.error!=='no-speech')toast('Microfono: '+ev.error,2500);stop()};rec.onend=()=>stop();
+        try{rec.start();mic.classList.add('on');lab.textContent='Ti ascolto… tocca per fermare';hap.tick(.6)}catch(er){stop();toast('Non riesco ad avviare il microfono',2500)}}
+      if(a==='go'){stop();const t=ta.value.trim();if(!t){ta.focus();return}if(!gemOn()){out.innerHTML='<p class="note">Serve la chiave gratuita di Gemini.</p>';return}
+        out.innerHTML=loader('web','Gemini scrive gli interventi…');try{R=await dictParse(t,pre)}catch(er){errBox(out,er,'Gemini',()=>b.click(),'gem');return}
+        const dn=id=>(devices.find(d=>d.id===id)||{}).nome||'?';
+        out.innerHTML=`${R.it.map((x,i)=>`<label class="dc-r"><input type="checkbox" checked data-ci="${i}"><span><b>🔧 ${esc(x.tipo||'Intervento')} · ${esc(dn(x.device_id))}</b><small>${esc([x.desc,x.costo?`€ ${x.costo}`:'',x.data&&x.data!==today()?fmtD(x.data):''].filter(Boolean).join(' · '))}</small></span></label>`).join('')}${R.stt.map((x,i)=>`<label class="dc-r"><input type="checkbox" checked data-cs="${i}"><span><b>🏷️ ${esc(dn(x.device_id))} → ${esc(x.stato)}</b><small>Cambio di stato</small></span></label>`).join('')}${R.dubbi?`<p class="note">🤔 ${esc(R.dubbi)}</p>`:''}<button class="btn" data-dc="save" style="width:100%;margin-top:8px">Salva</button>`;hap.tick(.5)}
+      if(a==='save'&&R){const ch=new Set();out.querySelectorAll('[data-ci]').forEach(c=>{if(!c.checked)return;const x=R.it[+c.dataset.ci],d=devices.find(z=>z.id===x.device_id);if(!d)return;d.interventi=d.interventi||[];d.interventi.push({id:uid(),data:/^\d{4}-\d{2}-\d{2}$/.test(x.data||'')?x.data:today(),tipo:String(x.tipo||'').slice(0,60),desc:String(x.desc||'').slice(0,500),costo:x.costo!=null&&isFinite(+x.costo)?String(+x.costo):'',prossimo:'',dettato:true});ch.add(d)});
+        out.querySelectorAll('[data-cs]').forEach(c=>{if(!c.checked)return;const x=R.stt[+c.dataset.cs],d=devices.find(z=>z.id===x.device_id);if(d){d.stato=x.stato;ch.add(d)}});
+        for(const d of ch)await saveDev(d);render();hap.thud(.5);toast(ch.size?`Salvato in ${ch.size} ${ch.size===1?'scheda':'schede'} ✔︎`:'Niente da salvare',3000);if(ch.size){ta.value='';out.innerHTML='';R=null}}})}});
   return el}
 /* ===== 2.19: Linee — «Cosa manca» e l'albero di famiglia in una pagina sola, più le linee tracciate con Gemini ===== */
 const TREE=[['Portatili pro',['PowerBook','PowerBook G3','PowerBook G4','MacBook Pro']],['Portatili per tutti',['iBook','MacBook']],['MacBook Air',['MacBook Air']],['iMac',['iMac']],['Desktop pro',['Power Mac G4','Power Mac G5','Mac Pro']],['Mac mini',['Mac mini']]];
@@ -4384,7 +4546,7 @@ function openLines(){
       const C=linesLive().map(customTrunk);C.forEach(t=>t.have=t.nodes.filter(n=>n.own.length).length);T=[...C,...base];
       if(!T.length){out.innerHTML='<p class="note">Nessuna linea riconosciuta nella collezione. Gli oggetti presi da EveryMac o The Apple Wiki (con Model ID o codice modello) vengono riconosciuti meglio; per le altre marche traccia una linea con Gemini.</p>';return}
       out.innerHTML=(C.length?'<div class="sec-t">Le tue linee</div>':'')+T.map((t,i)=>(C.length&&i===C.length&&base.length?'<div class="sec-t">Linee Apple</div>':'')+trunkHTML(t,i)).join('');
-      const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.08});out.querySelectorAll('.tr').forEach(s=>io.observe(s))};
+      const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('tr-on');io.unobserve(x.target)}}),{threshold:.08});out.querySelectorAll('.tr').forEach(s=>io.observe(s))};
     el._refresh=draw;draw();
     el.querySelector('.gpsel').onclick=e=>{const b=e.target.closest('[data-gm]');if(!b)return;LS.set('rd_gapmode',b.dataset.gm);el.querySelectorAll('[data-gm]').forEach(x=>x.classList.toggle('on',x===b));hap.tick(.4);draw()};
     el.querySelector('[data-nl]').onclick=()=>openNewLine();
@@ -5549,6 +5711,9 @@ function openMenu(){
   <button class="res" data-m="stats"><b>📊 Statistiche</b></button>
   <button class="res" data-m="wrap"><b>🎁 Il tuo anno · RDDC Wrapped</b><small>${(y=>y?`${y}: ${devices.filter(d=>!d.wish&&+d.acq_anno===y).length} pezzi nuovi, spesa, il colpo dell'anno, il tuo decennio…`:'Serve l\'anno di acquisto negli oggetti')(wrapYears()[0])}</small></button>
   <button class="res" data-m="gaps"><b>🌳 Linee e cosa manca</b><small>Le linee come linee della metro: cosa hai, cosa manca (in wishlist con un tocco); nuove linee con Gemini${linesLive().length?` · ${linesLive().length} ${linesLive().length===1?'linea tua':'linee tue'}`:''}</small></button>
+  <button class="res" data-m="duel"><b>🥊 Sfida</b><small>Due pezzi faccia a faccia: processore, RAM, anno, valore… vince chi vince più categorie</small></button>
+  <button class="res" data-m="grow"><b>📈 La collezione che cresce</b><small>Il replay dei tuoi acquisti mese per mese, da salvare come video</small></button>
+  <button class="res" data-m="hunt"><b>🗺️ Caccia del weekend</b><small>Fiere, mostre-scambio e mercatini vicino a te, cercati da Gemini</small></button>
   <button class="res" data-m="guess"><b>🎲 Indovina l'anno</b><small>Un gioco con i tuoi pezzi, da passare agli amici</small></button>
   <button class="res" data-m="cat"><b>🖨️ Catalogo PDF</b><small>Un catalogo impaginato da stampare o salvare in PDF, con foto e schede.</small></button>
   <button class="res" data-m="due"><b>🔧 Interventi in programma</b></button>
@@ -5607,6 +5772,9 @@ function menuWire(el){
       if(a==='album')openAlbum();
       if(a==='tree')openTree();
       if(a==='guess')openGuess();
+      if(a==='duel')openDuel();
+      if(a==='grow')openGrowth();
+      if(a==='hunt')openHunt();
       if(a==='cat')openCatalog();
       if(a==='due')openDue();
       if(a==='inv')openInventory();
