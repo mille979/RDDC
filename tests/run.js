@@ -696,7 +696,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.fill('#apv', '12.5'); await U.click('.modal [data-y]'); await U.evaluate(() => window._pz);
     eq(await U.evaluate(() => { const z = devices.find(x => x.id === 'pp').progetti[0].pezzi[0]; return [z.stato, z.prezzo]; }), ['Ordinato', 12.5], 'prezzo salvato');
     await U.evaluate(async () => { const d = devices.find(x => x.id === 'pp'), p = d.progetti[0]; await pzNext(d, p, p.pezzi[1]); });
-    eq(await U.evaluate(() => [!!document.querySelector('#apv'), devices.find(x => x.id === 'pp').progetti[0].pezzi[1].stato]), [false, 'Ordinato'], 'con il prezzo già scritto non chiede nulla');
+    eq(await U.evaluate(() => [!!document.querySelector('.modal:not(.out) #apv'), devices.find(x => x.id === 'pp').progetti[0].pezzi[1].stato]), [false, 'Ordinato'], 'con il prezzo già scritto non chiede nulla');
     await U.context().close();
   });
 
@@ -1355,6 +1355,34 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.waitForSelector('#dct'); await U.fill('#dct', 'ho cambiato la batteria del powerbook, 25 euro, ora funziona'); await U.click('[data-dc="go"]'); await U.waitForSelector('.dc-r');
     await U.click('[data-dc="save"]'); await U.waitForTimeout(300);
     eq(await U.evaluate(() => { const d = devices.find(x => x.id === 'b'), i = (d.interventi || []).slice(-1)[0]; return [i && i.tipo, i && i.costo, i && i.dettato, d.stato]; }), ['Batteria', '25', true, 'Funzionante'], 'dettatura: intervento con costo e stato salvati dopo il controllo');
+    await U.context().close();
+  });
+
+  await test('2.24: animazioni — mercatino dal cerchio, anteprima con trascina-e-rilascia, finestre e messaggi in uscita, sezioni animate', async () => {
+    const U = await phone('N24', { hasTouch: true, isMobile: true });
+    await U.evaluate(async () => { for (let i = 0; i < 3; i++) await saveDev({ id: 'k' + i, nome: 'Pezzo ' + i, tipologia: 'Portatile', creato: Date.now() }); render(); document.querySelectorAll('.modal').forEach(m => m.remove()); scrollTo(0, 0); });
+    await U.waitForTimeout(300);
+    await U.evaluate(() => document.querySelector('#fabLens').click()); await U.waitForTimeout(60);
+    ok(await U.evaluate(() => document.querySelector('.page.market').getAnimations().some(a => a.effect && a.effect.getKeyframes().some(k => /circle/.test(k.clipPath || '')))), 'il mercatino si apre come un cerchio che cresce dal tasto');
+    await U.waitForTimeout(700); await U.evaluate(() => history.back()); await U.waitForTimeout(80);
+    ok(await U.evaluate(() => !!document.querySelector('.page.market') && document.querySelector('.page.market').getAnimations().length > 0), 'e si richiude nel cerchio'); await U.waitForTimeout(600);
+    ok(await U.evaluate(() => !document.querySelector('.page.market')), 'poi si chiude davvero');
+    const c = await U.context().newCDPSession(U), T = (type, x, y) => c.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    const p = await U.evaluate(() => { const r = document.querySelector('#list [data-id="k1"]').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    await T('touchStart', p.x, p.y); await U.waitForTimeout(800);
+    const q = await U.evaluate(() => { const b = [...document.querySelectorAll('.peek [data-pk]')].find(b => /Modifica/.test(b.textContent)); const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, i: getComputedStyle(b).getPropertyValue('--i') }; });
+    ok(+q.i >= 1, 'le opzioni arrivano a cascata (ognuna col suo ritardo)');
+    for (let i = 1; i <= 8; i++) { await T('touchMove', p.x + (q.x - p.x) * i / 8, p.y + (q.y - p.y) * i / 8); await U.waitForTimeout(25); }
+    eq(await U.evaluate(() => (document.querySelector('.peek .hov') || {}).textContent || ''), 'Modifica✎', 'trascinando il dito l\'opzione si evidenzia');
+    await T('touchEnd'); await U.waitForTimeout(700);
+    ok(await U.evaluate(() => stack.length && /Modifica/.test(stack[stack.length - 1].textContent) && !document.querySelector('.peek.on')), 'rilasciando la si sceglie: una sola pressione');
+    await U.evaluate(() => goBase(() => { const pr = ask('Prova?'); window._pr = pr; })); await U.waitForSelector('.modal [data-n]'); await U.evaluate(() => document.querySelector('.modal [data-n]').click()); await U.waitForTimeout(40);
+    eq(await U.evaluate(() => [!!document.querySelector('.modal.out'), getComputedStyle(document.querySelector('.modal.out')).animationName]), [true, 'vt-fade-out'], 'le finestre escono con un\'animazione'); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => !document.querySelector('.modal')), 'e poi spariscono');
+    await U.evaluate(() => toast('Ciao', 300)); await U.waitForTimeout(380); ok(await U.evaluate(() => document.querySelector('#toast').classList.contains('out')), 'il messaggio esce sfumando');
+    await U.evaluate(() => { const d = document.createElement('details'); d.id = 'dx'; d.innerHTML = '<summary>Apri</summary><p style="height:200px">contenuto</p>'; document.body.append(d); });
+    await U.evaluate(() => document.querySelector('#dx summary').click()); await U.waitForTimeout(40); ok(await U.evaluate(() => document.querySelector('#dx').open && document.querySelector('#dx').getAnimations().length > 0), 'le sezioni a scomparsa si aprono con un\'animazione');
+    await U.waitForTimeout(400); await U.evaluate(() => document.querySelector('#dx summary').click()); await U.waitForTimeout(400); ok(await U.evaluate(() => !document.querySelector('#dx').open), 'e si richiudono');
     await U.context().close();
   });
 
