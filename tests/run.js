@@ -1386,6 +1386,30 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     await U.context().close();
   });
 
+  await test('2.25: modelli .obj compressi — lettura indicizzata, coordinate a 16 bit, .glb valido', async () => {
+    const U = await phone('M25');
+    const r = await U.evaluate(async () => {
+      const obj = 'mtllib a.mtl\nv 0 0 0\nv 2 0 0\nv 2 2 0\nv 0 2 0\nv 0 0 2\nvt 0 0\nvt 1 0\nvt 1 1\nvt 0 1\nusemtl rosso\nf 1/1 2/2 3/3 4/4\nusemtl blu\nf -5/4 -4/2 -1/3\n# commento\nf 1/1 2/2 9/9\n';
+      const M = await objParse(obj), c = document.createElement('canvas'); c.width = 64; c.height = 32; c.getContext('2d').fillRect(0, 0, 30, 30);
+      const base = { nv: M.pos.length / 3, tris: M.idx.length / 3, groups: M.groups.map(g => [g.start, g.count, g.m]), mtllib: M.mtllib, unit: [...Array(M.pos.length / 3).keys()].every(i => Math.abs(Math.hypot(M.nrm[i * 3], M.nrm[i * 3 + 1], M.nrm[i * 3 + 2]) - 1) < 1e-5),
+        uv: [...Array(M.pos.length / 3).keys()].map(i => [M.pos[i * 3], M.pos[i * 3 + 1], M.pos[i * 3 + 2], M.uv[i * 2], M.uv[i * 2 + 1]].join(',')).sort() };
+      M.mats = [{ name: 'rosso', color: [1, 0, 0], map: c, opacity: 1, alpha: false }, { name: 'blu', color: [0, 0, 1], map: null, opacity: 1, alpha: false }]; M.groups = M.groups.map((g, i) => ({ ...g, m: i }));
+      const out = await meshPack(M, () => {}), by = out.bytes, dv = new DataView(by.buffer, by.byteOffset), jl = dv.getUint32(12, true), js = JSON.parse(new TextDecoder().decode(by.subarray(20, 20 + jl))), bin = by.slice(28 + jl);
+      const pr = js.meshes[0].primitives, P = js.accessors[pr[0].attributes.POSITION], bv = js.bufferViews[P.bufferView], q = new Int16Array(bin.buffer, bv.byteOffset, bv.byteLength / 2), nd = js.nodes[0];
+      const pts = [...Array(P.count).keys()].map(i => [0, 1, 2].map(k => +(q[i * 4 + k] / 32767 * nd.scale[k] + nd.translation[k]).toFixed(3)).join(',')).sort();
+      return { ...base, magic: dv.getUint32(0, true) === 0x46546C67 && dv.getUint32(8, true) === by.length, bin: dv.getUint32(20 + jl, true) - js.buffers[0].byteLength >= 0 && dv.getUint32(20 + jl, true) - js.buffers[0].byteLength < 4, ext: js.extensionsUsed, req: js.extensionsRequired, packed: out.packed,
+        prims: pr.map(p => [js.accessors[p.indices].count, p.material, js.accessors[p.indices].componentType]), pos: [P.componentType, P.normalized, bv.byteStride, P.type], nrm: js.accessors[pr[0].attributes.NORMAL].componentType,
+        tex: [out.tex, js.images && js.images[0].mimeType, js.materials[0].pbrMetallicRoughness.baseColorTexture, js.materials[1].pbrMetallicRoughness.baseColorFactor], pts };
+    });
+    eq([r.nv, r.tris, r.groups, r.mtllib, r.unit], [6, 3, [[0, 6, 'rosso'], [6, 3, 'blu']], 'a.mtl', true], 'quadrilatero diviso in due, indici negativi risolti, faccia con indice sbagliato scartata, vertici ripetuti uniti, normali calcolate');
+    eq(r.uv, ['0,0,0,0,0', '0,0,0,0,1', '0,0,2,1,0', '0,2,0,0,0', '2,0,0,1,1', '2,2,0,1,0'], 'coordinate texture capovolte per il .glb, la stessa posizione con due coordinate diverse resta divisa');
+    eq([r.magic, r.bin, r.ext, r.req, r.packed], [true, true, ['KHR_mesh_quantization'], ['KHR_mesh_quantization'], false], '.glb valido; senza la libreria di compressione (rete bloccata) si salva comunque, quantizzato');
+    eq([r.prims, r.pos, r.nrm], [[[6, 0, 5123], [3, 1, 5123]], [5122, true, 8, 'VEC3'], 5120], 'un pezzo per materiale; posizioni a 16 bit allineate a 4 byte, normali a 8 bit');
+    eq(r.tex, [1, 'image/jpeg', { index: 0 }, [0, 0, 1, 1]], 'texture in JPEG nel primo materiale, colore pieno nel secondo');
+    eq(r.pts, ['0,0,0', '0,0,0', '0,0,2', '0,2,0', '2,0,0', '2,2,0'], 'le posizioni tornano uguali dopo la quantizzazione');
+    await U.context().close();
+  });
+
   await test('2.7: vetro liquido simulato su iPhone (anche con Chrome)', async () => {
     const U = await phone('U5', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0 Mobile/15E148 Safari/604.1' });
     eq(await U.evaluate(() => [LG.supported(), document.documentElement.classList.contains('lg'), document.documentElement.classList.contains('lgs')]), [false, false, true], 'simulato al posto della rifrazione');

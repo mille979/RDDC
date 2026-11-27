@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/","@sparkjsdev/spark":"https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.4.0/dist/spark.module.js"}}</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/","@sparkjsdev/spark":"https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.4.0/dist/spark.module.js","meshoptimizer/":"https://cdn.jsdelivr.net/npm/meshoptimizer@1.3.0/"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1077,8 +1077,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.24';
+const APP_VER='2.25';
 const NOVITA=[
+ ['2.25','2026-11-27',['🗜️ Modelli .obj compressi prima di salvarli e inviarli: un file da 50–70 MB diventa di solito 2–4 MB. Il file viene letto senza vertici ripetuti, i triangoli oltre i 300.000 vengono ridotti rispettando bordi e cuciture delle texture, le coordinate sono salvate a 16 bit e compresse, le texture diventano JPEG fino a 2048 px','📦 Anche i .gltf e i .glb oltre i 12 MB vengono compressi allo stesso modo; quelli più piccoli restano come sono','⏳ Durante la conversione l\'isola in alto mostra a che punto è (lettura, riduzione dei triangoli, compressione) e alla fine dice quanto pesava e quanto pesa']],
  ['2.24','2026-11-26',['🔍 Mercatino: si apre come un cerchio che cresce dal tasto fino a tutto schermo e si richiude allo stesso modo; scattata la foto, l\'immagine si stacca dai bordi con gli angoli arrotondati e il bordo colorato segue esattamente lo stesso ritaglio','👆 Anteprima con una sola pressione: tieni premuto un pezzo, l\'immagine vola dalla miniatura, la mini scheda scivola da sotto e le opzioni arrivano a cascata; senza staccare il dito trascina su un\'opzione (si evidenzia con uno scatto) e rilascia per sceglierla, o rilascia sulla scheda per aprirla. Chiudendo, l\'immagine torna nella miniatura','✨ Animazioni ovunque: finestre e messaggi escono sfumando, le sezioni a scomparsa si aprono e chiudono con un\'animazione, i contatori in basso fanno un balzo quando cambiano, le schede del Laboratorio entrano a cascata, i riquadri d\'errore salgono, le scelte cambiano colore con una transizione']],
  ['2.23','2026-11-25',['🥊 Sfida (Menu, o ⋯ nella scheda): due pezzi faccia a faccia, categoria per categoria (più vintage, processore, RAM, archiviazione, schermo, valore, più leggero) con barre che corrono, punteggio e corona al vincitore','📈 La collezione che cresce (Menu): il replay dei tuoi acquisti mese per mese, con i pezzi che cadono sugli scaffali e il valore che sale; «Salva il video» per condividerlo','🗺️ Caccia del weekend (Menu): Gemini cerca sul web fiere dell\'elettronica, mostre-scambio retrò e mercatini vicino a te nelle prossime settimane, con date, mappa, sito, promemoria nel calendario e perché andarci pensando alla tua wishlist','🎙️ Dettatura in laboratorio (Laboratorio, o ⋯ nella scheda): racconti cosa hai fatto e Gemini scrive gli interventi (tipo, costo, data) e i cambi di stato; li controlli prima di salvarli','Corretti alcuni riquadri chiari fuori posto in Indovina l\'anno e nelle linee']],
  ['2.22','2026-11-25',['🔺 Modelli 3D a triangoli: oltre ai Gaussian splat ora si importano .obj (selezionando insieme anche il .mtl e le immagini delle texture), .gltf e .glb; l\'app li converte in un unico .glb compatto che si sincronizza come gli altri e funziona con piedistallo, museo, etichette e seconda modalità','🙃 Mercatino: se inquadri qualcosa che non c\'entra con la collezione (aspirapolvere, posate, mobili, auto, piante, il gatto…) risponde con una frase a caso tra più di trenta, alcune su misura']],
@@ -3354,7 +3355,7 @@ async function mount3D(host,d,o={}){
     /* ogni modello: orientato, centrato e appoggiato a quota 0 (il piano del piedistallo) */
     const build=async(m,b)=>{let mesh;
       if(m3IsMesh(m)){/* 2.22: modello a triangoli (.glb): portato a una misura standard e centrato; le etichette usano il suo spazio locale */
-        const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js'),g=await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),''),inner=g.scene;
+        const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js'),{MeshoptDecoder}=await import('three/addons/libs/meshopt_decoder.module.js'),g=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),''),inner=g.scene;
         mesh=new THREE.Group();mesh.add(inner);const bx=new THREE.Box3().setFromObject(inner),sz=bx.getSize(new THREE.Vector3()),k=.4/Math.max(sz.x,sz.y,sz.z,1e-6);inner.scale.setScalar(k);inner.position.copy(bx.getCenter(new THREE.Vector3()).multiplyScalar(-k));
         mesh.updateMatrixWorld(true);mesh.userData.isMesh=true;mesh.userData.box=new THREE.Box3().setFromObject(mesh)}
       else{mesh=new SplatMesh({fileBytes:b,fileType:m.tipo||m3dType(m.nome)});await mesh.initialized}
@@ -3500,32 +3501,154 @@ async function m3dAdd(d,slot=1){let labels=null;if(slot===2){labels=await askLab
     toast(nome!==f.name?`Modello compresso: da ${fmtMB(f.size)} a ${fmtMB(bytes.length)} ✔︎`:bytes.length>25*1048576?`Modello aggiunto (${fmtMB(bytes.length)}: un po' pesante per il telefono, meglio sotto i 25 MB)`:slot===2?`Seconda modalità «${d.m3d2.label}» aggiunta`:'Modello 3D aggiunto',5000);
     openModel3D(d,true,slot===2)}
   catch(e){logErr('Modello 3D · caricamento',e);isleEnd('m3add','Caricamento non riuscito',false);toast(`Non riesco a caricare «${f.name}» (${fmtMB(f.size)}): ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
-/* 2.22: da .obj (+ .mtl e texture), .gltf o .glb a un unico .glb: materiali standard, colori dei vertici, due facce */
-async function meshToGLB(fs,mf){const T=await import('three'),ext=mf.name.split('.').pop().toLowerCase();if(ext==='glb')return new Uint8Array(await mf.arrayBuffer());
-  const urls=new Map(fs.map(f=>[f.name.toLowerCase(),URL.createObjectURL(f)])),man=new T.LoadingManager();let pending=0;
+/* 2.25: i modelli a triangoli vengono compressi prima di salvarli e inviarli (un .obj di 50 MB diventa pochi MB):
+   OBJ letto già indicizzato (niente vertici ripetuti), triangoli ridotti a MESH_TRIS con meshoptimizer (bordi e cuciture delle texture rispettati),
+   coordinate a 16 bit (KHR_mesh_quantization), flussi compressi (EXT_meshopt_compression), texture in JPEG fino a 2048 px */
+const MESH_TRIS=300000,MESH_TEX=2048,MESH_GLB_KEEP=12*1048576,nap=()=>new Promise(r=>setTimeout(r,0));
+const grow=(a,n)=>{if(n<=a.length)return a;const b=new a.constructor(Math.max(n,a.length*2));b.set(a);return b};
+const srgbLin=c=>c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
+/* OBJ → {pos,nrm,uv,col,idx,groups,mtllib}: un vertice per ogni combinazione posizione/coordinata texture/normale; normali lisce calcolate sulle posizioni se mancano */
+async function objParse(txt,prog){
+  let V=new Float32Array(49152),nv=0,C=null,T=new Float32Array(32768),nt=0,N=new Float32Array(49152),nn=0,F=new Int32Array(147456),nf=0,mtllib='',noT=false,noN=false,q=new Int32Array(48);
+  const groups=[{s:0,m:''}],L=txt.length,ws=/\s+/;let p=0,ln=0;
+  const ix=(s,cnt)=>{if(!s)return -1;const v=parseInt(s,10);return v>0?v-1:v<0?cnt+v:-9};
+  while(p<L){let e=txt.indexOf('\n',p);if(e<0)e=L;const c0=txt.charCodeAt(p),c1=txt.charCodeAt(p+1);
+    if(c0===118){const sp=c1===32||c1===9;
+      if(sp||(c1===116||c1===110)&&(txt.charCodeAt(p+2)===32||txt.charCodeAt(p+2)===9)){const a=txt.slice(p+(sp?2:3),e).trim().split(ws);
+        if(sp){V=grow(V,nv+3);V[nv]=+a[0]||0;V[nv+1]=+a[1]||0;V[nv+2]=+a[2]||0;
+          if(a.length>=6&&!C){C=new Float32Array(V.length).fill(1)}
+          if(C){C=grow(C,V.length);const h=a.length>=6;C[nv]=h?+a[3]||0:1;C[nv+1]=h?+a[4]||0:1;C[nv+2]=h?+a[5]||0:1}
+          nv+=3}
+        else if(c1===116){T=grow(T,nt+2);T[nt]=+a[0]||0;T[nt+1]=+a[1]||0;nt+=2}
+        else{N=grow(N,nn+3);N[nn]=+a[0]||0;N[nn+1]=+a[1]||0;N[nn+2]=+a[2]||0;nn+=3}}}
+    else if(c0===102&&(c1===32||c1===9)){const a=txt.slice(p+2,e).trim().split(ws),n=a.length;
+      if(n>=3){const nV=nv/3,nT=nt/2,nN=nn/3;if(q.length<n*3)q=new Int32Array(n*3);let ok=true;
+        for(let k=0;k<n;k++){const t=a[k].split('/'),vi=ix(t[0],nV),ti=t.length>1?ix(t[1],nT):-1,ni=t.length>2?ix(t[2],nN):-1;
+          if(vi<0||vi>=nV||ti<-1||ti>=nT||ni<-1||ni>=nN){ok=false;break}if(ti<0)noT=true;if(ni<0)noN=true;q[k*3]=vi;q[k*3+1]=ti;q[k*3+2]=ni}
+        if(ok){F=grow(F,nf+(n-2)*9);for(let k=1;k<n-1;k++){for(const j of [0,k,k+1]){F[nf++]=q[j*3];F[nf++]=q[j*3+1];F[nf++]=q[j*3+2]}}}}}
+    else if(c0===117&&txt.startsWith('usemtl',p)){const m=txt.slice(p+6,e).trim(),g=groups[groups.length-1];if(g.s===nf/9)g.m=m;else if(g.m!==m)groups.push({s:nf/9,m})}
+    else if(c0===109&&txt.startsWith('mtllib',p))mtllib=txt.slice(p+6,e).trim();
+    p=e+1;if(++ln%150000===0){prog&&prog(p/L);await nap()}}
+  const nV=nv/3,nTri=nf/9;if(!nTri)throw new AppErr('vuoto','nel file non ci sono triangoli');
+  const useT=nt>0,useN=nn>0&&!noN;
+  /* vertici unici: per ogni posizione una lista dei vertici già creati (coordinata texture, normale) */
+  const head=new Int32Array(nV).fill(-1);let cap=Math.max(1024,Math.ceil(nV*1.4)),nx=new Int32Array(cap),oV=new Int32Array(cap),oT=new Int32Array(cap),oN=new Int32Array(cap),no=0;const idx=new Uint32Array(nTri*3);
+  for(let c=0,j=0;c<nf;c+=3,j++){const vi=F[c],ti=useT?F[c+1]:-1,ni=useN?F[c+2]:-1;let o=head[vi];
+    while(o>=0&&(oT[o]!==ti||oN[o]!==ni))o=nx[o];
+    if(o<0){if(no>=cap){cap*=2;nx=grow(nx,cap);oV=grow(oV,cap);oT=grow(oT,cap);oN=grow(oN,cap)}o=no++;oV[o]=vi;oT[o]=ti;oN[o]=ni;nx[o]=head[vi];head[vi]=o}
+    idx[j]=o}
+  F=null;
+  const pos=new Float32Array(no*3),nrm=new Float32Array(no*3),uv=useT?new Float32Array(no*2):null,col=C?new Float32Array(no*3):null;
+  let cmax=0;if(C)for(let i=0;i<nv;i++)if(C[i]>cmax)cmax=C[i];const ck=cmax>1.001?1/255:1;
+  let acc=null;if(!useN){acc=new Float32Array(nv);for(let j=0;j<idx.length;j+=3){const a=oV[idx[j]]*3,b=oV[idx[j+1]]*3,c=oV[idx[j+2]]*3,
+    ux=V[b]-V[a],uy=V[b+1]-V[a+1],uz=V[b+2]-V[a+2],vx=V[c]-V[a],vy=V[c+1]-V[a+1],vz=V[c+2]-V[a+2],x=uy*vz-uz*vy,y=uz*vx-ux*vz,z=ux*vy-uy*vx;
+    for(const w of [a,b,c]){acc[w]+=x;acc[w+1]+=y;acc[w+2]+=z}}}
+  for(let o=0;o<no;o++){const v=oV[o]*3,o3=o*3;pos[o3]=V[v];pos[o3+1]=V[v+1];pos[o3+2]=V[v+2];
+    const S=useN?N:acc,s=useN?oN[o]*3:v,l=Math.hypot(S[s],S[s+1],S[s+2])||1;nrm[o3]=S[s]/l;nrm[o3+1]=S[s+1]/l;nrm[o3+2]=S[s+2]/l;
+    if(uv){const t=oT[o];if(t>=0){uv[o*2]=T[t*2];uv[o*2+1]=1-T[t*2+1]}}
+    if(col)for(let k=0;k<3;k++)col[o3+k]=srgbLin(Math.min(1,Math.max(0,C[v+k]*ck)))}
+  const gs=groups.map((g,i)=>({start:g.s*3,count:((i+1<groups.length?groups[i+1].s:nTri)-g.s)*3,m:g.m})).filter(g=>g.count>0);
+  return {pos,nrm,uv,col,idx,groups:gs,mtllib,noT:useT&&noT}}
+/* scena three.js (da .gltf/.glb) → stessa forma, con le trasformazioni applicate e i materiali raccolti */
+async function sceneMesh(T,root){const {mergeVertices}=await import('three/addons/utils/BufferGeometryUtils.js');root.updateMatrixWorld(true);
+  const parts=[],mats=[],seen=new Map();let nvt=0,nit=0,hasT=false,hasC=false;
+  const matOf=m=>{if(seen.has(m))return seen.get(m);const r={name:m&&m.name||'',color:m&&m.color?[m.color.r,m.color.g,m.color.b]:[.6,.6,.6],map:m&&m.map&&m.map.image||null,opacity:m&&m.opacity!=null?m.opacity:1,alpha:!!(m&&(m.transparent||m.alphaTest>0)),vc:!!(m&&m.vertexColors)};mats.push(r);seen.set(m,mats.length-1);return mats.length-1};
+  root.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position)return;let g=o.geometry.clone();g.morphAttributes={};
+    for(const k of Object.keys(g.attributes))if(!['position','normal','uv','color'].includes(k))g.deleteAttribute(k);
+    g=mergeVertices(g);if(!g.attributes.normal)g.computeVertexNormals();g.applyMatrix4(o.matrixWorld);
+    const ml=Array.isArray(o.material)?o.material:[o.material],n=g.index.count,grs=(g.groups.length?g.groups:[{start:0,count:n,materialIndex:0}]).map(x=>({start:x.start,count:Math.floor(Math.min(x.count,n-x.start)/3)*3,m:matOf(ml[x.materialIndex||0])})).filter(x=>x.count>0);
+    if(g.attributes.uv)hasT=true;if(g.attributes.color)hasC=true;parts.push({g,grs});nvt+=g.attributes.position.count;nit+=n});
+  if(!nit)throw new AppErr('vuoto','nel file non ci sono triangoli');
+  const pos=new Float32Array(nvt*3),nrm=new Float32Array(nvt*3),uv=hasT?new Float32Array(nvt*2):null,col=hasC?new Float32Array(nvt*3).fill(1):null,idx=new Uint32Array(nit),groups=[];let vo=0,io=0;
+  for(const {g,grs} of parts){const P=g.attributes.position,Nm=g.attributes.normal,U=g.attributes.uv,Cl=g.attributes.color,I=g.index;
+    for(let i=0;i<P.count;i++){const k=(vo+i)*3;pos[k]=P.getX(i);pos[k+1]=P.getY(i);pos[k+2]=P.getZ(i);const l=Math.hypot(Nm.getX(i),Nm.getY(i),Nm.getZ(i))||1;nrm[k]=Nm.getX(i)/l;nrm[k+1]=Nm.getY(i)/l;nrm[k+2]=Nm.getZ(i)/l;
+      if(U){uv[(vo+i)*2]=U.getX(i);uv[(vo+i)*2+1]=U.getY(i)}if(Cl){col[k]=Cl.getX(i);col[k+1]=Cl.getY(i);col[k+2]=Cl.getZ(i)}}
+    for(const x of grs){for(let i=0;i<x.count;i++)idx[io+i]=I.getX(x.start+i)+vo;groups.push({start:io,count:x.count,m:x.m});io+=x.count}
+    vo+=P.count;g.dispose()}
+  return {pos,nrm,uv,col,idx:io<idx.length?idx.slice(0,io):idx,groups,mats}}
+/* texture: ridimensionata e in JPEG (PNG solo se ha trasparenze) */
+async function meshTex(img,alpha){try{const w0=img.naturalWidth||img.videoWidth||img.width,h0=img.naturalHeight||img.videoHeight||img.height;if(!w0||!h0)return null;
+  const k=Math.min(1,MESH_TEX/Math.max(w0,h0)),cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w0*k));cv.height=Math.max(1,Math.round(h0*k));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  const type=alpha?'image/png':'image/jpeg',b=await new Promise(r=>cv.toBlob(r,type,.86));cv.width=cv.height=0;return b?{bytes:new Uint8Array(await b.arrayBuffer()),type:b.type||type}:null}catch(e){logErr('Modello 3D · texture',e);return null}}
+/* forma comune → .glb compresso; restituisce anche i triangoli prima e dopo */
+async function meshPack(M,step){let idx=M.idx,groups=M.groups;const tris0=idx.length/3;
+  if(tris0>MESH_TRIS){try{step(`Riduco i triangoli · ${tris0.toLocaleString('it')} → ${MESH_TRIS.toLocaleString('it')}`);await nap();
+    const {MeshoptSimplifier:S}=await import('meshoptimizer/meshopt_simplifier.js');await S.ready;const fl=groups.length>1?['LockBorder']:[];
+    for(const err of [.01,.04]){const cur=idx.length/3,out=[],gs=[];let at=0;
+      for(const g of groups){const sub=idx.slice(g.start,g.start+g.count),tgt=Math.max(3,Math.floor(g.count*MESH_TRIS/cur/3)*3),[r]=S.simplify(sub,M.pos,3,tgt,err,fl);out.push(r);gs.push({...g,start:at,count:r.length});at+=r.length}
+      idx=new Uint32Array(at);let o=0;for(const r of out){idx.set(r,o);o+=r.length}groups=gs.filter(g=>g.count>0);if(at/3<=MESH_TRIS*1.5)break;await nap()}}
+    catch(e){logErr('Modello 3D · riduzione dei triangoli',e);idx=M.idx;groups=M.groups}}
+  step('Comprimo il modello');await nap();
+  let E=null;try{E=(await import('meshoptimizer/meshopt_encoder.js')).MeshoptEncoder;await E.ready}catch(e){E=null;logErr('Modello 3D · compressore (salvo senza)',e)}
+  /* ordine dei triangoli che si comprime meglio (dentro ogni gruppo di materiale) */
+  if(E)try{for(const g of groups){const sub=idx.subarray(g.start,g.start+g.count),cp=sub.slice(),[rm]=E.reorderMesh(cp,true,true),inv=new Uint32Array(rm.length);for(let v=0;v<rm.length;v++)if(rm[v]!==0xffffffff)inv[rm[v]]=v;for(let i=0;i<cp.length;i++)sub[i]=inv[cp[i]]}}catch(e){logErr('Modello 3D · ordine dei triangoli',e)}
+  /* solo i vertici usati, nell'ordine in cui servono */
+  const nv0=M.pos.length/3,rm=new Uint32Array(nv0).fill(0xffffffff);let n=0;for(let i=0;i<idx.length;i++){const v=idx[i];if(rm[v]===0xffffffff)rm[v]=n++;idx[i]=rm[v]}
+  const mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity];let uvOk=!!M.uv;
+  for(let v=0;v<nv0;v++){if(rm[v]===0xffffffff)continue;for(let k=0;k<3;k++){const x=M.pos[v*3+k];if(x<mn[k])mn[k]=x;if(x>mx[k])mx[k]=x}
+    if(uvOk){const a=M.uv[v*2],b=M.uv[v*2+1];if(!(a>=-1e-4&&a<=1.0001&&b>=-1e-4&&b<=1.0001))uvOk=false}}
+  const c=mn.map((a,k)=>(a+mx[k])/2),s=Math.max((mx[0]-mn[0])/2,(mx[1]-mn[1])/2,(mx[2]-mn[2])/2)||1;
+  const P=new Int16Array(n*4),Nq=new Int8Array(n*4),U=M.uv?(uvOk?new Uint16Array(n*2):new Float32Array(n*2)):null,Cq=M.col?new Uint16Array(n*4):null,pmin=[32767,32767,32767],pmax=[-32767,-32767,-32767];
+  const cl=(x,a,b)=>x<a?a:x>b?b:x;
+  for(let v=0;v<nv0;v++){const o=rm[v];if(o===0xffffffff)continue;
+    for(let k=0;k<3;k++){const qv=cl(Math.round((M.pos[v*3+k]-c[k])/s*32767),-32767,32767);P[o*4+k]=qv;if(qv<pmin[k])pmin[k]=qv;if(qv>pmax[k])pmax[k]=qv;Nq[o*4+k]=cl(Math.round(M.nrm[v*3+k]*127),-127,127)}
+    if(U){if(uvOk){U[o*2]=Math.round(cl(M.uv[v*2],0,1)*65535);U[o*2+1]=Math.round(cl(M.uv[v*2+1],0,1)*65535)}else{U[o*2]=M.uv[v*2];U[o*2+1]=M.uv[v*2+1]}}
+    if(Cq){for(let k=0;k<3;k++)Cq[o*4+k]=Math.round(cl(M.col[v*3+k],0,1)*65535);Cq[o*4+3]=65535}}
+  /* scrittura del .glb: buffer 0 = dati (compressi), buffer 1 = spazio dei dati decompressi */
+  const chunks=[],views=[],acc=[];let len0=0,lenF=0;
+  const put=u8=>{const pad=(4-len0%4)%4;if(pad){chunks.push(new Uint8Array(pad));len0+=pad}const off=len0;chunks.push(u8);len0+=u8.length;return off};
+  const view=(arr,stride,mode,target)=>{const u8=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength),count=u8.length/stride,bv={byteLength:u8.length,target};if(mode==='ATTRIBUTES')bv.byteStride=stride;
+    if(E){const z=E.encodeGltfBuffer(u8,count,stride,mode);bv.buffer=1;bv.byteOffset=lenF;lenF+=(u8.length+3)&~3;bv.extensions={EXT_meshopt_compression:{buffer:0,byteOffset:put(z),byteLength:z.length,byteStride:stride,count,mode}}}
+    else{bv.buffer=0;bv.byteOffset=put(u8)}views.push(bv);return views.length-1};
+  const A=o=>{acc.push(o);return acc.length-1};
+  const attrs={POSITION:A({bufferView:view(P,8,'ATTRIBUTES',34962),componentType:5122,normalized:true,count:n,type:'VEC3',min:pmin,max:pmax}),NORMAL:A({bufferView:view(Nq,4,'ATTRIBUTES',34962),componentType:5120,normalized:true,count:n,type:'VEC3'})};
+  if(U)attrs.TEXCOORD_0=A(uvOk?{bufferView:view(U,4,'ATTRIBUTES',34962),componentType:5123,normalized:true,count:n,type:'VEC2'}:{bufferView:view(U,8,'ATTRIBUTES',34962),componentType:5126,count:n,type:'VEC2'});
+  if(Cq)attrs.COLOR_0=A({bufferView:view(Cq,8,'ATTRIBUTES',34962),componentType:5123,normalized:true,count:n,type:'VEC4'});
+  const big=n>65535,I=big?idx:Uint16Array.from(idx),isz=big?4:2,iv=view(I,isz,'TRIANGLES',34963);
+  const mats=M.mats&&M.mats.length?M.mats:[{name:'',color:[.6,.6,.6],map:null,opacity:1,alpha:false}],images=[],textures=[],texOf=new Map();
+  for(const m of mats)if(m.map&&!texOf.has(m.map)){step('Comprimo le texture');const t=await meshTex(m.map,m.alpha);if(t){images.push({bufferView:(views.push({buffer:0,byteOffset:put(t.bytes),byteLength:t.bytes.length}),views.length-1),mimeType:t.type});textures.push({source:images.length-1,sampler:0});texOf.set(m.map,textures.length-1)}else texOf.set(m.map,null)}
+  const json={asset:{version:'2.0',generator:'RDDC '+APP_VER},extensionsUsed:['KHR_mesh_quantization',...(E?['EXT_meshopt_compression']:[])],scene:0,scenes:[{nodes:[0]}],
+    nodes:[{mesh:0,translation:c,scale:[s,s,s]}],meshes:[{primitives:groups.map(g=>({attributes:attrs,indices:A({bufferView:iv,byteOffset:g.start*isz,componentType:big?5125:5123,count:g.count,type:'SCALAR'}),material:Math.min(g.m|0,mats.length-1),mode:4}))}],
+    materials:mats.map(m=>{const t=m.map?texOf.get(m.map):null,cf=Cq&&m.vc?[1,1,1]:m.color;return {...(m.name?{name:m.name}:{}),pbrMetallicRoughness:{baseColorFactor:[...cf.map(x=>+x.toFixed(4)),m.opacity],...(t!=null?{baseColorTexture:{index:t}}:{}),metallicFactor:0,roughnessFactor:.75},doubleSided:true,alphaMode:m.opacity<1||m.alpha?'BLEND':'OPAQUE'}}),
+    accessors:acc,bufferViews:views,buffers:[{byteLength:len0},...(E?[{byteLength:lenF,extensions:{EXT_meshopt_compression:{fallback:true}}}]:[])]};
+  json.extensionsRequired=json.extensionsUsed.slice();
+  if(textures.length){json.textures=textures;json.images=images;json.samplers=[{magFilter:9729,minFilter:9987,wrapS:10497,wrapT:10497}]}
+  const bin=new Uint8Array(len0);let o=0;for(const ch of chunks){bin.set(ch,o);o+=ch.length}
+  const js=new TextEncoder().encode(JSON.stringify(json)),jl=(js.length+3)&~3,bl=(bin.length+3)&~3,tot=28+jl+bl,out=new Uint8Array(tot),dv=new DataView(out.buffer);
+  dv.setUint32(0,0x46546C67,true);dv.setUint32(4,2,true);dv.setUint32(8,tot,true);dv.setUint32(12,jl,true);dv.setUint32(16,0x4E4F534A,true);out.set(js,20);out.fill(32,20+js.length,20+jl);
+  dv.setUint32(20+jl,bl,true);dv.setUint32(24+jl,0x004E4942,true);out.set(bin,28+jl);
+  return {bytes:out,tris0,tris:idx.length/3,packed:!!E,tex:textures.length,col:!!M.col}}
+/* da .obj (+ .mtl e texture), .gltf o .glb a un unico .glb compresso */
+async function meshToGLB(fs,mf,step=()=>{}){const T=await import('three'),ext=mf.name.split('.').pop().toLowerCase();
+  if(ext==='glb'&&mf.size<=MESH_GLB_KEEP)return {bytes:new Uint8Array(await mf.arrayBuffer())};
+  const urls=new Map(fs.map(f=>[f.name.toLowerCase(),URL.createObjectURL(f)])),man=new T.LoadingManager();
   man.setURLModifier(u=>{if(/^(blob|data):/.test(u))return u;const n=decodeURIComponent(String(u).split(/[\\/]/).pop()).toLowerCase();return urls.get(n)||u});
-  man.onStart=()=>{pending++};const idle=()=>new Promise(r=>{const t0=Date.now();const chk=()=>{if(!man.isLoading&&Date.now()-t0>150||Date.now()-t0>15000)return r();setTimeout(chk,100)};chk()});
-  try{let root;
-    if(ext==='obj'){const {OBJLoader}=await import('three/addons/loaders/OBJLoader.js'),ol=new OBJLoader(man),txt=await mf.text(),want=((txt.match(/^mtllib\s+(.+)$/m)||[])[1]||'').trim().split(/[\\/]/).pop().toLowerCase();
-      const mtl=fs.find(f=>/\.mtl$/i.test(f.name)&&f.name.toLowerCase()===want)||fs.find(f=>/\.mtl$/i.test(f.name));
-      if(mtl){const {MTLLoader}=await import('three/addons/loaders/MTLLoader.js'),mats=new MTLLoader(man).parse(await mtl.text(),'');mats.preload();ol.setMaterials(mats)}
-      root=ol.parse(txt)}
-    else{const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');root=(await new GLTFLoader(man).parseAsync(await mf.text(),'')).scene}
-    await idle();let tris=0;
-    root.traverse(o=>{if(!o.isMesh)return;const g=o.geometry;if(!g.attributes.normal)g.computeVertexNormals();tris+=(g.index?g.index.count:g.attributes.position.count)/3;const vc=!!g.attributes.color;
-      const conv=m=>{if(m&&m.isMeshStandardMaterial){m.side=T.DoubleSide;if(vc)m.vertexColors=true;return m}const n=new T.MeshStandardMaterial({color:vc?0xffffff:(m&&m.color?m.color.getHex():0xcccccc),map:m&&m.map||null,vertexColors:vc,roughness:.75,metalness:0,side:T.DoubleSide,transparent:!!(m&&m.transparent),opacity:m&&m.opacity!=null?m.opacity:1});if(n.map)n.map.colorSpace=T.SRGBColorSpace;return n};
-      o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)});
-    if(!tris)throw new AppErr('vuoto','nel file non ci sono triangoli');
-    const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');const ab=await new GLTFExporter().parseAsync(root,{binary:true,maxTextureSize:2048});return new Uint8Array(ab)}
+  const idle=()=>new Promise(r=>{const t0=Date.now();const chk=()=>{if(!man.isLoading&&Date.now()-t0>150||Date.now()-t0>15000)return r();setTimeout(chk,100)};chk()});
+  try{let M;
+    if(ext==='obj'){M=await objParse(await mf.text(),f=>step(`Leggo il modello · ${Math.round(f*100)}%`));
+      const want=M.mtllib.split(/[\\/]/).pop().toLowerCase(),mtl=fs.find(f=>/\.mtl$/i.test(f.name)&&f.name.toLowerCase()===want)||fs.find(f=>/\.mtl$/i.test(f.name));let mc=null;
+      if(mtl){const {MTLLoader}=await import('three/addons/loaders/MTLLoader.js');mc=new MTLLoader(man).parse(await mtl.text(),'');mc.preload();await idle()}
+      const names=[...new Set(M.groups.map(g=>g.m))],def=new T.Color(0xcccccc);
+      M.mats=names.map(nm=>{const m=mc&&mc.materials[nm];return {name:nm,color:M.col?[1,1,1]:m&&m.color?[m.color.r,m.color.g,m.color.b]:[def.r,def.g,def.b],map:m&&m.map&&m.map.image||null,opacity:m&&m.opacity!=null?m.opacity:1,alpha:!!(m&&m.transparent),vc:!!M.col}});
+      M.groups=M.groups.map(g=>({...g,m:names.indexOf(g.m)}))}
+    else{const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js'),{MeshoptDecoder}=await import('three/addons/libs/meshopt_decoder.module.js'),gl=new GLTFLoader(man).setMeshoptDecoder(MeshoptDecoder);
+      step('Leggo il modello');let root;
+      try{root=(await gl.parseAsync(ext==='glb'?await mf.arrayBuffer():await mf.text(),'')).scene;await idle();M=await sceneMesh(T,root)}
+      catch(e){if(ext==='glb'&&mf.size<=M3D_MAX){logErr('Modello 3D · compressione del .glb (salvato così com\'è)',e);return {bytes:new Uint8Array(await mf.arrayBuffer())}}throw e}}
+    return await meshPack(M,step)}
   finally{urls.forEach(u=>URL.revokeObjectURL(u))}}
 async function m3dAddMesh(d,slot,fs,mf,labels){const tot=fs.reduce((a,f)=>a+f.size,0);
   try{if(tot>M3D_RAW_MAX){toast(`File troppo grandi (${fmtMB(tot)}, massimo ${fmtMB(M3D_RAW_MAX)})`,6000);return}
-    isle('m3add',{ic:'🔺',t:`Converto il modello · ${fmtMB(tot)}`});const bytes=await meshToGLB(fs,mf);
-    if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Il modello convertito pesa ${fmtMB(bytes.length)} (massimo ${fmtMB(M3D_MAX)}): riducine i triangoli o la dimensione delle texture`,7000);return}
-    const nome=mf.name.replace(/\.\w+$/,'')+'.glb',data=await m3Store(bytes),k=slot===2?'m3d2':'m3d',old=d[k],texN=fs.filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).length;
-    d[k]={id:uid(),nome,size:bytes.length,tipo:'glb',data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==mf.name?{orig:{nome:mf.name,size:tot}}:{})};if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
-    await saveDev(d);render();buzz('ok');isleEnd('m3add',`Modello a triangoli · ${fmtMB(bytes.length)}`);
-    toast(/\.obj$/i.test(mf.name)&&!fs.some(f=>/\.mtl$/i.test(f.name))?'Modello aggiunto. Per i colori seleziona insieme al .obj anche il .mtl e le immagini delle texture':`Modello aggiunto (${fmtMB(bytes.length)}${texN?`, ${texN} ${texN===1?'texture':'texture'}`:''}) ✔︎`,5500);openModel3D(d,true,slot===2)}
+    const step=t=>isle('m3add',{ic:'🗜️',t});step(`Leggo il modello · ${fmtMB(tot)}`);await nap();
+    const r=await meshToGLB(fs,mf,step),bytes=r.bytes;
+    if(bytes.length>M3D_MAX){isleEnd('m3add','Modello troppo grande',false);toast(`Anche compresso il modello pesa ${fmtMB(bytes.length)} (massimo ${fmtMB(M3D_MAX)}): riduci la dimensione delle texture`,7000);return}
+    const nome=mf.name.replace(/\.\w+$/,'')+'.glb',data=await m3Store(bytes),k=slot===2?'m3d2':'m3d',old=d[k],texN=r.tex!=null?r.tex:fs.filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).length;
+    d[k]={id:uid(),nome,size:bytes.length,tipo:'glb',data,t:today(),rot:[0,0,0],label:old&&old.label||'',...(nome!==mf.name||bytes.length!==tot?{orig:{nome:mf.name,size:tot}}:{})};if(labels){d.m3d.label=labels[0];d.m3d2.label=labels[1]}
+    await saveDev(d);render();buzz('ok');const less=r.tris0&&r.tris<r.tris0,smaller=bytes.length<tot*.95;
+    const noMtl=/\.obj$/i.test(mf.name)&&!fs.some(f=>/\.mtl$/i.test(f.name))&&!r.col;
+    isleEnd('m3add',smaller?`Compresso: ${fmtSize(tot)} → ${fmtSize(bytes.length)}`:`Modello a triangoli · ${fmtSize(bytes.length)}`);
+    toast((smaller?`Modello compresso: da ${fmtSize(tot)} a ${fmtSize(bytes.length)}${less?` · triangoli da ${Math.round(r.tris0).toLocaleString('it')} a ${Math.round(r.tris).toLocaleString('it')}`:''}${texN?` · ${texN} texture`:''}`
+      :`Modello aggiunto (${fmtSize(bytes.length)}${texN?`, ${texN} texture`:''})`)+(noMtl?'. Per i colori seleziona insieme al .obj anche il .mtl e le immagini delle texture':' ✔︎'),noMtl?7500:6500);openModel3D(d,true,slot===2)}
   catch(e){logErr('Modello 3D · conversione del modello a triangoli',e);isleEnd('m3add','Conversione non riuscita',false);toast(`Non riesco a leggere «${mf.name}»: ${e.message||e}`,7000,{label:'DETTAGLI',fn:openErrLog})}}
 /* nomi delle due modalità (es. Portatile / Tablet) */
 function askLabels(d){return new Promise(res=>{const m=document.createElement('div');m.className='modal';const a=(d.m3d&&d.m3d.label)||'Portatile',b=(d.m3d2&&d.m3d2.label)||'Tablet';
