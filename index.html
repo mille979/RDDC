@@ -189,6 +189,7 @@ a{color:var(--acc-ink)}
 .hero{position:relative;height:min(64vh,480px);min-height:300px;overflow:hidden;background:#1a1208;color:#fff}
 .hero .himg,.hero .hbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero .hbg{display:none;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);filter:blur(28px) saturate(1.25) brightness(.85)}
+/* foto piccole (sotto i 700 px): intere su sfondo sfocato, in automatico */
 .hero.fit .hbg{display:block}
 .hero.fit .himg{object-fit:contain;padding:calc(58px + env(safe-area-inset-top)) 12px 118px}
 .hero.noph{height:auto;min-height:calc(270px + env(safe-area-inset-top));background:radial-gradient(120% 90% at 75% 5%,#ffc867 0%,#d27b0c 38%,#5a3203 75%,#2a1704 100%)}
@@ -294,6 +295,14 @@ html.tilting .o3{animation:none}
 .mu-obj::after{content:"";width:70%;height:8px;margin-top:-4px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.55),transparent 70%)}
 .mu-plaque{position:absolute;bottom:-21px;font:650 9px/1 system-ui,sans-serif;letter-spacing:.05em;color:#3a2410;background:linear-gradient(#f3d48c,#c99a45);padding:3px 6px;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .mu-hint{text-align:center;margin:22px 14px 0;font-size:12px;color:#b89f7b}
+/* 2.26: grandezza degli oggetti sugli scaffali (tenendo premuto) */
+.mu-wall{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.mu-wall .mu-shelf{height:calc(200px * var(--mk,1));transition:height .18s ease}.mu-wall .mu-obj{width:var(--mw,31%)}
+.mu-wall .mu-obj .o3 .fr,.mu-wall .mu-obj .o3 .ly{max-height:calc(140px * var(--mk,1))}.mu-wall .mu-obj .o3 .frame{max-height:calc(104px * var(--mk,1))}.mu-wall .mu-obj .emo{font-size:calc(62px * var(--mk,1))}
+.mu-wall.still .mu-obj,.mu-wall.still .mu-shelf::before{animation:none}
+.mu-size{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;width:min(420px,calc(100% - 32px));padding:9px 10px 9px 14px;border-radius:999px;background:rgba(26,16,9,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,214,150,.18);color:#f3e2c4;font-size:12.5px;animation:mu-size-in .32s cubic-bezier(.2,.9,.3,1.2) both}
+.mu-size input{flex:1;min-width:60px;accent-color:#e9b45f}.mu-size b{min-width:86px;text-align:right;font-weight:650}.mu-sx{border:0;background:rgba(255,240,220,.12);color:inherit;width:30px;height:30px;border-radius:50%;flex:none}
+.mu-size.out{animation:mu-size-out .2s ease both}@keyframes mu-size-in{from{opacity:0;transform:translate(-50%,16px) scale(.94)}}@keyframes mu-size-out{to{opacity:0;transform:translate(-50%,12px) scale(.96)}}
+@media (prefers-reduced-motion:reduce){.mu-size,.mu-size.out{animation:none}.mu-wall .mu-shelf{transition:none}}
 .mu-empty{padding:60px 24px;text-align:center;color:#c8b08c}
 /* piedistallo */
 .pl-wrap{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;height:100%;scrollbar-width:none}
@@ -871,7 +880,11 @@ details.more>summary{color:var(--mute);padding:10px 4px}
 .m3tags.on .m3pill,.m3tags.on .m3pin{animation:m3tag-in .5s cubic-bezier(.2,.9,.3,1.35) both;animation-delay:calc(var(--i)*.07s)}.m3tags.on .m3pin{animation:m3tag-in .5s cubic-bezier(.2,.9,.3,1.35) both,m3pin 1.8s ease-in-out .6s infinite}
 @keyframes m3tag-in{from{opacity:0;scale:.4}}
 .m3ed{position:absolute;left:0;right:0;margin:0 auto;width:max-content;bottom:14px;z-index:4;display:flex;gap:10px;align-items:center;max-width:calc(100% - 24px);padding:7px 7px 7px 14px;border-radius:999px;background:rgba(20,14,8,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#f3e9da;font-size:12.5px;animation:m3-up .35s ease both}
-.m3ed span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m3ed .btn{flex:none}.m3page.editing .m3c{cursor:crosshair}.m3page.editing .m3ed{box-shadow:0 0 0 2px rgba(255,213,138,.6)}.hb.on{box-shadow:0 0 0 2px #ffd58a}
+.m3ed span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 2.26: il pannello di «Modifica» sta in alto, sopra le etichette: istruzioni, orientamento, Fine */
+.m3ed{top:8px;bottom:auto;flex-direction:column;align-items:stretch;gap:8px;width:min(440px,calc(100% - 24px));padding:10px 10px 10px;border-radius:20px;z-index:6}.m3ed[hidden]{display:none}.m3eh{display:flex;align-items:center;gap:10px}.m3ed .m3et{flex:1;white-space:normal;line-height:1.3;padding:0 2px 0 6px}
+.m3er{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}.m3rb{flex:none;border:0;border-radius:999px;padding:7px 10px;font:600 12px/1 system-ui,sans-serif;color:#f3e9da;background:rgba(255,240,220,.12)}.m3rb:active{background:rgba(255,240,220,.24)}.m3rb:disabled{opacity:.35}
+.m3page.editing .m3ed{animation:m3-drop .35s cubic-bezier(.2,.85,.25,1) both}.m3ed .btn{flex:none}.m3page.editing .m3c{cursor:crosshair}.m3page.editing .m3ed{box-shadow:0 0 0 2px rgba(255,213,138,.6)}.hb.on{box-shadow:0 0 0 2px #ffd58a}
 .tgm .tgc{margin-top:10px;max-height:34vh;overflow:auto}
 /* ===== 2.23: sfida ===== */
 .page.duel{background:radial-gradient(90% 60% at 50% 30%,#3a1414,#0a0505);color:#fff;animation:m3-in .3s ease both}.du{position:absolute;inset:0;display:flex;flex-direction:column;overflow:auto}
@@ -1067,7 +1080,7 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 <div id="pane0" aria-hidden="true"><div><svg class="ic" viewBox="0 0 24 24"><rect x="3.5" y="5" width="11" height="8.5" rx="2"/><rect x="11.5" y="8" width="6.5" height="11" rx="1.8"/><circle cx="8" cy="16.5" r="3"/></svg><b>Scegli un oggetto</b><small>La scheda si apre qui accanto</small></div></div>
 <nav id="dock" aria-label="Sezioni"><div class="seg" id="seg"><button data-view="col">Collezione<i id="nC"></i></button><button data-view="wish">Wishlist<i id="nW"></i></button></div></nav>
 <button class="fab" id="fab" aria-label="Aggiungi"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button class="lensb" id="fabLens" aria-label="Mercatino: riconosci un oggetto" title="Mercatino"><svg class="ic" viewBox="0 0 24 24"><path d="M4 9V6.5A2.5 2.5 0 0 1 6.5 4H9M15 4h2.5A2.5 2.5 0 0 1 20 6.5V9M20 15v2.5a2.5 2.5 0 0 1-2.5 2.5H15M9 20H6.5A2.5 2.5 0 0 1 4 17.5V15"/><circle cx="12" cy="12" r="3.3"/></svg></button>
-<div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="merge">⧉ Unisci come esemplari</button><button data-b="del" class="dng">🗑</button></div>
+<div id="bulk" hidden><button data-b="luogo">📍 Luogo</button><button data-b="stato">Stato</button><button data-b="tag"># Etichette</button><button data-b="rac">🗂️ Raccolte</button><button data-b="ver">✓ Verificati</button><button data-b="cmp">⇆ Confronta</button><button data-b="merge">⧉ Unisci come esemplari</button><button data-b="del" class="dng">🗑</button></div>
 <div id="toast"></div>
 <div id="print"></div>
 
@@ -1077,8 +1090,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.25';
+const APP_VER='2.26';
 const NOVITA=[
+ ['2.26','2026-11-28',['🗂️ Raccolte come le etichette: un oggetto può stare in più raccolte (un PowerBook G4 è sia in «Apple» sia in «Portatili»). Nel modulo si scelgono a bottoncini, nei filtri e nei raggruppamenti l\'oggetto compare in ognuna, nel museo sta in tutte le sue sale; nella selezione multipla c\'è «🗂️ Raccolte» per aggiungerle o toglierle a molti oggetti insieme','🍎 Tutti gli oggetti di marca Apple sono entrati anche nella raccolta «Apple» (una volta sola, subito dopo la prima sincronizzazione)','＋ Nella foto della scheda il tasto «Adatta / riempi» è diventato «＋»: aggiunge scontorno per il museo, modello 3D, foto, allegati, interventi (anche dettati), accessori, collaudi, progetti, valore, prestito, raccolte ed etichette','✎ Vista 3D: un solo tasto «Modifica» per le etichette e l\'orientamento (capovolgi, ruota, ripristina), con le istruzioni in alto sopra le etichette; ⓘ ora mostra soltanto le etichette','⏳ Museo, linea del tempo: in verticale gli anni seguono il dito (trascinando in giù si va avanti e i pezzi vengono verso di te)','🔍 Museo, scaffali: tieni premuto e compare un cursore per ingrandire o rimpicciolire gli oggetti; quanti stanno su un ripiano si adatta (da 5 a 1) e la grandezza resta ricordata']],
  ['2.25','2026-11-27',['🗜️ Modelli .obj compressi prima di salvarli e inviarli: un file da 50–70 MB diventa di solito 2–4 MB. Il file viene letto senza vertici ripetuti, i triangoli oltre i 300.000 vengono ridotti rispettando bordi e cuciture delle texture, le coordinate sono salvate a 16 bit e compresse, le texture diventano JPEG fino a 2048 px','📦 Anche i .gltf e i .glb oltre i 12 MB vengono compressi allo stesso modo; quelli più piccoli restano come sono','⏳ Durante la conversione l\'isola in alto mostra a che punto è (lettura, riduzione dei triangoli, compressione) e alla fine dice quanto pesava e quanto pesa']],
  ['2.24','2026-11-26',['🔍 Mercatino: si apre come un cerchio che cresce dal tasto fino a tutto schermo e si richiude allo stesso modo; scattata la foto, l\'immagine si stacca dai bordi con gli angoli arrotondati e il bordo colorato segue esattamente lo stesso ritaglio','👆 Anteprima con una sola pressione: tieni premuto un pezzo, l\'immagine vola dalla miniatura, la mini scheda scivola da sotto e le opzioni arrivano a cascata; senza staccare il dito trascina su un\'opzione (si evidenzia con uno scatto) e rilascia per sceglierla, o rilascia sulla scheda per aprirla. Chiudendo, l\'immagine torna nella miniatura','✨ Animazioni ovunque: finestre e messaggi escono sfumando, le sezioni a scomparsa si aprono e chiudono con un\'animazione, i contatori in basso fanno un balzo quando cambiano, le schede del Laboratorio entrano a cascata, i riquadri d\'errore salgono, le scelte cambiano colore con una transizione']],
  ['2.23','2026-11-25',['🥊 Sfida (Menu, o ⋯ nella scheda): due pezzi faccia a faccia, categoria per categoria (più vintage, processore, RAM, archiviazione, schermo, valore, più leggero) con barre che corrono, punteggio e corona al vincitore','📈 La collezione che cresce (Menu): il replay dei tuoi acquisti mese per mese, con i pezzi che cadono sugli scaffali e il valore che sale; «Salva il video» per condividerlo','🗺️ Caccia del weekend (Menu): Gemini cerca sul web fiere dell\'elettronica, mostre-scambio retrò e mercatini vicino a te nelle prossime settimane, con date, mappa, sito, promemoria nel calendario e perché andarci pensando alla tua wishlist','🎙️ Dettatura in laboratorio (Laboratorio, o ⋯ nella scheda): racconti cosa hai fatto e Gemini scrive gli interventi (tipo, costo, data) e i cambi di stato; li controlli prima di salvarli','Corretti alcuni riquadri chiari fuori posto in Indovina l\'anno e nelle linee']],
@@ -1259,7 +1273,7 @@ const SECTIONS=[
  ['Aspetto e dati fisici',[['colore','Colore','color'],['dimensioni','Dimensioni'],['peso','Peso'],['prezzo','Prezzo di lancio']]],
  ['Wishlist',[['w_priorita','Priorità','select:Alta|Media|Bassa'],['w_budget','Budget massimo (€)','number'],['w_link','Link annuncio / dove cercarlo'],['w_note','Note per la ricerca (configurazione, colore, condizioni…)','area']],'wish'],
  ['Manutenzione',[['man_batt','Batteria','select:Ricaricabile (da tenere carica)|Tampone PRAM/BIOS|Nessuna'],['batt_stato','Stato della batteria','select:'+BATT_ST.join('|')],['man_freq','Accensione e ricarica ogni (mesi)','select:3|6|12|Mai (non serve)'],['man_on','Ultima accensione','date'],['man_charge','Ultima carica','date']],'own nopart noacc'],
- ['Collezione',[['raccolta','Raccolta (es. Apple, Console, Server)','list:raccolte'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_mese','Mese acquisto (se lo ricordi)','select:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
+ ['Collezione',[['raccolta','Raccolte (anche più di una, es. Apple e Portatili)','racc'],['ruolo','Ruolo','select:Collezione|In uso|Ricambi|Da vendere'],['tags','Etichette','tags'],['luogo','Luogo (dove si trova)','list:luoghi'],['quantita','Quantità','number'],['stato','Stato','select:'+STATI.join('|')],['scatola','Scatola / accessori','select:Sì|No|Parziale'],['condizione','Condizione estetica','area'],['acq_anno','Anno acquisto','number'],['acq_mese','Mese acquisto (se lo ricordi)','select:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre'],['acq_prezzo','Pagato (€)','number'],['valore','Valore stimato (€)','number'],['note','Note','area']],'own']
 ];
 const ALLF=SECTIONS.flatMap(s=>s[1]);
 const FACETS=[['lab','Laboratorio'],['manut','Manutenzione'],['raccolta','Raccolta'],['ruolo','Ruolo'],['completezza','Completezza'],['part_cat','Ricambi'],['fuori','In casa / fuori'],['tags','Etichette'],['w_priorita','Priorità'],['luogo','Luogo'],['marca','Marca'],['tipologia','Tipologia'],['linea','Linea'],['decennio','Decennio'],['anno','Anno'],['colore','Colore'],['stato','Stato']];
@@ -1304,10 +1318,12 @@ const hasVal=(d,k)=>k==='foto'?!!(d.foto&&d.foto.length):k==='scontorno'?!!d.sco
 function missing(d){if(d.wish||d.ruolo==='In uso')return [];const ig=d.ignoti||[];const kd=kindOf(d.tipologia);return [...(kd==='part'?ESS.part0:ESS.all),...(ESS[kd]||[]),...(kd==='part'||kd==='acc'?[]:['scontorno'])].filter(k=>!(k==='stato'&&hasUnits(d)?d.esemplari.every(u=>u.stato):k==='collegato'&&hasUnits(d)?true:hasVal(d,k))&&!ig.includes(k))}
 const TAGS0=['Preferito','Raro','Da restaurare','Da vendere','Regalo'];
 const loanOverdue=d=>!!(d.prestito&&d.prestito.al&&d.prestito.al<today());
-function vals(d,k){if(k==='lab'){if(d.wish)return ['—'];const a=[];if((d.progetti||[]).some(p=>p.stato!=='Finito'))a.push('In restauro');if(d.stato==='Da testare'||(hasUnits(d)&&d.esemplari.some(u=>u.stato==='Da testare')))a.push('Da collaudare');if((d.collaudi||[]).length)a.push('Collaudato');else if(!['acc','part'].includes(kindOf(d.tipologia)))a.push('Mai collaudato');return a.length?a:['—']}if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];if(hasUnits(d)&&['stato','luogo','scatola'].includes(k))return [...new Set(d.esemplari.map(u=>u[k]||(k==='luogo'?d.luogo:'')||'—'))];return [val(d,k)]}
+/* 2.26: raccolte multiple, come le etichette (campo raccolta = elenco; le schede vecchie con una sola raccolta scritta come testo valgono ancora) */
+const racOf=d=>{const r=d&&d.raccolta;return [...new Set((Array.isArray(r)?r:r?String(r).split(/\s*,\s*/):[]).map(x=>String(x).trim()).filter(Boolean))]};
+function vals(d,k){if(k==='raccolta'){const r=racOf(d);return r.length?r:['—']}if(k==='lab'){if(d.wish)return ['—'];const a=[];if((d.progetti||[]).some(p=>p.stato!=='Finito'))a.push('In restauro');if(d.stato==='Da testare'||(hasUnits(d)&&d.esemplari.some(u=>u.stato==='Da testare')))a.push('Da collaudare');if((d.collaudi||[]).length)a.push('Collaudato');else if(!['acc','part'].includes(kindOf(d.tipologia)))a.push('Mai collaudato');return a.length?a:['—']}if(k==='tags')return d.tags&&d.tags.length?d.tags:['—'];if(hasUnits(d)&&['stato','luogo','scatola'].includes(k))return [...new Set(d.esemplari.map(u=>u[k]||(k==='luogo'?d.luogo:'')||'—'))];return [val(d,k)]}
 function val(d,k){
   if(k==='ruolo')return d.wish?'—':(d.ruolo||'Collezione');
-  if(k==='raccolta')return d.raccolta||'—';
+  if(k==='raccolta')return racOf(d).join(', ')||'—';
   if(k==='manut'){const ts=manTargets(d);if(!ts.length)return '—';const st=ts.map(manState);return st.some(x=>x.dueOn||x.dueCh)?'Da fare':'In regola'}
   if(k==='completezza')return d.wish?'—':missing(d).length?'Da completare':'Completa';
   if(k==='fuori')return d.wish?'—':d.prestito?(d.prestito.tipo==='Esposizione'?'In esposizione':'In prestito'):'In casa';
@@ -1368,7 +1384,7 @@ function render(){
   const grp=curGroup();
   if(lay==='time')html+=timeline(items);
   else if(grp){
-    const map=new Map();items.forEach(d=>{const g=val(d,grp);if(!map.has(g))map.set(g,[]);map.get(g).push(d)});
+    const map=new Map();items.forEach(d=>{for(const g of grp==='raccolta'?vals(d,grp):[val(d,grp)]){if(!map.has(g))map.set(g,[]);map.get(g).push(d)}});
     const keys=[...map.keys()].filter(k=>k!=='—').sort((a,b)=>grp==='w_priorita'?PRIO[a]-PRIO[b]:String(a).localeCompare(String(b),'it',{numeric:true}));
     if(curSort()==='anno_d'&&['anno','decennio'].includes(grp))keys.reverse();
     if(map.has('—'))keys.push('—');
@@ -1516,6 +1532,7 @@ function fieldDisplay(d,k){
   if(k==='w_link')return /^https?:\/\//i.test(d[k])?`<a href="${esc(d[k])}" target="_blank" rel="noopener">${esc(d[k].replace(/^https?:\/\/(www\.)?/,'').slice(0,60))}</a>`:esc(d[k]);
   if(k==='w_budget')return '€ '+esc(d[k]);
   if(k==='tags')return (d.tags||[]).map(t=>`<span class="chip" style="font-size:13px;padding:2px 9px">#${esc(t)}</span>`).join(' ');
+  if(k==='raccolta')return racOf(d).map(t=>`<span class="chip" style="font-size:13px;padding:2px 9px">🗂️ ${esc(t)}</span>`).join(' ');
   if(k==='valore'||k==='acq_prezzo')return '€ '+Number(d[k]).toLocaleString('it');
   if(['cpu','ram','storage','gpu','display','os_orig','os_max','connettivita','porte','batteria','dimensioni','peso','prezzo','intro','discontinued'].includes(k))return esc(trVal(d[k],d));
   return esc(d[k]);
@@ -1576,14 +1593,13 @@ function openDetailFrom(card,id){
 }
 function openDetail(id,replace,morph,quiet,dir){
   const d=devices.find(x=>x.id===id);if(!d)return;
-  const fit=LS.get('rd_fit',{})[d.id];
   const ph=d.foto&&d.foto.length?d.foto[0]:'';
   const sub=[d.marca,d.linea&&d.linea!==d.marca?d.linea:'',kindOf(d.tipologia)==='part'?'':d.anno].filter(Boolean).join(' · ');
   const hchips=[d.prestito&&`<span class="hchip">${d.prestito.tipo==='Esposizione'?'🖼️ In esposizione':'📤 In prestito'}${loanOverdue(d)?' ⚠️':''}</span>`,...(d.tags||[]).map(t=>`<span class="hchip">#${esc(t)}</span>`),d.wish&&'<span class="hchip">💭 Wishlist</span>',d.wish&&d.w_priorita&&`<span class="hchip">★ ${esc(d.w_priorita)}</span>`,d.wish&&d.w_budget&&`<span class="hchip">≤ € ${esc(d.w_budget)}</span>`,d.tipologia&&`<span class="hchip">${esc(d.tipologia)}</span>`,linkedTo(d)&&`<span class="hchip">↳ ${esc(linkedTo(d).nome)}</span>`,d.colore&&`<span class="hchip"><i class="sw" style="--c:${esc(colHex(d)||'transparent')}"></i>${esc(d.colore)}</span>`,d.luogo&&`<span class="hchip">📍 ${esc(d.luogo)}</span>`,d.stato&&`<span class="hchip">${esc(d.stato)}</span>`,+d.quantita>1&&`<span class="hchip">×${+d.quantita}</span>`].filter(Boolean).join('');
-  let h=`<div class="hero ${ph?'':'noph'} ${fit==='contain'?'fit':''}">
+  let h=`<div class="hero ${ph?'':'noph'}">
     ${ph?`<img class="hbg" src="${ph}" alt=""><img class="himg" src="${ph}" alt="" data-view="0">`:`<div class="hicon">${icon(d)}</div>`}
     <button class="hb l" data-back aria-label="Indietro">${IC.back}</button>${(()=>{const L=render.items||[],i=L.indexOf(d.id);return i>=0&&L.length>1?`<span class="hpos">${i+1} / ${L.length}</span>`:''})()}
-    <div class="hbr">${d.m3d?'<button class="hb hb3d" data-m3open aria-label="Modello 3D">3D</button>':''}${ph?'<button class="hb" data-fit aria-label="Adatta foto" title="Adatta / riempi">⤢</button>':''}<button class="hb" data-edit aria-label="Modifica">✎</button></div>
+    <div class="hbr">${d.m3d?'<button class="hb hb3d" data-m3open aria-label="Modello 3D">3D</button>':''}<button class="hb hbadd" data-addx aria-label="Aggiungi" title="Aggiungi">＋</button><button class="hb" data-edit aria-label="Modifica">✎</button></div>
     <div class="cap">${sub?`<small>${esc(sub)}</small>`:''}<h1>${esc(d.nome)}</h1>${hchips?`<div class="hchips">${hchips}</div>`:''}</div>
   </div>`;
   if(d.foto&&d.foto.length>1)h+=`<div class="thumbs">${d.foto.map((f,i)=>`<img src="${f}" alt="" data-view="${i}">`).join('')}</div>`;
@@ -1675,7 +1691,7 @@ function openDetail(id,replace,morph,quiet,dir){
     const af=$('#attf',el);if(af)af.onchange=async e=>{if(await addAttachments(d,e.target.files))openDetail(d.id,true)};
     const vc=$('#vch',el);if(vc)lineChart(vc,[{name:'Valore',cls:'s1',pts:valSeries(d)}],{ref:+d.acq_prezzo?{v:+d.acq_prezzo,label:'pagato'}:null});
     const hi=$('.himg',el);
-    if(hi&&!fit){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
+    if(hi){const chk=()=>{if(hi.naturalWidth&&hi.naturalWidth<700)$('.hero',el).classList.add('fit')};hi.complete?chk():hi.addEventListener('load',chk)}
     el.addEventListener('click',async e=>{
       const t=e.target;
       if(t.closest('[data-m3sync]')){await ghSync(true);return openDetail(d.id,true,false,true)}
@@ -1693,9 +1709,9 @@ function openDetail(id,replace,morph,quiet,dir){
       if(t.closest('[data-m3pl]'))return vt('vt-pl',()=>openPlinth([d],0,false));
       if(t.closest('[data-m3del]')){if(await ask(`Togliere il modello 3D da questa scheda${d.m3d2?' (anche la seconda modalità)':''}? I file restano nelle versioni precedenti su GitHub.`,'Togli',true)){delete d.m3d;delete d.m3d2;await saveDev(d);render();toast('Modello 3D tolto');openDetail(d.id,true,false,true)}return}
       {const mb=t.closest('[data-moreacts]');if(mb)return moreActs(el,mb)}
+      if(t.closest('[data-addx]'))return addToCard(el,d);
       if(t.closest('[data-edit]'))openForm(d);
       const v=t.closest('[data-view]');if(v)openViewer(d.foto,+v.dataset.view,{onCover:async k=>{d.foto.unshift(d.foto.splice(k,1)[0]);d.thumb=await shrink(d.foto[0],180,.75);CUTS.clear();await saveDev(d);render();toast('Nuova copertina ★');goBase(()=>openDetail(d.id))}});
-      if(t.closest('[data-fit]')){const hero=$('.hero',el);hero.classList.toggle('fit');const f=LS.get('rd_fit',{});f[d.id]=hero.classList.contains('fit')?'contain':'cover';LS.set('rd_fit',f)}
       if(t.closest('[data-orig]')){const b=t.closest('[data-orig]'),x=$('#dsct',el),o=b.dataset.on!=='1';x.textContent=o?d.descrizione_orig:d.descrizione;b.dataset.on=o?'1':'0';b.textContent=o?'Mostra traduzione':'Mostra originale';x.classList.remove('cl');return}
       if(t.closest('[data-spo]')){const b=t.closest('[data-spo]'),o=b.dataset.on!=='1';$('#spk',el).innerHTML=kv(d.specs.map(([a,v])=>o?[a,esc(v)]:[trLabel(a),esc(trVal(v,d))]));b.dataset.on=o?'1':'0';b.textContent=o?'Mostra in italiano':'Mostra originale';return}
       if(t.closest('[data-more]')){const ds=$('.desc>div',el);ds.classList.toggle('cl');t.textContent=ds.classList.contains('cl')?'Leggi tutto ▾':'Riduci ▴'}
@@ -1751,6 +1767,24 @@ function openDetail(id,replace,morph,quiet,dir){
     });
   }});
 }
+/* 2.26: il «+» sulla foto della scheda raccoglie tutto quello che si può aggiungere all'oggetto (al posto di «Adatta / riempi») */
+async function addToCard(el,d){const kd=kindOf(d.tipologia),obj=!['part','acc'].includes(kd),own=!d.wish;hap.tick(.5);
+  const A=[
+    obj&&own&&{ic:'🏛️',t:d.scontorno?'Rifai lo scontorno per il museo':'Scontorno per il museo',sub:'L\'immagine senza sfondo per gli scaffali e il piedistallo',g:1,f:()=>openCutout(d)},
+    {ic:'🧊',t:d.m3d?'Modello 3D…':'Modello 3D',sub:d.m3d?'Sostituisci, seconda modalità, nomi':'Gaussian splat (.spz, .ply…) o .obj/.glb, compresso al caricamento',g:1,f:()=>d.m3d?m3More(el,d):m3dAdd(d)},
+    {ic:'📷',t:'Foto',sub:'Altre foto dell\'oggetto',g:1,f:()=>openForm(d,{focus:'foto'})},
+    {ic:'📎',t:'Allegato',sub:'Manuale, ricevuta, foto dell\'interno, video…',g:2,f:()=>$('#attf',el).click()},
+    own&&{ic:'🔧',t:'Intervento',sub:'Riparazione, pulizia, sostituzione…',g:2,f:()=>openIntervento(d)},
+    own&&{ic:'🎙️',t:'Detta un intervento',sub:'Racconta cosa hai fatto: Gemini lo scrive nel registro',g:2,f:()=>openDictate(d)},
+    own&&obj&&{ic:'🔌',t:'Accessorio',sub:'Alimentatore, cavo, custodia… collegato a questo oggetto',g:3,f:()=>openForm({tipologia:'Accessorio',marca:d.marca,collegato:d.id,luogo:d.luogo,acc_compat:d.nome})},
+    !own&&{ic:'🔗',t:'Annuncio',sub:'Un annuncio da tenere d\'occhio',g:3,f:()=>askListing(d)},
+    own&&kd!=='part'&&{ic:'🧪',t:'Collaudo',sub:'Prova di funzionamento, voce per voce',g:4,f:()=>openCollaudo(d,null)},
+    own&&{ic:'🛠️',t:'Progetto di restauro',g:4,f:()=>openNewProject(d)},
+    own&&{ic:'💶',t:'Valore',sub:'Una stima o una quotazione',g:4,f:()=>openValore(d)},
+    own&&!d.prestito&&{ic:'📤',t:'Prestito o esposizione',g:4,f:()=>openLoan(d)},
+    {ic:'🗂️',t:'Raccolte ed etichette',sub:'Es. Apple e Portatili, #Raro',g:5,f:()=>openForm(d,{focus:'raccolta'})}
+  ].filter(Boolean);
+  const i=await sheet(`Aggiungi a «${d.nome}»`,A);if(i>=0)A[i].f()}
 function openIntervento(d,it,pre={}){
   const v=Object.assign({data:today()},pre,it||{});
   const h=`<datalist id="dl_int">${INT_TIPI.map(o=>`<option value="${esc(o)}">`).join('')}</datalist>
@@ -3693,19 +3727,21 @@ function askTag(chips,init=''){return new Promise(res=>{const m=document.createE
   m.onclick=e=>{if(e.target===m)return done(null);const c=e.target.closest('[data-tg]');if(c)return done(c.dataset.tg);if(e.target.closest('[data-x]'))return done(null);if(e.target.closest('[data-ok]'))return done(m.querySelector('#tgv').value.trim()||null)};
   m.querySelector('#tgv').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();done(m.querySelector('#tgv').value.trim()||null)}};document.body.append(m);lgScan(m);setTimeout(()=>{const i=m.querySelector('#tgv');i&&!chips.length&&i.focus()},120)})}
 function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
-  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3info aria-label="Etichette">ⓘ</button><button class="hb" data-m3cm aria-label="Grandezza">📏</button><button class="hb" data-m3set aria-label="Orientamento">⟲</button></div>
-    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div><div class="m3tags" hidden><svg class="m3ln"></svg></div><div class="m3ed" hidden><span></span><button class="btn sm" data-m3ed></button></div></div><div class="m3size" hidden><span>Grandezza reale</span><input type="range" min="0" max="1000" step="1" aria-label="Grandezza reale (lato lungo)"><b></b><button class="btn sm sec" data-m3auto>Auto</button></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
+  openPage(d.nome,`<div class="m3page"><div class="m3top"><button class="hb" data-back aria-label="Indietro">${IC.back}</button><b>${esc(d.nome)}</b>${L[1]?`<button class="m3sw wait" data-m3sw aria-label="Cambia modalità">⇄ <span>${esc(m3Label(L[1],1))}</span></button>`:''}<button class="hb" data-m3info aria-label="Etichette">ⓘ</button><button class="hb" data-m3cm aria-label="Grandezza">📏</button><button class="hb" data-m3edit aria-label="Modifica" title="Modifica etichette e orientamento">✎</button></div>
+    <div class="m3stage"><div class="m3glow"></div><div class="m3v"></div><div class="m3tags" hidden><svg class="m3ln"></svg></div><div class="m3ed" hidden><div class="m3eh"><span class="m3et"></span><button class="btn sm" data-m3done>Fine</button></div><div class="m3er"><button class="m3rb" data-rot="0">↕️ Capovolgi</button><button class="m3rb" data-rot="1">⤵️ Avanti 90°</button><button class="m3rb" data-rot="2">↪️ Di lato 90°</button><button class="m3rb" data-rot="3" aria-label="Ripristina l'orientamento">↺</button></div></div></div><div class="m3size" hidden><span>Grandezza reale</span><input type="range" min="0" max="1000" step="1" aria-label="Grandezza reale (lato lungo)"><b></b><button class="btn sm sec" data-m3auto>Auto</button></div><p class="m3hint">Trascina per girarlo · due dita per avvicinarti · doppio tocco per tornare all'inizio</p></div>`,{bare:true,cls:'museum m3root',mount(el){
     const host=$('.m3v',el),sw=$('[data-m3sw]',el);
     const go=async alt=>{v&&v.dispose();if(sw){sw.classList.add('wait');sw.querySelector('span').textContent=m3Label(L[1],1)}
       v=await mount3D(host,d,{intro:!v,startAlt:alt,onFrame:()=>tagFrame(),onTap:(x,y)=>tagTap(x,y),onFix:fx=>toast(`Questo modello ha ${[fx.op&&'opacità',fx.sc&&'dimensioni dei punti'].filter(Boolean).join(' e ')} salvate in modo non standard (KIRI): l'ho corretto alla meglio. Per la qualità piena ricaricalo dal file PLY originale`,7000),onAlt:()=>sw&&sw.classList.remove('wait'),onSwitch:i=>{if(sw)sw.querySelector('span').textContent=m3Label(L[1-i],1-i);if(show){tagsBuild();edUI()}},onWait:n=>toast(`Preparo «${n}»…`,1500),onAltErr:()=>{if(sw)sw.hidden=true;toast('La seconda modalità non si carica',4000)}})};
-    /* 2.20: etichette sulle porte e sulle caratteristiche — ⓘ le mostra, «Modifica» permette di piazzarle toccando il modello */
-    const tg=$('.m3tags',el),svg=$('.m3ln',el),ed=$('.m3ed',el),edT=$('span',ed),edB=$('[data-m3ed]',ed);let show=false,edit=false,nodes=[];
+    /* 2.20: etichette sulle porte e sulle caratteristiche. 2.26: ⓘ le mostra soltanto; ✎ «Modifica» le piazza toccando il modello e raddrizza il modello (orientamento), con le istruzioni in alto sopra le etichette */
+    const tg=$('.m3tags',el),svg=$('.m3ln',el),ed=$('.m3ed',el),edT=$('.m3et',ed);let show=false,edit=false,wasShow=false,nodes=[];
     const curM=()=>d[v&&v.cur()===1?'m3d2':'m3d'];
     const tagsBuild=()=>{const ns=(curM()&&curM().notes)||[];svg.innerHTML=ns.map(n=>`<line data-l="${n.id}"/>`).join('');tg.querySelectorAll('.m3n').forEach(x=>x.remove());
       nodes=ns.map((n,i)=>{const w=document.createElement('div');w.className='m3n';w.style.setProperty('--i',i);w.innerHTML=`<i class="m3pin"></i><button class="m3pill" data-nid="${n.id}">${esc(n.t)}</button>`;tg.append(w);return {n,w,pin:w.firstElementChild,pill:w.lastElementChild,ln:svg.querySelector(`[data-l="${n.id}"]`)}})};
-    const edUI=()=>{const has=((curM()&&curM().notes)||[]).length;ed.hidden=!show;el.querySelector('.m3page').classList.toggle('editing',edit);
-      edT.textContent=edit?(has?'Tocca il modello per aggiungere · tocca un\'etichetta per cambiarla':'Tocca il modello dove vuoi un\'etichetta'):`${has} ${has===1?'etichetta':'etichette'}`;edB.textContent=edit?'Fine':'✎ Modifica'};
-    const tagsShow=(on,ed2)=>{show=on;edit=!!(on&&ed2);tg.hidden=!on;tg.classList.toggle('on',on);if(on){tagsBuild();hap.tick(.5)}v&&v.setAuto&&v.setAuto(!on);el.querySelector('[data-m3info]').classList.toggle('on',on);edUI()};
+    const edUI=()=>{const has=((curM()&&curM().notes)||[]).length,m=curM(),r=(m&&m.rot)||[0,0,0];ed.hidden=!edit;el.querySelector('.m3page').classList.toggle('editing',edit);el.querySelector('[data-m3edit]').classList.toggle('on',edit);
+      edT.textContent=has?'Tocca il modello per aggiungere un\'etichetta · tocca un\'etichetta per cambiarla o toglierla':'Tocca il modello dove vuoi un\'etichetta · se è storto, raddrizzalo qui sotto';ed.querySelector('[data-rot="3"]').disabled=!r.some(Boolean)};
+    const tagsShow=(on,ed2)=>{show=on;edit=!!(on&&ed2);tg.hidden=!on;tg.classList.toggle('on',on);if(on){tagsBuild();hap.tick(.5)}v&&v.setAuto&&v.setAuto(!on);el.querySelector('[data-m3info]').classList.toggle('on',on&&!edit);edUI()};
+    const editOn=()=>{wasShow=show;tagsShow(true,true);hap.tick(.6)};
+    const editOff=()=>{tagsShow(wasShow&&((curM()&&curM().notes)||[]).length>0,false);hap.tick(.5)};
     var tagFrame=()=>{if(!show||!v||!v.project)return;const c=v.center(),busy=v.busy(),L=[],R=[];
       for(const o of nodes){const p=v.project(o.n.p);if(!p)continue;let dx=p.x-c.x,dy=p.y-c.y;const k=Math.hypot(dx,dy)||1;dx/=k;dy/=k;if(Math.abs(dx)<.25)dx=dx<0?-.25:.25;
         const a=busy?0:Math.max(0,Math.min(1,(p.f+.25)/.4));o.p=p;o.a=a;o.lx=p.x+dx*62;o.ly=p.y+dy*40;(dx<0?L:R).push(o);o.side=dx<0}
@@ -3719,25 +3755,27 @@ function openModel3D(d,adjust,startAlt){let v=null;const L=m3List(d);
       if(!edit){b.animate([{scale:1},{scale:1.12},{scale:1}],{duration:260});hap.tick(.4);return}
       const i=await sheet(n.t,[{ic:'✎',t:'Cambia il testo',g:1},{ic:'🗑',t:'Togli l\'etichetta',dng:true,g:2}]);
       if(i===0){const t=await askTag(tagChips(d,[]),n.t);if(t){n.t=t;await saveDev(d);tagsBuild()}}if(i===1){m.notes=m.notes.filter(x=>x!==n);await saveDev(d);tagsBuild();edUI()}});
-    edB.onclick=()=>{if(edit){tagsShow(((curM()&&curM().notes)||[]).length>0,false);hap.tick(.5)}else tagsShow(true,true)};
     go(startAlt);
     /* chiusura: l'oggetto si ritira, la luce si spegne, poi la pagina sfuma */
     el._close=()=>{const w=v;if(!w)return;w.outro();setTimeout(()=>w.dispose(),RM()?0:M3_OUT+120)};
     if(!RM())el._out={fly(run){el.classList.add('m3bye');setTimeout(run,M3_OUT+60);return true}};
-    const setOri=async()=>{const k=v&&v.cur()===1?'m3d2':'m3d',m=d[k],r=m.rot||[0,0,0];
-      const i=await sheet(`Orientamento${L[1]?' · '+m3Label(m,k==='m3d2'?1:0):''}`,[{ic:'↕️',t:'Capovolgi',sub:'Se è a testa in giù',g:1},{ic:'⤵️',t:'Ruota in avanti di 90°',sub:'Se è sdraiato sul dorso o sulla faccia',g:1},{ic:'↪️',t:'Ruota di lato di 90°',sub:'Se è coricato su un fianco',g:1},{ic:'↺',t:'Ripristina',g:2}]);
-      if(i<0)return;const n=[...r];if(i===0)n[0]=(n[0]+180)%360;if(i===1)n[0]=(n[0]+90)%360;if(i===2)n[2]=(n[2]+90)%360;if(i===3)n.splice(0,3,0,0,0);
-      m.rot=n;await saveDev(d);buzz('tick');go(k==='m3d2')};
+    /* orientamento (dentro «Modifica»): capovolgi, ruota in avanti, ruota di lato, ripristina; vale per la modalità mostrata */
+    const rotate=async i=>{const k=v&&v.cur()===1?'m3d2':'m3d',m=d[k],n=[...(m.rot||[0,0,0])];
+      if(i===0)n[0]=(n[0]+180)%360;if(i===1)n[0]=(n[0]+90)%360;if(i===2)n[2]=(n[2]+90)%360;if(i===3)n.splice(0,3,0,0,0);
+      m.rot=n;await saveDev(d);buzz('tick');edUI();await go(k==='m3d2');if(show&&v&&v.setAuto)v.setAuto(false)};
     /* grandezza reale: cursore logaritmico 2–60 cm; il piedistallo resta uguale, l'oggetto cambia */
     const zb=$('.m3size',el),zr=$('input',zb),zl=$('b',zb),c2t=c=>Math.round(Math.log(c/M3_CM_MIN)/Math.log(M3_CM_MAX/M3_CM_MIN)*1000),t2c=t=>{const c=M3_CM_MIN*Math.pow(M3_CM_MAX/M3_CM_MIN,t/1000);return c<10?Math.round(c*2)/2:Math.round(c)};
     const zset=c=>{zr.value=c2t(c);zl.textContent=String(c).replace('.',',')+' cm'+(+d.m3cm>0?'':' · auto')};zset(m3Cm(d));
     let zc=0;zr.addEventListener('input',()=>{const c=t2c(+zr.value);if(c!==zc){zc&&hap.tick(.3);zc=c}zl.textContent=String(c).replace('.',',')+' cm';v&&v.setScale(m3Scale(c))});
     zr.addEventListener('change',async()=>{d.m3cm=t2c(+zr.value);zset(d.m3cm);await saveDev(d);buzz('tick')});
-    el.addEventListener('click',async e=>{if(e.target.closest('[data-m3set]'))setOri();if(e.target.closest('[data-m3sw]')&&v)v.toggle();
-      if(e.target.closest('[data-m3info]')){if(!v||!v.pick){toast('Aspetta che il modello sia pronto',1500);return}const has=((curM()&&curM().notes)||[]).length;show?tagsShow(false):tagsShow(true,!has)}
+    el.addEventListener('click',async e=>{if(e.target.closest('[data-m3sw]')&&v)v.toggle();
+      if(e.target.closest('[data-m3edit]'))return edit?editOff():editOn();
+      if(e.target.closest('[data-m3done]'))return editOff();
+      {const rb=e.target.closest('[data-rot]');if(rb&&!rb.disabled)return rotate(+rb.dataset.rot)}
+      if(e.target.closest('[data-m3info]')){if(edit)return editOff();if(!v||!v.pick){toast('Aspetta che il modello sia pronto',1500);return}const has=((curM()&&curM().notes)||[]).length;if(!has){toast('Nessuna etichetta: tocca ✎ per aggiungerle',2600);hap.bump();return}tagsShow(!show)}
       if(e.target.closest('[data-m3cm]')){zb.hidden=!zb.hidden;buzz('tick')}
       if(e.target.closest('[data-m3auto]')){delete d.m3cm;d.m3cm=null;zset(m3Cm(d));v&&v.setScale(m3Scale(m3Cm(d)));await saveDev(d);buzz('tick')}});
-    if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, usa ⟲ in alto a destra',5000),1200)}});
+    if(adjust)setTimeout(()=>toast('Se il modello è storto o capovolto, tocca ✎ in alto a destra',5000),1200)}});
 }
 function attHTML(d){const as=d.allegati||[];
   return `<div class="sec-t">Allegati${as.length?` (${as.length})`:''}</div>${as.length?`<div class="log">${as.map(a=>`<div class="att"><span class="ai">${attIcon(a)}</span><button class="an" data-att="${a.id}"><b>${esc(a.nome)}</b><small>${[attKind(a),fmtSize(a.size),fmtD(a.t)].filter(Boolean).join(' · ')}</small></button><button class="ab" data-attdl="${a.id}" aria-label="Scarica">⬇︎</button><button class="ab" data-attdel="${a.id}" aria-label="Elimina">✕</button></div>`).join('')}</div>`:''}<button class="btn sm sec" data-addatt style="margin-top:8px">📎 Aggiungi allegato</button><input type="file" id="attf" multiple hidden>`}
@@ -3800,7 +3838,7 @@ function listOpts(kind){
   if(kind==='tipi')return u([...TIPI,...devices.map(d=>d.tipologia)]);
   if(kind==='linee')return u(devices.map(d=>d.linea));
   if(kind==='luoghi')return u([...LUOGHI0,...devices.map(d=>d.luogo)]);
-  if(kind==='raccolte')return u(['Apple','Console','Server','Televisori','Altro',...devices.map(d=>d.raccolta)]);
+  if(kind==='raccolte')return u(['Apple','Portatili','Console','Server','Televisori',...devices.flatMap(racOf)]);
   if(kind==='tubi')return u([...TUBI,...devices.map(d=>d.tv_tubo)]);
   if(kind==='audio')return AUDIO;
   if(kind==='connettori')return u([...CONNETTORI,...devices.map(d=>d.acc_connettore)]);
@@ -3816,6 +3854,8 @@ function fieldHTML(k,l,t,v,d){
     return `<label class="f">${l}</label><input class="in" id="lnkq" placeholder="Cerca un computer…" autocomplete="off"><div class="lnkbox" id="lnkbox">${opts.map(x=>`<label class="lnk"><input type="checkbox" value="${x.id}" ${cur.includes(x.id)?'checked':''}> ${esc(x.nome)}${x.anno?' ('+x.anno+')':''}</label>`).join('')||'<small style="color:var(--mute)">Nessun computer in collezione</small>'}</div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='tags'){const cur=Array.isArray(v)?v:[];const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[]),...cur])];
     return `<label class="f">${l}</label><div class="chips" id="tagbox">${all.map(x=>`<button type="button" class="chip ${cur.includes(x)?'on':''}" data-tag="${esc(x)}">#${esc(x)}</button>`).join('')}</div><div class="row"><input class="in" id="newtag" placeholder="Nuova etichetta (es. Da pulire)" autocomplete="off"><button type="button" class="btn sm sec" id="addtag">＋</button></div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
+  if(t==='racc'){const cur=racOf({raccolta:v}),all=[...new Set([...listOpts('raccolte'),...cur])];
+    return `<label class="f">${l}</label><div class="chips" id="racbox">${all.map(x=>`<button type="button" class="chip ${cur.includes(x)?'on':''}" data-rac="${esc(x)}">🗂️ ${esc(x)}</button>`).join('')}</div><div class="row"><input class="in" id="newrac" placeholder="Nuova raccolta (es. Portatili)" autocomplete="off"><button type="button" class="btn sm sec" id="addrac">＋</button></div><input type="hidden" name="${k}" value="${esc(JSON.stringify(cur))}">`}
   if(t==='area')return `<label class="f">${l}</label><textarea class="in" name="${k}">${esc(v)}</textarea>`;
   if(t==='link'){const opts=devices.filter(x=>x.id!==d.id&&!x.wish&&!['acc','part'].includes(kindOf(x.tipologia))).sort((a,b)=>String(a.nome).localeCompare(b.nome,'it'));
     return `<label class="f">${l}</label><select class="in" name="${k}"><option value="">— nessuno —</option>${opts.map(x=>`<option value="${x.id}" ${x.id===v?'selected':''}>${esc(x.nome)}${x.anno?' ('+x.anno+')':''}${x.luogo?' · '+esc(x.luogo):''}</option>`).join('')}</select>`}
@@ -3924,13 +3964,19 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     const addTag=()=>{const v=$('#newtag',el).value.trim().replace(/^#/,'');if(!v)return;let b=[...tb.children].find(x=>x.dataset.tag.toLowerCase()===v.toLowerCase());
       if(!b){b=document.createElement('button');b.type='button';b.className='chip';b.dataset.tag=v;b.textContent='#'+v;tb.append(b)}b.classList.add('on');setTags();$('#newtag',el).value=''};
     $('#addtag',el).onclick=addTag;$('#newtag',el).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addTag()}};
+    /* 2.26: raccolte (più di una) */
+    {const rb=$('#racbox',el);if(rb){const setR=()=>{fm.raccolta.value=JSON.stringify([...rb.querySelectorAll('.on')].map(b=>b.dataset.rac))};
+      rb.addEventListener('click',e=>{const b=e.target.closest('[data-rac]');if(b){b.classList.toggle('on');setR();hap.tick(.4)}});
+      const addR=()=>{const v=$('#newrac',el).value.trim();if(!v)return;let b=[...rb.children].find(x=>x.dataset.rac.toLowerCase()===v.toLowerCase());
+        if(!b){b=document.createElement('button');b.type='button';b.className='chip';b.dataset.rac=v;b.textContent='🗂️ '+v;rb.append(b)}b.classList.add('on');setR();$('#newrac',el).value=''};
+      $('#addrac',el).onclick=addR;$('#newrac',el).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addR()}}}}
     /* «non si sa» accanto ai campi essenziali */
     const ign=new Set(d.ignoti||[]);
     const unkBtn=k=>{const b=document.createElement('button');b.type='button';b.className='unk'+(ign.has(k)?' on':'');b.dataset.unkt=k;b.textContent='non si sa';return b};
     for(const k of ESS_ALL){const inp=fm.querySelector(`[name="${k}"]`);let lab=inp&&inp.previousElementSibling;if(lab&&lab.tagName==='LABEL'){lab.append(unkBtn(k));if(ign.has(k))inp.placeholder='Sconosciuto'}}
     const fs=[...el.querySelectorAll('.sec-t')].find(x=>x.textContent==='Foto');if(fs)fs.append(unkBtn('foto'));
     el.addEventListener('click',e=>{const b=e.target.closest('[data-unkt]');if(!b)return;b.classList.toggle('on');const inp=fm.querySelector(`[name="${b.dataset.unkt}"]`);if(inp)inp.placeholder=b.classList.contains('on')?'Sconosciuto':''});
-    if(focus)setTimeout(()=>{const t=focus==='foto'?fs:fm.querySelector(`[name="${focus}"]`);if(t){t.scrollIntoView({block:'center'});if(t.focus&&t.tagName!=='DIV')t.focus()}},300);fm.tipologia.addEventListener('change',applyKind);
+    if(focus)setTimeout(()=>{const t=focus==='foto'?fs:focus==='raccolta'?$('#racbox',el):fm.querySelector(`[name="${focus}"]`);if(t){t.scrollIntoView({block:'center'});if(t.focus&&t.tagName!=='DIV')t.focus()}},300);fm.tipologia.addEventListener('change',applyKind);
     const updSw=()=>{const hx=fm.colore_hex.value||nameHex(fm.colore.value);const s=$('#swp',el);s.style.setProperty('--c',hx||'transparent');s.classList.toggle('none',!hx);el.querySelectorAll('.swb').forEach(b=>b.classList.toggle('on',b.title===fm.colore.value))};
     fm.colore.addEventListener('input',()=>{fm.colore_hex.value='';updSw()});
     $('#cpick',el).addEventListener('input',e=>{fm.colore_hex.value=e.target.value;if(!fm.colore.value.trim())fm.colore.value='Personalizzato';updSw()});
@@ -3976,6 +4022,7 @@ function openForm(src,{fromLookup=false,focus=''}={}){
     o.anno=o.anno?parseInt(o.anno,10)||'':'';
     for(const [k] of ALLF)o[k]=f[k].value.trim();
     try{o.tags=JSON.parse(f.tags.value||'[]')}catch(e){o.tags=[]}
+    {let r;try{r=JSON.parse(f.raccolta.value||'[]')}catch(e){r=racOf({raccolta:f.raccolta.value})}r=racOf({raccolta:Array.isArray(r)?r:[]});o.raccolta=r.length?r:''}
     try{o.compat=JSON.parse(f.compat.value||'[]')}catch(e){o.compat=[]}
     if(!o.compat.length)o.compat=undefined;
     o.ignoti=[...f.querySelectorAll('.unk.on')].map(b=>b.dataset.unkt);
@@ -4219,13 +4266,13 @@ function openTimeMachine({replace=false}={}){
         Y=Math.max(y0,Math.min(y1,Y))}paint();if(drag||target||V||Math.abs(Y-Math.round(Y))>.002)raf=requestAnimationFrame(step)};
     const kick=()=>{if(!raf)raf=requestAnimationFrame(step)};
     const fly=(y,ms)=>{target={y,from:Y,t0:performance.now(),ms};V=0;kick()};
-    /* righello e palco: trascina in orizzontale (o in verticale sul palco) per viaggiare */
+    /* righello e palco: trascina in orizzontale (o in verticale sul palco) per viaggiare. 2.26: in verticale gli anni seguono il dito (giù = avanti, i pezzi vengono verso di te) */
     const down=e=>{if(e.target.closest('.tm-c'))return;target=null;drag={x:e.clientX,y:e.clientY,Y,t:performance.now(),vy:0,ax:e.currentTarget===ru?'x':null,lx:e.clientX,ly:e.clientY};e.currentTarget.setPointerCapture&&e.currentTarget.setPointerCapture(e.pointerId);kick()};
     const move=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.ax){if(Math.hypot(dx,dy)<8)return;drag.ax=Math.abs(dx)>Math.abs(dy)?'x':'y'}
-      const now=performance.now(),dt=Math.max(1,now-drag.t)/1000,d=drag.ax==='x'?-(e.clientX-drag.lx)/PX:-(e.clientY-drag.ly)/90;Y=Math.max(y0,Math.min(y1,Y+d));drag.vy=d/dt;drag.t=now;drag.lx=e.clientX;drag.ly=e.clientY;kick()};
+      const now=performance.now(),dt=Math.max(1,now-drag.t)/1000,d=drag.ax==='x'?-(e.clientX-drag.lx)/PX:(e.clientY-drag.ly)/90;Y=Math.max(y0,Math.min(y1,Y+d));drag.vy=d/dt;drag.t=now;drag.lx=e.clientX;drag.ly=e.clientY;kick()};
     const up=()=>{if(!drag)return;V=Math.max(-14,Math.min(14,drag.vy||0))*(performance.now()-drag.t<90?1:0);drag=null;kick()};
     [ru,$('.tm-stage',el)].forEach(t=>{t.addEventListener('pointerdown',down);t.addEventListener('pointermove',move);t.addEventListener('pointerup',up);t.addEventListener('pointercancel',up)});
-    el.addEventListener('wheel',e=>{e.preventDefault();target=null;Y=Math.max(y0,Math.min(y1,Y+(e.deltaY+e.deltaX)*.006));V=0;kick()},{passive:false});
+    el.addEventListener('wheel',e=>{e.preventDefault();target=null;Y=Math.max(y0,Math.min(y1,Y+(e.deltaX-e.deltaY)*.006));V=0;kick()},{passive:false});
     el.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){fly(Math.max(y0,Math.min(y1,Math.round(Y)+(e.key==='ArrowRight'?1:-1))),320)}});
     ru.addEventListener('click',e=>{if(e.target.closest('.tm-t span')){fly(+e.target.textContent,700)}});
     el.addEventListener('click',e=>{const c=e.target.closest('[data-tm]');if(!c)return;const l=c.closest('.tm-l');if(Math.abs(+l.dataset.y-Y)>.5){fly(+l.dataset.y,600);return}hap.tick(.6);openDetail(c.dataset.tm)});
@@ -5620,12 +5667,12 @@ async function mergeFetched(base,r,overwrite){
 function openStats(){return statsPage(devices.filter(d=>!d.wish),devices.filter(d=>d.wish))}
 function statsPage(devices,wl){
   const bars=(title,k)=>{
-    const c=new Map();devices.forEach(d=>{const v=val(d,k);c.set(v,(c.get(v)||0)+1)});
+    const c=new Map();devices.forEach(d=>{for(const v of k==='raccolta'?vals(d,k):[val(d,k)])c.set(v,(c.get(v)||0)+1)});
     const a=[...c].sort((x,y)=>y[1]-x[1]).slice(0,12);const mx=Math.max(...a.map(x=>x[1]),1);
     return `<div class="sec-t">${title}</div>`+a.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><div style="width:${v/mx*50}%"></div><span>${v}</span></div>`).join('');
   };
   const sum=k=>devices.reduce((s,d)=>s+(parseFloat(d[k])||0),0);
-  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>Spese per interventi</div><div>€ ${devices.reduce((s,d)=>s+(d.interventi||[]).reduce((t,i)=>t+(parseFloat(i.costo)||0),0),0).toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+(devices.some(d=>d.raccolta)?bars('Per raccolta','raccolta'):'')+(devices.some(d=>d.ruolo&&d.ruolo!=='Collezione')?bars('Per ruolo','ruolo'):'')+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
+  const h=`<div class="kv"><div>Oggetti</div><div>${devices.length}</div><div>Pezzi (con quantità)</div><div>${devices.reduce((s,d)=>s+(parseInt(d.quantita,10)||1),0)}</div><div>Con foto</div><div>${devices.filter(d=>d.foto&&d.foto.length).length}</div><div>Speso (indicato)</div><div>€ ${sum('acq_prezzo').toLocaleString('it')}</div><div>Valore stimato</div><div>€ ${sum('valore').toLocaleString('it')}</div><div>Spese per interventi</div><div>€ ${devices.reduce((s,d)=>s+(d.interventi||[]).reduce((t,i)=>t+(parseFloat(i.costo)||0),0),0).toLocaleString('it')}</div><div>In wishlist</div><div>${wl.length}${wl.length?` (budget € ${wl.reduce((s,d)=>s+(parseFloat(d.w_budget)||0),0).toLocaleString('it')})`:''}</div></div>`+(devices.some(d=>racOf(d).length)?bars('Per raccolta','raccolta'):'')+(devices.some(d=>d.ruolo&&d.ruolo!=='Collezione')?bars('Per ruolo','ruolo'):'')+bars('Per luogo','luogo')+bars('Per marca','marca')+bars('Per tipologia','tipologia')+bars('Per decennio','decennio')+bars('Per linea','linea')+bars('Per colore','colore')+bars('Per stato','stato');
   const tops=devices.filter(d=>+d.valore&&+d.acq_prezzo).map(d=>({d,g:+d.valore-+d.acq_prezzo})).sort((a,b)=>b.g-a.g).slice(0,5);
   const cs=collSeries();
   const VR=[[1,'1 anno'],[2,'2 anni'],[5,'5 anni'],[0,'Tutto']],vr=LS.get('rd_vrange',2);
@@ -5723,8 +5770,10 @@ function openCutout(d){
 
 /* ============ museo ============ */
 function museumItems(){return devices.filter(d=>!d.wish&&kindOf(d.tipologia)!=='acc'&&kindOf(d.tipologia)!=='part'&&!['In uso','Ricambi'].includes(d.ruolo)).sort((a,b)=>((a.anno||9999)-(b.anno||9999))||String(a.nome).localeCompare(b.nome,'it'))}
-const muByRac=()=>LS.get('rd_mu_by','')==='rac'||(LS.get('rd_mu_by','')===''&&devices.some(d=>d.raccolta));
-const roomOf=d=>muByRac()?(d.raccolta||'Altro'):d.anno?Math.floor(d.anno/10)*10+'s':'Senza anno';
+const muByRac=()=>LS.get('rd_mu_by','')==='rac'||(LS.get('rd_mu_by','')===''&&devices.some(d=>racOf(d).length));
+/* 2.26: con le raccolte multiple un oggetto può stare in più sale (es. Apple e Portatili) */
+const roomsOf=d=>{if(!muByRac())return [d.anno?Math.floor(d.anno/10)*10+'s':'Senza anno'];const r=racOf(d);return r.length?r:['Altro']};
+const roomOf=d=>roomsOf(d)[0];
 /* inclinazione del telefono → rotazione 3D degli oggetti */
 const Tilt={n:0,on(){if(this.n++)return;this.h=e=>{if(e.gamma==null)return;const h=document.documentElement;h.classList.add('tilting');
     const ry=Math.max(-14,Math.min(14,e.gamma*.55)),rx=Math.max(-8,Math.min(8,((e.beta||55)-55)*.25));
@@ -5744,29 +5793,47 @@ function openMuseum(){originFrom($('#bMuseo'));vt('vt-mu-in',()=>LS.get('rd_muvi
 function museumView(v){LS.set('rd_muview',v);hap.tick(.6);vt('vt-pl',()=>v==='tm'?openTimeMachine({replace:true}):museumPage({replace:true}))}
 function museumPage({replace=false}={}){
   const all=museumItems();
-  const rooms=[...new Set(all.map(roomOf))];
+  const rooms=[...new Set(all.flatMap(roomsOf))];
   let room=LS.get('rd_room','');if(!rooms.includes(room))room=rooms[0]||'';
   const body=`<div class="mu-top"><button class="hb" data-back aria-label="Esci">←</button><b>MUSEO</b><div class="mu-tabs">${rooms.map(r=>`<button data-room="${esc(r)}">${esc(r)}</button>`).join('')}</div><button class="hb" id="muv" aria-label="Visita guidata" title="Visita guidata">▶︎</button><button class="hb" data-muview="tm" aria-label="Linea del tempo" title="Linea del tempo">⏳</button></div><div class="mu-wall" id="muw"></div>`;
   openPage('Museo',body,{replace,bare:true,cls:'museum mu-root',mount(el){
     el.addEventListener('click',e=>{if(e.target.closest('[data-muview]'))museumView('tm')});
     Tilt.on();el._close=()=>Tilt.off();el._out={cls:'vt-mu-out',before(){originFrom($('#bMuseo'))}};
     const wall=$('#muw',el);let gen=0;
+    /* 2.26: tenendo premuto sugli scaffali compare un cursore che ingrandisce o rimpicciolisce gli oggetti; il numero per ripiano si adatta (5…1) */
+    let K=Math.max(.6,Math.min(1.8,+LS.get('rd_mu_k',1)||1));const perShelf=k=>Math.max(1,Math.min(5,Math.round(3/k)));let N=perShelf(K);
+    const applyK=()=>{wall.style.setProperty('--mk',K.toFixed(3));wall.style.setProperty('--mw',`calc(${(100/N).toFixed(2)}% - 2%)`)};applyK();
+    const reshelve=()=>{const objs=[...wall.querySelectorAll('.mu-obj')];if(!objs.length)return;wall.classList.add('still');const fr=document.createDocumentFragment();
+      for(let i=0;i<objs.length;i+=N){const sh=document.createElement('div');sh.className='mu-shelf';sh.style.setProperty('--i',i/N);objs.slice(i,i+N).forEach(o=>sh.append(o));const b=document.createElement('div');b.className='mu-board';sh.append(b);fr.append(sh)}
+      wall.querySelectorAll('.mu-shelf').forEach(x=>x.remove());wall.prepend(fr)};
+    let pan=null,panT=0;const hideSize=()=>{if(!pan)return;const p=pan;pan=null;p.classList.add('out');setTimeout(()=>p.remove(),220)};
+    const showSize=()=>{if(pan||!wall.querySelector('.mu-obj'))return;hap.thud(.6);pan=document.createElement('div');pan.className='mu-size';
+      const t0=Math.round(Math.log(K/.6)/Math.log(3)*100);pan.innerHTML=`<span class="mu-s1">🔍</span><input type="range" min="0" max="100" step="1" value="${t0}" aria-label="Grandezza degli oggetti"><b>${N} per ripiano</b><button class="mu-sx" aria-label="Chiudi">✕</button>`;el.append(pan);
+      const rg=$('input',pan),lb=$('b',pan),idle=()=>{clearTimeout(panT);panT=setTimeout(hideSize,4500)};idle();
+      rg.addEventListener('input',()=>{K=.6*Math.pow(3,+rg.value/100);const n=perShelf(K);if(n!==N){N=n;reshelve();hap.tick(.6);lb.textContent=`${N} per ripiano`}applyK();idle()});
+      rg.addEventListener('change',()=>{LS.set('rd_mu_k',+K.toFixed(3));idle()});$('.mu-sx',pan).onclick=hideSize};
+    {let lp=null,swallow=false;
+      wall.addEventListener('pointerdown',e=>{swallow=false;if(e.button>0)return;if(lp)clearTimeout(lp.t);lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp=null;swallow=true;showSize()},480)}});
+      wall.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10){clearTimeout(lp.t);lp=null}});
+      for(const ty of ['pointerup','pointercancel'])wall.addEventListener(ty,()=>{if(lp){clearTimeout(lp.t);lp=null}});
+      wall.addEventListener('click',e=>{if(swallow){swallow=false;e.stopPropagation();e.preventDefault()}},true);wall.addEventListener('contextmenu',e=>e.preventDefault());
+      el.addEventListener('pointerdown',e=>{if(pan&&!e.target.closest('.mu-size')&&!lp)hideSize()},true)}
     const draw=async()=>{
-      const my=++gen;LS.set('rd_room',room);
+      const my=++gen;LS.set('rd_room',room);wall.classList.remove('still');
       el.querySelectorAll('[data-room]').forEach(b=>{b.classList.toggle('on',b.dataset.room===room);if(b.dataset.room===room)b.scrollIntoView({inline:'center',block:'nearest'})});
-      const its=all.filter(d=>roomOf(d)===room);
+      const its=all.filter(d=>roomsOf(d).includes(room));
       if(!its.length){wall.innerHTML=`<div class="mu-empty"><div style="font-size:56px">🏛️</div><p><b>Il museo è vuoto</b></p><p>Aggiungi oggetti alla collezione (con una foto) e torneranno qui, sugli scaffali della loro decade.</p></div>`;return}
-      let h='';for(let i=0;i<its.length;i+=3)h+=`<div class="mu-shelf" style="--i:${i/3}">${its.slice(i,i+3).map(d=>`<button class="mu-obj" data-mu="${d.id}"><span class="emo">${icon(d)}</span><span class="mu-plaque">${esc([d.anno,d.nome].filter(Boolean).join(' · '))}</span></button>`).join('')}<div class="mu-board"></div></div>`;
-      wall.innerHTML=h+`<p class="mu-hint">Tocca un oggetto per vederlo sul piedistallo · ▶︎ per la visita guidata · inclina il telefono</p>`;
+      let h='';for(let i=0;i<its.length;i+=N)h+=`<div class="mu-shelf" style="--i:${i/N}">${its.slice(i,i+N).map(d=>`<button class="mu-obj" data-mu="${d.id}"><span class="emo">${icon(d)}</span><span class="mu-plaque">${esc([d.anno,d.nome].filter(Boolean).join(' · '))}</span></button>`).join('')}<div class="mu-board"></div></div>`;
+      wall.innerHTML=h+`<p class="mu-hint">Tocca un oggetto per vederlo sul piedistallo · tieni premuto per cambiare la grandezza · ▶︎ per la visita guidata · inclina il telefono</p>`;
       let n=0;for(const d of its){const r=await museumImg(d);if(my!==gen)return;const b=wall.querySelector(`[data-mu="${d.id}"]`);if(!r||!b)continue;b.querySelector('.emo').outerHTML=o3HTML(d,r,{layers:1,i:n++})}
     };
     draw();
     el.addEventListener('click',e=>{const r=e.target.closest('[data-room]');if(r){room=r.dataset.room;draw();return}
       const o=e.target.closest('[data-mu]');
-      if(o){const its=all.filter(d=>roomOf(d)===room),k=its.findIndex(d=>d.id===o.dataset.mu),hero=o.querySelector('.o3');
+      if(o){const its=all.filter(d=>roomsOf(d).includes(room)),k=its.findIndex(d=>d.id===o.dataset.mu),hero=o.querySelector('.o3');
         if(hero)hero.style.viewTransitionName='mu-hero';
         vt('vt-pl',async()=>{if(hero)hero.style.viewTransitionName='';await openPlinth(its,k,false,!!hero)},clearHero)}
-      if(e.target.closest('#muv'))vt('vt-pl',()=>openPlinth(all,Math.max(0,all.findIndex(d=>roomOf(d)===room)),true))});
+      if(e.target.closest('#muv'))vt('vt-pl',()=>openPlinth(all,Math.max(0,all.findIndex(d=>roomsOf(d).includes(room))),true))});
   }});
 }
 async function openPlinth(list,start,auto,hero){
@@ -6073,6 +6140,10 @@ async function gh(path,{method='GET',body,raw}={}){
   return raw?r:r.json();
 }
 let syncing=null;
+/* 2.26: una volta sola, subito dopo aver ricevuto la collezione aggiornata (così non si perdono modifiche fatte sull'altro telefono): tutti gli oggetti di marca Apple entrano anche nella raccolta «Apple» */
+async function migApple(){if(LS.get('rd_mig_apple'))return 0;let n=0;
+  for(const d of devices){if(!/^apple\b/i.test(String(d.marca||'').trim()))continue;const r=racOf(d);if(r.some(x=>x.toLowerCase()==='apple'))continue;d.raccolta=[...r,'Apple'];await saveDev(d);n++}
+  LS.set('rd_mig_apple',1);if(n){render();setTimeout(()=>toast(`🗂️ ${n} ${n===1?'oggetto Apple aggiunto':'oggetti Apple aggiunti'} alla raccolta «Apple»`,5000),1600)}return n}
 function ghSync(manual){
   if(syncing)return syncing;
   syncing=(async()=>{
@@ -6088,6 +6159,7 @@ function ghSync(manual){
         if(tmap.has('collezione.json')){remote=JSON.parse(await (await gh(`git/blobs/${tmap.get('collezione.json')}`,{raw:true})).text());arr=Array.isArray(remote)?remote:(remote.devices||[])}
         const fetchPhoto=async p=>{const sha=tmap.get(p.replace(/^\.\//,''));if(!sha)throw new Error('foto mancante');return (await gh(`git/blobs/${sha}`,{raw:true})).blob()};
         const r=await mergeRemote(arr.map(x=>JSON.parse(JSON.stringify(x))),tombsOf(remote),fetchPhoto);res.nuovi+=r.nuovi;res.agg+=r.agg;res.canc+=r.canc;linesMerge(remote.linee);
+        if(!attempt)await migApple();
         if(r.nuovi||r.agg||r.canc)render();
         // contenuto da inviare: foto come file separati (nome = impronta SHA-1, così ognuna si carica una volta sola)
         const files=new Map(),m3up=[];
@@ -6246,6 +6318,11 @@ $('#bulk').addEventListener('click',async e=>{const b=e.target.closest('[data-b]
       const go=async l=>{let k=0;for(const d of L)if(setLuogo(d,l)){await saveDev(d);k++}bulkDone(`${k} oggetti spostati a ${l||'nessun luogo'}`)};
       el.addEventListener('click',e=>{const c=e.target.closest('[data-l]');if(c)go(c.dataset.l)});$('#blok',el).onclick=()=>go($('#bl',el).value)}});return}
   if(a==='stato')return openPage(`Stato di ${n} oggetti`,`<div class="chips">${STATI.map(x=>`<button class="chip" data-st="${esc(x)}">${esc(x)}</button>`).join('')}</div>`,{mount(el){el.addEventListener('click',async e=>{const c=e.target.closest('[data-st]');if(!c)return;for(const d of L){d.stato=c.dataset.st;await saveDev(d)}bulkDone(`Stato «${c.dataset.st}» per ${n} oggetti`)})}});
+  if(a==='rac'){const all=listOpts('raccolte'),has=[...new Set(L.flatMap(racOf))];
+    openPage(`Raccolte di ${n} oggetti`,`<div class="sec-t">Aggiungi a tutti</div><div class="chips">${all.map(t=>`<button class="chip" data-ra="${esc(t)}">＋ 🗂️ ${esc(t)}</button>`).join('')}</div><div class="row"><input class="in" id="nr" placeholder="Nuova raccolta (es. Portatili)" autocomplete="off"><button class="btn sm sec" id="nrb">＋</button></div><div id="rtg">${has.length?`<div class="sec-t">Togli a tutti</div><div class="chips">${has.map(t=>`<button class="chip" data-rr="${esc(t)}">✕ 🗂️ ${esc(t)}</button>`).join('')}</div>`:''}</div><div class="row" style="margin-top:18px"><button class="btn" style="flex:1" id="rgok">Fatto</button></div><p class="note">Un oggetto può stare in più raccolte: un PowerBook G4 può essere sia in «Apple» sia in «Portatili».</p>`,{mount(el){
+      const add=async t=>{t=t.trim();if(!t)return;let k=0;for(const d of L){const r=racOf(d);if(!r.some(x=>x.toLowerCase()===t.toLowerCase())){d.raccolta=[...r,t];await saveDev(d);k++}}render();hap.tick(.5);toast(k?`🗂️ ${t}: aggiunta a ${k} ${k===1?'oggetto':'oggetti'}`:`Erano già tutti in «${t}»`)};
+      el.addEventListener('click',async e=>{const x=e.target.closest('[data-ra]');if(x)return add(x.dataset.ra);const y=e.target.closest('[data-rr]');if(y){const t=y.dataset.rr;for(const d of L){const r=racOf(d);if(r.includes(t)){const z=r.filter(q=>q!==t);d.raccolta=z.length?z:'';await saveDev(d)}}y.remove();render();toast(`Tolti da «${t}»`)}});
+      $('#nrb',el).onclick=()=>{add($('#nr',el).value);$('#nr',el).value=''};$('#rgok',el).onclick=()=>bulkDone('Raccolte aggiornate')}});return}
   if(a==='tag'){const all=[...new Set([...TAGS0,...devices.flatMap(x=>x.tags||[])])],has=[...new Set(L.flatMap(d=>d.tags||[]))];
     openPage(`Etichette di ${n} oggetti`,`<div class="sec-t">Aggiungi a tutti</div><div class="chips">${all.map(t=>`<button class="chip" data-ta="${esc(t)}">＋ #${esc(t)}</button>`).join('')}</div><div class="row"><input class="in" id="nt" placeholder="Nuova etichetta" autocomplete="off"><button class="btn sm sec" id="ntb">＋</button></div>${has.length?`<div class="sec-t">Togli a tutti</div><div class="chips">${has.map(t=>`<button class="chip" data-tr2="${esc(t)}">− #${esc(t)}</button>`).join('')}</div>`:''}<button class="btn" id="tgok" style="width:100%;margin-top:16px">Fatto</button>`,{mount(el){
       const add=async t=>{t=t.trim().replace(/^#/,'');if(!t)return;for(const d of L)if(!(d.tags||[]).includes(t)){d.tags=[...(d.tags||[]),t];await saveDev(d)}render();toast(`#${t} aggiunta`)};
@@ -6388,7 +6465,7 @@ $('#sum').addEventListener('click',e=>{if(e.target.closest('#syncS')){ghSync(tru
   if(/[?&]condividi=1/.test(location.search)){history.replaceState({p:0},'',location.pathname);readShared().then(r=>{if(r.files.length||r.meta.url||r.meta.text)openShared(r);else toast('Niente da aggiungere')}).catch(()=>toast('Condivisione non riuscita'))}
   render();
   if(location.protocol!=='file:'){
-    Promise.resolve(ghOn()?ghSync(false):LS.get('rd_db_auto',true)?syncDB(false):0).finally(()=>setTimeout(autoTranslate,1500));
+    Promise.resolve(ghOn()?ghSync(false):LS.get('rd_db_auto',true)?syncDB(false):0).finally(()=>{setTimeout(autoTranslate,1500);if(!ghOn())migApple()});
     document.addEventListener('visibilitychange',()=>{if(!ghOn())return;if(document.visibilityState==='hidden'&&LS.get('rd_dirty',0))ghSync(false);if(document.visibilityState==='visible'&&!syncing)ghSync(false)});
   }
   if('serviceWorker' in navigator&&location.protocol!=='file:'){
