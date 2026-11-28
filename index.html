@@ -94,6 +94,7 @@ a.res{text-decoration:none;color:var(--ink)}.pz.shp .btn{flex:none;padding:6px 1
 .annr{display:flex;align-items:center;gap:6px}
 .annn{display:flex;flex-wrap:wrap;gap:4px;padding:6px 4px 2px 66px}.annn .tg{flex:none;font-size:11.5px;background:var(--chip);border-radius:10px;padding:2px 8px;color:var(--ink)}.annn p{flex-basis:100%;margin:4px 0 2px;font-size:13.5px;color:var(--ink);white-space:pre-wrap}
 .ann em s{display:block;font-size:11px;font-weight:500;color:var(--mute);text-align:right}
+.ann em .annsp{display:block;font-size:10.5px;font-weight:550;color:var(--mute);text-align:right}
 .chip.on{background:var(--acc);color:var(--on-acc,#2a1a05);border-color:transparent}
 .ann a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
 .ann img,.ann a>i{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none;background:var(--chip);display:grid;place-items:center;font-style:normal;font-size:24px}
@@ -295,14 +296,16 @@ html.tilting .o3{animation:none}
 .mu-obj::after{content:"";width:70%;height:8px;margin-top:-4px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.55),transparent 70%)}
 .mu-plaque{position:absolute;bottom:-21px;font:650 9px/1 system-ui,sans-serif;letter-spacing:.05em;color:#3a2410;background:linear-gradient(#f3d48c,#c99a45);padding:3px 6px;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .mu-hint{text-align:center;margin:22px 14px 0;font-size:12px;color:#b89f7b}
-/* 2.26: grandezza degli oggetti sugli scaffali (tenendo premuto) */
-.mu-wall{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.mu-wall .mu-shelf{height:calc(200px * var(--mk,1));transition:height .18s ease}.mu-wall .mu-obj{width:var(--mw,31%)}
-.mu-wall .mu-obj .o3 .fr,.mu-wall .mu-obj .o3 .ly{max-height:calc(140px * var(--mk,1))}.mu-wall .mu-obj .o3 .frame{max-height:calc(104px * var(--mk,1))}.mu-wall .mu-obj .emo{font-size:calc(62px * var(--mk,1))}
-.mu-wall.still .mu-obj,.mu-wall.still .mu-shelf::before{animation:none}
-.mu-size{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;width:min(420px,calc(100% - 32px));padding:9px 10px 9px 14px;border-radius:999px;background:rgba(26,16,9,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,214,150,.18);color:#f3e2c4;font-size:12.5px;animation:mu-size-in .32s cubic-bezier(.2,.9,.3,1.2) both}
-.mu-size input{flex:1;min-width:60px;accent-color:#e9b45f}.mu-size b{min-width:86px;text-align:right;font-weight:650}.mu-sx{border:0;background:rgba(255,240,220,.12);color:inherit;width:30px;height:30px;border-radius:50%;flex:none}
+/* 2.27: grandezza del singolo oggetto sugli scaffali (tenendo premuto l'oggetto) */
+.mu-wall{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.mu-wall .mu-obj .o3 .fr,.mu-wall .mu-obj .o3 .ly{max-height:calc(140px * var(--ik,1));max-width:calc(100% * var(--ik,1));transition:max-height .12s ease,max-width .12s ease}
+.mu-wall .mu-obj .o3 .frame{max-height:calc(104px * var(--ik,1));max-width:calc(100% * var(--ik,1));transition:max-height .12s ease,max-width .12s ease}.mu-wall .mu-obj .emo{font-size:calc(62px * var(--ik,1))}
+.mu-obj.mu-sel .o3 .fr,.mu-obj.mu-sel .o3 .frame{filter:drop-shadow(0 0 7px rgba(255,214,140,.95)) drop-shadow(0 6px 6px rgba(0,0,0,.55))}.mu-obj.mu-sel .mu-plaque{box-shadow:0 0 0 2px #ffd58a,0 1px 2px rgba(0,0,0,.5)}
+.mu-size{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;gap:6px;width:min(420px,calc(100% - 32px));padding:10px 10px 10px 14px;border-radius:22px;background:rgba(26,16,9,.84);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,214,150,.18);color:#f3e2c4;font-size:12.5px;animation:mu-size-in .32s cubic-bezier(.2,.9,.3,1.2) both}
+.mu-sn{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}.mu-sr{display:flex;align-items:center;gap:10px}
+.mu-size input{flex:1;min-width:60px;accent-color:#e9b45f}.mu-size b{min-width:40px;text-align:right;font-weight:650}.mu-sx{border:0;background:rgba(255,240,220,.12);color:inherit;width:30px;height:30px;border-radius:50%;flex:none}
 .mu-size.out{animation:mu-size-out .2s ease both}@keyframes mu-size-in{from{opacity:0;transform:translate(-50%,16px) scale(.94)}}@keyframes mu-size-out{to{opacity:0;transform:translate(-50%,12px) scale(.96)}}
-@media (prefers-reduced-motion:reduce){.mu-size,.mu-size.out{animation:none}.mu-wall .mu-shelf{transition:none}}
+@media (prefers-reduced-motion:reduce){.mu-size,.mu-size.out{animation:none}.mu-wall .mu-obj .o3 .fr,.mu-wall .mu-obj .o3 .frame{transition:none}}
 .mu-empty{padding:60px 24px;text-align:center;color:#c8b08c}
 /* piedistallo */
 .pl-wrap{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;height:100%;scrollbar-width:none}
@@ -1090,8 +1093,9 @@ html.lgs #toast{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* versione dell'app: a ogni modifica sale (1.1, 1.2…; 2.0 per i cambi grandi). Deve coincidere con V in sw.js */
-const APP_VER='2.26';
+const APP_VER='2.27';
 const NOVITA=[
+ ['2.27','2026-11-28',['🔍 Museo, scaffali: tenendo premuto un oggetto compare un cursore che cambia la grandezza di quell\'oggetto soltanto (dal 30% al 125%, ↺ per tornare normale); la grandezza resta nella scheda e si sincronizza, così un iPod shuffle può stare piccolo accanto a un portatile','📦 Annunci della wishlist con la spedizione: campo «Spedizione (€)» (0 = gratis), letta da sola dalla pagina dell\'annuncio o dallo screenshot quando c\'è; nella scheda il totale con il dettaglio, nell\'elenco «da €…» e il controllo del budget usano il totale, e con «Preso!» il prezzo pagato include la spedizione']],
  ['2.26','2026-11-28',['🗂️ Raccolte come le etichette: un oggetto può stare in più raccolte (un PowerBook G4 è sia in «Apple» sia in «Portatili»). Nel modulo si scelgono a bottoncini, nei filtri e nei raggruppamenti l\'oggetto compare in ognuna, nel museo sta in tutte le sue sale; nella selezione multipla c\'è «🗂️ Raccolte» per aggiungerle o toglierle a molti oggetti insieme','🍎 Tutti gli oggetti di marca Apple sono entrati anche nella raccolta «Apple» (una volta sola, subito dopo la prima sincronizzazione)','＋ Nella foto della scheda il tasto «Adatta / riempi» è diventato «＋»: aggiunge scontorno per il museo, modello 3D, foto, allegati, interventi (anche dettati), accessori, collaudi, progetti, valore, prestito, raccolte ed etichette','✎ Vista 3D: un solo tasto «Modifica» per le etichette e l\'orientamento (capovolgi, ruota, ripristina), con le istruzioni in alto sopra le etichette; ⓘ ora mostra soltanto le etichette','⏳ Museo, linea del tempo: in verticale gli anni seguono il dito (trascinando in giù si va avanti e i pezzi vengono verso di te)','🔍 Museo, scaffali: tieni premuto e compare un cursore per ingrandire o rimpicciolire gli oggetti; quanti stanno su un ripiano si adatta (da 5 a 1) e la grandezza resta ricordata']],
  ['2.25','2026-11-27',['🗜️ Modelli .obj compressi prima di salvarli e inviarli: un file da 50–70 MB diventa di solito 2–4 MB. Il file viene letto senza vertici ripetuti, i triangoli oltre i 300.000 vengono ridotti rispettando bordi e cuciture delle texture, le coordinate sono salvate a 16 bit e compresse, le texture diventano JPEG fino a 2048 px','📦 Anche i .gltf e i .glb oltre i 12 MB vengono compressi allo stesso modo; quelli più piccoli restano come sono','⏳ Durante la conversione l\'isola in alto mostra a che punto è (lettura, riduzione dei triangoli, compressione) e alla fine dice quanto pesava e quanto pesa']],
  ['2.24','2026-11-26',['🔍 Mercatino: si apre come un cerchio che cresce dal tasto fino a tutto schermo e si richiude allo stesso modo; scattata la foto, l\'immagine si stacca dai bordi con gli angoli arrotondati e il bordo colorato segue esattamente lo stesso ritaglio','👆 Anteprima con una sola pressione: tieni premuto un pezzo, l\'immagine vola dalla miniatura, la mini scheda scivola da sotto e le opzioni arrivano a cascata; senza staccare il dito trascina su un\'opzione (si evidenzia con uno scatto) e rilascia per sceglierla, o rilascia sulla scheda per aprirla. Chiudendo, l\'immagine torna nella miniatura','✨ Animazioni ovunque: finestre e messaggi escono sfumando, le sezioni a scomparsa si aprono e chiudono con un\'animazione, i contatori in basso fanno un balzo quando cambiano, le schede del Laboratorio entrano a cascata, i riquadri d\'errore salgono, le scelte cambiano colore con una transizione']],
@@ -1753,8 +1757,8 @@ function openDetail(id,replace,morph,quiet,dir){
       if(t.closest('[data-got]')&&await ask(`Hai preso "${d.nome}"? Lo sposto in collezione: poi puoi indicare luogo e prezzo pagato.`,'Sposta in collezione')){
         const o=Object.assign({},d,{wish:false,acq_anno:d.acq_anno||new Date().getFullYear(),modificato:Date.now()});
         if(o.w_note)o.note=[o.note,o.w_note].filter(Boolean).join('\n');
-        if(o.annunci&&o.annunci.length===1&&!o.acq_prezzo&&o.annunci[0].prezzo)o.acq_prezzo=o.annunci[0].prezzo;
-        if(o.annunci&&o.annunci.length)o.note=[o.note,'Annunci seguiti: '+o.annunci.map(a=>[a.sito,a.config,a.prezzo?'€ '+a.prezzo:'',(a.etichette||[]).join(', '),a.note,a.url].filter(Boolean).join(' · ')).join('; ')].filter(Boolean).join('\n');
+        if(o.annunci&&o.annunci.length===1&&!o.acq_prezzo&&annTot(o.annunci[0])!=null)o.acq_prezzo=String(annTot(o.annunci[0]));
+        if(o.annunci&&o.annunci.length)o.note=[o.note,'Annunci seguiti: '+o.annunci.map(a=>[a.sito,a.config,a.prezzo?'€ '+a.prezzo:'',+a.spedizione>0?'spedizione € '+a.spedizione:a.spedizione==='0'?'spedizione gratis':'',(a.etichette||[]).join(', '),a.note,a.url].filter(Boolean).join(' · ')).join('; ')].filter(Boolean).join('\n');
         ['w_priorita','w_budget','w_link','w_note','annunci'].forEach(k=>delete o[k]);
         stamp(o);idx(o);await DB.put(o);devices[devices.findIndex(x=>x.id===o.id)]=o;dirty();S.view='col';render();toast('Spostato in collezione 🎉');goBase(()=>openForm(o));return}
       if(t.closest('[data-dup]')&&kindOf(d.tipologia)==='acc'){const c=JSON.parse(JSON.stringify(d));c.id=uid();delete c.creato;delete c.modificato;c.seriale='';c.interventi=[];c.quantita=1;openForm(c);toast('Copia pronta: scegli «Va con» e salva',3500);return}
@@ -1826,21 +1830,28 @@ function openDue(){
 const siteName=u=>{const h=((String(u).match(/^https?:\/\/(?:www\.|m\.)?([^/]+)/)||[])[1]||'').toLowerCase();return /vinted/.test(h)?'Vinted':/subito/.test(h)?'Subito':/ebay/.test(h)?'eBay':/facebook/.test(h)?'Facebook Marketplace':/wallapop/.test(h)?'Wallapop':/kijiji/.test(h)?'Kijiji':h};
 const parsePrice=t=>{t=String(t||'').replace(/\s/g,'');if(!t)return '';if(/,\d{1,2}$/.test(t))t=t.replace(/\./g,'').replace(',','.');else t=t.replace(/[.,](?=\d{3}\b)/g,'');const n=parseFloat(t);return isFinite(n)?String(Math.round(n*100)/100):''};
 const findPrice=t=>{const m=String(t||'').match(/(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)\s?€|€\s?(\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)|EUR\s?(\d+(?:[.,]\d{1,2})?)/i);return m?parsePrice(m[1]||m[2]||m[3]):''};
+/* 2.27: spedizione negli annunci ('' = non indicata, '0' = gratuita); il totale (prezzo + spedizione) conta per budget, «da € …» e prezzo pagato */
+const findShip=t=>{t=String(t||'');if(/spedizione\s*(?:gratuita|gratis)|spese di spedizione\s*:?\s*(?:gratuite|gratis)|consegna\s*gratuita|free\s+(?:shipping|postage)/i.test(t))return '0';
+  const P='(\\d{1,3}(?:[.\\s]\\d{3})*(?:,\\d{1,2})?|\\d+(?:[.,]\\d{1,2})?)',E=`(?:€\\s?${P}|${P}\\s?(?:€|eur\\b))`;
+  for(const re of [new RegExp(`(?:spese di spedizione|spedizione|shipping|postage)[^\\d€\\n]{0,30}${E}`,'i'),new RegExp(`${E}\\s*(?:di\\s+)?(?:spese di spedizione|spedizione|sped\\.|shipping|postage)`,'i')]){const m=t.match(re);if(m)return parsePrice(m[1]||m[2])}
+  return ''};
+const annTot=a=>a&&a.prezzo!==''&&a.prezzo!=null&&isFinite(+a.prezzo)?Math.round(((+a.prezzo)+(+a.spedizione||0))*100)/100:null;
+const eurIt=v=>'€ '+(+v).toLocaleString('it',{minimumFractionDigits:+v%1?2:0,maximumFractionDigits:2});
 const annTitle=t=>clean(String(t||'').replace(/\s*[|–-]\s*(Vinted|Subito(\.it)?|eBay|Facebook)\b.*$/i,'').replace(/^(Guarda|Dai un'occhiata a|Ecco)[^:]*:\s*/i,'').replace(/\s+(su|on)\s+(eBay|Vinted|Subito(\.it)?|Facebook( Marketplace)?)[!.]*$/i,'').replace(/^(Guarda|Dai un'occhiata a)\s+/i,''));
 async function linkPreview(url,hint=''){
-  const r={id:uid(),url,sito:siteName(url),titolo:'',prezzo:'',img:'',desc:'',data:today()};
+  const r={id:uid(),url,sito:siteName(url),titolo:'',prezzo:'',spedizione:'',img:'',desc:'',data:today()};
   try{const res=await fetch('https://r.jina.ai/'+url,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(25000)});
     const BLK=/just a moment|attention required|access denied|security check|verify you are human|captcha|forbidden/i;
-    if(res.ok){const j=await res.json(),d=j.data||{},c=d.content||'';if(BLK.test(d.title||'')||BLK.test(c.slice(0,300)))throw new Error('anteprima bloccata dal sito');r.titolo=d.title||'';r.desc=d.description||'';r.prezzo=findPrice(c)||findPrice(r.desc);
+    if(res.ok){const j=await res.json(),d=j.data||{},c=d.content||'';if(BLK.test(d.title||'')||BLK.test(c.slice(0,300)))throw new Error('anteprima bloccata dal sito');r.titolo=d.title||'';r.desc=d.description||'';r.prezzo=findPrice(c)||findPrice(r.desc);r.spedizione=findShip(c)||findShip(r.desc);
       const im=[...c.matchAll(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g)].map(m=>m[1]).find(u=>!/\.svg|logo|icon|avatar|static|placeholder|badge/i.test(u));if(im)r.img=im}}catch(e){}
-  if(!r.titolo||!r.img){try{const j=await wjson('https://api.microlink.io/?url='+encodeURIComponent(url));const d=j.data||{};if(!/just a moment|attention required|access denied|security check/i.test(d.title||''))r.titolo=r.titolo||d.title||'';r.desc=r.desc||d.description||'';r.img=r.img||(d.image&&d.image.url)||'';r.prezzo=r.prezzo||findPrice(d.description)}catch(e){}}
+  if(!r.titolo||!r.img){try{const j=await wjson('https://api.microlink.io/?url='+encodeURIComponent(url));const d=j.data||{};if(!/just a moment|attention required|access denied|security check/i.test(d.title||''))r.titolo=r.titolo||d.title||'';r.desc=r.desc||d.description||'';r.img=r.img||(d.image&&d.image.url)||'';r.prezzo=r.prezzo||findPrice(d.description);r.spedizione=r.spedizione||findShip(d.description)}catch(e){}}
   const h=clean(String(hint||'').replace(/https?:\/\/\S+/g,''));
-  r.titolo=annTitle(r.titolo)||annTitle(h);r.prezzo=r.prezzo||findPrice(h);r.desc=clean(r.desc).slice(0,400);
+  r.titolo=annTitle(r.titolo)||annTitle(h);r.prezzo=r.prezzo||findPrice(h);r.spedizione=r.spedizione||findShip(h);r.desc=clean(r.desc).slice(0,400);
   return r;
 }
-function annMeta(d){const a=(d.annunci||[]).filter(x=>x.prezzo);if(!(d.annunci||[]).length)return d.w_link?'<span>🔗 annuncio</span>':'';
-  const min=a.length?Math.min(...a.map(x=>+x.prezzo)):null,ok=min!=null&&+d.w_budget&&min<=+d.w_budget;
-  return `<span class="${ok?'lk':''}">🏷️ ${d.annunci.length===1?'1 annuncio':d.annunci.length+' annunci'}${min!=null?` · ${a.length>1?'da ':''}€ ${min.toLocaleString('it')}`:''}${ok?' ✓':''}</span>`}
+function annMeta(d){const a=(d.annunci||[]).filter(x=>annTot(x)!=null);if(!(d.annunci||[]).length)return d.w_link?'<span>🔗 annuncio</span>':'';
+  const best=a.length?a.reduce((x,y)=>annTot(y)<annTot(x)?y:x):null,min=best?annTot(best):null,ok=min!=null&&+d.w_budget&&min<=+d.w_budget;
+  return `<span class="${ok?'lk':''}">🏷️ ${d.annunci.length===1?'1 annuncio':d.annunci.length+' annunci'}${min!=null?` · ${a.length>1?'da ':''}${eurIt(min)}${+best.spedizione>0?' sped. incl.':''}`:''}${ok?' ✓':''}</span>`}
 const ANN_TAGS=['Caricabatterie incluso','Con scatola','Funzionante','Da testare','Graffi','Ammaccature','Batteria da cambiare','Schermo con difetti','Spedizione','Ritiro a mano','Trattabile'];
 const annTagsHTML=(sel=[])=>`<div class="chips" id="atg">${[...new Set([...ANN_TAGS,...sel])].map(t=>`<button type="button" class="chip ${sel.includes(t)?'on':''}" data-atg="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;
 const annNoteFields=a=>`<label class="f">Modello / configurazione di questo annuncio</label><input class="in" id="acf" value="${esc(a.config||'')}" placeholder='Es. Retina 15" 2014, i7, 16 GB' autocomplete="off">
@@ -1849,24 +1860,25 @@ const annNoteFields=a=>`<label class="f">Modello / configurazione di questo annu
 function annNoteBind(el){el.addEventListener('click',e=>{const c=e.target.closest('[data-atg]');if(c)c.classList.toggle('on')})}
 const annNoteRead=el=>({config:($('#acf',el)||{value:''}).value.trim(),etichette:[...el.querySelectorAll('[data-atg].on')].map(x=>x.dataset.atg),note:($('#ant',el)||{value:''}).value.trim()});
 function annCard(a,rm){const ex=rm&&(a.config||(a.etichette||[]).length||a.note);
-  return `<div class="ann ${ex?'annx':''}"><div class="annr"><a href="${esc(a.url||'#')}" ${a.url?'target="_blank" rel="noopener"':'data-noop'}>${a.img?`<img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('i'),{textContent:'🏷️'}))">`:'<i>🏷️</i>'}<span><b>${esc(a.titolo||a.url||'Annuncio')}</b><small>${esc([a.sito,a.config,a.data?fmtD(a.data):''].filter(Boolean).join(' · '))}</small></span>${a.prezzo?`<em>€ ${(+a.prezzo).toLocaleString('it')}${a.prezzo_prima&&a.prezzo_prima!==a.prezzo?`<s>€ ${(+a.prezzo_prima).toLocaleString('it')}</s>`:''}</em>`:''}</a>${rm?`<button class="ibtn" data-annedit="${a.id}" aria-label="Note e modifica">✎</button>`:''}</div>
+  return `<div class="ann ${ex?'annx':''}"><div class="annr"><a href="${esc(a.url||'#')}" ${a.url?'target="_blank" rel="noopener"':'data-noop'}>${a.img?`<img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('i'),{textContent:'🏷️'}))">`:'<i>🏷️</i>'}<span><b>${esc(a.titolo||a.url||'Annuncio')}</b><small>${esc([a.sito,a.config,a.data?fmtD(a.data):''].filter(Boolean).join(' · '))}</small></span>${a.prezzo?`<em>${eurIt(annTot(a))}${+a.spedizione>0?`<small class="annsp">${eurIt(a.prezzo)} + ${eurIt(a.spedizione)} sped.</small>`:a.spedizione==='0'?'<small class="annsp">spedizione gratis</small>':''}${a.prezzo_prima&&a.prezzo_prima!==a.prezzo?`<s>${eurIt((+a.prezzo_prima)+(+a.spedizione||0))}</s>`:''}</em>`:''}</a>${rm?`<button class="ibtn" data-annedit="${a.id}" aria-label="Note e modifica">✎</button>`:''}</div>
   ${ex?`<div class="annn">${(a.etichette||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join('')}${a.note?`<p>📝 ${esc(a.note)}</p>`:''}</div>`:''}</div>`}
 function openAnnEdit(d,a){
   openPage('Annuncio',`${annCard(a)}
   <label class="f">Titolo</label><input class="in" id="et" value="${esc(a.titolo)}" autocomplete="off">
-  <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ep" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="es" value="${esc(a.sito)}"></div></div>
+  <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ep" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Spedizione (€)</label><input class="in" id="esp" type="number" inputmode="decimal" step="any" min="0" value="${esc(a.spedizione||'')}" placeholder="0 = gratis"></div></div>
+  <label class="f">Sito</label><input class="in" id="es" value="${esc(a.sito)}">
   ${annNoteFields(a)}
   ${a.desc?`<details class="more"><summary>Descrizione del venditore</summary><p class="note" style="white-space:pre-wrap">${esc(a.desc)}</p></details>`:''}
   <div class="row" style="margin-top:18px;flex-wrap:wrap"><button class="btn" id="eok" style="flex:1">Salva</button>${a.url?`<a class="btn sec" href="${esc(a.url)}" target="_blank" rel="noopener">Apri ↗</a>`:''}<button class="btn dng" data-annrm2>Togli</button></div>`,{mount(el){
     annNoteBind(el);
-    $('#eok',el).onclick=async()=>{Object.assign(a,{titolo:$('#et',el).value.trim(),prezzo:parsePrice($('#ep',el).value),sito:$('#es',el).value.trim()},annNoteRead(el));await saveDev(d);render();toast('Annuncio aggiornato');goBase(()=>openDetail(d.id))};
+    $('#eok',el).onclick=async()=>{Object.assign(a,{titolo:$('#et',el).value.trim(),prezzo:parsePrice($('#ep',el).value),spedizione:parsePrice($('#esp',el).value),sito:$('#es',el).value.trim()},annNoteRead(el));await saveDev(d);render();toast('Annuncio aggiornato');goBase(()=>openDetail(d.id))};
     el.querySelector('[data-annrm2]').onclick=async()=>{if(!await ask(`Togliere l'annuncio «${a.titolo||a.url}»?`,'Togli',true))return;d.annunci=d.annunci.filter(x=>x!==a);await saveDev(d);render();goBase(()=>openDetail(d.id))};
   }});
 }
 function annunciHTML(d){const L=(d.annunci||[]);
   return `<div class="sec-t">Annunci${L.length?` (${L.length})`:''}</div>${L.map(a=>annCard(a,true)).join('')}<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px"><button class="btn sm sec" data-annadd>＋ Aggiungi link di un annuncio</button>${L.length?'<button class="btn sm sec" data-annupd>↻ Aggiorna prezzi</button>':''}</div>${L.length?'':'<p class="note">Suggerimento: dall\'app Vinted o Subito usa «Condividi» → RDDC per aggiungere l\'annuncio al volo.</p>'}`}
 async function refreshListings(d){toast('Aggiorno gli annunci…',8000);let k=0;
-  for(const a of d.annunci||[]){const r=await linkPreview(a.url);if(r.prezzo&&r.prezzo!==a.prezzo){a.prezzo_prima=a.prezzo;a.prezzo=r.prezzo;k++}if(r.img&&!a.img)a.img=r.img;a.agg=today()}
+  for(const a of d.annunci||[]){const r=await linkPreview(a.url);if(r.prezzo&&r.prezzo!==a.prezzo){a.prezzo_prima=a.prezzo;a.prezzo=r.prezzo;k++}if(r.spedizione!==''&&r.spedizione!==(a.spedizione||'')){a.spedizione=r.spedizione;k++}if(r.img&&!a.img)a.img=r.img;a.agg=today()}
   await saveDev(d);render();toast(k?`${k} prezzi cambiati`:'Prezzi invariati');openDetail(d.id,true)}
 /* ---- lettura del testo da screenshot (OCR sul telefono; il programma si scarica la prima volta, ~5 MB, poi resta in memoria) ---- */
 let TESS=null;
@@ -1889,7 +1901,7 @@ const OCR_NOISE=/^(indietro|condividi|salva(to)?|preferiti|contatta|chatta|chat|
 function parseListingText(t){
   t=String(t||'').replace(/([A-Za-z0-9])\s+Il\b/g,'$1 II').replace(/([A-Za-z0-9])\s+Ill\b/g,'$1 III');
   const L=String(t||'').split('\n').map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>1);
-  const low=t.toLowerCase(),r={titolo:'',prezzo:'',desc:'',sito:'',luogo:'',condizione:'',url:''};
+  const low=t.toLowerCase(),r={titolo:'',prezzo:'',spedizione:findShip(t),desc:'',sito:'',luogo:'',condizione:'',url:''};
   r.sito=/subito/.test(low)?'Subito':/vinted/.test(low)?'Vinted':/ebay/.test(low)?'eBay':/marketplace|facebook/.test(low)?'Facebook Marketplace':/wallapop/.test(low)?'Wallapop':'';
   const u=t.match(/https?:\/\/\S+/);if(u)r.url=u[0];
   const PR=/^(?:prezzo:?\s*)?(?:€|eur)?\s?\d{1,3}(?:[.\s]\d{3})*(?:,\d{1,2})?\s?(?:€|eur)?(?:\s*\(?\s*(?:trattabile|spedizione[^)]*|\+ ?spedizione.*|iva inclusa)\)?)?$/i;
@@ -1924,15 +1936,16 @@ function askListing(target){
 }
 function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
   openPage('Annuncio',`<div id="lv" class="rv">${url?loader('ann','Leggo l\'annuncio…',siteName(url)):loader('scan','Preparo lo screenshot…')}</div>`,{replace,mount(el){
-    annNoteBind(el);const box=$('#lv',el);let a={id:uid(),url,sito:url?siteName(url):'',titolo:'',prezzo:'',img:'',desc:'',data:today()},sh=[],crop=null,blocked=false;
+    annNoteBind(el);const box=$('#lv',el);let a={id:uid(),url,sito:url?siteName(url):'',titolo:'',prezzo:'',spedizione:'',img:'',desc:'',data:today()},sh=[],crop=null,blocked=false;
     const wl=devices.filter(x=>x.wish).sort((x,y)=>(y.modificato||0)-(x.modificato||0));
-    const keep=()=>{const g=id=>{const x=$(id,el);return x?x.value:null};const t=g('#at');if(t!=null){a.titolo=t.trim();a.prezzo=parsePrice(g('#ap'));a.sito=g('#as').trim();a.desc=g('#ad').trim();Object.assign(a,annNoteRead(el))}};
+    const keep=()=>{const g=id=>{const x=$(id,el);return x?x.value:null};const t=g('#at');if(t!=null){a.titolo=t.trim();a.prezzo=parsePrice(g('#ap'));a.spedizione=parsePrice(g('#asp'));a.sito=g('#as').trim();a.desc=g('#ad').trim();Object.assign(a,annNoteRead(el))}};
     const draw=()=>{const cropU=crop?URL.createObjectURL(crop):'';
       box.innerHTML=`${a.url?annCard(a):''}
       ${blocked?'<p class="note">Il sito non ha mostrato l\'anteprima. Puoi completare a mano o leggere i dati da uno screenshot.</p>':''}
       <button class="btn sec" id="ash" style="width:100%;margin:8px 0">📷 ${sh.length?'Rileggi da un altro screenshot':'Leggi i dati da uno screenshot'}</button><input type="file" id="ashf" accept="image/*" multiple hidden><div id="aprog"></div>
       <label class="f">Titolo</label><input class="in" id="at" value="${esc(a.titolo)}" autocomplete="off">
-      <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}" list="dl_siti"><datalist id="dl_siti">${['Subito','Vinted','eBay','Facebook Marketplace','Wallapop','Mercatino'].map(x=>`<option value="${x}">`).join('')}</datalist></div></div>
+      <div class="grid2"><div><label class="f">Prezzo (€)</label><input class="in" id="ap" type="number" inputmode="decimal" step="any" value="${esc(a.prezzo)}"></div><div><label class="f">Spedizione (€)</label><input class="in" id="asp" type="number" inputmode="decimal" step="any" min="0" value="${esc(a.spedizione||'')}" placeholder="0 = gratis"></div></div>
+      <div><label class="f">Sito</label><input class="in" id="as" value="${esc(a.sito)}" list="dl_siti"><datalist id="dl_siti">${['Subito','Vinted','eBay','Facebook Marketplace','Wallapop','Mercatino'].map(x=>`<option value="${x}">`).join('')}</datalist></div>
       ${annNoteFields(a)}
       <label class="f">Descrizione del venditore</label><textarea class="in" id="ad" style="min-height:90px">${esc(a.desc)}</textarea>
       ${sh.length?`<label class="row" style="gap:10px;margin-top:10px">${cropU?`<img src="${cropU}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px">`:''}<input type="checkbox" id="acr" ${crop&&!a.img?'checked':''} style="width:20px;height:20px"> Usa la parte alta dello screenshot come foto</label>
@@ -1946,7 +1959,7 @@ function openListing(url,hint,{replace=false,target=null,shots=[]}={}){
       try{if(pr){pr.innerHTML=loader('scan','Leggo lo screenshot…','La prima volta scarico il lettore di testo')+'';pr.querySelector('.ldr').insertAdjacentHTML('beforeend','<div class="bar2"><i></i></div>');pr.scrollIntoView({behavior:'smooth',block:'center'})}
         const txt=await ocrImages(fs,(v,m)=>{const x=$('#aprog',el);if(!x||!x.querySelector('.ldr'))return;if(m)x.querySelector('.ldm').textContent=m.replace(/…$/,'');const sm=x.querySelector('small');if(sm&&v)sm.textContent=Math.round(v*100)+'%';const b=x.querySelector('.bar2 i');if(b&&v!=null)b.style.width=Math.round(v*100)+'%'});
         const r=parseListingText(txt);a.ocr=txt.slice(0,4000);
-        if(r.titolo)a.titolo=r.titolo;if(r.prezzo)a.prezzo=r.prezzo;if(r.sito&&!a.sito)a.sito=r.sito;if(r.url&&!a.url){a.url=r.url;a.sito=a.sito||siteName(r.url)}
+        if(r.titolo)a.titolo=r.titolo;if(r.prezzo)a.prezzo=r.prezzo;if(r.spedizione!=='')a.spedizione=r.spedizione;if(r.sito&&!a.sito)a.sito=r.sito;if(r.url&&!a.url){a.url=r.url;a.sito=a.sito||siteName(r.url)}
         a.desc=[r.desc||a.desc,r.condizione&&'Condizione: '+r.condizione,r.luogo&&'Luogo: '+r.luogo].filter(Boolean).join('\n');
         try{crop=(await shotParts(fs[0])).crop}catch(e){crop=null}
         blocked=false;draw();toast(r.titolo||r.prezzo?'Dati letti dallo screenshot: controllali':'Testo poco leggibile: completa a mano',3500)}
@@ -5800,31 +5813,33 @@ function museumPage({replace=false}={}){
     el.addEventListener('click',e=>{if(e.target.closest('[data-muview]'))museumView('tm')});
     Tilt.on();el._close=()=>Tilt.off();el._out={cls:'vt-mu-out',before(){originFrom($('#bMuseo'))}};
     const wall=$('#muw',el);let gen=0;
-    /* 2.26: tenendo premuto sugli scaffali compare un cursore che ingrandisce o rimpicciolisce gli oggetti; il numero per ripiano si adatta (5…1) */
-    let K=Math.max(.6,Math.min(1.8,+LS.get('rd_mu_k',1)||1));const perShelf=k=>Math.max(1,Math.min(5,Math.round(3/k)));let N=perShelf(K);
-    const applyK=()=>{wall.style.setProperty('--mk',K.toFixed(3));wall.style.setProperty('--mw',`calc(${(100/N).toFixed(2)}% - 2%)`)};applyK();
-    const reshelve=()=>{const objs=[...wall.querySelectorAll('.mu-obj')];if(!objs.length)return;wall.classList.add('still');const fr=document.createDocumentFragment();
-      for(let i=0;i<objs.length;i+=N){const sh=document.createElement('div');sh.className='mu-shelf';sh.style.setProperty('--i',i/N);objs.slice(i,i+N).forEach(o=>sh.append(o));const b=document.createElement('div');b.className='mu-board';sh.append(b);fr.append(sh)}
-      wall.querySelectorAll('.mu-shelf').forEach(x=>x.remove());wall.prepend(fr)};
-    let pan=null,panT=0;const hideSize=()=>{if(!pan)return;const p=pan;pan=null;p.classList.add('out');setTimeout(()=>p.remove(),220)};
-    const showSize=()=>{if(pan||!wall.querySelector('.mu-obj'))return;hap.thud(.6);pan=document.createElement('div');pan.className='mu-size';
-      const t0=Math.round(Math.log(K/.6)/Math.log(3)*100);pan.innerHTML=`<span class="mu-s1">🔍</span><input type="range" min="0" max="100" step="1" value="${t0}" aria-label="Grandezza degli oggetti"><b>${N} per ripiano</b><button class="mu-sx" aria-label="Chiudi">✕</button>`;el.append(pan);
-      const rg=$('input',pan),lb=$('b',pan),idle=()=>{clearTimeout(panT);panT=setTimeout(hideSize,4500)};idle();
-      rg.addEventListener('input',()=>{K=.6*Math.pow(3,+rg.value/100);const n=perShelf(K);if(n!==N){N=n;reshelve();hap.tick(.6);lb.textContent=`${N} per ripiano`}applyK();idle()});
-      rg.addEventListener('change',()=>{LS.set('rd_mu_k',+K.toFixed(3));idle()});$('.mu-sx',pan).onclick=hideSize};
+    /* 2.27: tenendo premuto un oggetto sugli scaffali compare un cursore che cambia la grandezza di quell'oggetto soltanto (dal 30% al 125%);
+       resta nella scheda (campo mu_k) e si sincronizza, così un iPod shuffle può restare piccolo accanto a un portatile */
+    const ikOf=d=>Math.max(.3,Math.min(1.25,+d.mu_k||1));
+    let pan=null,panT=0,selB=null;
+    const hideSize=()=>{if(!pan)return;const p=pan;pan=null;clearTimeout(panT);p.classList.add('out');setTimeout(()=>p.remove(),220);if(selB){selB.classList.remove('mu-sel');selB=null}};
+    const showSize=b=>{const d=devices.find(x=>x.id===b.dataset.mu);if(!d)return;hideSize();hap.thud(.6);selB=b;b.classList.add('mu-sel');
+      const k0=ikOf(d),pc=k=>Math.round(k*100)+'%';pan=document.createElement('div');pan.className='mu-size';
+      pan.innerHTML=`<span class="mu-sn">${esc(d.nome)}</span><div class="mu-sr"><span class="mu-s1">🔍</span><input type="range" min="30" max="125" step="1" value="${Math.round(k0*100)}" aria-label="Grandezza di ${esc(d.nome)}"><b>${pc(k0)}</b><button class="mu-sx" data-mu0 aria-label="Grandezza normale">↺</button><button class="mu-sx" data-mux aria-label="Chiudi">✕</button></div>`;el.append(pan);
+      const rg=$('input',pan),lb=$('b',pan),idle=()=>{clearTimeout(panT);panT=setTimeout(hideSize,6000)};idle();
+      const set=k=>{b.style.setProperty('--ik',k.toFixed(2));lb.textContent=pc(k)};let lastV=+rg.value;
+      const save=async k=>{d.mu_k=+k.toFixed(2);await saveDev(d)};
+      rg.addEventListener('input',()=>{const v=+rg.value;if(Math.abs(v-lastV)>=5){hap.tick(.3);lastV=v}set(v/100);idle()});
+      rg.addEventListener('change',()=>{save(+rg.value/100);idle()});
+      $('[data-mu0]',pan).onclick=()=>{rg.value=100;set(1);save(1);hap.tick(.5);idle()};$('[data-mux]',pan).onclick=hideSize};
     {let lp=null,swallow=false;
-      wall.addEventListener('pointerdown',e=>{swallow=false;if(e.button>0)return;if(lp)clearTimeout(lp.t);lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp=null;swallow=true;showSize()},480)}});
+      wall.addEventListener('pointerdown',e=>{swallow=false;if(e.button>0)return;const b=e.target.closest('.mu-obj');if(lp)clearTimeout(lp.t);lp=null;if(!b)return;lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{lp=null;swallow=true;showSize(b)},480)}});
       wall.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10){clearTimeout(lp.t);lp=null}});
       for(const ty of ['pointerup','pointercancel'])wall.addEventListener(ty,()=>{if(lp){clearTimeout(lp.t);lp=null}});
       wall.addEventListener('click',e=>{if(swallow){swallow=false;e.stopPropagation();e.preventDefault()}},true);wall.addEventListener('contextmenu',e=>e.preventDefault());
-      el.addEventListener('pointerdown',e=>{if(pan&&!e.target.closest('.mu-size')&&!lp)hideSize()},true)}
+      el.addEventListener('pointerdown',e=>{if(pan&&!e.target.closest('.mu-size'))hideSize()},true)}
     const draw=async()=>{
-      const my=++gen;LS.set('rd_room',room);wall.classList.remove('still');
+      const my=++gen;LS.set('rd_room',room);
       el.querySelectorAll('[data-room]').forEach(b=>{b.classList.toggle('on',b.dataset.room===room);if(b.dataset.room===room)b.scrollIntoView({inline:'center',block:'nearest'})});
       const its=all.filter(d=>roomsOf(d).includes(room));
       if(!its.length){wall.innerHTML=`<div class="mu-empty"><div style="font-size:56px">🏛️</div><p><b>Il museo è vuoto</b></p><p>Aggiungi oggetti alla collezione (con una foto) e torneranno qui, sugli scaffali della loro decade.</p></div>`;return}
-      let h='';for(let i=0;i<its.length;i+=N)h+=`<div class="mu-shelf" style="--i:${i/N}">${its.slice(i,i+N).map(d=>`<button class="mu-obj" data-mu="${d.id}"><span class="emo">${icon(d)}</span><span class="mu-plaque">${esc([d.anno,d.nome].filter(Boolean).join(' · '))}</span></button>`).join('')}<div class="mu-board"></div></div>`;
-      wall.innerHTML=h+`<p class="mu-hint">Tocca un oggetto per vederlo sul piedistallo · tieni premuto per cambiare la grandezza · ▶︎ per la visita guidata · inclina il telefono</p>`;
+      let h='';for(let i=0;i<its.length;i+=3)h+=`<div class="mu-shelf" style="--i:${i/3}">${its.slice(i,i+3).map(d=>`<button class="mu-obj" data-mu="${d.id}" style="--ik:${ikOf(d)}"><span class="emo">${icon(d)}</span><span class="mu-plaque">${esc([d.anno,d.nome].filter(Boolean).join(' · '))}</span></button>`).join('')}<div class="mu-board"></div></div>`;
+      wall.innerHTML=h+`<p class="mu-hint">Tocca un oggetto per vederlo sul piedistallo · tieni premuto un oggetto per cambiarne la grandezza · ▶︎ per la visita guidata · inclina il telefono</p>`;
       let n=0;for(const d of its){const r=await museumImg(d);if(my!==gen)return;const b=wall.querySelector(`[data-mu="${d.id}"]`);if(!r||!b)continue;b.querySelector('.emo').outerHTML=o3HTML(d,r,{layers:1,i:n++})}
     };
     draw();

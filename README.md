@@ -210,11 +210,16 @@ In Statistiche si sceglie l'arco di tempo (1 anno, **2 anni** di partenza, 5 ann
 ## Backup
 I dati stanno solo sul dispositivo: Menu → «💾 Esporta…» → «Backup completo» ogni tanto (include le foto). Dallo stesso tasto: tabella CSV per Excel/Fogli, CSV del laboratorio e `collezione.json` per GitHub.
 
+## Spedizione negli annunci (2.27)
+- Ogni annuncio della wishlist ha **«Spedizione (€)»** accanto al prezzo: vuota = non indicata, **0 = gratis** (o ritiro a mano).
+- Viene letta da sola quando c'è: dalla pagina dell'annuncio (es. «Spedizione da 2,99 €», «+ 9,90 € spedizione», «Spedizione: 15,00 EUR», «Spedizione gratuita») e dagli screenshot; «↻ Aggiorna prezzi» aggiorna anche la spedizione.
+- Nella scheda l'annuncio mostra il **totale** con il dettaglio (es. «€ 104,90 · € 95 + € 9,90 sped.»); nell'elenco della wishlist «da € …» e la spunta del **budget** usano il totale; con **«Preso!»** il prezzo pagato è il totale e la spedizione finisce anche nelle note.
+
 ## Scheda, vista 3D e museo (2.26)
 - **＋ sulla foto della scheda** (al posto di «Adatta / riempi»): un menu con tutto quello che si può aggiungere all'oggetto — scontorno per il museo, modello 3D, foto, allegato, intervento (anche dettato), accessorio collegato, collaudo, progetto di restauro, valore, prestito o esposizione, raccolte ed etichette. Per i pezzi in wishlist: modello 3D, foto, allegato, annuncio, raccolte ed etichette.
 - **Vista 3D**: ⓘ mostra o nasconde le etichette (solo da guardare); ✎ «Modifica» le piazza e le cambia e raddrizza il modello; le istruzioni stanno in alto, sopra le etichette.
 - **Museo, linea del tempo**: trascinando in verticale gli anni seguono il dito (in giù si va avanti, i pezzi vengono verso di te); sul righello in basso resta come prima.
-- **Museo, scaffali**: tenendo premuto compare un cursore che ingrandisce o rimpicciolisce gli oggetti (da 0,6 a 1,8 volte); i ripiani si ricompongono da soli, da 5 a 1 oggetto per ripiano, senza ricaricare le immagini. La grandezza resta ricordata sul telefono (`rd_mu_k`); il cursore si chiude con ✕, toccando altrove o dopo qualche secondo.
+- **Museo, scaffali** (2.27): tenendo premuto **un oggetto** compare un cursore col suo nome che cambia la grandezza di quell'oggetto soltanto (dal 30% al 125%; ↺ torna al 100%), così un iPod shuffle può restare piccolo accanto a un portatile. La grandezza sta nella scheda (campo `mu_k`) e si sincronizza con l'altro telefono; l'oggetto scelto si illumina finché il cursore è aperto, e il cursore si chiude con ✕, toccando altrove o dopo qualche secondo. La pressione lunga non apre il piedistallo.
 
 ## Sfida, crescita, caccia del weekend, dettatura (2.23)
 - **🥊 Sfida** (Menu → Collezione, o scheda → ⋯ → Sfida con…): scegli due pezzi; entrano dai lati con un «VS» e, categoria per categoria, due barre corrono dal centro: più vintage (anni), processore (MHz/GHz), RAM, archiviazione, schermo (pollici), valore, più leggero (kg). Contano solo le categorie con il dato su entrambi; la barra vincente si accende, il punteggio sale con una vibrazione e alla fine la corona va al vincitore (Rivincita / Nuova sfida).
