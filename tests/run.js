@@ -1457,14 +1457,41 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     const pt = await U.evaluate(() => { const b = document.querySelector('.tm-stage').getBoundingClientRect(); return { x: b.x + 10, y: b.y + b.height * .6 }; });
     await U.mouse.move(pt.x, pt.y); await U.mouse.down(); for (let i = 1; i <= 12; i++) { await U.mouse.move(pt.x, pt.y - i * 15); await U.waitForTimeout(16); } await U.waitForTimeout(180); await U.mouse.up(); await U.waitForTimeout(1200);
     eq([y0, await U.evaluate(() => document.querySelector('.tm-yr span:not(.out)').textContent)], ['2010', '2008'], 'trascinando in su si torna indietro (in giù si va avanti)');
-    // scaffali: tenendo premuto compare il cursore della grandezza
+    // scaffali (2.27): tenendo premuto un oggetto compare il cursore della sua grandezza, solo per lui
     await U.evaluate(() => { LS.set('rd_muview', ''); LS.set('rd_room', 'Apple'); goBase(() => museumPage()); }); await U.waitForSelector('.mu-root .mu-obj'); await U.waitForTimeout(900);
-    const n0 = await U.evaluate(() => [document.querySelectorAll('.mu-root .mu-obj').length, document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length]);
-    const ob = await U.evaluate(() => { const b = document.querySelector('.mu-root .mu-obj').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+    const ob = await U.evaluate(() => { const o = document.querySelector('.mu-root .mu-obj'), b = o.getBoundingClientRect(); return { id: o.dataset.mu, x: b.x + b.width / 2, y: b.y + b.height / 2, per: document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length }; });
     await U.mouse.move(ob.x, ob.y); await U.mouse.down(); await U.waitForTimeout(650); await U.mouse.up(); await U.waitForTimeout(300);
-    ok(await U.evaluate(() => !!document.querySelector('.mu-size input') && stack[stack.length - 1].classList.contains('mu-root')), 'tenendo premuto compare il cursore (e non si apre il piedistallo)');
-    const n1 = await U.evaluate(() => { const r = document.querySelector('.mu-size input'); r.value = 100; r.dispatchEvent(new Event('input')); r.dispatchEvent(new Event('change')); return [document.querySelectorAll('.mu-root .mu-obj').length, document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length, +LS.get('rd_mu_k').toFixed(1), document.querySelector('.mu-size b').textContent]; });
-    eq([n0, n1], [[n0[0], Math.min(3, n0[0])], [n0[0], Math.min(2, n0[0]), 1.8, '2 per ripiano']], 'cursore al massimo: oggetti più grandi, due per ripiano, grandezza ricordata');
+    eq(await U.evaluate(id => [!!document.querySelector('.mu-size input'), stack[stack.length - 1].classList.contains('mu-root'), document.querySelector('.mu-size .mu-sn').textContent === devices.find(d => d.id === id).nome, document.querySelector(`.mu-root [data-mu="${id}"]`).classList.contains('mu-sel')], ob.id), [true, true, true, true], 'tenendo premuto un oggetto compare il cursore col suo nome (e non si apre il piedistallo)');
+    const sz = await U.evaluate(id => { const r = document.querySelector('.mu-size input'); r.value = 50; r.dispatchEvent(new Event('input')); r.dispatchEvent(new Event('change'));
+      const objs = [...document.querySelectorAll('.mu-root .mu-obj')]; return [objs.find(o => o.dataset.mu === id).style.getPropertyValue('--ik'), objs.filter(o => o.dataset.mu !== id).every(o => +o.style.getPropertyValue('--ik') === ikOfTest(o)), document.querySelector('.mu-size b').textContent, document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length];
+      function ikOfTest(o) { const d = devices.find(x => x.id === o.dataset.mu); return Math.max(.3, Math.min(1.25, +d.mu_k || 1)); } }, ob.id);
+    eq(sz, ['0.50', true, '50%', ob.per], 'cambia solo l\'oggetto tenuto premuto; gli altri e i ripiani restano com\'erano');
+    await U.waitForTimeout(300);
+    eq(await U.evaluate(id => devices.find(d => d.id === id).mu_k, ob.id), 0.5, 'la grandezza resta nella scheda (si sincronizza)');
+    await U.evaluate(() => { goBase(() => museumPage()); }); await U.waitForSelector('.mu-root .mu-obj'); await U.waitForTimeout(400);
+    eq(await U.evaluate(id => document.querySelector(`.mu-root [data-mu="${id}"]`).style.getPropertyValue('--ik'), ob.id), '0.5', 'riaprendo il museo l\'oggetto resta della grandezza scelta');
+    await U.context().close();
+  });
+
+  await test('2.27: annunci con la spedizione — letta dalla pagina e dallo screenshot, totale per budget e prezzo pagato', async () => {
+    const U = await phone('S27');
+    eq(await U.evaluate(() => ['Prezzo 450,00 € + 9,90 € spedizione', 'Spedizione da 2,99 €', 'Spedizione: 15,00 EUR', 'Spedizione gratuita', 'Prezzo 1.180,50 € Funzionante', 'Consegna prevista in 3-5 giorni · 120 €'].map(findShip)), ['9.9', '2.99', '15', '0', '', ''], 'spedizione riconosciuta nei testi degli annunci (gratis = 0, assente = vuota)');
+    eq(await U.evaluate(() => parseListingText('MacBook Pro 2012\n350,00 €\nSpedizione da 6,50 €\nDescrizione\nFunziona benissimo').spedizione), '6.5', 'dallo screenshot');
+    const r = await U.evaluate(async () => { document.querySelectorAll('.modal').forEach(m => m.remove());
+      await saveDev({ id: 'w27', wish: true, nome: 'iBook G4', w_budget: '100', creato: Date.now(), annunci: [{ id: 'a1', titolo: 'iBook G4 14"', prezzo: '95', spedizione: '9.90', sito: 'Vinted' }, { id: 'a2', titolo: 'iBook G4 12"', prezzo: '99', spedizione: '0', sito: 'Subito' }] });
+      const d = devices.find(x => x.id === 'w27'), m1 = annMeta(d); render(); goBase(() => openDetail('w27')); await new Promise(r => setTimeout(r, 600));
+      const cards = [...document.querySelectorAll('.page.det .ann em')].map(e => e.textContent);
+      return { tot: d.annunci.map(annTot), m1, cards };
+    });
+    eq(r.tot, [104.9, 99], 'totale = prezzo + spedizione');
+    ok(/da € 99\b/.test(r.m1) && / ✓/.test(r.m1), 'nell\'elenco «da» usa il totale più basso e il budget è rispettato: ' + r.m1);
+    eq(r.cards, ['€ 104,90€ 95 + € 9,90 sped.', '€ 99spedizione gratis'], 'nella scheda il totale con il dettaglio');
+    await U.evaluate(() => document.querySelector('.page.det [data-annedit="a1"]').click()); await U.waitForSelector('#esp');
+    await U.evaluate(() => { document.querySelector('#esp').value = '12'; document.querySelector('#eok').click(); }); await U.waitForTimeout(600);
+    eq(await U.evaluate(() => devices.find(x => x.id === 'w27').annunci[0].spedizione), '12', 'la spedizione si modifica nell\'annuncio');
+    await U.evaluate(async () => { const d = devices.find(x => x.id === 'w27'); d.annunci = [d.annunci[0]]; await saveDev(d); goBase(() => openDetail('w27')); }); await U.waitForTimeout(500);
+    await U.evaluate(() => document.querySelector('.page.det [data-got]').click()); await U.waitForSelector('.modal [data-y]'); await U.click('.modal [data-y]'); await U.waitForTimeout(800);
+    eq(await U.evaluate(() => { const d = devices.find(x => x.id === 'w27'); return [d.wish, d.acq_prezzo, /spedizione € 12/.test(d.note || '')]; }), [false, '107', true], '«Preso!»: il prezzo pagato include la spedizione');
     await U.context().close();
   });
 
