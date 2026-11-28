@@ -963,7 +963,7 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq(await U.evaluate(() => { const m = devices.find(d => d.id === 'm3').m3d; return [m.nome, m.tipo, /^local:/.test(m.data), m.rot]; }), ['ipod.spz', 'spz', true, [0, 0, 0]], 'nella scheda solo il riferimento al file (nella cache), pagina 3D aperta');
     await U.waitForSelector('.m3err', { timeout: 15000 });
     ok(await U.evaluate(() => /visualizzatore 3D/.test(document.querySelector('.m3err').textContent)), 'senza rete per la libreria: messaggio chiaro');
-    await U.click('[data-m3set]'); await U.waitForSelector('.modal.sheet'); await U.click('.modal.sheet [data-c="0"]'); await U.waitForTimeout(400);
+    await U.click('[data-m3edit]'); await U.waitForSelector('.m3ed:not([hidden])'); await U.click('[data-rot="0"]'); await U.waitForTimeout(400);
     eq(await U.evaluate(() => devices.find(d => d.id === 'm3').m3d.rot), [180, 0, 0], 'Capovolgi salva l\'orientamento');
     await U.evaluate(() => goBase(() => openDetail('m3'))); await U.waitForTimeout(500);
     eq(await U.evaluate(() => [!!document.querySelector('.page.det .hb3d'), /ipod\.spz/.test(document.querySelector('.page.det .m3sec').textContent)]), [true, true], 'pulsante 3D sulla foto e sezione Modello 3D');
@@ -1407,6 +1407,64 @@ function ok(v, msg) { if (!v) throw new Error(msg || 'condizione falsa'); }
     eq([r.prims, r.pos, r.nrm], [[[6, 0, 5123], [3, 1, 5123]], [5122, true, 8, 'VEC3'], 5120], 'un pezzo per materiale; posizioni a 16 bit allineate a 4 byte, normali a 8 bit');
     eq(r.tex, [1, 'image/jpeg', { index: 0 }, [0, 0, 1, 1]], 'texture in JPEG nel primo materiale, colore pieno nel secondo');
     eq(r.pts, ['0,0,0', '0,0,0', '0,0,2', '0,2,0', '2,0,0', '2,2,0'], 'le posizioni tornano uguali dopo la quantizzazione');
+    await U.context().close();
+  });
+
+  await test('2.26: raccolte multiple, Apple in «Apple», «＋» nella scheda, Modifica 3D, linea del tempo e scaffali', async () => {
+    const U = await phone('R26');
+    const r = await U.evaluate(async () => { document.querySelectorAll('.modal').forEach(m => m.remove());
+      const mk = (id, o) => saveDev({ id, tipologia: 'Portatile', creato: Date.now(), ...o });
+      await mk('ra', { nome: 'PowerBook G4', marca: 'Apple', anno: '2001', raccolta: ['Apple', 'Portatili'] }); await mk('rb', { nome: 'Game Boy', marca: 'Nintendo', anno: '1989', tipologia: 'Console', raccolta: 'Console' });
+      await mk('rc', { nome: 'iBook G3', marca: 'Apple', anno: '1999', raccolta: 'Portatili' }); await mk('rd', { nome: 'Vaio', marca: 'Sony', anno: '2003' }); await mk('re', { nome: 'iMac G3', marca: ' apple ', anno: '1998' });
+      const g = id => devices.find(d => d.id === id);
+      const base = [racOf(g('ra')), racOf(g('rb')), racOf(g('rd')), vals(g('ra'), 'raccolta'), val(g('ra'), 'raccolta'), vals(g('rd'), 'raccolta')];
+      S.sel = { raccolta: ['Portatili'] }; const filt = ['ra', 'rb', 'rc', 'rd'].filter(id => pass(g(id))); S.sel = {};
+      S.group = 'raccolta'; render(); const grp = [[...document.querySelectorAll('#list .gh')].map(h => h.firstChild.textContent.trim()), document.querySelectorAll('#list [data-id="ra"]').length]; S.group = ''; render();
+      LS.set('rd_mu_by', 'rac'); const rooms = [roomsOf(g('ra')), roomsOf(g('rd')), roomOf(g('rb'))];
+      LS.set('rd_mig_apple', 0); const n1 = await migApple(), n2 = await migApple();
+      return { base, filt, grp, rooms, mig: [n1, n2, racOf(g('rc')), racOf(g('re')), racOf(g('rd')), racOf(g('ra'))] };
+    });
+    eq(r.base, [['Apple', 'Portatili'], ['Console'], [], ['Apple', 'Portatili'], 'Apple, Portatili', ['—']], 'raccolte come elenco; le schede vecchie con il testo valgono ancora');
+    eq(r.filt, ['ra', 'rc'], 'filtro: chi è anche in «Portatili»');
+    eq(r.grp, [['Apple', 'Console', 'Portatili', 'Non indicato'], 2], 'raggruppando per raccolta il PowerBook compare sia in Apple sia in Portatili');
+    eq(r.rooms, [['Apple', 'Portatili'], ['Altro'], 'Console'], 'nel museo un oggetto sta in tutte le sue sale');
+    eq(r.mig, [2, 0, ['Portatili', 'Apple'], ['Apple'], [], ['Apple', 'Portatili']], 'gli oggetti Apple entrano in «Apple» una volta sola, senza perdere le altre raccolte');
+    // modulo: raccolte a bottoncini
+    await U.evaluate(() => { goBase(() => openForm(devices.find(d => d.id === 'rd'))); }); await U.waitForSelector('#racbox');
+    await U.evaluate(() => { document.querySelector('#racbox [data-rac="Portatili"]').click(); document.querySelector('#newrac').value = 'Giapponesi'; document.querySelector('#addrac').click(); document.querySelector('.page [data-save]').click(); }); await U.waitForTimeout(900);
+    eq(await U.evaluate(() => racOf(devices.find(d => d.id === 'rd'))), ['Portatili', 'Giapponesi'], 'nel modulo si accendono più raccolte e se ne aggiunge una nuova');
+    // scheda: «＋» al posto di «Adatta / riempi»
+    await U.evaluate(() => goBase(() => openDetail('ra'))); await U.waitForSelector('.page.det [data-addx]');
+    ok(await U.evaluate(() => !document.querySelector('[data-fit]')), 'niente più «Adatta / riempi»');
+    await U.click('.page.det [data-addx]'); await U.waitForSelector('.modal.sheet');
+    eq(await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi b')].map(b => b.textContent)), ['Scontorno per il museo', 'Modello 3D', 'Foto', 'Allegato', 'Intervento', 'Detta un intervento', 'Accessorio', 'Collaudo', 'Progetto di restauro', 'Valore', 'Prestito o esposizione', 'Raccolte ed etichette'], '«＋» raccoglie tutto quello che si può aggiungere');
+    await U.evaluate(() => [...document.querySelectorAll('.modal.sheet .shi')].find(b => b.querySelector('b').textContent === 'Intervento').click()); await U.waitForTimeout(500);
+    ok(await U.evaluate(() => !!stack[stack.length - 1].querySelector('#i_tipo')), 'scegliendo «Intervento» si apre il modulo dell\'intervento');
+    // vista 3D: un solo tasto Modifica con l'orientamento, pannello in alto
+    await U.evaluate(async () => { const d = devices.find(x => x.id === 'ra'); d.m3d = { id: 'm', nome: 'p.spz', size: 9, tipo: 'spz', data: 'data:application/octet-stream;base64,' + btoa('x'), rot: [0, 0, 0] }; await saveDev(d); goBase(() => openModel3D(d)); });
+    await U.waitForSelector('[data-m3edit]');
+    ok(await U.evaluate(() => !document.querySelector('[data-m3set]') && document.querySelector('.m3ed').hidden), 'niente più ⟲ separato; il pannello di modifica è chiuso');
+    await U.click('[data-m3edit]'); await U.waitForSelector('.m3ed:not([hidden])');
+    eq(await U.evaluate(() => { const e = document.querySelector('.m3ed').getBoundingClientRect(), st = document.querySelector('.m3stage').getBoundingClientRect(); return [e.top - st.top < 30, getComputedStyle(document.querySelector('.m3ed')).zIndex > getComputedStyle(document.querySelector('.m3tags')).zIndex, document.querySelector('[data-rot="3"]').disabled]; }), [true, true, true], 'istruzioni in alto, sopra le etichette; «ripristina» spento finché non si ruota');
+    await U.click('[data-rot="1"]'); await U.waitForTimeout(300);
+    eq(await U.evaluate(() => [devices.find(x => x.id === 'ra').m3d.rot, document.querySelector('[data-rot="3"]').disabled]), [[90, 0, 0], false], '«Avanti 90°» dentro Modifica salva l\'orientamento');
+    await U.click('[data-m3done]'); await U.waitForTimeout(200);
+    ok(await U.evaluate(() => document.querySelector('.m3ed').hidden && !document.querySelector('[data-m3edit]').classList.contains('on')), '«Fine» chiude la modifica');
+    // linea del tempo: in verticale gli anni seguono il dito
+    await U.evaluate(async () => { for (const [i, a] of [[1, '2004'], [2, '2010'], [3, '2010']]) await saveDev({ id: 'tl' + i, nome: 'Anno ' + a + i, marca: 'Apple', anno: a, tipologia: 'Portatile', creato: Date.now() }); goBase(() => openTimeMachine()); });
+    await U.waitForSelector('.tm-l', { state: 'attached' }); await U.waitForTimeout(3600);
+    const y0 = await U.evaluate(() => document.querySelector('.tm-yr span:not(.out)').textContent);
+    const pt = await U.evaluate(() => { const b = document.querySelector('.tm-stage').getBoundingClientRect(); return { x: b.x + 10, y: b.y + b.height * .6 }; });
+    await U.mouse.move(pt.x, pt.y); await U.mouse.down(); for (let i = 1; i <= 12; i++) { await U.mouse.move(pt.x, pt.y - i * 15); await U.waitForTimeout(16); } await U.waitForTimeout(180); await U.mouse.up(); await U.waitForTimeout(1200);
+    eq([y0, await U.evaluate(() => document.querySelector('.tm-yr span:not(.out)').textContent)], ['2010', '2008'], 'trascinando in su si torna indietro (in giù si va avanti)');
+    // scaffali: tenendo premuto compare il cursore della grandezza
+    await U.evaluate(() => { LS.set('rd_muview', ''); LS.set('rd_room', 'Apple'); goBase(() => museumPage()); }); await U.waitForSelector('.mu-root .mu-obj'); await U.waitForTimeout(900);
+    const n0 = await U.evaluate(() => [document.querySelectorAll('.mu-root .mu-obj').length, document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length]);
+    const ob = await U.evaluate(() => { const b = document.querySelector('.mu-root .mu-obj').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+    await U.mouse.move(ob.x, ob.y); await U.mouse.down(); await U.waitForTimeout(650); await U.mouse.up(); await U.waitForTimeout(300);
+    ok(await U.evaluate(() => !!document.querySelector('.mu-size input') && stack[stack.length - 1].classList.contains('mu-root')), 'tenendo premuto compare il cursore (e non si apre il piedistallo)');
+    const n1 = await U.evaluate(() => { const r = document.querySelector('.mu-size input'); r.value = 100; r.dispatchEvent(new Event('input')); r.dispatchEvent(new Event('change')); return [document.querySelectorAll('.mu-root .mu-obj').length, document.querySelector('.mu-root .mu-shelf').querySelectorAll('.mu-obj').length, +LS.get('rd_mu_k').toFixed(1), document.querySelector('.mu-size b').textContent]; });
+    eq([n0, n1], [[n0[0], Math.min(3, n0[0])], [n0[0], Math.min(2, n0[0]), 1.8, '2 per ripiano']], 'cursore al massimo: oggetti più grandi, due per ripiano, grandezza ricordata');
     await U.context().close();
   });
 
